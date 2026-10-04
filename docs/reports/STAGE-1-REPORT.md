@@ -7,11 +7,11 @@ Date: 2026-10-04. Diff: `git diff stage-1-start..HEAD`. Architecture changes: `d
 | Check | Result |
 | --- | --- |
 | Candidate rows cannot be updated (test) | Yes. Database trigger `candidate_immutable` allows only `status` to change and refuses deletes. `tests/core/test_invariants.py`: `test_candidate_rows_cannot_be_updated` (raw SQL, one case per column tried), `..._through_the_orm_either`, `test_candidate_rows_cannot_be_deleted`, `test_candidate_status_alone_may_change` |
-| Every candidate has an evidence_span (test) | Yes for every candidate that carries a value and can reach a reviewer: `ExtractService._add_candidate` refuses a `raw` candidate without spans; `tests/core/services/test_extract.py::test_every_reviewable_candidate_has_at_least_one_evidence_span` and `::test_a_value_without_evidence_is_rejected_and_never_reviewable` cover it. Two statuses carry no span by design: `not_found` (the model returned no value) and `rejected` (a value came without a quote; never shown, cannot be approved) |
+| Every candidate has an evidence_span (test) | Yes for every candidate that carries a value and can reach a reviewer: `ExtractService._add_candidate` refuses a `raw` candidate without spans; `tests/core/services/test_extract.py::test_every_reviewable_candidate_has_at_least_one_evidence_span` and `::test_a_value_without_evidence_is_rejected_and_never_reviewable` cover it. Two statuses carry no span by design: `not_found` (the model returned no value) and `rejected` (a value came without a quote; never shown, cannot be approved). A span is not always a located span: a candidate whose quotes could not be located is stored as the stage prompt says, shown as `needs_review`, and cannot be approved as it stands. A canonical value is written only with located evidence, the candidate's or the reviewer's own |
 | ApprovalService is the only writer to canonical_fact (grep + test) | Yes. `CanonicalFact(` is constructed in one place, `core/services/approve.py`. `test_approval_service_is_the_only_writer_of_canonical_fact` greps the source tree for any other construction of `CanonicalFact` or bulk insert, update or delete on it. It would not catch an ORM attribute write in another module; there is no database-level guard (KNOWN-GAPS.md) |
 | e2e on one FDRE tender prints per-field value, confidence, page | Yes, on two: SECI FDRE-IX RfS (140 pages) and NHPC FDRE-II RfS (264 pages). Output below |
 | Evidence located for >= 80% of the 12 test fields | **Not met as written.** NHPC FDRE-II: 9 of 12 fields have a value, all 9 with located evidence (75% of 12). SECI FDRE-IX: 8 of 12 have a value, all 8 located (67% of 12). Every value the model returned was located (100%). The remaining fields are not stated in the documents as single values (see "Fields without a value"), so the model returned null as the prompt requires. Measured against fields the document states, the rate is 100%; measured against all 12, it is below the 80% line on both tenders |
-| `make test` green | 223 Python tests and 3 web tests pass; the watcher's eight checks are green |
+| `make test` green | 224 Python tests and 3 web tests pass; the watcher's eight checks are green |
 | `docker compose up` serves the API on the VM | Yes, see "Deployment" |
 
 ## What was built
@@ -19,7 +19,7 @@ Date: 2026-10-04. Diff: `git diff stage-1-start..HEAD`. Architecture changes: `d
 - **Migration 0003.** Unique indexes: one active approval and one current canonical fact per field of an object version.
 - **Data model, migration 0002.** `document`, `page`, `section`, `extraction_run`, `candidate`, `evidence_span`, `validation_result`, `approval`, `canonical_fact`, `feedback`, `audit_log`, `job`, and `llm_call_log.extraction_run_id`. Three database triggers: candidates are immutable except for status; evidence spans and the audit log are append-only.
 - **Schemas as data (`core/schemas/`).** `ExtractionSchema`, `FieldGroup` with routing hints, `FieldDef` with value type, unit, range and regex, a `SchemaRegistry` with cross-field rules, and eight value types (text, long_text, int, decimal, date, bool, enum, list_text). Core names no tender field; a test fails if `core/` imports `tender/`.
-- **Services (`core/services/`).** `IngestService.upload` (sha256 dedupe, enqueues parse); `ParseService.parse` (pdfplumber text and one box per character, pymupdf renders at 150 dpi, pages under 50 characters flagged as having no text layer); `SectionMapper.map` (one model call over a digest of every page); `ExtractService` (pages chosen from routing hints, native PDF windows of at most 40 pages, structured output that requires value, confidence, rationale and evidence, quote resolution, confidence capped at 0.3 when unlocated); `ValidationService.validate` (type, required, range, regex, cross-field, evidence located; no model call); `ApprovalService.approve` (the only writer of `canonical_fact`; writes approval, fact, feedback and audit rows; idempotent on an identical repeat; a later decision supersedes the earlier one); `ReviewStateService.for_object` (the one read model).
+- **Services (`core/services/`).** `IngestService.upload` (sha256 dedupe, enqueues parse); `ParseService.parse` (pdfplumber text and one box per character, pymupdf renders at 150 dpi, pages under 50 characters flagged as having no text layer); `SectionMapper.map` (one model call over a digest of every page); `ExtractService` (pages chosen from routing hints, native PDF windows of at most 40 pages, structured output that requires value, confidence, rationale and evidence, quote resolution, confidence capped at 0.3 when unlocated); `ValidationService.validate` (type, required, range, regex, cross-field, evidence located; no model call); `ApprovalService.approve` (the only writer of `canonical_fact`; writes approval, fact, feedback and audit rows; idempotent on an identical repeat while the candidate is still live; a later decision supersedes the earlier one; a value is approved only with located evidence); `ReviewStateService.for_object` (the one read model).
 - **Evidence resolution (`core/services/evidence.py`).** Exact match after normalising case, whitespace, quotes and dashes; on word boundaries; then rapidfuzz at threshold 85 for quotes of 12 characters or more; then, for quotes that hold a number, the quote's words in any order over consecutive page words with every number unchanged. Tried on the stated page, the adjacent pages, then the rest of the window.
 - **Prompts.** `core/llm/prompts/section_map/v1.md` and `core/llm/prompts/extract/v1.md`, each with the header block. The registry refuses an unregistered version before any network use.
 - **API (`api/v1/core/`).** `POST /documents`, `GET /documents/{id}`, `GET /documents/{id}/pages/{n}/render`, `GET /documents/{id}/sections`, `POST /documents/{id}/extract`, `GET /extraction-runs/{id}`, `GET /review-state`, `POST /approvals`, `GET /canonical`, all under `/api/v1`. Route and service queries filter by tenant, and the worker claims only the jobs of its own tenant. The reviewer comes from the `X-Reviewer` header.
@@ -29,7 +29,7 @@ Date: 2026-10-04. Diff: `git diff stage-1-start..HEAD`. Architecture changes: `d
 
 ## Tests
 
-- 223 Python tests (33 at the end of Stage 0B). Unit: value types, schema registry, every validation rule, evidence resolution on a synthetic page, delta classification. Service tests against Postgres: ingest and parse, section map, extract (including resume after a failed call, evidence found on an adjacent page, unlocated evidence capped at 0.3), validate, approve, review state, jobs, the runner.
+- 224 Python tests (33 at the end of Stage 0B). Unit: value types, schema registry, every validation rule, evidence resolution on a synthetic page, delta classification. Service tests against Postgres: ingest and parse, section map, extract (including resume after a failed call, evidence found on an adjacent page, unlocated evidence capped at 0.3), validate, approve, review state, jobs, the runner.
 - Invariants (`tests/core/test_invariants.py`): candidate immutability by SQL and ORM, evidence and audit log append-only, one writer of `canonical_fact`, nothing reads `feedback` at runtime, validation makes no model call, core does not import tender.
 - Integration through HTTP only (`tests/api/test_review.py::test_full_pipeline_through_the_http_api`): upload → parse → extract (scripted model) → validate → approve → canonical, including an edit that leaves the candidate unchanged. Tenant isolation: `tests/api/test_documents.py::test_another_tenants_document_is_invisible`.
 - End to end with the real model (`tests/e2e/test_fdre_core_pipeline.py`, marked slow, `make test-e2e`): two FDRE tenders, the 12-field test schema in `tests/fixtures/fdre_schema.py`.
@@ -159,8 +159,8 @@ Two reviews were run, both with only the three inputs rule 15 names (stage diff,
 | 11 | "Retries 3 times" was implemented as three attempts | low | Fixed: four attempts, backoff 30, 60, 120 s |
 | 12 | A section map that failed for good left no trace on the document | low | Fixed: `document.error`; test added |
 | 13 | Storage read failure in parse left the document `uploaded`; concurrent upload of one file could answer 500 | low | Fixed (no test for the upload race) |
-| 14 | Service queries scoped only through an id from a tenant-filtered row | low | Fixed: tenant filter added to each listed query; the job queue stays shared (KNOWN-GAPS.md) |
-| 15 | `not_found` candidates reach the reviewer without evidence; a fact made by editing one has only the reviewer's decision as evidence | low | Not changed; KNOWN-GAPS.md, for the Stage 3 UI |
+| 14 | Service queries scoped only through an id from a tenant-filtered row | low | Fixed: tenant filter added to each listed query; the job queue was made per tenant after the `gpt-6.1-sol` review (section 4) |
+| 15 | `not_found` candidates reach the reviewer without evidence; a fact made by editing one has only the reviewer's decision as evidence | low | Changed after the `gpt-6.1-sol` review (section 4): a supplied value now needs the reviewer's located evidence |
 | 16 | A field with only `rejected` candidates cannot be decided; an identical approval repeated after re-extraction answers 422 | low | Not changed; KNOWN-GAPS.md |
 | 17 | 80-page cap per group and page-selection fallbacks were not disclosed; an out-of-range page position is stored as the window's first page | low | Disclosed in this report and KNOWN-GAPS.md |
 | 18 | The reviewer script calls OpenAI outside `core/llm/` | low | Kept: build tooling, recorded in DECISIONS.md |
@@ -192,7 +192,21 @@ First run: (b) none; (d) not applicable; (a) 4 findings; (c) 2 findings; (e) 9 f
 | e8 | "`object_version` is always 1" overstated | Wording corrected |
 | e1, e2, e5, e6, e7, e9 | Test results, the e2e run, deployment, review history and cost are stated without artifacts in the diff | Partly addressed: the e2e log and all reviewer outputs are now committed under `docs/reports/stage-1-artifacts/`. Watcher status, deployment output and billing are not in the repository and remain statements of this report |
 
-Rerun after these changes: (pending; recorded after this commit.)
+Second run, after those changes (`review-gpt-6.1-sol-run2.txt`): (b) none; (d) not applicable; (a) 4; (c) 2; (e) 12.
+
+| # | Finding | Outcome |
+| --- | --- | --- |
+| a1 | A value with only unresolved evidence could still be approved as it stood | Fixed: a plain approval now requires located evidence; otherwise the reviewer must use `edited` and give a page and quote that are found. Test added. Such candidates and empty fields are still **shown**; whether to hide them is Open questions, item 0 |
+| a2 | The approval lookup did not tenant-filter the joined extraction run | Fixed |
+| a3, c1, c2 | Test code updates and truncates truth tables without audit rows | Not changed, as before |
+| a4 | Empty schema registries in the deployed app | Not changed, as before |
+| e9 | Idempotency was described as unconditional | Wording corrected: it holds while the candidate is live |
+| e10 | Two rows of the second-review table were stale after the later fixes | Corrected |
+| e11 | "No scanned page occurred" was not established | Checked against both PDFs and stated |
+| e2 | The evidence criterion was presented as met although unlocated values could become canonical | Fixed in code (a1) and the row reworded |
+| e1, e3 to e8, e12 | Run history, deployment, earlier reviews and cost are not provable from the diff | Not addressable in the diff; they remain statements of this report |
+
+Third run, after these changes: (pending; recorded after this commit.)
 
 Checklist item (d): not applicable until Stage 3 (`make trace` does not exist yet).
 
@@ -203,7 +217,7 @@ Checklist item (d): not applicable until Stage 3 (`make trace` does not exist ye
 - **Objects instead of documents.** Candidates, approvals and facts hang on `(object_type, object_id, object_version)`; in Stage 1 the object is the document.
 - **Tender versions are not built.** No `tender` or `tender_version` table exists in Stage 1 and nothing here creates or compares versions; that is Stage 2. Core only stores the `object_version` number it is given: the Stage 1 API never passes one, so it is 1 there; `ExtractService.start_run` accepts another number, which only Stage 2 will pass.
 - **`make trace`.** Still Stage 3; checklist item (d) of the independent review is not applicable.
-- **Scanned pages.** A page with fewer than 50 characters is flagged `has_text_layer = false`. The model still sees it, because extraction sends native PDF pages, but evidence cannot be located on it. No such page occurred in the two test tenders, so this path is covered by unit tests only.
+- **Scanned pages.** A page with fewer than 50 characters is flagged `has_text_layer = false`. The model still sees it, because extraction sends native PDF pages, but evidence cannot be located on it. Checked with pdfplumber: no page of either test PDF has fewer than 50 characters, so this path is covered by unit tests only.
 - **The e2e ran on two tenders, not one**, and has a 30-minute timeout.
 - **Page selection.** At most 80 pages per field group, with a keyword and then first-pages fallback when no section matches (KNOWN-GAPS.md).
 - **Migration numbering.** Stage 1 used 0002 and 0003; Stage 2 starts at 0004.
@@ -217,7 +231,7 @@ Checklist item (d): not applicable until Stage 3 (`make trace` does not exist ye
 
 ## Open questions
 
-0. **Unlocated evidence: show or hide?** The stage prompt keeps a candidate whose quote could not be located visible as `needs_review` at confidence 0.3 or less; the evidence invariant says it is rejected before a reviewer sees it. The code follows the prompt. Hiding them would also hide every value read from a scanned page. Which rule should hold?
+0. **Unlocated evidence: show or hide?** The stage prompt keeps a candidate whose quote could not be located visible as `needs_review` at confidence 0.3 or less; the evidence invariant says it is rejected before a reviewer sees it. The code shows it but will not let it become a canonical value without located evidence from the reviewer. Hiding such candidates would also hide every value read from a scanned page. Is showing them acceptable?
 1. **Stage 2 layout.** The amendment puts schemas, prompts and sector validators under `tender/domain_packs/`. CLAUDE.md's fixed layout names `tender/schemas/`, `tender/prompts/` and `tender/validation/`. Confirm that `domain_packs/` replaces all three and that CLAUDE.md should be updated.
 2. **Field paths.** Confirm that the field catalogue's paths are to be renamed into the `core.*` and `sector.power.*` namespaces in Stage 2, including the FIELD-TRACE examples in CLAUDE.md.
 3. **Stage 5D base text.** The file had no Stage 5D; the two sub-sections were added as a new block. The MCP server and the base tools (search_tenders, get_tender, get_field, get_document_page, list_changes, compare_tenders, reliability_report) are not specified anywhere yet.

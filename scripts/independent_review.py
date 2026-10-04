@@ -15,12 +15,14 @@ import os
 import re
 import subprocess
 import sys
+import time
 import urllib.error
 import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 # Generated or locked files: large, and not something a reviewer can judge.
+ATTEMPTS, WAIT_SECONDS = 6, 20
 EXCLUDED = ("uv.lock", "web/src/api/openapi.json", "web/src/api/schema.d.ts")
 CHECKLIST = """You are an independent reviewer of one stage of a software build. You have no
 other context than the three inputs below. Answer this fixed checklist and nothing else.
@@ -81,12 +83,21 @@ def main() -> int:
         data=json.dumps(body).encode(),
         headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
     )
-    try:
-        with urllib.request.urlopen(request, timeout=600) as response:
-            answer = json.load(response)
-    except urllib.error.HTTPError as exc:
-        print(f"reviewer call failed: HTTP {exc.code}: {exc.read().decode()[:800]}")
-        return 1
+    # Access to a newly enabled model can answer 403 for a while; rate limits and server
+    # errors are also worth a second try.
+    for attempt in range(1, ATTEMPTS + 1):
+        try:
+            with urllib.request.urlopen(request, timeout=900) as response:
+                answer = json.load(response)
+            break
+        except urllib.error.HTTPError as exc:
+            detail = exc.read().decode()[:800]
+            retryable = exc.code in (403, 429) or exc.code >= 500
+            if not retryable or attempt == ATTEMPTS:
+                print(f"reviewer call failed: HTTP {exc.code}: {detail}")
+                return 1
+            print(f"attempt {attempt}: HTTP {exc.code}, retrying in {WAIT_SECONDS} s", flush=True)
+            time.sleep(WAIT_SECONDS)
     usage = answer.get("usage", {})
     print(
         f"reviewer: {answer.get('model')}  input chars: {len(user)}  "

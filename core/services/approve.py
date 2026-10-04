@@ -75,7 +75,11 @@ class ApprovalService:
         row = session.execute(
             select(Candidate, ExtractionRun)
             .join(ExtractionRun, Candidate.extraction_run_id == ExtractionRun.id)
-            .where(Candidate.id == candidate_id, Candidate.tenant_id == self._tenant_id)
+            .where(
+                Candidate.id == candidate_id,
+                Candidate.tenant_id == self._tenant_id,
+                ExtractionRun.tenant_id == self._tenant_id,
+            )
             .with_for_update(of=Candidate)
             # The row lock is only useful if the locked values are read from the database,
             # not from objects this session loaded earlier.
@@ -103,6 +107,12 @@ class ApprovalService:
                 )
             if final_value is not None and self._coerced(final_value, field) != candidate_value:
                 raise ApprovalError("an approval cannot change the value; use decision 'edited'")
+            if not self._has_located_evidence(session, candidate):
+                # No canonical value without located evidence: the reviewer must find it.
+                raise ApprovalError(
+                    "the evidence for this value was not located in the document; use decision "
+                    "'edited' and give the page and the quoted text that state the value"
+                )
             final: Any = candidate_value
         elif decision == "edited":
             if final_value is None:

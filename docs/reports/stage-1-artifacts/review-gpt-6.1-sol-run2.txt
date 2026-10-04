@@ -1,0 +1,82 @@
+attempt 1: HTTP 403, retrying in 20 s
+reviewer: gpt-6.1-sol  input chars: 458594  tokens in/out: 118582/3111
+
+## (a) Non-negotiable invariants
+
+| Invariant | Assessment |
+|---|---|
+| **The LLM never writes truth** | Upheld by the application paths shown. Extraction inserts candidates at `core/services/extract.py:437–461`; canonical facts are constructed in `ApprovalService.approve()` at `core/services/approve.py:200–218`, reached through the reviewer-required approval endpoint at `api/v1/core/review.py:29–47`. No automatic approval path is shown. |
+| **Every value carries its evidence** | Violated. Unresolved spans and evidence-free null candidates reach review. Furthermore, an unresolved, non-null candidate can be approved without supplying located evidence. Canonical evidence inheritance itself is implemented at `core/services/approve.py:339–382`. |
+| **The tender is a versioned object** | Not applicable to tender operations in this stage: no tender or tender-version implementation is shown. Generic canonical facts retain an object version at `core/models/truth.py:69–71`, populated at `core/services/approve.py:203–207`. This does not establish amendment creation or a tender current-view projection. |
+| **Candidates are immutable** | Candidate content is protected by the database trigger at `migrations/versions/0002_core.py:288–305`; status changes are permitted. Reviewer edits create separate approvals at `core/services/approve.py:169–185`, rather than changing candidate values. |
+| **Validation is deterministic** | Upheld by the shown implementation: Python coercion and field rules at `core/services/validate.py:88–99`, registered cross-field rules at `core/services/validate.py:135–140`, and failed-candidate status transitions at `core/services/validate.py:114–120`. No validation model call is shown. |
+| **Everything is audited and tenant-scoped** | Application truth writes have audit calls, listed in (c). New tables have tenant and attribution columns—for example, `migrations/versions/0002_core.py:153–156,180–183,244–247`. However, the approval lookup does not tenant-filter the joined extraction run, and successful test mutations bypass auditing. |
+| **Feedback is stored, never auto-applied** | Feedback is stored at `core/services/approve.py:237–262`; no runtime path reading it to change prompts, thresholds or models appears. The restriction is tested at `tests/core/test_invariants.py:115–123`. |
+| **API first** | The added routes are registered under `/api/v1/` at `api/main.py:35–36`. Upload drives parsing, and extraction drives validation through jobs. However, default API and worker startup register no schema, so deployed extraction cannot be driven successfully through the API. No compare/report feature or reviewer UI is added here. |
+
+FINDINGS: 4
+1. `core/services/extract.py:392–395,529–538`, `core/services/validate.py:83–86,114–120`, and `core/services/review_state.py:213–239`: candidates without located evidence—including evidence-free null candidates—reach reviewers. `core/services/approve.py:98–108,123–132,200–218` also permits plain approval of a non-null candidate with only unresolved evidence; located-evidence enforcement applies only to edits.
+2. `core/services/approve.py:77–80`: the lookup filters `Candidate.tenant_id` but not the joined `ExtractionRun.tenant_id`. Separate foreign keys do not establish tenant equality between these rows; subsequent object identity, version and schema are taken from that unfiltered run.
+3. `tests/core/test_invariants.py:65–69` and `tests/conftest.py:83–86`: a committed candidate-status update and cleanup of truth tables bypass the audit log. The invariant contains no test-code exception.
+4. `api/main.py:26`, `worker/main.py:22`, and `core/services/extract.py:203`: default startup uses empty schema registries, while extraction requires a registered schema. The deployed extraction operation is unavailable through the API.
+
+## (b) Tests for added API endpoints
+
+| Endpoint | HTTP integration test |
+|---|---|
+| `POST /api/v1/documents` | `tests/api/test_documents.py:20–28` — `test_upload_returns_201_then_200_for_the_same_file` |
+| `GET /api/v1/documents/{document_id}` | `tests/api/test_documents.py:45–52` — `test_get_document_shows_status_and_page_count_after_parsing` |
+| `GET /api/v1/documents/{document_id}/pages/{page_no}/render` | `tests/api/test_documents.py:55–67` — `test_page_render_is_a_png_and_missing_pages_are_404` |
+| `GET /api/v1/documents/{document_id}/sections` | `tests/api/test_documents.py:70–81` — `test_sections_are_listed_in_page_order` |
+| `POST /api/v1/documents/{document_id}/extract` | `tests/api/test_extraction.py:9–19` — `test_extract_queues_a_run_and_the_worker_completes_it` |
+| `GET /api/v1/extraction-runs/{run_id}` | Same test, GET requests at `tests/api/test_extraction.py:30,33` |
+| `GET /api/v1/review-state` | `tests/api/test_review.py:36–44,101–102` — `test_full_pipeline_through_the_http_api` |
+| `POST /api/v1/approvals` | Same test, POST requests at `tests/api/test_review.py:55–59,70–80` |
+| `GET /api/v1/canonical` | Same test, GET requests at `tests/api/test_review.py:50,87,93` |
+
+FINDINGS: none
+
+## (c) Audit coverage of writes
+
+| Application write | Corresponding audit call |
+|---|---|
+| Candidate insert — `core/services/extract.py:461–462` | `audit.record()` at `core/services/extract.py:473–488` |
+| Candidate supersession — `core/services/extract.py:603` | `audit.record()` at `core/services/extract.py:604–613` |
+| Candidate validation status — `core/services/validate.py:153` | `audit.record()` at `core/services/validate.py:154–163` |
+| Approval insert — `core/services/approve.py:186–188` | `self._audit()` at `core/services/approve.py:196` |
+| Approval supersession — `core/services/approve.py:264` | `self._audit()` at `core/services/approve.py:265–273` |
+| Canonical-fact insert — `core/services/approve.py:219–220` | `self._audit()` at `core/services/approve.py:221–235` |
+| Canonical-fact supersession — `core/services/approve.py:282–283` | `self._audit()` at `core/services/approve.py:284–292` |
+| Feedback insert — `core/services/approve.py:252–253` | `self._audit()` at `core/services/approve.py:254–262` |
+
+`self._audit()` delegates to `audit.record()` at `core/services/approve.py:393–403`; the latter appends an `AuditLog` row at `core/services/audit.py:21–31`. These application writes and audit inserts share their service transaction.
+
+No `tender_version` write is shown. Test mutations that fail and roll back do not constitute successful writes.
+
+FINDINGS: 2
+1. `tests/core/test_invariants.py:65–69`: the candidate-status test commits a direct candidate update without an audit insert.
+2. `tests/conftest.py:83–86`: cleanup truncates candidate, approval, canonical-fact and feedback tables without auditing their removal; it also truncates the audit log.
+
+## (d) FIELD-TRACE regeneration
+
+**Not applicable.** No `make trace` implementation or trace generator is shown. Its absence and deferral to Stage 3 are recorded at `docs/reports/STAGE-1-REPORT.md:195,203` and `docs/KNOWN-GAPS.md:17`. Therefore, regeneration without a diff cannot be checked in this stage.
+
+FINDINGS: none
+
+## (e) Unsupported draft-report claims
+
+The committed e2e log supports the pasted final run results, including three passing slow tests, printed field results, token counts and configured cost calculations (`docs/reports/stage-1-artifacts/e2e-final-run.log:5–68`). It does not establish the full test suite, deployment, earlier runs, billing or all review history.
+
+FINDINGS: 12
+1. `docs/reports/STAGE-1-REPORT.md:14,32`: “223 Python tests and 3 web tests pass” and “the watcher's eight checks are green” lack a full-suite or watcher-status execution artifact. The supplied execution log covers only three slow tests.
+2. `docs/reports/STAGE-1-REPORT.md:9`: the evidence criterion is presented as satisfied, although candidates carrying values with only unresolved spans can reach review and canonical approval. The implementation checks span existence for raw insertion, not the invariant’s required location (`core/services/extract.py:435–436`; `core/services/approve.py:98–108`).
+3. `docs/reports/STAGE-1-REPORT.md:114`: earlier section-count ranges, earlier extraction omissions, and historical token increases are not established by the one final-run log supplied.
+4. `docs/reports/STAGE-1-REPORT.md:118–128`: the assertions that original document text was checked, that particular phrases do not occur anywhere in the RfS, and that missing fields are definitively absent are not established by supplied PDF/page-text artifacts. Model rationales in the final log do not independently establish those document-wide checks.
+5. `docs/reports/STAGE-1-REPORT.md:134`: the first NHPC failure and subsequent rerun history lack earlier execution artifacts. The matcher implementation and final successful result support the implemented matching behavior, not that historical sequence.
+6. `docs/reports/STAGE-1-REPORT.md:138`: execution of `make deploy` after the last change, rebuilt images, applied migrations, migration head and successful static-IP health probe lack deployment/runtime artifacts.
+7. `docs/reports/STAGE-1-REPORT.md:140`: the live amendment upload, approximately ten-second processing time, returned render, review-state response and resulting app-database row lack operational artifacts.
+8. `docs/reports/STAGE-1-REPORT.md:148–152,176`: the “only” callable-model assertions and the second Claude review’s execution, severity distribution and confirmations are not established by the supplied reviewer outputs. In particular, the claimed confirmation that invariants hold conflicts with the evidence violation still present.
+9. `docs/reports/STAGE-1-REPORT.md:168`: “an identical approval repeated after re-extraction answers 422” is followed by an outcome of “Not changed” in a merged row; elsewhere, the report describes unconditional identical-repeat idempotency (`:23`). The implementation checks candidate status before idempotency (`core/services/approve.py:89–90,148–167`), so the unconditional claim is unsupported.
+10. `docs/reports/STAGE-1-REPORT.md:167`: “Not changed” for edits of evidence-free candidates is stale. Such edits now require located reviewer evidence at `core/services/approve.py:123–130`. Similarly, the statement that the job queue “stays shared” at report line 166 conflicts with tenant-filtered claiming at `core/services/jobs.py:26–34`.
+11. `docs/reports/STAGE-1-REPORT.md:204`: “No such page occurred in the two test tenders” is not established by the final log or e2e assertions. Neither reports nor asserts that every parsed page has a usable text layer.
+12. `docs/reports/STAGE-1-REPORT.md:211–214`: the initial unhealthy-container state, rebuilding during that session, SSH/push history, and approximately USD 22 total expenditure over three full and four single-tender runs lack corresponding operational, earlier-run or billing artifacts.

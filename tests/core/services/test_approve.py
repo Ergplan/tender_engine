@@ -403,3 +403,36 @@ def test_an_approval_may_repeat_the_value_in_the_form_the_document_uses(
     )
     assert outcome.created and outcome.approval.final_value == "2026-03-12"
     assert outcome.feedback is None
+
+
+def test_a_value_whose_evidence_was_not_located_cannot_simply_be_approved(
+    make_pipeline: MakePipeline, db: Session
+) -> None:
+    """No canonical value without located evidence: the reviewer has to point to the text."""
+    sdk = ScriptedSDK(
+        {
+            **GOOD_ANSWERS,
+            "issuer": {
+                **GOOD_ANSWERS["issuer"],
+                "evidence": [{"page_no": 1, "quote": "words that are not on the page at all"}],
+            },
+        }
+    )
+    pipeline = make_pipeline(sdk)
+    run = pipeline.extracted_run(db)
+    issuer = candidate(db, run, "identity.issuer")
+    assert issuer.status == "needs_review"
+    with pytest.raises(ApprovalError, match="was not located"):
+        pipeline.approvals.approve(db, candidate_id=issuer.id, decision="approved", reviewer="Asha")
+    assert count(db, CanonicalFact) == 0
+    outcome = pipeline.approvals.approve(
+        db,
+        candidate_id=issuer.id,
+        decision="edited",
+        final_value="Acme Power Limited",
+        reviewer="Asha",
+        evidence=[{"page_no": 1, "quote": "Issued by Acme Power Limited"}],
+    )
+    assert outcome.canonical_fact is not None and outcome.feedback is None
+    kinds = [item["kind"] for item in outcome.canonical_fact.evidence]
+    assert kinds == ["span", "reviewer_span", "reviewer_decision"]
