@@ -77,10 +77,10 @@ A candidate, approval and canonical fact belong to an **object** (`object_type`,
 | section map | `core.services.section_map.SectionMapper.map` | `section` rows from one model call over a digest of every page (first 400 characters plus heading-like lines) |
 | start run | `core.services.extract.ExtractService.start_run` | `extraction_run`, `job(extract)`. Refuses an unknown schema or an unregistered prompt version |
 | extract | `core.services.extract.ExtractService.extract` | per field group: pages chosen by `select_pages` from the group's routing hints, sent as a native PDF of at most 40 pages per call; output model built by `build_group_model` requires value, confidence, rationale and evidence for every field. Inserts `candidate` and `evidence_span`, then `job(validate)` |
-| locate evidence | `core.services.evidence.locate`, driven by `ExtractService._resolve` | each quote is matched on the stated page, then the adjacent pages, then the rest of the window (exact after normalisation, then rapidfuzz, threshold 85). Unlocated: the span is stored as `unresolved` and the candidate's confidence is capped at 0.3 |
-| validate (deterministic) | `core.services.validate.ValidationService.validate` | `validation_result` rows: `evidence_located` or `evidence_not_located`, `type`, `range`, `regex`, `required_present`, and the schema's cross-field rules. Sets `candidate.status` to `validated` or `needs_review`. No model call |
-| read model | `core.services.review_state.ReviewStateService.for_object` | nothing; returns every schema field with its best candidate, evidence, validation results and active approval |
-| approve → `canonical_fact` (only writer) | `core.services.approve.ApprovalService.approve` | `approval`, `canonical_fact` (for approved, edited, not_in_document), `feedback` when the final value differs (`classify_delta`), `audit_log`. A later decision supersedes the earlier approval and its fact. An identical repeat writes nothing |
+| locate evidence | `core.services.evidence.locate`, driven by `ExtractService._resolve` | each quote is matched on the stated page, then the adjacent pages, then the rest of the window. Three matchers in order: exact after normalisation, on word boundaries only ("50 MW" is not found inside "250 MW"); rapidfuzz at threshold 85, for quotes of 12 characters or more; and, for quotes that hold a number, the quote's words in any order over consecutive page words with every number unchanged (wrapped table cells). Unlocated: the span is stored as `unresolved` and the candidate's confidence is capped at 0.3 |
+| validate (deterministic) | `core.services.validate.ValidationService.validate` | `validation_result` rows: `evidence_located` or `evidence_not_located` (also when only some of a candidate's quotes were found), `type`, `range`, `regex`, `required_present`, and the schema's cross-field rules, written on every typed candidate of the fields a rule concerns. Sets `candidate.status` to `validated` or `needs_review`. No model call |
+| read model | `core.services.review_state.ReviewStateService.for_object` | nothing; returns every schema field with its best candidate, evidence, validation results and active approval, from the latest validated run of the object (a newer run that is queued, running or failed does not hide it) |
+| approve → `canonical_fact` (only writer) | `core.services.approve.ApprovalService.approve` | `approval`, `canonical_fact` (for approved, edited, not_in_document), `feedback` when the final value differs (`classify_delta`), `audit_log`. A later decision supersedes the earlier approval and its fact. An identical repeat writes nothing. Unique indexes (migration 0003) allow one active approval and one current fact per field of an object version |
 
 Candidate outcomes that never reach a reviewer as a value: `not_found` (the model returned null; shown as "no value" and can be decided as edited or not_in_document) and `rejected` (a value came with no quote; stored for the record, never shown, cannot be approved).
 
@@ -123,7 +123,7 @@ Before each stage report, a reviewer from a different model family (OpenAI throu
 
 `upload` → `parse` → `section_map`, and `start_run` → `extract` → `validate`.
 
-A failure is stored with its traceback in `job.last_error`. A retryable failure is re-queued with backoff (30 s, 60 s) up to `max_attempts` (3); a non-retryable one (unknown document, schema or prompt; a refusal, truncation or invalid output from the model) fails at once. When an extract or validate job fails for good, the run is marked `failed` with the error. Extraction commits per field group, so a retry resumes at the first group without candidates.
+A failure is stored with its traceback in `job.last_error`. A retryable failure is retried three times with backoff (30 s, 60 s, 120 s; `max_attempts` is 4); a non-retryable one (unknown document, schema or prompt; a refusal, truncation or invalid output from the model) fails at once. When an extract or validate job fails for good, the run is marked `failed` with the error. Extraction commits per field group, so a retry resumes at the first group without candidates. When the worker starts, jobs still marked `running` were left by a worker that died and are put back in the queue (`jobs.requeue_orphans`). The newest finished run of an object keeps the live candidates: a run supersedes the candidates of runs started before it, and supersedes its own if a run started later has already finished. A section map that fails for good is shown in `document.error`. The job queue is one queue for all tenants; each job carries its `tenant_id` and the services it calls filter by it.
 
 ## Continuous test pipeline
 
@@ -143,9 +143,10 @@ One GCE VM (`instance-20261004-081207`, asia-south2-b), static IP `34.131.65.108
 
 **Stage 1 (2026-10-04)**
 
+- Migration 0003: unique indexes for one active approval and one current canonical fact per field (the tender tables of Stage 2 therefore start at 0004).
 - Migration 0002: document, page, section, extraction_run, candidate, evidence_span, validation_result, approval, canonical_fact, feedback, audit_log, job; `llm_call_log.extraction_run_id`; three database triggers for immutability.
 - `core/services/`: ingest, parse, section_map, extract, evidence, validate, approve, review_state, audit, jobs. `core/schemas/`, `core/storage/`, `core/validation/`.
 - Prompts `section_map/v1` and `extract/v1`.
 - API routers documents, extraction, review under `/api/v1/`; generated client refreshed.
 - Worker job chain with retries.
-- End-to-end test on the SECI FDRE-IX RfS with a 12-field test schema (`tests/e2e/test_fdre_core_pipeline.py`).
+- End-to-end test on two FDRE tenders, the SECI FDRE-IX RfS and the NHPC FDRE-II RfS, with a 12-field test schema (`tests/e2e/test_fdre_core_pipeline.py`).
