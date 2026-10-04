@@ -72,6 +72,24 @@ In Stage 0B only the LLM boundary exists: `core.llm.client.LLMClient.call(LLMReq
 
 Tenant resolution is the request dependency `api.deps.get_tenant_id`, which returns the configured single tenant in phase 1. Errors go through `api/middleware/errors.py`: a request id on every response and a typed error payload.
 
+## Tender documents and roles (decided 2026-10-04, built in Stage 2)
+
+A `tender_version` owns many documents through a link table, each with a role. This refines the Stage 2 prompt, which gave `tender_version` a single `document_id`.
+
+| Table | Columns | Notes |
+| --- | --- | --- |
+| `tender_version` | tender_id, version_no, kind (original/corrigendum/amendment/clarification), issued_on, summary_of_change, supersedes_version_id | no `document_id` column |
+| `tender_version_document` | tender_version_id, document_id, role | role is one of `rfs`, `amendment`, `clarification`, `ppa`, `psa`, `cfda`, `technical`, `contractual`, `nit` |
+
+- The original version of a SECI tender typically holds the RfS plus its standard PPA and PSA (or CfDA). An EPC tender holds a contractual and a technical document. A corrigendum, amendment or clarification still creates a new version with its own document; it is never attached to an existing version.
+- Extraction routes each field group to documents by role. Commercial-section fields (payment security, change in law, termination compensation) may be routed to the `ppa` document.
+- Nothing changes in the evidence model: an `evidence_span` already names a document id, so a canonical fact shows which document, page and box it came from.
+- The roles are the same vocabulary used in `/work/tenders/<type>/<slug>/manifest.yaml`.
+
+## Independent review (operating rule 15, from Stage 1)
+
+Before each stage report, a reviewer from a different model family (OpenAI through `OPENAI_API_KEY`) runs in a fresh context. It receives only the stage diff (`git diff stage-N-start..HEAD`), `CLAUDE.md` and the stage prompt, and answers a fixed five-point checklist. Every finding is fixed and the reviewer is rerun until it reports none; findings and fixes go into the stage report under "Independent review". Stage starts are tagged `stage-N-start`.
+
 ## Job chain
 
 None yet. Stage 1 adds the `job` table and the parse → section map → extract → validate chain in `worker/`.
@@ -89,4 +107,5 @@ One GCE VM (`instance-20261004-081207`, asia-south2-b), static IP `34.131.65.108
 **Stage 0B (2026-10-04)**
 
 - File created from the locked decisions and layout.
+- Decisions recorded for later stages: tender documents with roles; independent review under operating rule 15.
 - Compose stack, Python and web scaffolds, Alembic migration 0001 (`tenant`, `llm_call_log`), health endpoint, LLM client with call log, watcher, pre-commit hook, CI workflow.
