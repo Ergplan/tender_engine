@@ -157,7 +157,9 @@ class ExtractService:
         if document.status != "parsed":
             raise ExtractionError(f"document is {document.status}, not parsed")
         has_sections = session.scalar(
-            select(func.count()).select_from(Section).where(Section.document_id == document.id)
+            select(func.count())
+            .select_from(Section)
+            .where(Section.document_id == document.id, Section.tenant_id == tenant_id)
         )
         if not has_sections:
             raise ExtractionError("document has no section map yet")
@@ -207,7 +209,9 @@ class ExtractService:
         run.started_at = run.started_at or datetime.now(UTC)
         session.commit()
 
-        document = session.get_one(Document, run.document_id)
+        document = session.scalars(
+            select(Document).where(Document.id == run.document_id, Document.tenant_id == tenant_id)
+        ).one()
         schema = self._schemas.get(run.schema_name, run.schema_version)
         page_texts = {
             page_no: text
@@ -226,7 +230,7 @@ class ExtractService:
             )
         ]
         pdf = self._storage.get(document.storage_path)
-        pages = _PageCache(session, document.id)
+        pages = _PageCache(session, document.id, tenant_id)
 
         for group in schema.groups:
             fields = schema.fields_in(group.name)
@@ -234,6 +238,7 @@ class ExtractService:
                 session.scalars(
                     select(Candidate.field_path).where(
                         Candidate.extraction_run_id == run.id,
+                        Candidate.tenant_id == tenant_id,
                         Candidate.field_path.in_([field.path for field in fields]),
                     )
                 )
@@ -302,7 +307,7 @@ class ExtractService:
             select(
                 func.coalesce(func.sum(LLMCallLog.tokens_in), 0),
                 func.coalesce(func.sum(LLMCallLog.tokens_out), 0),
-            ).where(LLMCallLog.extraction_run_id == run.id)
+            ).where(LLMCallLog.extraction_run_id == run.id, LLMCallLog.tenant_id == tenant_id)
         ).one()
         run.token_in, run.token_out = int(tokens_in), int(tokens_out)
         run.cost_usd = Decimal(
@@ -488,20 +493,47 @@ class ExtractService:
         }
 
     def _supersede_earlier_runs(self, session: Session, run: ExtractionRun) -> None:
-        earlier = session.scalars(
-            select(Candidate)
-            .join(ExtractionRun, Candidate.extraction_run_id == ExtractionRun.id)
-            .where(
-                ExtractionRun.tenant_id == run.tenant_id,
-                ExtractionRun.object_type == run.object_type,
-                ExtractionRun.object_id == run.object_id,
-                ExtractionRun.object_version == run.object_version,
-                ExtractionRun.schema_name == run.schema_name,
-                ExtractionRun.id != run.id,
-                Candidate.status.in_(LIVE_STATUSES),
-            )
+        """The newest run of an object keeps the live candidates. A run that finishes
+        supersedes the candidates of runs started before it; if a run started after it
+        has already finished, this run's own candidates are superseded instead."""
+        same_object = (
+            ExtractionRun.tenant_id == run.tenant_id,
+            ExtractionRun.object_type == run.object_type,
+            ExtractionRun.object_id == run.object_id,
+            ExtractionRun.object_version == run.object_version,
+            ExtractionRun.schema_name == run.schema_name,
+            ExtractionRun.id != run.id,
         )
-        for candidate in earlier:
+        newer_finished = session.scalar(
+            select(ExtractionRun.id)
+            .where(
+                *same_object,
+                ExtractionRun.created_at > run.created_at,
+                ExtractionRun.status.in_(("extracted", "validated")),
+            )
+            .limit(1)
+        )
+        if newer_finished is not None:
+            outdated = session.scalars(
+                select(Candidate).where(
+                    Candidate.extraction_run_id == run.id,
+                    Candidate.tenant_id == run.tenant_id,
+                    Candidate.status.in_(LIVE_STATUSES),
+                )
+            )
+        else:
+            outdated = session.scalars(
+                select(Candidate)
+                .join(ExtractionRun, Candidate.extraction_run_id == ExtractionRun.id)
+                .where(
+                    *same_object,
+                    ExtractionRun.created_at <= run.created_at,
+                    Candidate.tenant_id == run.tenant_id,
+                    Candidate.status.in_(LIVE_STATUSES),
+                )
+            )
+        superseded_by = newer_finished or run.id
+        for candidate in outdated:
             before = candidate.status
             candidate.status = "superseded"
             audit.record(
@@ -512,23 +544,26 @@ class ExtractService:
                 table_name="candidate",
                 row_id=candidate.id,
                 before={"status": before},
-                after={"status": "superseded", "superseded_by_run": run.id},
+                after={"status": "superseded", "superseded_by_run": superseded_by},
             )
 
 
 class _PageCache:
     """Loads page text and character boxes on demand; a run touches few pages per field."""
 
-    def __init__(self, session: Session, document_id: str) -> None:
+    def __init__(self, session: Session, document_id: str, tenant_id: str) -> None:
         self._session = session
         self._document_id = document_id
+        self._tenant_id = tenant_id
         self._pages: dict[int, PageText | None] = {}
 
     def get(self, page_no: int) -> PageText | None:
         if page_no not in self._pages:
             row = self._session.execute(
                 select(Page.text, Page.char_boxes, Page.has_text_layer).where(
-                    Page.document_id == self._document_id, Page.page_no == page_no
+                    Page.document_id == self._document_id,
+                    Page.tenant_id == self._tenant_id,
+                    Page.page_no == page_no,
                 )
             ).one_or_none()
             self._pages[page_no] = (

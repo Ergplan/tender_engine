@@ -3,6 +3,7 @@
 import hashlib
 
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from core.models import Document
@@ -26,9 +27,10 @@ class IngestService:
         if not data.startswith(b"%PDF-"):
             raise IngestError("the file is not a PDF")
         sha256 = hashlib.sha256(data).hexdigest()
-        existing = session.scalar(
-            select(Document).where(Document.tenant_id == self._tenant_id, Document.sha256 == sha256)
+        by_hash = select(Document).where(
+            Document.tenant_id == self._tenant_id, Document.sha256 == sha256
         )
+        existing = session.scalar(by_hash)
         if existing is not None:
             return existing, False
         key = self._storage.put(f"documents/{sha256}.pdf", data)
@@ -42,7 +44,12 @@ class IngestService:
             status="uploaded",
         )
         session.add(document)
-        session.flush()
+        try:
+            session.flush()
+        except IntegrityError:
+            # The same file was uploaded by another request a moment ago.
+            session.rollback()
+            return session.scalars(by_hash).one(), False
         jobs.enqueue(
             session,
             tenant_id=self._tenant_id,

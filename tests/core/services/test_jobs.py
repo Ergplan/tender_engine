@@ -56,12 +56,12 @@ def test_complete_marks_done_and_clears_the_error(db: Session) -> None:
     assert (job.status, job.last_error, job.attempts) == ("done", None, 2) and job.finished_at
 
 
-def test_failure_requeues_with_growing_backoff_then_fails_after_three_attempts(
+def test_failure_is_retried_three_times_with_growing_backoff_then_fails(
     db: Session,
 ) -> None:
     job = enqueue(db)
     delays = []
-    for attempt in (1, 2, 3):
+    for attempt in (1, 2, 3, 4):
         job.run_after = datetime.now(UTC) - timedelta(seconds=1)
         db.commit()
         assert jobs.claim_next(db) is not None
@@ -70,10 +70,28 @@ def test_failure_requeues_with_growing_backoff_then_fails_after_three_attempts(
         db.refresh(job)
         delays.append((job.run_after - before).total_seconds())
         assert job.last_error == f"Traceback attempt {attempt}"
-        assert job.status == ("queued" if attempt < 3 else "failed")
-    assert 29 <= delays[0] <= 31 and 59 <= delays[1] <= 61
-    assert job.attempts == 3 and job.finished_at is not None
+        assert job.status == ("queued" if attempt < 4 else "failed")
+    assert 29 <= delays[0] <= 31 and 59 <= delays[1] <= 61 and 119 <= delays[2] <= 121
+    assert job.attempts == 4 and job.finished_at is not None
     assert jobs.claim_next(db) is None
+
+
+def test_jobs_left_running_by_a_dead_worker_are_put_back_or_failed(db: Session) -> None:
+    interrupted, exhausted, waiting = enqueue(db), enqueue(db), enqueue(db)
+    for job in (interrupted, exhausted):
+        job.status = "running"
+        job.attempts = 1
+    exhausted.attempts = exhausted.max_attempts
+    db.commit()
+
+    assert jobs.requeue_orphans(db) == 2
+    for job in (interrupted, exhausted, waiting):
+        db.refresh(job)
+    assert (interrupted.status, interrupted.attempts) == ("queued", 1)
+    assert interrupted.last_error is not None and "worker stopped" in interrupted.last_error
+    assert exhausted.status == "failed" and exhausted.finished_at is not None
+    assert (waiting.status, waiting.last_error) == ("queued", None)
+    assert jobs.requeue_orphans(db) == 0
 
 
 def test_a_non_retryable_failure_fails_at_once(db: Session) -> None:

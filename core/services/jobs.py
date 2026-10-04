@@ -42,6 +42,25 @@ def claim_next(session: Session) -> Job | None:
     return job
 
 
+def requeue_orphans(session: Session) -> int:
+    """Put jobs left in `running` back in the queue. Called when the single worker starts:
+    a job still marked running then belongs to a worker that died mid-job. A job that has
+    used all its attempts is marked failed instead. Commits; returns the number touched."""
+    orphans = list(session.scalars(select(Job).where(Job.status == "running").with_for_update()))
+    now = datetime.now(UTC)
+    for job in orphans:
+        note = "worker stopped while the job was running"
+        job.last_error = f"{note}\n{job.last_error}" if job.last_error else note
+        if job.attempts < job.max_attempts:
+            job.status = "queued"
+            job.run_after = now
+        else:
+            job.status = "failed"
+            job.finished_at = now
+    session.commit()
+    return len(orphans)
+
+
 def complete(session: Session, job_id: str) -> None:
     job = session.get_one(Job, job_id)
     job.status = "done"

@@ -87,3 +87,21 @@ def test_decisions_show_on_the_field_and_drive_the_progress_counts(
         ("identity.issuer", None),
     ]
     assert pipeline.review_state.canonical(db, "document", run.document_id, version=2) == []
+
+
+def test_a_newer_run_that_has_not_finished_does_not_hide_the_validated_one(
+    pipeline: Pipeline, db: Session
+) -> None:
+    from core.models import Document, ExtractionRun
+
+    run = pipeline.extracted_run(db)
+    document = db.get_one(Document, run.document_id)
+    queued = pipeline.start_run(db, document)
+    state = pipeline.review_state.for_object(db, "document", document.id)
+    assert state.run is not None and state.run.id == run.id
+    assert all(field.candidate is not None for field in state.fields)
+
+    db.get_one(ExtractionRun, queued.id).status = "failed"
+    db.commit()
+    state = pipeline.review_state.for_object(db, "document", document.id)
+    assert state.run is not None and state.run.id == run.id

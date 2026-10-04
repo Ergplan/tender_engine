@@ -123,7 +123,9 @@ class ReviewStateService:
     def for_object(
         self, session: Session, object_type: str, object_id: str, version: int | None = None
     ) -> ReviewState:
-        """State from the latest extraction run of the object (latest version by default)."""
+        """State from the latest finished extraction run of the object (latest version by
+        default). A newer run that is queued, running or failed does not hide the fields of
+        the last validated one; with no validated run, the latest run of any status is shown."""
         query = select(ExtractionRun).where(
             ExtractionRun.tenant_id == self._tenant_id,
             ExtractionRun.object_type == object_type,
@@ -131,13 +133,22 @@ class ReviewStateService:
         )
         if version is not None:
             query = query.where(ExtractionRun.object_version == version)
-        run = session.scalar(
-            query.order_by(
-                ExtractionRun.object_version.desc(),
-                ExtractionRun.created_at.desc(),
-                ExtractionRun.id.desc(),
-            ).limit(1)
+        newest_first = (
+            ExtractionRun.object_version.desc(),
+            ExtractionRun.created_at.desc(),
+            ExtractionRun.id.desc(),
         )
+        if version is None:
+            latest_version = session.scalar(
+                query.with_only_columns(ExtractionRun.object_version)
+                .order_by(ExtractionRun.object_version.desc())
+                .limit(1)
+            )
+            if latest_version is not None:
+                query = query.where(ExtractionRun.object_version == latest_version)
+        run = session.scalar(
+            query.where(ExtractionRun.status == "validated").order_by(*newest_first).limit(1)
+        ) or session.scalar(query.order_by(*newest_first).limit(1))
         if run is None:
             return ReviewState(
                 object_type=object_type,

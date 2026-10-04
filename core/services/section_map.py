@@ -90,7 +90,12 @@ class SectionMapper:
             )
             for item in clean_sections(response.parsed.sections, document.page_count)
         ]
-        session.execute(delete(Section).where(Section.document_id == document.id))
+        session.execute(
+            delete(Section).where(
+                Section.document_id == document.id, Section.tenant_id == self._tenant_id
+            )
+        )
+        document.error = None
         session.add_all(sections)
         session.commit()
         return sections

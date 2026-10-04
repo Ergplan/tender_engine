@@ -40,14 +40,18 @@ class ValidationService:
             )
         )
         ids = [candidate.id for candidate in candidates]
-        session.execute(delete(ValidationResult).where(ValidationResult.candidate_id.in_(ids)))
-        located = set(
-            session.scalars(
-                select(EvidenceSpan.candidate_id).where(
-                    EvidenceSpan.candidate_id.in_(ids), EvidenceSpan.char_start.is_not(None)
-                )
+        session.execute(
+            delete(ValidationResult).where(
+                ValidationResult.candidate_id.in_(ids), ValidationResult.tenant_id == run.tenant_id
             )
         )
+        spans: dict[str, list[bool]] = {cid: [] for cid in ids}
+        for candidate_id, char_start in session.execute(
+            select(EvidenceSpan.candidate_id, EvidenceSpan.char_start).where(
+                EvidenceSpan.candidate_id.in_(ids), EvidenceSpan.tenant_id == run.tenant_id
+            )
+        ):
+            spans[candidate_id].append(char_start is not None)
 
         results: dict[str, list[tuple[str, bool, str]]] = {cid: [] for cid in ids}
         coerced: dict[str, Any] = {}
@@ -65,8 +69,18 @@ class ValidationService:
             if candidate.status not in ("raw", "validated", "needs_review"):
                 continue
             checks = results[candidate.id]
-            if candidate.id in located:
+            found = spans[candidate.id]
+            if found and all(found):
                 checks.append(("evidence_located", True, "quote found on the page"))
+            elif any(found):
+                missing = len(found) - sum(found)
+                checks.append(
+                    (
+                        "evidence_not_located",
+                        False,
+                        f"{missing} of {len(found)} quotes were not found on the page",
+                    )
+                )
             else:
                 checks.append(
                     ("evidence_not_located", False, "the quoted evidence was not found on the page")
@@ -84,7 +98,7 @@ class ValidationService:
                     checks.append(outcome)
 
         best = _best_per_field(candidates, coerced)
-        self._cross_field(schema, best, coerced, results)
+        self._cross_field(schema, best, candidates, coerced, results)
 
         for candidate in candidates:
             for rule_name, passed, message in results[candidate.id]:
@@ -110,15 +124,19 @@ class ValidationService:
         self,
         schema: ExtractionSchema,
         best: dict[str, Candidate],
+        candidates: list[Candidate],
         coerced: dict[str, Any],
         results: dict[str, list[tuple[str, bool, str]]],
     ) -> None:
+        """Rules run on the best value of each field. The outcome is written on every
+        typed candidate of the fields concerned, so a failure cannot be hidden behind an
+        alternative candidate that the rule never saw."""
         values = {path: coerced[candidate.id] for path, candidate in best.items()}
         for rule_name in schema.cross_field_rules:
             for outcome in self._schemas.rule(rule_name)(values):
-                for path in outcome.field_paths:
-                    if path in best:
-                        results[best[path].id].append((rule_name, outcome.passed, outcome.message))
+                for candidate in candidates:
+                    if candidate.id in coerced and candidate.field_path in outcome.field_paths:
+                        results[candidate.id].append((rule_name, outcome.passed, outcome.message))
 
     def _set_status(self, session: Session, candidate: Candidate, status: str) -> None:
         if candidate.status == status:

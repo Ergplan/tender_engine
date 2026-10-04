@@ -402,3 +402,30 @@ def test_a_run_cannot_start_on_an_unparsed_document_or_with_unknown_schema_or_pr
             created_by="x",
         )
     assert db.scalar(select(func.count()).select_from(ExtractionRun)) == 0
+
+
+def test_an_older_run_that_finishes_after_a_newer_one_does_not_take_over(
+    pipeline: Pipeline, db: Session
+) -> None:
+    """Two runs queued for one object; the newer finishes first. The older one must not
+    supersede it, and must not leave the object without live candidates."""
+    from core.models import Document, Job
+
+    document = pipeline.parsed_document(db)
+    older = pipeline.start_run(db, db.get_one(Document, document.id))
+    newer = pipeline.start_run(db, db.get_one(Document, document.id))
+    assert older.created_at < newer.created_at
+    for job in db.scalars(select(Job).where(Job.status == "queued")):
+        job.status = "done"
+    db.commit()
+
+    pipeline.extract.extract(db, newer.id)
+    pipeline.extract.extract(db, older.id)
+    pipeline.runner.run_until_idle()
+    db.expire_all()
+
+    assert {c.status for c in candidates(db, older).values()} == {"superseded"}
+    assert {c.status for c in candidates(db, newer).values()} == {"validated"}
+    state = pipeline.review_state.for_object(db, "document", document.id)
+    assert state.run is not None and state.run.id == newer.id
+    assert all(field.candidate is not None for field in state.fields)

@@ -10,12 +10,13 @@ from collections.abc import Callable
 from datetime import UTC, datetime
 from typing import Any
 
+from sqlalchemy import select
 from sqlalchemy.orm import Session, sessionmaker
 
 from core.config import Settings
 from core.llm.client import LLMCallError, LLMClient
 from core.llm.registry import UnregisteredPromptError
-from core.models import ExtractionRun, Job
+from core.models import Document, ExtractionRun, Job
 from core.schemas import SchemaRegistry, UnknownSchemaError
 from core.services import jobs
 from core.services.extract import ExtractService
@@ -85,16 +86,34 @@ class Runner:
         return count
 
     def run_forever(self, stop: threading.Event) -> None:
+        with self._session_factory() as session:
+            orphans = jobs.requeue_orphans(session)
+        if orphans:
+            log.warning("%s job(s) left running by an earlier worker were put back", orphans)
         log.info("worker polling every %ss", self._settings.worker_poll_seconds)
         while not stop.is_set():
             if not self.run_once():
                 stop.wait(self._settings.worker_poll_seconds)
 
     def _mark_run_failed(self, session: Session, job: Job, exc: Exception) -> None:
+        """Show a job that failed for good on the thing it was working on."""
         run_id = job.payload.get("extraction_run_id")
         if not run_id:
+            document = session.scalar(
+                select(Document).where(
+                    Document.id == job.payload.get("document_id"),
+                    Document.tenant_id == job.tenant_id,
+                )
+            )
+            if document is not None and job.kind == "section_map":
+                document.error = f"section map failed: {type(exc).__name__}: {exc}"
+                session.commit()
             return
-        run = session.get(ExtractionRun, run_id)
+        run = session.scalar(
+            select(ExtractionRun).where(
+                ExtractionRun.id == run_id, ExtractionRun.tenant_id == job.tenant_id
+            )
+        )
         if run is not None and run.status not in ("validated",):
             run.status = "failed"
             run.error = f"{type(exc).__name__}: {exc}"

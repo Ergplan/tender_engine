@@ -163,3 +163,62 @@ def test_status_changes_are_audited_and_validation_is_repeatable(
         )
         == 7
     )
+
+
+def test_one_unlocated_quote_among_several_still_sends_the_candidate_to_review(
+    make_pipeline: MakePipeline, db: Session
+) -> None:
+    good = GOOD_ANSWERS["issuer"]["evidence"][0]
+    run = run_with(
+        make_pipeline,
+        db,
+        issuer={
+            **GOOD_ANSWERS["issuer"],
+            "evidence": [good, {"page_no": 1, "quote": "words that are not on the page at all"}],
+        },
+    )
+    status, rules = results(db, run, "identity.issuer")
+    assert status == "needs_review"
+    assert rules["evidence_not_located"] == (False, "1 of 2 quotes were not found on the page")
+    issuer = db.scalars(
+        select(Candidate).where(
+            Candidate.extraction_run_id == run.id, Candidate.field_path == "identity.issuer"
+        )
+    ).one()
+    assert issuer.confidence == GOOD_ANSWERS["issuer"]["confidence"], "located once: no cap"
+
+
+def test_a_cross_field_failure_is_written_on_every_candidate_of_the_fields(
+    make_pipeline: MakePipeline, db: Session
+) -> None:
+    """A field can have two candidates when its window is split. The failed rule must show
+    on both, so the read model cannot pick one the rule never touched."""
+    sdk = ScriptedSDK(
+        {**GOOD_ANSWERS, "pre_bid_date": {**GOOD_ANSWERS["pre_bid_date"], "value": "12.04.2026"}},
+        sections=[
+            {
+                "start_page": 1,
+                "end_page": 3,
+                "heading": "All",
+                "kind": "dates_and_schedule",
+                "confidence": 1,
+            }
+        ],
+    )
+    run = make_pipeline(sdk, extract_max_pages_per_call=2).extracted_run(db)
+    rows = list(
+        db.scalars(
+            select(Candidate).where(
+                Candidate.extraction_run_id == run.id,
+                Candidate.field_path.in_(["dates.pre_bid_date", "dates.bid_deadline"]),
+            )
+        )
+    )
+    assert len(rows) == 4
+    for row in rows:
+        failed = db.scalars(
+            select(ValidationResult.rule_name).where(
+                ValidationResult.candidate_id == row.id, ValidationResult.passed.is_(False)
+            )
+        ).all()
+        assert "date_order" in failed and row.status == "needs_review"

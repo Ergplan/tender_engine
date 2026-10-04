@@ -36,8 +36,8 @@ class ParseService:
         )
         if document is None:
             raise LookupError(f"document {document_id} not found")
-        data = self._storage.get(document.storage_path)
         try:
+            data = self._storage.get(document.storage_path)
             pages = self._read_pages(document, data)
         except Exception as exc:
             session.rollback()
@@ -45,7 +45,11 @@ class ParseService:
             document.error = f"{type(exc).__name__}: {exc}"
             session.commit()
             raise
-        session.execute(delete(Page).where(Page.document_id == document.id))
+        session.execute(
+            delete(Page).where(
+                Page.document_id == document.id, Page.tenant_id == document.tenant_id
+            )
+        )
         session.add_all(pages)
         document.page_count = len(pages)
         document.status = "parsed"
