@@ -50,3 +50,20 @@ def test_range_rules_of_the_power_fields() -> None:
     assert (ceiling.min, ceiling.max) == (1, 15)
     assert (tenure.min, tenure.max) == (10, 35)
     assert scod.min == 1
+
+
+def test_range_rules_pass_and_fail_on_values() -> None:
+    from core.validation.rules import range_rule
+
+    fields = {field.path: field for field in load_catalog().get("solar").schema.fields}
+    cases = [
+        ("sector.power.common.tariff_ceiling_inr_per_kwh", 2.6, 0.5, 18),
+        ("sector.power.common.ppa_tenure_years", 25, 5, 40),
+        ("sector.power.common.scod_months", 18, 0, 500),
+        ("core.guarantees.emd_per_mw_inr", 928000, 10, 10**10),
+    ]
+    for path, good, too_low, too_high in cases:
+        assert range_rule(fields[path], good) == ("range", True, "within range"), path
+        low, high = range_rule(fields[path], too_low), range_rule(fields[path], too_high)
+        assert low is not None and not low[1] and "below the minimum" in low[2], path
+        assert high is not None and not high[1] and "above the maximum" in high[2], path

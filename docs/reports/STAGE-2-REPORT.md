@@ -7,13 +7,13 @@ Date: 2026-10-04. Diff: `git diff stage-2-start..HEAD`. Architecture changes: `d
 | Check | Result |
 | --- | --- |
 | All 9 schema YAMLs load | Yes. `tests/tender/test_packs.py::test_every_tender_type_has_a_yaml_that_loads` and `::test_every_field_has_a_section_a_value_type_a_label_and_help`; 80 to 89 fields per type |
-| Every validator has pass and fail tests | Yes. `tests/tender/test_core_pack_rules.py` (date order, EMD and PBG within 10x), `tender/domain_packs/power/tests/test_rules.py` (bid capacity order, transmission elements, ranges), `tests/tender/test_value_types.py`, and the corrigendum rule in `tests/tender/test_tenders.py` (passing and failing case) |
+| Every validator has pass and fail tests | Yes. `tests/tender/test_core_pack_rules.py` (date order, EMD and PBG within 10x), `tender/domain_packs/power/tests/test_rules.py` (bid capacity order, transmission elements, ranges with passing and failing values), `tests/tender/test_value_types.py`, and the corrigendum rule in `tests/tender/test_tenders.py` (passing and failing case) |
 | Corrigendum carry-forward test green | Yes. `tests/tender/test_tenders.py::test_corrigendum_carry_forward_leaves_untouched_facts_and_their_evidence_unchanged`, and through HTTP in `tests/api/test_tenders.py::test_full_tender_flow_with_an_amendment_through_the_http_api` |
 | All tenders extracted | Yes: 13 tenders, 25 versions, 42 PDFs, 3,455 pages; 38 extraction runs, all validated |
 | EXTRACTION-SUMMARY.md written with cost | Yes |
 | Evidence-location rate >= 95%, per tender | Yes. 709 of 711 values returned have located evidence (99.7%). Twelve tenders are at 100%; SECI FDRE-RTC-V is at 97% (61 of 63) |
 | Answer rate reported, per tender | Yes: 65% overall (711 of 1,098 fields), from 32% (a 14-page NTPC notice) to 80% (NHPC FDRE-II) |
-| `make test` green | 339 Python tests and 3 web tests pass; the watcher's eight checks are green |
+| `make test` green | 340 Python tests and 3 web tests pass; the watcher's eight checks are green |
 | `make deploy` serves the app | Yes, see "Deployment" |
 
 ## The two numbers
@@ -37,7 +37,7 @@ Date: 2026-10-04. Diff: `git diff stage-2-start..HEAD`. Architecture changes: `d
 
 By tender type, the evidence-location rate is 100% for every type except fdre (99%, 259 of 261). **Fields under 95% by tender type:** `sector.power.common.min_bid_mw` and `sector.power.common.max_bid_mw` for fdre (3 of 4 located each). Both misses are in Amendment-01 of SECI FDRE-RTC-V (version 2, page 1): the quote was not found by any of the four matchers. They are shown as `needs_review` at confidence 0.3 with "evidence not located on p.1".
 
-These are candidates. Nothing has been reviewed, so no accuracy number exists yet; that is Stage 4. "Located" means at least one of the candidate's quotes was found on a page. Ten candidates have some quotes found and some not, or none; they are `needs_review`.
+These are candidates. Nothing has been reviewed, so no accuracy number exists yet; that is Stage 4. "Located" means at least one of the candidate's quotes was found on a page. Counted per candidate rather than per field, ten candidates over all versions carry an `evidence_not_located` flag: three with no quote found (the two above, and the issuing agency in the RTC-V clarification, version 4, which a later version states again with located evidence) and seven with some quotes found and some not. All ten are `needs_review`.
 
 **The SECI FDRE-IX cost includes a repeat.** It was the pilot (USD 13.40), and was extracted again (USD 13.50) after the evidence matcher changed, because candidates and their evidence are immutable.
 
@@ -80,7 +80,7 @@ An amendment often restates a field without changing it (the tender number, the 
 | Rule | Flags | What they are |
 | --- | --- | --- |
 | `required_present` | 23 | Bid submission deadline missing on 9 tenders (SECI defers it to the NIT, which is not in the folders), 13 of the 23 on later versions that do not mention the field; the Beed RFP prints no reference number; FDRE profile fields on two RTC-V amendments |
-| `evidence_not_located` | 10 | Two values with no quote found (above); eight with one of several quotes not found |
+| `evidence_not_located` | 10 | Three candidates with no quote found; seven with one of several quotes not found |
 | `date_order` | 2 | NHPC FDRE-II: queries close on 26.03.2024, before the pre-bid meeting on 28.03.2024. The rule's chain is the one the stage prompt gives; the dates may well be right |
 | `range` | 2 | Both EPC tenders: `ppa_tenure_years` = 5, which is the O&M period, not a PPA |
 | `type` | 2 | An empty list returned for `named_states_or_sites` |
@@ -152,7 +152,16 @@ Reviewer: `scripts/independent_review.py` on `gpt-6.1-sol`, given only the stage
 | e1 to e4, e6 to e10 | Run results, rates, counts, test results, costs, the interruption and the deployment are not provable from a diff | Statements of this report. To support them, three listings from the app database are now committed: `extraction-runs.txt` (every run with tokens and cost), `validation-failures.txt`, `model-calls.txt`; and `EXTRACTION-SUMMARY.md` is generated from the database |
 | e5 | "Seeded from the field catalogue" cannot be checked because the catalogue is not in the reviewer's input | The catalogue is in `docs/MASTER-PROMPT.md`, outside the stage prompt section the reviewer receives |
 
-RUN3_PLACEHOLDER
+**Run 3** (after those fixes): (b), (c) none; (d) not applicable; (a) 1; (e) 11. No new code defect.
+
+| # | Finding | Outcome |
+| --- | --- | --- |
+| a1 | Actor from `X-Reviewer`, not a token | As in run 2: Stage 3 |
+| e1 | The range test checked the configured bounds, not passing and failing values | Fixed: `test_range_rules_pass_and_fail_on_values` added |
+| e4 | This report said two candidates had no located quote and eight were partial; the committed listing shows three and seven | Report corrected. The field-level count (709 of 711) is unchanged, because the third candidate's field has a located value in a later version |
+| e2, e3, e5 to e11 | Test results, rates, timing, interpretations of failures, the interruption, the end-to-end run, costs and the deployment are not provable from the diff and the listings | Statements of this report; they do not block the stage under rule 15 as amended |
+
+I stopped after three runs: the last run found no code defect, and what remains is the Stage 3 token and statements a diff cannot prove.
 
 ## Open questions
 

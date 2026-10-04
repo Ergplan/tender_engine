@@ -1,0 +1,75 @@
+ Container tender-engine-tests-run-6854785d2d80 Creating 
+ Container tender-engine-tests-run-6854785d2d80 Created 
+reviewer: gpt-6.1-sol  input chars: 445379  tokens in/out: 117659/2873
+
+## (a) Non-negotiable invariants
+
+| Invariant | Assessment from the supplied diff |
+|---|---|
+| **The LLM never writes truth** | No added production path writes canonical facts. `current_view` reads only `CanonicalFact` (`tender/services/current_view.py:58–72`). The HTTP test asserts that extraction produces no truth before approval (`tests/api/test_tenders.py:258–270`). The unchanged approval handler’s exclusive-writer guarantee cannot be fully verified from this diff. |
+| **Every value carries its evidence** | Added later-version validation checks located evidence against that version’s documents (`tender/domain_packs/core/validation.py:51–92`). Canonical evidence is exposed unchanged by the current view (`tender/services/current_view.py:89`). Carry-forward evidence preservation is tested (`tests/tender/test_tenders.py:203–264`). Missing-evidence rejection, confidence capping and approval-time evidence enforcement reside in unchanged implementations not supplied in full. |
+| **The tender is a versioned object** | New versions are inserted with a version number and predecessor link (`tender/services/tenders.py:170–200`). Attachment rejects amendment and clarification roles (`tender/services/tenders.py:214–219`); the route rejects a conflicting `kind` when attaching to an existing version (`api/v1/tenders/tenders.py:151–168`). The current view reports each canonical fact’s source version (`tender/services/current_view.py:85–89`). |
+| **Candidates are immutable** | No added reviewer path changes candidate values. The visible candidate mutation changes lifecycle status, with an audit event (`core/services/extract.py:582–595`). Reviewer edits and approval-row creation remain in unchanged code not supplied. |
+| **Validation is deterministic** | Added rules are plain Python comparisons and tenant-filtered database reads (`tender/domain_packs/core/validation.py:24–92`; `tender/domain_packs/power/validation/rules.py:11–39`). Run-rule results retain the rule name (`core/services/validate.py:100–106`). A test asserts that a failed run rule leaves the candidate `needs_review` (`tests/core/services/test_validate.py:277–285`). |
+| **Everything is audited and tenant-scoped** | All four added tables inherit `TenantAuditMixin` (`tender/models/tender.py:34,54,73,91`); the migration supplies the three required columns (`migrations/versions/0005_tender_domain.py:28–30,50–52,67–69,83–85`). Added production queries shown filter by tenant, including document joins and canonical reads (`tender/services/tenders.py:108–132`; `tender/services/current_view.py:50–66`). Visible protected writes have audit calls, listed in (c). **Reviewer attribution does not come from a token.** |
+| **Feedback is stored, never auto-applied** | No added runtime path reads feedback to alter prompts, thresholds or models. Feedback storage remains in the unchanged approval implementation, which is not supplied. |
+| **API first** | Added extraction, current-view, review-state and report operations have API routes (`api/v1/tenders/tenders.py:204–284`), exercised under `/api/v1/` by HTTP tests (`tests/api/test_tenders.py:197–375`). No reviewer UI implementation is added. |
+
+FINDINGS: 1
+1. `api/v1/tenders/tenders.py:95–106,130–137,213–230`; `tests/api/test_tenders.py:29–34,43–47`: added write routes use `ActorDep`, and the tests obtain attribution solely through `X-Reviewer: Asha`, without a review token. The report explicitly confirms this substitution (`docs/reports/STAGE-2-REPORT.md:152`). Deferring token middleware does not override the non-negotiable token-derived identity requirement.
+
+## (b) Tests for added API endpoints
+
+All ten added endpoints have HTTP tests.
+
+| Endpoint | Test |
+|---|---|
+| `POST /api/v1/tenders` | `tests/api/test_tenders.py:72–85`, `test_create_get_and_list_tenders` |
+| `GET /api/v1/tenders` | `tests/api/test_tenders.py:72–85`, `test_create_get_and_list_tenders` |
+| `GET /api/v1/tenders/{id}` | `tests/api/test_tenders.py:72–85`, `test_create_get_and_list_tenders` |
+| `POST /api/v1/tenders/{id}/versions` | `tests/api/test_tenders.py:96–125`, `test_versions_are_added_listed_and_ordered`; attachment and refusal cases at lines 128–166 |
+| `GET /api/v1/tenders/{id}/versions` | `tests/api/test_tenders.py:96–125`, `test_versions_are_added_listed_and_ordered` |
+| `GET /api/v1/tenders/{id}/view` | `tests/api/test_tenders.py:255–308`, `test_full_tender_flow_with_an_amendment_through_the_http_api` |
+| `POST /api/v1/tenders/{id}/extract` | `tests/api/test_tenders.py:197–226`, `test_extract_queues_one_run_per_document_and_the_worker_completes_them` |
+| `GET /api/v1/tenders/{id}/review-state` | `tests/api/test_tenders.py:229–252`, `test_review_state_delegates_to_core_for_one_version` |
+| `GET /api/v1/schemas/tender/{type}` | `tests/api/test_tenders.py:311–329`, `test_schema_endpoint_returns_the_compiled_field_list` |
+| `GET /api/v1/reports/extraction-summary` | `tests/api/test_tenders.py:354–375`, `test_extraction_summary_is_served_as_data_and_as_the_markdown_report` |
+
+Execution results are not supplied.
+
+FINDINGS: none
+
+## (c) Audit coverage for protected-table writes
+
+| Write shown | Audit call |
+|---|---|
+| Candidate lifecycle update to `status = "superseded"` | Assignment at `core/services/extract.py:584`; `audit.record` immediately follows at lines 585–595. |
+| Insert of `TenderVersion` | Construction, addition and flush at `tender/services/tenders.py:170–181`; `audit.record` at lines 182–196, before commit at line 199. |
+| Document addition through `TenderVersionDocument` | Link construction, addition and flush at `tender/services/tenders.py:350–359`; `audit.record` against the owning `tender_version` at lines 360–368. |
+
+No direct approval, canonical-fact or feedback write is added in the supplied production diff. Calls to the unchanged approval and extraction services do not expose their internal writes or audit calls. Likewise, the validation hunks do not supply the existing candidate-status write implementation.
+
+FINDINGS: none
+
+## (d) `make trace`
+
+**not applicable** — `docs/KNOWN-GAPS.md:17` explicitly defers `make trace` and `FIELD-TRACE.md` to Stage 3, when UI components exist. No trace implementation or regeneration result is supplied.
+
+FINDINGS: none
+
+## (e) Draft report claims unsupported by the supplied code
+
+The committed summaries and database listings provide documentary support for some measurements. They do not establish test execution, deployment, operational history or the provenance of catalogue fields. The following claims remain unsupported or conflict with supplied evidence.
+
+FINDINGS: 11
+1. `docs/reports/STAGE-2-REPORT.md:10`: “Every validator has pass and fail tests,” specifically including ranges, is not demonstrated. The cited range test only checks configured bounds (`tender/domain_packs/power/tests/test_rules.py:44–52`); it does not execute passing and failing range cases.
+2. `docs/reports/STAGE-2-REPORT.md:11,17`: the carry-forward test being green, 339 Python tests and three web tests passing, and eight watcher checks being green have no supplied execution or status output.
+3. `docs/reports/STAGE-2-REPORT.md:14–15,23–41,67–78`: the actual returned-value counts, located counts, rates, per-version value counts and confidence of the RTC-V misses cannot be reconstructed from supplied candidate records. `EXTRACTION-SUMMARY.md` states these measurements, but the supplied listings do not contain the underlying candidates and evidence.
+4. `docs/reports/STAGE-2-REPORT.md:41,88`: the stated breakdown of ten evidence failures into two with no located quote and eight partial failures conflicts with `docs/reports/stage-2-artifacts/validation-failures.txt:4–13`, which lists **three** complete failures and **seven** partial failures. The third complete failure is RTC-V version 4’s issuing agency.
+5. `docs/reports/STAGE-2-REPORT.md:43`: the pilot and repeat runs and their costs have listing support, but their claimed timing relative to the evidence-matcher change is not established by the supplied code or commit history.
+6. `docs/reports/STAGE-2-REPORT.md:48`: “Fields are seeded from the field catalogue” cannot be checked because that catalogue is not supplied. Comments asserting provenance do not establish it.
+7. `docs/reports/STAGE-2-REPORT.md:82,87,90–100`: the 21 shown failing fields and the tender-specific interpretations—nine filled NIT deferral notes, FDRE formula-field results, figures retained in rationales, query-deadline meaning and EPC O&M misclassification—are not established by supplied candidate values, rationales or source PDFs. The failure listing supports rule flags and messages, not all these interpretations.
+8. `docs/reports/STAGE-2-REPORT.md:111–113`: the watcher being stopped twice and restarted, full checks before affected commits, credit exhaustion as the cause of the errors, account refill, 30 failed runs being resumed, and no duplicate payment during the interruption are not established. The model-call listing supports 30 errors at the stated time; the synthetic test supports resumability, not that operational history.
+9. `docs/reports/STAGE-2-REPORT.md:117`: the real-model e2e test running once, passing in 4 minutes 36 seconds, returning 30 located values, costing USD 1.79, preceding the matcher change and not being rerun have no supplied execution artifact.
+10. `docs/reports/STAGE-2-REPORT.md:125–131`: the actual e2e cost, Stage 1 expenditure and resulting stage/running totals are not established by supplied logs. The extraction and section-map cost calculations have listing support, but those remaining expenditures do not.
+11. `docs/reports/STAGE-2-REPORT.md:18,135–139`: successful deployment, rebuilt images, migration head, recreated/scaled containers, the live static-IP health response, all stated deployed-API responses, 759 stored field-definition rows and candidates currently ready in the app database have no supplied deployment or live-query execution evidence.
