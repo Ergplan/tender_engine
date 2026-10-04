@@ -1,7 +1,9 @@
 """Locate a quoted piece of evidence on a page: character range and bounding box.
 
 Deterministic. Text is normalised (case, whitespace, quote and dash variants) with an
-index map back to the original, then matched exactly, then fuzzily (rapidfuzz).
+index map back to the original, then matched exactly, then fuzzily (rapidfuzz), then
+by words in any order, because a table cell that wraps is read by a person as
+"Closing Date & Time 12.04.2024" and by the text layer as "Closing 12.04.2024 / Date & Time".
 """
 
 from dataclasses import dataclass
@@ -10,6 +12,7 @@ from typing import Any
 from rapidfuzz import fuzz
 
 MIN_FUZZY_QUOTE_CHARS = 12
+MIN_REORDERED_QUOTE_WORDS = 4
 _TRANSLATE = str.maketrans(
     {
         "‘": "'",
@@ -78,9 +81,13 @@ def locate(quote: str, page: PageText, threshold: float) -> Located | None:
         if len(needle) < MIN_FUZZY_QUOTE_CHARS:
             return None
         alignment = fuzz.partial_ratio_alignment(needle, haystack)
-        if alignment is None or alignment.score < threshold:
-            return None
-        start, end, score = alignment.dest_start, alignment.dest_end, float(alignment.score)
+        if alignment is not None and alignment.score >= threshold:
+            start, end, score = alignment.dest_start, alignment.dest_end, float(alignment.score)
+        else:
+            reordered = _locate_reordered(needle, haystack, threshold)
+            if reordered is None:
+                return None
+            start, end, score = reordered
         if end <= start:
             return None
     char_start = index_map[start]
@@ -92,6 +99,40 @@ def locate(quote: str, page: PageText, threshold: float) -> Located | None:
         bbox=_union(page.char_boxes[char_start:char_end]),
         score=round(score, 1),
     )
+
+
+def _locate_reordered(
+    needle: str, haystack: str, threshold: float
+) -> tuple[int, int, float] | None:
+    """The run of consecutive page words that best matches the quote's words in any order.
+    Every word of the quote that holds a digit must appear in the run unchanged, so a
+    neighbouring row with another date or amount is never taken for the quoted one.
+    Returns (start, end, score) in the normalised haystack, or None below the threshold."""
+    quoted = needle.split()
+    wanted = len(quoted)
+    if wanted < MIN_REORDERED_QUOTE_WORDS:
+        return None
+    numbers = {word for word in quoted if any(char.isdigit() for char in word)}
+    words: list[tuple[int, int]] = []
+    position = 0
+    for word in haystack.split(" "):
+        words.append((position, position + len(word)))
+        position += len(word) + 1
+    best: tuple[int, int, float] | None = None
+    best_rank = (0.0, False)
+    for size in (wanted, wanted + 1, wanted - 1):
+        for first in range(len(words) - size + 1):
+            start, end = words[first][0], words[first + size - 1][1]
+            run = haystack[start:end]
+            if not numbers.issubset(run.split()):
+                continue
+            score = float(fuzz.token_sort_ratio(needle, run))
+            # Rows of a table repeat words, so two runs can tie; take the one that
+            # starts where the quote starts.
+            rank = (score, run.startswith(quoted[0]))
+            if score >= threshold and rank > best_rank:
+                best, best_rank = (start, end, score), rank
+    return best
 
 
 def _union(boxes: list[Any]) -> list[float] | None:

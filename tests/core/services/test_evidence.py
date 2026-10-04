@@ -78,3 +78,40 @@ def test_normalise_maps_every_character_back_to_the_original() -> None:
     assert normalised == 'a "b" c - d'
     assert len(index_map) == len(normalised)
     assert text[index_map[0]] == "A" and text[index_map[-1]] == "d"
+
+
+WRAPPED_CELL = (
+    "v) Online Bid Submission Start 02.04.2024 (11:30 Hrs.)\n"
+    "Date & Time\n"
+    "vi) Online Bid Submission Closing 12.04.2024 (17:30 Hrs.)\n"
+    "Date & Time\n"
+    "vii) Last date of Offline submission 15.04.2024 (upto 17:00 Hrs.)"
+)
+
+
+def test_a_quote_read_across_a_wrapped_table_cell_is_located_by_its_words() -> None:
+    """The reader sees the cell label then the value; the text layer interleaves them."""
+    found = locate(
+        "Online Bid Submission Closing Date & Time 12.04.2024 (17:30 Hrs.)", page(WRAPPED_CELL), 85
+    )
+    assert found is not None and found.score >= 85
+    located = WRAPPED_CELL[found.char_start : found.char_end]
+    assert "Closing 12.04.2024 (17:30 Hrs.)" in located and "02.04.2024" not in located
+    with_row_label = locate(
+        "vi) Online Bid Submission Closing Date & Time 12.04.2024 (17:30 Hrs.)",
+        page(WRAPPED_CELL),
+        85,
+    )
+    assert with_row_label is not None
+    assert WRAPPED_CELL[with_row_label.char_start : with_row_label.char_end] == (
+        "vi) Online Bid Submission Closing 12.04.2024 (17:30 Hrs.)\nDate & Time"
+    )
+
+
+def test_reordered_matching_refuses_a_different_number_and_very_short_quotes() -> None:
+    wrapped = page(WRAPPED_CELL)
+    assert (
+        locate("Online Bid Submission Closing Date & Time 19.05.2024 (10:00 Hrs.)", wrapped, 85)
+        is None
+    )
+    assert locate("Time & Date", wrapped, 85) is None
