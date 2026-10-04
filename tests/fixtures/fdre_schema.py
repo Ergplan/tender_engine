@@ -1,5 +1,5 @@
 """The 12-field schema of the Stage 1 end-to-end test. It lives with the tests, not in
-core: core receives it like any other schema. Stage 2 replaces it with tender/schemas/."""
+core: core receives it like any other schema. Stage 2 replaces it with tender/domain_packs/."""
 
 from typing import Any
 

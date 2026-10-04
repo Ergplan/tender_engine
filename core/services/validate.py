@@ -46,12 +46,15 @@ class ValidationService:
             )
         )
         spans: dict[str, list[bool]] = {cid: [] for cid in ids}
-        for candidate_id, char_start in session.execute(
-            select(EvidenceSpan.candidate_id, EvidenceSpan.char_start).where(
+        unlocated_pages: dict[str, set[int]] = {cid: set() for cid in ids}
+        for candidate_id, char_start, page_no in session.execute(
+            select(EvidenceSpan.candidate_id, EvidenceSpan.char_start, EvidenceSpan.page_no).where(
                 EvidenceSpan.candidate_id.in_(ids), EvidenceSpan.tenant_id == run.tenant_id
             )
         ):
             spans[candidate_id].append(char_start is not None)
+            if char_start is None:
+                unlocated_pages[candidate_id].add(page_no)
 
         results: dict[str, list[tuple[str, bool, str]]] = {cid: [] for cid in ids}
         coerced: dict[str, Any] = {}
@@ -59,7 +62,7 @@ class ValidationService:
             field = schema.field(candidate.field_path)
             if candidate.value is None and candidate.status in ("not_found", "needs_review"):
                 if field.required:
-                    message = "required field: the model found no value"
+                    message = "required field: the model returned no value"
                     results[candidate.id].append(("required_present", False, message))
                 continue
             if candidate.status == "rejected":
@@ -70,21 +73,15 @@ class ValidationService:
                 continue
             checks = results[candidate.id]
             found = spans[candidate.id]
+            pages = ", ".join(f"p.{page_no}" for page_no in sorted(unlocated_pages[candidate.id]))
             if found and all(found):
                 checks.append(("evidence_located", True, "quote found on the page"))
             elif any(found):
                 missing = len(found) - sum(found)
-                checks.append(
-                    (
-                        "evidence_not_located",
-                        False,
-                        f"{missing} of {len(found)} quotes were not found on the page",
-                    )
-                )
+                message = f"{missing} of {len(found)} quotes not located (stated on {pages})"
+                checks.append(("evidence_not_located", False, message))
             else:
-                checks.append(
-                    ("evidence_not_located", False, "the quoted evidence was not found on the page")
-                )
+                checks.append(("evidence_not_located", False, f"evidence not located on {pages}"))
             try:
                 value = self._schemas.value_types.coerce(candidate.value, field)
             except ValueError as exc:

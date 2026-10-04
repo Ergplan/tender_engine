@@ -108,7 +108,7 @@ def test_unlocated_evidence_is_a_named_validation_failure_and_the_candidate_stay
     run = pipeline.extracted_run(db)
     status, rules = results(db, run, "identity.issuer")
     assert status == "needs_review"
-    assert rules["evidence_not_located"] == (False, "the quoted evidence was not found on the page")
+    assert rules["evidence_not_located"] == (False, "evidence not located on p.1")
     state = pipeline.review_state.for_object(db, "document", run.document_id)
     issuer = next(f for f in state.fields if f.field_path == "identity.issuer")
     assert issuer.candidate is not None and issuer.candidate.status == "needs_review"
@@ -123,7 +123,7 @@ def test_a_required_field_the_model_did_not_find_is_flagged_but_an_optional_one_
     run = make_pipeline(sdk).extracted_run(db)
     status, rules = results(db, run, "dates.bid_deadline")
     assert status == "needs_review", "a failed validation marks the candidate needs_review"
-    assert rules == {"required_present": (False, "required field: the model found no value")}
+    assert rules == {"required_present": (False, "required field: the model returned no value")}
     assert results(db, run, "identity.issuer") == ("not_found", {})
     assert "date_order" not in results(db, run, "dates.pre_bid_date")[1]
 
@@ -179,7 +179,7 @@ def test_one_unlocated_quote_among_several_still_sends_the_candidate_to_review(
     )
     status, rules = results(db, run, "identity.issuer")
     assert status == "needs_review"
-    assert rules["evidence_not_located"] == (False, "1 of 2 quotes were not found on the page")
+    assert rules["evidence_not_located"] == (False, "1 of 2 quotes not located (stated on p.1)")
     issuer = db.scalars(
         select(Candidate).where(
             Candidate.extraction_run_id == run.id, Candidate.field_path == "identity.issuer"

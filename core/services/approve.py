@@ -270,6 +270,8 @@ class ApprovalService:
             before={"status": "active"},
             after={"status": "superseded"},
         )
+        # The database retires a fact only after its approval is no longer active.
+        session.flush()
         for fact in session.scalars(
             select(CanonicalFact).where(
                 CanonicalFact.approval_id == current.id,

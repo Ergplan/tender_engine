@@ -4,11 +4,11 @@ import re
 from pathlib import Path
 
 import pytest
-from sqlalchemy import select, text, update
+from sqlalchemy import func, select, text, update
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.orm import Session
 
-from core.models import AuditLog, Candidate, EvidenceSpan
+from core.models import Approval, AuditLog, Candidate, CanonicalFact, EvidenceSpan
 from tests.conftest import Pipeline
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -92,6 +92,133 @@ def test_the_audit_log_is_append_only(pipeline: Pipeline, db: Session, statement
     with pytest.raises(DBAPIError, match="audit_log rows are append-only"):
         db.execute(text(statement))
     db.rollback()
+
+
+def one_fact(pipeline: Pipeline, db: Session) -> CanonicalFact:
+    candidate = one_candidate(pipeline, db)
+    fact = pipeline.approvals.approve(
+        db, candidate_id=candidate.id, decision="approved", reviewer="Asha"
+    ).canonical_fact
+    assert fact is not None
+    return fact
+
+
+def fact_like(fact: CanonicalFact, **changes: object) -> CanonicalFact:
+    values = {
+        "tenant_id": fact.tenant_id,
+        "created_by": "someone",
+        "object_type": fact.object_type,
+        "object_id": fact.object_id,
+        "object_version": fact.object_version,
+        "field_path": fact.field_path,
+        "value": 1,
+        "value_type": fact.value_type,
+        "approval_id": fact.approval_id,
+        "evidence": [],
+        "is_current": True,
+    }
+    return CanonicalFact(**{**values, **changes})
+
+
+@pytest.mark.parametrize(
+    "assignment",
+    [
+        "value = '1'::jsonb",
+        "evidence = '[]'::jsonb",
+        "approval_id = 'x'",
+        "field_path = 'x.y'",
+        "object_version = 2",
+        "value_type = 'text'",
+        "created_by = 'someone'",
+        "is_current = false, superseded_at = now()",
+        "superseded_at = now()",
+    ],
+)
+def test_canonical_fact_rows_cannot_be_updated(
+    pipeline: Pipeline, db: Session, assignment: str
+) -> None:
+    """The last two cases: a fact cannot be retired while its approval is still live."""
+    fact = one_fact(pipeline, db)
+    with pytest.raises(DBAPIError, match="canonical_fact rows are immutable"):
+        db.execute(text(f"UPDATE canonical_fact SET {assignment} WHERE id = :id"), {"id": fact.id})
+    db.rollback()
+    db.refresh(fact)
+    assert fact.value == 928000 and fact.is_current is True and fact.superseded_at is None
+
+
+def test_canonical_fact_rows_cannot_be_updated_through_the_orm_either(
+    pipeline: Pipeline, db: Session
+) -> None:
+    fact = one_fact(pipeline, db)
+    fact.value = 1
+    with pytest.raises(DBAPIError, match="canonical_fact rows are immutable: update refused"):
+        db.commit()
+    db.rollback()
+
+
+def test_canonical_fact_rows_cannot_be_deleted(pipeline: Pipeline, db: Session) -> None:
+    fact = one_fact(pipeline, db)
+    with pytest.raises(DBAPIError, match="delete refused"):
+        db.execute(text("DELETE FROM canonical_fact WHERE id = :id"), {"id": fact.id})
+    db.rollback()
+
+
+def test_a_retired_canonical_fact_cannot_be_made_current_again(
+    pipeline: Pipeline, db: Session
+) -> None:
+    fact = one_fact(pipeline, db)
+    candidate_id = db.get_one(Approval, fact.approval_id).candidate_id
+    pipeline.approvals.approve(
+        db, candidate_id=candidate_id, decision="not_in_document", reviewer="Ravi"
+    )
+    db.refresh(fact)
+    assert fact.is_current is False and fact.superseded_at is not None
+    for assignment in ("is_current = true, superseded_at = NULL", "superseded_at = now()"):
+        with pytest.raises(DBAPIError, match="a current fact may only be retired"):
+            db.execute(
+                text(f"UPDATE canonical_fact SET {assignment} WHERE id = :id"), {"id": fact.id}
+            )
+        db.rollback()
+
+
+@pytest.mark.parametrize(
+    "changes",
+    [
+        {"approval_id": "0" * 32},
+        {"field_path": "identity.capacity_mw"},
+        {"object_version": 2},
+        {"object_id": "0" * 32},
+        {"is_current": False},
+    ],
+)
+def test_canonical_fact_insert_needs_a_live_approval_of_the_same_field(
+    pipeline: Pipeline, db: Session, changes: dict[str, object]
+) -> None:
+    fact = one_fact(pipeline, db)
+    db.add(fact_like(fact, **changes))
+    with pytest.raises(DBAPIError, match="canonical_fact insert refused"):
+        db.flush()
+    db.rollback()
+    assert db.scalar(select(func.count()).select_from(CanonicalFact)) == 1
+
+
+def test_canonical_fact_insert_is_refused_under_a_superseded_or_rejecting_approval(
+    pipeline: Pipeline, db: Session
+) -> None:
+    fact = one_fact(pipeline, db)
+    candidate_id = db.get_one(Approval, fact.approval_id).candidate_id
+    rejection = pipeline.approvals.approve(
+        db, candidate_id=candidate_id, decision="rejected", reviewer="Ravi"
+    ).approval
+    db.expire_all()
+    superseded = db.get_one(Approval, fact.approval_id)
+    assert superseded.status == "superseded" and rejection.status == "active"
+    for approval_id in (superseded.id, rejection.id):
+        db.add(fact_like(fact, approval_id=approval_id))
+        with pytest.raises(DBAPIError, match="canonical_fact insert refused: no live approval"):
+            db.flush()
+        db.rollback()
+    assert db.scalar(select(func.count()).select_from(CanonicalFact)) == 1
 
 
 def _python_files() -> list[Path]:

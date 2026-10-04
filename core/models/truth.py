@@ -50,7 +50,10 @@ class Approval(IdMixin, TenantAuditMixin, Base):
 
 
 class CanonicalFact(IdMixin, TenantAuditMixin, Base):
-    """Truth. Written only by core.services.approve.ApprovalService.approve()."""
+    """Truth. Written only by core.services.approve.ApprovalService.approve().
+
+    A database trigger accepts a row only under a live approval of the same field, and
+    afterwards lets it be retired (is_current, superseded_at) but never changed or deleted."""
 
     __tablename__ = "canonical_fact"
     __table_args__ = (
