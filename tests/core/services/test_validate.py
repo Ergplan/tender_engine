@@ -122,7 +122,7 @@ def test_a_required_field_the_model_did_not_find_is_flagged_but_an_optional_one_
     )
     run = make_pipeline(sdk).extracted_run(db)
     status, rules = results(db, run, "dates.bid_deadline")
-    assert status == "not_found"
+    assert status == "needs_review", "a failed validation marks the candidate needs_review"
     assert rules == {"required_present": (False, "required field: the model found no value")}
     assert results(db, run, "identity.issuer") == ("not_found", {})
     assert "date_order" not in results(db, run, "dates.pre_bid_date")[1]

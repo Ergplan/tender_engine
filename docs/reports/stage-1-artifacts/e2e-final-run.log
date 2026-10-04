@@ -1,0 +1,68 @@
+docker compose run --rm --no-deps -T tests python -m pytest -p no:cacheprovider -m slow -s tests/e2e
+ Container tender-engine-tests-run-93b7b0eb298d Creating 
+ Container tender-engine-tests-run-93b7b0eb298d Created 
+
+document: RfS_FDRE_1200MW_NHPC_Tranche-II.pdf (264 pages, 78 sections)
+run: model=claude-fable-5-1 tokens_in=327221 tokens_out=3937 cost_usd=3.4691
+field | value | confidence | status | evidence page (resolution, score) | failed rules
+identity.tender_number | '2024_NHPC_800202_1' | 0.95 | validated | p1 (stated_page, 100.0), p17 (stated_page, 100.0) | -
+    rationale: The cover page states the Tender ID and the definitions section (attached page 9) identifies the RfS No. as 2024_NHPC_800202_1 dated 15.03.2024; both agree.
+identity.issuing_agency | 'NHPC Limited' | 0.95 | validated | p1 (stated_page, 100.0), p9 (stated_page, 100.0) | -
+    rationale: The cover page states the document is issued by NHPC Limited, and clause 1.11 confirms NHPC Limited issued this RfS as Intermediary Procurer/REIA.
+identity.capacity_mw | 1200.0 | 0.95 | validated | p8 (stated_page, 100.0), p8 (stated_page, 100.0) | -
+    rationale: NIT clause 1.0/1.1 and the title state an aggregate capacity of 1200 MW of Firm and Dispatchable RE power with ESS; the 600 MW figure is only a per-bidder cap, not the total.
+identity.connectivity_type | 'ists' | 0.90 | validated | p1 (stated_page, 100.0), p8 (stated_page, 100.0) | -
+    rationale: The RfS title and NIT clause 1.4 require ISTS-connected RE Power Projects; pooling definition also refers to connection to the ISTS substation. No intra-state option is mentioned in the attached pages.
+key_dates.pre_bid_date | '2024-03-28' | 0.95 | validated | p22 (stated_page, 100.0) | -
+    rationale: The critical date sheet (clause 3.4 B) lists the pre bid meeting date and time as 28.03.2024 (15:00 Hrs.), day-first, which converts to 2024-03-28.
+key_dates.bid_deadline | '2024-04-12' | 0.85 | validated | p22 (stated_page, 100.0), p22 (stated_page, 100.0) | -
+    rationale: The critical date sheet gives the Online Bid Submission Closing Date & Time as 12.04.2024 (17:30 Hrs.), taken as the bid submission deadline; a separate later date of 15.04.2024 is given for offline submission of physical documents (processing fee, EMD origina
+security.emd_per_mw | None | 0.00 | not_found | - | -
+    rationale: The RfS does not state a single EMD per MW; Clause 3.24(i) (attached pages 3 and 8) defines EMD by formula as INR 9,28,000 per MW of Solar component + INR 12,64,000 per MW of Wind component + INR 14,64,000 per MW of ESS component, capped at Rs. 10 Crores per P
+security.pbg_per_mw | None | 0.00 | not_found | - | -
+    rationale: The RfS does not state a single PBG per MW; Clause 3.24(ii) (attached page 9) defines PBG by formula as INR 23,20,000 per MW of Solar component + INR 31,60,000 per MW of Wind component + INR 36,60,000 per MW of ESS component, and the PPA Article 3.3.1 (attache
+commercial.scod_months | 24 | 0.95 | validated | p48 (stated_page, 100.0), p66 (stated_page, 100.0) | -
+    rationale: Clause 3.28 (attached page 7) and SCC Clause 7.2(a) (attached page 22) both state SCSD for full contracted capacity is 24 months from the Effective Date / date of execution of the PPA; no disagreement found.
+commercial.ppa_tenure_years | 25 | 0.95 | validated | p35 (stated_page, 100.0), p47 (stated_page, 100.0) | -
+    rationale: Clause 3.14 and Clause 3.28 state the PPA is for 25 years from the Scheduled Commissioning Date / SCSD; SCC Clause 7.1 also says 25 years from SCSD or commencement of full contracted capacity, whichever is later.
+commercial.tariff_ceiling | None | 0.00 | not_found | - | -
+    rationale: Searched the attached pages (RfS clauses 3.10-3.30, SCC Clauses 1-11, PPA Articles 2, 3, 4, 11, 13 and annexures) for a ceiling/maximum tariff in INR per kWh; none is stated. Only PSM charges (Rs 0.02/kWh) and trading margin (7 paise/unit) appear, which are no
+commercial.min_cuf_percent | 40.0 | 0.95 | validated | p29 (stated_page, 100.0), p61 (stated_page, 100.0) | -
+    rationale: Clause 3.10 and SCC Clause 6.1(b) both state the declared annual CUF shall in no case be less than 40%; the PPA template leaves the declared CUF blank and ties the lower limit to 85% of the declared value, but the tender floor is 40%.
+approved identity.tender_number -> canonical value '2024_NHPC_800202_1'
+.
+document: RfS_for_4800_MWh_Peak_Supply_(FDRE-IX)-_final_upload.pdf (140 pages, 38 sections)
+run: model=claude-fable-5-1 tokens_in=233057 tokens_out=3287 cost_usd=2.4949
+field | value | confidence | status | evidence page (resolution, score) | failed rules
+identity.tender_number | 'SECI/C&P/IPP/13/0006/26-27' | 0.98 | validated | p1 (stated_page, 100.0), p3 (stated_page, 100.0) | -
+    rationale: The cover page and Bid Information Sheet state the RfS number directly; the same number appears in the footer of every page.
+identity.issuing_agency | 'Solar Energy Corporation of India Limited' | 0.97 | validated | p1 (stated_page, 100.0), p8 (stated_page, 100.0) | -
+    rationale: The cover page names Solar Energy Corporation of India Limited as the issuer, and Clause 1.3 states SECI invites the proposals; Clause 2.7 confirms SECI issued the RfS as Intermediary Procurer.
+identity.capacity_mw | 1200.0 | 0.90 | validated | p1 (stated_page, 89.8), p6 (stated_page, 92.5) | -
+    rationale: The tender is for assured peak supply of 4800 MWh expressed as 1200 MW x 4 Hrs, so the capacity in MW is 1200; the document frames the capacity as 1200 MW of peak supply rather than installed capacity.
+identity.connectivity_type | 'ists' | 0.95 | validated | p1 (window_page, 89.8), p6 (stated_page, 92.5) | -
+    rationale: The title and Clause 1.3 require ISTS-connected RE projects; no intra-state connectivity option is mentioned in the attached pages.
+key_dates.pre_bid_date | None | 0.00 | not_found | - | -
+    rationale: Looked for a pre-bid meeting date in the Bid Information Sheet (item J) and Clause 30; the document only says the meeting is 'Scheduled as per NIT on ISN-ETS portal and/or SECI website' and prints no date.
+key_dates.bid_deadline | None | 0.00 | not_found | - | -
+    rationale: Looked for the bid submission deadline in Bid Information Sheet item K and Clauses 2.3 and 26.1; the document only states 'As per NIT on ISN-ETS portal'. The '10.08.2026' on attached page 11 is an explicit illustrative example ('For e.g.'), not the actual dead
+security.emd_per_mw | 968000.0 | 0.40 | validated | p24 (stated_page, 100.0) | -
+    rationale: Clause 16 does not state a single EMD per MW; it gives a component-based formula: INR 9,68,000 per MW of Solar PV, INR 13,68,000 per MW of Wind/other RE, and INR 2,40,000 per MWh of ESS. The Solar PV component rate (INR 9,68,000 = 968000) is reported as the ca
+security.pbg_per_mw | 2420000.0 | 0.40 | validated | p26 (stated_page, 100.0) | -
+    rationale: Clause 17.1 does not state a single PBG per MW; it gives a component-based formula: INR 24,20,000 per MW of Solar, INR 34,20,000 per MW of Wind/other RE, and INR 6,00,000 per MWh of ESS. The Solar component rate (INR 24,20,000 = 2420000) is reported as the can
+commercial.scod_months | 18 | 0.95 | validated | p19 (stated_page, 100.0) | -
+    rationale: Clause 9.2.a states SCSD for the full Project capacity is the date as on 18 months from the Effective Date of the PPA, with a worked example (07.11.2026 to 07.05.2028) confirming 18 months.
+commercial.ppa_tenure_years | 25 | 0.95 | validated | p31 (stated_page, 100.0) | -
+    rationale: Clause 20.2 states the PPAs are valid for 25 years from the SCSD; clause 20.8 consistently refers to the 25-year PPA period.
+commercial.tariff_ceiling | None | 0.00 | not_found | - | -
+    rationale: Searched the attached pages (scope, energy supply, commencement, PPA signing, financial closure, definitions, technical annexures) for a ceiling or maximum tariff in INR/kWh; none is stated. Only penalty multipliers of PPA Tariff and a 7 paise/unit trading mar
+commercial.min_cuf_percent | None | 0.00 | not_found | - | -
+    rationale: Looked for a minimum capacity utilisation factor or annual CUF requirement; the attached pages only specify a daily peak-hour supply obligation of 4000 kWh per MW with a 10% monthly shortfall allowance, not a CUF percentage.
+approved identity.tender_number -> canonical value 'SECI/C&P/IPP/13/0006/26-27'
+.
+answer='The document was issued by Solar Energy Corporation of India Limited (SECI).'
+quote='Solar Energy Corporation of India Limited (SECI)'
+tokens_in=2696 tokens_out=69 latency_ms=4078
+.
+3 passed in 399.90s (0:06:39)
+exit=0

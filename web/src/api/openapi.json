@@ -106,6 +106,20 @@
             "title": "Decision",
             "type": "string"
           },
+          "evidence": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ReviewerEvidence"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidence"
+          },
           "final_value": {
             "title": "Final Value"
           },
@@ -794,6 +808,25 @@
           "required_undecided"
         ],
         "title": "ReviewState",
+        "type": "object"
+      },
+      "ReviewerEvidence": {
+        "description": "Evidence the reviewer gives for an edited value: the page and the text on it.",
+        "properties": {
+          "page_no": {
+            "title": "Page No",
+            "type": "integer"
+          },
+          "quote": {
+            "title": "Quote",
+            "type": "string"
+          }
+        },
+        "required": [
+          "page_no",
+          "quote"
+        ],
+        "title": "ReviewerEvidence",
         "type": "object"
       },
       "RunView": {

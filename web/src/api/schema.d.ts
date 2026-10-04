@@ -239,6 +239,8 @@ export interface components {
              * @enum {string}
              */
             decision: "approved" | "edited" | "not_in_document" | "rejected";
+            /** Evidence */
+            evidence?: components["schemas"]["ReviewerEvidence"][] | null;
             /** Final Value */
             final_value?: unknown;
             /** Note */
@@ -471,6 +473,16 @@ export interface components {
             run: components["schemas"]["RunView"] | null;
             /** Total */
             total: number;
+        };
+        /**
+         * ReviewerEvidence
+         * @description Evidence the reviewer gives for an edited value: the page and the text on it.
+         */
+        ReviewerEvidence: {
+            /** Page No */
+            page_no: number;
+            /** Quote */
+            quote: string;
         };
         /** RunView */
         RunView: {

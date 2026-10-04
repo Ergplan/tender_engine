@@ -78,8 +78,9 @@ def get_extract(
     )
 
 
-def get_approvals(schemas: SchemasDep, tenant_id: TenantDep) -> ApprovalService:
-    return ApprovalService(schemas, tenant_id)
+def get_approvals(request: Request, schemas: SchemasDep, tenant_id: TenantDep) -> ApprovalService:
+    settings: Settings = request.app.state.settings
+    return ApprovalService(schemas, tenant_id, settings.evidence_match_threshold)
 
 
 def get_review_state(schemas: SchemasDep, tenant_id: TenantDep) -> ReviewStateService:

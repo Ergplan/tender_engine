@@ -59,11 +59,19 @@ class ExtractionRunOut(BaseModel):
     error: str | None
 
 
+class ReviewerEvidence(BaseModel):
+    """Evidence the reviewer gives for an edited value: the page and the text on it."""
+
+    page_no: int
+    quote: str
+
+
 class ApprovalRequest(BaseModel):
     candidate_id: str
     decision: Literal["approved", "edited", "not_in_document", "rejected"]
     final_value: Any = None
     note: str | None = None
+    evidence: list[ReviewerEvidence] | None = None
 
 
 class ApprovalOut(BaseModel):

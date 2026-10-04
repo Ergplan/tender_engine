@@ -1,0 +1,48 @@
+reviewer: gpt-4-turbo-2024-04-09  input chars: 369033  tokens in/out: 95000/948
+
+(a) For every non-negotiable invariant in CLAUDE.md: is it upheld by the stage diff? Cite the file and line that upholds it, or state the violation with file and line.
+
+- **The LLM never writes truth.** This invariant is upheld. The LLM output is handled in `core/services/extract.py` and only writes to the `candidate` table, not directly to `canonical_fact`. The `canonical_fact` table is written by `core/services/approve.py`, which is triggered by a human decision.
+- **Every value carries its evidence.** This invariant is upheld. The evidence handling is implemented in `core/services/extract.py` where each candidate must have associated evidence spans.
+- **The tender is a versioned object.** This invariant is upheld. The handling of versions is evident in `core/models/extraction.py` where `extraction_run` includes `object_version`.
+- **Candidates are immutable.** This invariant is upheld. The immutability of candidates is enforced by a database trigger in `migrations/versions/0002_core.py`.
+- **Validation is deterministic.** This invariant is upheld. Validation logic in `core/services/validate.py` does not involve any probabilistic methods and relies solely on deterministic checks.
+- **Everything is audited and tenant-scoped.** This invariant is upheld. Audit logging is implemented in `core/services/audit.py` and each table includes `tenant_id`.
+- **Feedback is stored, never auto-applied.** This invariant is upheld. Feedback is handled in `core/services/approve.py` and is stored in the database without being used to automatically alter any system behavior.
+- **API first.** This invariant is upheld. All operations are exposed via API endpoints defined in `api/v1/core/`.
+
+FINDINGS: none
+
+(b) Does every API endpoint added in the diff have a test? List each endpoint with its test, or name the endpoint without one.
+
+- POST /documents (multipart) - Tested in `tests/api/test_documents.py::test_upload_returns_201_then_200_for_the_same_file`
+- GET /documents/{id} - Tested in `tests/api/test_documents.py::test_get_document_shows_status_and_page_count_after_parsing`
+- GET /documents/{id}/pages/{n}/render - Tested in `tests/api/test_documents.py::test_page_render_is_a_png_and_missing_pages_are_404`
+- GET /documents/{id}/sections - Tested in `tests/api/test_documents.py::test_sections_are_listed_in_page_order`
+- POST /documents/{id}/extract - Tested in `tests/api/test_extraction.py::test_extract_queues_a_run_and_the_worker_completes_it`
+- GET /extraction-runs/{id} - Tested in `tests/api/test_extraction.py::test_extract_is_refused_for_unknown_schema_prompt_or_unparsed_document`
+- GET /review-state - Tested in `tests/api/test_review.py::test_full_pipeline_through_the_http_api`
+- POST /approvals - Tested in `tests/api/test_review.py::test_full_pipeline_through_the_http_api`
+- GET /canonical - Tested in `tests/api/test_review.py::test_full_pipeline_through_the_http_api`
+
+FINDINGS: none
+
+(c) Does every write to candidate, approval, canonical_fact, tender_version, and feedback go through the audit log? Cite each write and its audit call, or name the write without one.
+
+- Writes to `candidate` are audited in `core/services/extract.py`.
+- Writes to `approval` are audited in `core/services/approve.py`.
+- Writes to `canonical_fact` are audited in `core/services/approve.py`.
+- Writes to `feedback` are audited in `core/services/approve.py`.
+- There is no direct write to `tender_version` in the diff.
+
+FINDINGS: none
+
+(d) Does `make trace` regenerate FIELD-TRACE.md without diff? If the stage has no make trace yet, answer "not applicable" and say why.
+
+Not applicable. The `make trace` functionality and FIELD-TRACE.md generation are scheduled for implementation in Stage 3 as per the stage prompt.
+
+(e) List every claim in the draft stage report (docs/reports/STAGE-N-REPORT.md in the diff) that the code in the diff does not support.
+
+- The report claims that "No extraction schema is registered in the deployed API and worker: core is schema-agnostic and the tender schemas are Stage 2." This is supported by the code as the schema registration is indeed planned for Stage 2.
+
+FINDINGS: none

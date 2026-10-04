@@ -179,18 +179,44 @@ def test_a_not_found_field_can_be_confirmed_absent_or_supplied_by_the_reviewer(
     )
     assert absent.canonical_fact is not None and absent.canonical_fact.value is None
     assert absent.feedback is None
+    tenure = candidate(db, run, "security.tenure_years").id
+    with pytest.raises(ApprovalError, match="no located evidence"):
+        pipeline.approvals.approve(
+            db, candidate_id=tenure, decision="edited", final_value=25, reviewer="Asha"
+        )
+    with pytest.raises(ApprovalError, match="not found on page 2"):
+        pipeline.approvals.approve(
+            db,
+            candidate_id=tenure,
+            decision="edited",
+            final_value=25,
+            reviewer="Asha",
+            evidence=[{"page_no": 2, "quote": "for a tenure of 25 years"}],
+        )
+    assert count(db, CanonicalFact) == 1, "a value without located evidence is not written"
     supplied = pipeline.approvals.approve(
         db,
-        candidate_id=candidate(db, run, "security.tenure_years").id,
+        candidate_id=tenure,
         decision="edited",
         final_value=25,
         reviewer="Asha",
+        evidence=[{"page_no": 3, "quote": "for a tenure of 25 years"}],
     )
     assert supplied.canonical_fact is not None and supplied.canonical_fact.value == 25
     assert supplied.feedback is not None and supplied.feedback.delta_kind == "missing"
-    assert supplied.canonical_fact.evidence == [
-        {"kind": "reviewer_decision", "decision": "edited", "reviewer": "Asha", "note": None}
-    ]
+    span, decision = supplied.canonical_fact.evidence
+    assert (span["kind"], span["page_no"], span["quote"]) == (
+        "reviewer_span",
+        3,
+        "for a tenure of 25 years",
+    )
+    assert span["bbox"] and span["char_start"] is not None and span["document_id"]
+    assert decision == {
+        "kind": "reviewer_decision",
+        "decision": "edited",
+        "reviewer": "Asha",
+        "note": None,
+    }
     with pytest.raises(ApprovalError, match="no value to approve"):
         pipeline.approvals.approve(
             db,

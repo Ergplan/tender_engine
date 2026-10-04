@@ -13,10 +13,19 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from core.models import Approval, Candidate, CanonicalFact, EvidenceSpan, ExtractionRun, Feedback
+from core.models import (
+    Approval,
+    Candidate,
+    CanonicalFact,
+    EvidenceSpan,
+    ExtractionRun,
+    Feedback,
+    Page,
+)
 from core.models.truth import DECISIONS
 from core.schemas import FieldDef, SchemaRegistry
 from core.services import audit
+from core.services.evidence import PageText, locate
 
 DECIDABLE_STATUSES = ("validated", "needs_review", "not_found")
 FACT_DECISIONS = ("approved", "edited", "not_in_document")
@@ -35,9 +44,12 @@ class ApprovalOutcome:
 
 
 class ApprovalService:
-    def __init__(self, schemas: SchemaRegistry, tenant_id: str) -> None:
+    def __init__(
+        self, schemas: SchemaRegistry, tenant_id: str, evidence_match_threshold: float = 85.0
+    ) -> None:
         self._schemas = schemas
         self._tenant_id = tenant_id
+        self._threshold = evidence_match_threshold
 
     def approve(
         self,
@@ -48,8 +60,14 @@ class ApprovalService:
         final_value: Any = None,
         reviewer: str,
         note: str | None = None,
+        evidence: list[dict[str, Any]] | None = None,
     ) -> ApprovalOutcome:
-        """Record a human decision. Idempotent: an identical repeat writes nothing."""
+        """Record a human decision. Idempotent: an identical repeat writes nothing.
+
+        `evidence` is the reviewer's own evidence for an edited value: a list of
+        {page_no, quote}. It is required when the candidate has none (the model found no
+        value), so that no canonical value exists without a located quote. Each quote must
+        be found on its page."""
         if decision not in DECISIONS:
             raise ApprovalError(f"unknown decision {decision!r}")
         if not reviewer.strip():
@@ -98,6 +116,16 @@ class ApprovalService:
                 raise ApprovalError(f"decision {decision!r} does not take a value")
             final = None
         note = note.strip() if note and note.strip() else None
+        reviewer_spans: list[dict[str, Any]] = []
+        if decision == "edited":
+            reviewer_spans = self._reviewer_spans(session, run, evidence or [])
+            if not reviewer_spans and not self._has_located_evidence(session, candidate):
+                raise ApprovalError(
+                    "this field has no located evidence from the document; give the page and "
+                    "the quoted text that state the value"
+                )
+        elif evidence:
+            raise ApprovalError(f"decision {decision!r} does not take evidence")
 
         current = session.scalar(
             select(Approval)
@@ -172,7 +200,9 @@ class ApprovalService:
                 value=final,
                 value_type=field.value_type,
                 approval_id=approval.id,
-                evidence=self._evidence(session, candidate, decision, reviewer, note),
+                evidence=self._evidence(
+                    session, candidate, decision, reviewer, note, reviewer_spans
+                ),
                 effective_at=now,
                 is_current=True,
             )
@@ -252,10 +282,67 @@ class ApprovalService:
         # inserted, or the one-active-per-field index would refuse the insert.
         session.flush()
 
-    def _evidence(
-        self, session: Session, candidate: Candidate, decision: str, reviewer: str, note: str | None
+    def _has_located_evidence(self, session: Session, candidate: Candidate) -> bool:
+        return (
+            session.scalar(
+                select(EvidenceSpan.id)
+                .where(
+                    EvidenceSpan.candidate_id == candidate.id,
+                    EvidenceSpan.tenant_id == self._tenant_id,
+                    EvidenceSpan.char_start.is_not(None),
+                )
+                .limit(1)
+            )
+            is not None
+        )
+
+    def _reviewer_spans(
+        self, session: Session, run: ExtractionRun, evidence: list[dict[str, Any]]
     ) -> list[dict[str, Any]]:
-        """Evidence copied from the candidate, plus the reviewer's edit if there was one."""
+        """Locate each quote the reviewer gave on the page they named, or refuse."""
+        spans = []
+        for item in evidence:
+            page_no, quote = item.get("page_no"), str(item.get("quote") or "").strip()
+            if not isinstance(page_no, int) or not quote:
+                raise ApprovalError("each piece of evidence needs a page number and a quote")
+            row = session.execute(
+                select(Page.text, Page.char_boxes, Page.has_text_layer).where(
+                    Page.document_id == run.document_id,
+                    Page.tenant_id == self._tenant_id,
+                    Page.page_no == page_no,
+                )
+            ).one_or_none()
+            found = (
+                None
+                if row is None
+                else locate(quote, PageText(page_no, row[0], row[1], row[2]), self._threshold)
+            )
+            if found is None:
+                raise ApprovalError(f"the quote was not found on page {page_no}")
+            spans.append(
+                {
+                    "kind": "reviewer_span",
+                    "document_id": run.document_id,
+                    "page_no": page_no,
+                    "bbox": found.bbox,
+                    "char_start": found.char_start,
+                    "char_end": found.char_end,
+                    "quote": quote,
+                }
+            )
+        return spans
+
+    def _evidence(
+        self,
+        session: Session,
+        candidate: Candidate,
+        decision: str,
+        reviewer: str,
+        note: str | None,
+        reviewer_spans: list[dict[str, Any]],
+    ) -> list[dict[str, Any]]:
+        """Evidence copied from the candidate, plus the reviewer's own evidence and decision
+        when it was not a plain approval."""
         evidence: list[dict[str, Any]] = [
             {
                 "kind": "span",
@@ -276,6 +363,7 @@ class ApprovalService:
                 .order_by(EvidenceSpan.page_no, EvidenceSpan.id)
             )
         ]
+        evidence.extend(reviewer_spans)
         if decision != "approved":
             evidence.append(
                 {

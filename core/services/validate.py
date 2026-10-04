@@ -57,7 +57,7 @@ class ValidationService:
         coerced: dict[str, Any] = {}
         for candidate in candidates:
             field = schema.field(candidate.field_path)
-            if candidate.status == "not_found":
+            if candidate.value is None and candidate.status in ("not_found", "needs_review"):
                 if field.required:
                     message = "required field: the model found no value"
                     results[candidate.id].append(("required_present", False, message))
@@ -112,8 +112,11 @@ class ValidationService:
                         message=message,
                     )
                 )
-            if candidate.status in ("raw", "validated", "needs_review"):
-                failed = any(not passed for _, passed, _ in results[candidate.id])
+            failed = any(not passed for _, passed, _ in results[candidate.id])
+            if candidate.value is None and candidate.status in ("not_found", "needs_review"):
+                # No value: a required field needs review, an optional one stays not_found.
+                self._set_status(session, candidate, "needs_review" if failed else "not_found")
+            elif candidate.status in ("raw", "validated", "needs_review"):
                 self._set_status(session, candidate, "needs_review" if failed else "validated")
         run.status = "validated"
         run.finished_at = datetime.now(UTC)

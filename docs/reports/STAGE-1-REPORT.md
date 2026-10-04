@@ -11,7 +11,7 @@ Date: 2026-10-04. Diff: `git diff stage-1-start..HEAD`. Architecture changes: `d
 | ApprovalService is the only writer to canonical_fact (grep + test) | Yes. `CanonicalFact(` is constructed in one place, `core/services/approve.py`. `test_approval_service_is_the_only_writer_of_canonical_fact` greps the source tree for any other construction of `CanonicalFact` or bulk insert, update or delete on it. It would not catch an ORM attribute write in another module; there is no database-level guard (KNOWN-GAPS.md) |
 | e2e on one FDRE tender prints per-field value, confidence, page | Yes, on two: SECI FDRE-IX RfS (140 pages) and NHPC FDRE-II RfS (264 pages). Output below |
 | Evidence located for >= 80% of the 12 test fields | **Not met as written.** NHPC FDRE-II: 9 of 12 fields have a value, all 9 with located evidence (75% of 12). SECI FDRE-IX: 8 of 12 have a value, all 8 located (67% of 12). Every value the model returned was located (100%). The remaining fields are not stated in the documents as single values (see "Fields without a value"), so the model returned null as the prompt requires. Measured against fields the document states, the rate is 100%; measured against all 12, it is below the 80% line on both tenders |
-| `make test` green | 222 Python tests and 3 web tests pass; the watcher's eight checks are green |
+| `make test` green | 223 Python tests and 3 web tests pass; the watcher's eight checks are green |
 | `docker compose up` serves the API on the VM | Yes, see "Deployment" |
 
 ## What was built
@@ -22,20 +22,21 @@ Date: 2026-10-04. Diff: `git diff stage-1-start..HEAD`. Architecture changes: `d
 - **Services (`core/services/`).** `IngestService.upload` (sha256 dedupe, enqueues parse); `ParseService.parse` (pdfplumber text and one box per character, pymupdf renders at 150 dpi, pages under 50 characters flagged as having no text layer); `SectionMapper.map` (one model call over a digest of every page); `ExtractService` (pages chosen from routing hints, native PDF windows of at most 40 pages, structured output that requires value, confidence, rationale and evidence, quote resolution, confidence capped at 0.3 when unlocated); `ValidationService.validate` (type, required, range, regex, cross-field, evidence located; no model call); `ApprovalService.approve` (the only writer of `canonical_fact`; writes approval, fact, feedback and audit rows; idempotent on an identical repeat; a later decision supersedes the earlier one); `ReviewStateService.for_object` (the one read model).
 - **Evidence resolution (`core/services/evidence.py`).** Exact match after normalising case, whitespace, quotes and dashes; on word boundaries; then rapidfuzz at threshold 85 for quotes of 12 characters or more; then, for quotes that hold a number, the quote's words in any order over consecutive page words with every number unchanged. Tried on the stated page, the adjacent pages, then the rest of the window.
 - **Prompts.** `core/llm/prompts/section_map/v1.md` and `core/llm/prompts/extract/v1.md`, each with the header block. The registry refuses an unregistered version before any network use.
-- **API (`api/v1/core/`).** `POST /documents`, `GET /documents/{id}`, `GET /documents/{id}/pages/{n}/render`, `GET /documents/{id}/sections`, `POST /documents/{id}/extract`, `GET /extraction-runs/{id}`, `GET /review-state`, `POST /approvals`, `GET /canonical`, all under `/api/v1`. Every route and service query filters by tenant; the job queue alone is shared across tenants (KNOWN-GAPS.md). The reviewer comes from the `X-Reviewer` header.
+- **API (`api/v1/core/`).** `POST /documents`, `GET /documents/{id}`, `GET /documents/{id}/pages/{n}/render`, `GET /documents/{id}/sections`, `POST /documents/{id}/extract`, `GET /extraction-runs/{id}`, `GET /review-state`, `POST /approvals`, `GET /canonical`, all under `/api/v1`. Route and service queries filter by tenant, and the worker claims only the jobs of its own tenant. The reviewer comes from the `X-Reviewer` header.
 - **Worker (`worker/`).** One process polling `job` every 2 seconds; parse → section_map and extract → validate; traceback in `job.last_error`; three retries with backoff (30, 60, 120 seconds); non-retryable failures fail at once; jobs left running by a dead worker are re-queued at start.
-- **Independent review script.** `scripts/independent_review.py` (operating rule 15).
+- **Reviewer evidence on edits.** `POST /approvals` accepts `evidence: [{page_no, quote}]`; it is required when a reviewer supplies a value for a field that has no located evidence.
+- **Independent review script.** `scripts/independent_review.py` (operating rule 15), default model `gpt-6.1-sol`.
 
 ## Tests
 
-- 222 Python tests (33 at the end of Stage 0B). Unit: value types, schema registry, every validation rule, evidence resolution on a synthetic page, delta classification. Service tests against Postgres: ingest and parse, section map, extract (including resume after a failed call, evidence found on an adjacent page, unlocated evidence capped at 0.3), validate, approve, review state, jobs, the runner.
+- 223 Python tests (33 at the end of Stage 0B). Unit: value types, schema registry, every validation rule, evidence resolution on a synthetic page, delta classification. Service tests against Postgres: ingest and parse, section map, extract (including resume after a failed call, evidence found on an adjacent page, unlocated evidence capped at 0.3), validate, approve, review state, jobs, the runner.
 - Invariants (`tests/core/test_invariants.py`): candidate immutability by SQL and ORM, evidence and audit log append-only, one writer of `canonical_fact`, nothing reads `feedback` at runtime, validation makes no model call, core does not import tender.
 - Integration through HTTP only (`tests/api/test_review.py::test_full_pipeline_through_the_http_api`): upload → parse → extract (scripted model) → validate → approve → canonical, including an edit that leaves the candidate unchanged. Tenant isolation: `tests/api/test_documents.py::test_another_tenants_document_is_invisible`.
 - End to end with the real model (`tests/e2e/test_fdre_core_pipeline.py`, marked slow, `make test-e2e`): two FDRE tenders, the 12-field test schema in `tests/fixtures/fdre_schema.py`.
 
 ## End-to-end run on real tenders (real model, `make test-e2e`)
 
-Final run of `make test-e2e` on the committed code (3 passed in 6 min 40 s: the two tenders below and the Stage 0 one-page smoke test). Each tender goes through the HTTP API and the worker: upload, parse, section map, extract, validate, review state, then one approval and the canonical read.
+Last run of `make test-e2e` (full log: `docs/reports/stage-1-artifacts/e2e-final-run.log`; 3 passed in 6 min 40 s: the two tenders below and the Stage 0 one-page smoke test). Each tender goes through the HTTP API and the worker: upload, parse, section map, extract, validate, review state, then one approval and the canonical read.
 
 **SECI FDRE-IX RfS**
 
@@ -103,11 +104,11 @@ commercial.min_cuf_percent | 40.0 | 0.95 | validated | p29 (stated_page, 100.0),
 approved identity.tender_number -> canonical value '2024_NHPC_800202_1'
 ```
 
-Reading the tables: SECI has 8 of 12 fields with a value and NHPC 9 of 12; every one of those 17 values has evidence located on the page the model named. The EMD and PBG values on the SECI tender (confidence 0.40) are the Solar PV component of a component-wise formula, which the model says in its rationale; they are not a single per-MW figure.
+Reading the tables: SECI has 8 of 12 fields with a value and NHPC 9 of 12; every one of those 17 values has at least one quote located in the document with a character range and a box. All but one quote were found on the page the model named; one quote on the SECI tender (connectivity type, page 1) was found on another page of the window (`window_page`). The EMD and PBG values on the SECI tender (confidence 0.40) are the Solar PV component of a component-wise formula, which the model says in its rationale; they are not a single per-MW figure.
 
 ### Run-to-run variation
 
-The section map differs between runs (38 to 41 sections on the SECI RfS, 57 to 78 on the NHPC RfS), and with it the pages each field group receives. Before the page-selection change, a run returned no EMD, PBG or PPA tenure on the SECI tender because only the bank-guarantee formats were sent; another returned no minimum CUF on the NHPC tender. `select_pages` now adds, to the sections the routing hints name, up to 12 pages that mention each of the group's keywords, taken keyword by keyword. The final run above was made after that change. One run is not proof that the variation is gone; Stage 2 runs all tenders and will show the rate per field group. Tokens per run rose with the wider windows: about 233,000 in for SECI (USD 2.49) and 327,000 in for NHPC (USD 3.47) at the configured prices.
+The section map differs between runs (38 to 41 sections on the SECI RfS, 57 to 78 on the NHPC RfS), and with it the pages each field group receives. Before the page-selection change, a run returned no EMD, PBG or PPA tenure on the SECI tender because only the bank-guarantee formats were sent; another returned no minimum CUF on the NHPC tender. `select_pages` now adds, to the sections the routing hints name, up to 12 pages that mention each of the group's keywords, taken keyword by keyword. The run above was made after that change, and before the last three fixes from the `gpt-6.1-sol` review (reviewer evidence on edits, review status of required empty fields, per-tenant job claims), which are covered by unit and integration tests but were not rerun against the real model. One run is not proof that the variation is gone; Stage 2 runs all tenders and will show the rate per field group. Tokens per run rose with the wider windows: about 233,000 in for SECI (USD 2.49) and 327,000 in for NHPC (USD 3.47) at the configured prices.
 
 ### Fields without a value
 
@@ -167,12 +168,31 @@ Two reviews were run, both with only the three inputs rule 15 names (stage diff,
 
 (Twenty findings as counted by the reviewer; some rows above merge two.)
 
-**3. OpenAI reviewer rerun** on the final diff and this report: run twice.
+**3. OpenAI reviewer rerun (`gpt-4-turbo`)** on the final diff and this report: run twice.
 
 - Rerun 1: (a), (b), (c) "FINDINGS: none"; (d) not applicable; (e) one finding: "Full implementation details for handling tender versions are not provided." The report made no such claim, but a line was added under "Skipped or changed" saying plainly that tender versions are Stage 2.
 - Rerun 2, after that change: (a), (b), (c) none; (d) not applicable; (e) the same finding again: "Tender versioning and linking canonical facts to versions are claimed but not supported in this stage."
 
-**The reviewer has therefore not reported "none" on (e), and rule 15 is not fully met.** I could not find the claim it objects to: this report and DECISIONS.md say that no tender version exists in Stage 1. The diff it reads also contains ARCHITECTURE.md's section on Stage 2 tender documents and the master-prompt amendment, which describe versioning as future work and may be what it is reading as a claim. I stopped rerunning rather than reword documents until the reviewer goes quiet. The line numbers it cites in (a) and (c) do not match the files (for example, candidate audit "extract.py lines 180-185"), so its "none" answers there carry little weight either; the second review above is the one that examined the code.
+**The reviewer has therefore not reported "none" on (e), and rule 15 is not fully met.** I could not find the claim it objects to: this report and DECISIONS.md say that no tender version exists in Stage 1. The diff it reads also contains ARCHITECTURE.md's section on Stage 2 tender documents and the master-prompt amendment, which describe versioning as future work and may be what it is reading as a claim. I stopped rerunning `gpt-4-turbo` rather than reword documents until it went quiet. The line numbers it cites in (a) and (c) do not match the files (for example, candidate audit "extract.py lines 180-185"), so its "none" answers there carry little weight either; the second review above is the one that examined the code.
+
+**4. OpenAI reviewer on `gpt-6.1-sol`**, after you enabled the model on the project. This is the review that meets rule 15's "different family" requirement with real depth; its line citations match the files. Outputs of every reviewer run are in `docs/reports/stage-1-artifacts/`.
+
+First run: (b) none; (d) not applicable; (a) 4 findings; (c) 2 findings; (e) 9 findings.
+
+| # | Finding | Outcome |
+| --- | --- | --- |
+| a1 | A `not_found` candidate reaches review without evidence, and editing it produced a canonical value with only reviewer metadata | Fixed for values: an edit of a field with no located evidence must carry the reviewer's page and quote, which must be found on that page and is stored on the fact. The empty field is still shown, so the reviewer can confirm absence (KNOWN-GAPS.md) |
+| a1 | Candidates with unresolved evidence spans remain reviewable | **Not changed: needs your decision.** The stage prompt requires exactly this (cap at 0.3, `evidence_not_located`, still visible); the evidence invariant says such a candidate is rejected before a reviewer sees it. Invariants override the prompt, so this is flagged as a conflict (Open questions, item 0) |
+| a2 | A required field the model left empty stayed `not_found` instead of `needs_review` | Fixed; test updated |
+| a3 | Job queries had no tenant filter and the runner used the process tenant | Fixed: claim, complete, fail and re-queue are per tenant; test added |
+| a4 | Empty schema registries make extraction unavailable in the deployed app | Not changed: by design until Stage 2 registers the tender schemas; disclosed in this report and KNOWN-GAPS.md |
+| c1, c2 | A test updates a candidate's status directly, and the test fixture truncates tables, without audit rows | Not changed: test code only. The fixture must empty the tables between tests, and the status test exists to prove the trigger allows only that column to change |
+| e3 | "Every route and service query filters by tenant" was contradicted by the job queue | Fixed in code and wording |
+| e4 | "Located on the page the model named" was wrong for one `window_page` span | Wording corrected |
+| e8 | "`object_version` is always 1" overstated | Wording corrected |
+| e1, e2, e5, e6, e7, e9 | Test results, the e2e run, deployment, review history and cost are stated without artifacts in the diff | Partly addressed: the e2e log and all reviewer outputs are now committed under `docs/reports/stage-1-artifacts/`. Watcher status, deployment output and billing are not in the repository and remain statements of this report |
+
+Rerun after these changes: (pending; recorded after this commit.)
 
 Checklist item (d): not applicable until Stage 3 (`make trace` does not exist yet).
 
@@ -181,7 +201,7 @@ Checklist item (d): not applicable until Stage 3 (`make trace` does not exist ye
 - **`delta_kind = exact` is never written.** When the final value equals the candidate, no feedback row is created.
 - **Two extra candidate statuses**, `not_found` and `rejected` (DECISIONS.md).
 - **Objects instead of documents.** Candidates, approvals and facts hang on `(object_type, object_id, object_version)`; in Stage 1 the object is the document.
-- **Tender versions are not built.** No `tender` or `tender_version` table exists in Stage 1 and nothing here creates or compares versions; that is Stage 2. Core only stores the `object_version` number it is given, which is always 1 in Stage 1.
+- **Tender versions are not built.** No `tender` or `tender_version` table exists in Stage 1 and nothing here creates or compares versions; that is Stage 2. Core only stores the `object_version` number it is given: the Stage 1 API never passes one, so it is 1 there; `ExtractService.start_run` accepts another number, which only Stage 2 will pass.
 - **`make trace`.** Still Stage 3; checklist item (d) of the independent review is not applicable.
 - **Scanned pages.** A page with fewer than 50 characters is flagged `has_text_layer = false`. The model still sees it, because extraction sends native PDF pages, but evidence cannot be located on it. No such page occurred in the two test tenders, so this path is covered by unit tests only.
 - **The e2e ran on two tenders, not one**, and has a 30-minute timeout.
@@ -197,11 +217,12 @@ Checklist item (d): not applicable until Stage 3 (`make trace` does not exist ye
 
 ## Open questions
 
+0. **Unlocated evidence: show or hide?** The stage prompt keeps a candidate whose quote could not be located visible as `needs_review` at confidence 0.3 or less; the evidence invariant says it is rejected before a reviewer sees it. The code follows the prompt. Hiding them would also hide every value read from a scanned page. Which rule should hold?
 1. **Stage 2 layout.** The amendment puts schemas, prompts and sector validators under `tender/domain_packs/`. CLAUDE.md's fixed layout names `tender/schemas/`, `tender/prompts/` and `tender/validation/`. Confirm that `domain_packs/` replaces all three and that CLAUDE.md should be updated.
 2. **Field paths.** Confirm that the field catalogue's paths are to be renamed into the `core.*` and `sector.power.*` namespaces in Stage 2, including the FIELD-TRACE examples in CLAUDE.md.
 3. **Stage 5D base text.** The file had no Stage 5D; the two sub-sections were added as a new block. The MCP server and the base tools (search_tenders, get_tender, get_field, get_document_page, list_changes, compare_tenders, reliability_report) are not specified anywhere yet.
 4. **The 80% line.** It is not met when counted over all 12 fields because the documents do not state some of them. Is "located evidence for every value returned, and null for what the document does not state" the bar you want, or should the test schema be changed to fields every FDRE RfS states?
 5. **EMD and PBG as formulas** (NHPC) and **dates deferred to the NIT** (SECI): how should the Stage 2 schema hold them?
-6. **Independent review.** The OpenAI key exposes only `gpt-4-turbo` and `gpt-4`. Its review was shallow and its one repeated finding is not a claim the report makes (see "Independent review"). Do you accept Stage 1 on that basis, or enable a current model on the OpenAI project so the review can be rerun with `python -m scripts.independent_review --stage 1 --model <name>`?
+6. **Independent review.** `gpt-6.1-sol` is now the reviewer. Some of its findings cannot reach "none" by fixing code: the deployed registry is empty until Stage 2, tests bypass the audit log, and run results are not provable from a diff. Do you accept Stage 1 with those recorded?
 
 Stage 1 stops here. Next: `Run Stage 2 of docs/MASTER-PROMPT.md.`

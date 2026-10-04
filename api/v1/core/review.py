@@ -43,6 +43,7 @@ def post_approval(
             final_value=body.final_value,
             reviewer=reviewer,
             note=body.note,
+            evidence=[item.model_dump() for item in body.evidence] if body.evidence else None,
         )
     except ApprovalError as exc:
         raise AppError("validation_failed", str(exc)) from exc

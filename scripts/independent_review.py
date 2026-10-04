@@ -1,6 +1,6 @@
 """Independent stage review (operating rule 15).
 
-  python -m scripts.independent_review --stage 1 [--model gpt-4-turbo]
+  python -m scripts.independent_review --stage 1 [--model gpt-6.1-sol]
 
 Sends exactly three things to a model from a different family than the builder, in a fresh
 context: the stage diff (git diff stage-N-start..HEAD), CLAUDE.md and the stage prompt from
@@ -59,7 +59,7 @@ def stage_diff(stage: str) -> str:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--stage", required=True)
-    parser.add_argument("--model", default="gpt-4-turbo")
+    parser.add_argument("--model", default="gpt-6.1-sol")
     args = parser.parse_args()
     key = os.environ.get("OPENAI_API_KEY")
     if not key:
@@ -71,7 +71,6 @@ def main() -> int:
     )
     body = {
         "model": args.model,
-        "temperature": 0,
         "messages": [
             {"role": "system", "content": CHECKLIST},
             {"role": "user", "content": user},

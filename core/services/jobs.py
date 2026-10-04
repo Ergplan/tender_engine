@@ -22,12 +22,12 @@ def enqueue(
     return job
 
 
-def claim_next(session: Session) -> Job | None:
-    """Take the oldest due job and mark it running. Commits."""
+def claim_next(session: Session, tenant_id: str) -> Job | None:
+    """Take the tenant's oldest due job and mark it running. Commits."""
     now = datetime.now(UTC)
     job = session.scalar(
         select(Job)
-        .where(Job.status == "queued", Job.run_after <= now)
+        .where(Job.tenant_id == tenant_id, Job.status == "queued", Job.run_after <= now)
         .order_by(Job.run_after, Job.created_at)
         .limit(1)
         .with_for_update(skip_locked=True)
@@ -42,11 +42,15 @@ def claim_next(session: Session) -> Job | None:
     return job
 
 
-def requeue_orphans(session: Session) -> int:
+def requeue_orphans(session: Session, tenant_id: str) -> int:
     """Put jobs left in `running` back in the queue. Called when the single worker starts:
     a job still marked running then belongs to a worker that died mid-job. A job that has
     used all its attempts is marked failed instead. Commits; returns the number touched."""
-    orphans = list(session.scalars(select(Job).where(Job.status == "running").with_for_update()))
+    orphans = list(
+        session.scalars(
+            select(Job).where(Job.tenant_id == tenant_id, Job.status == "running").with_for_update()
+        )
+    )
     now = datetime.now(UTC)
     for job in orphans:
         note = "worker stopped while the job was running"
@@ -61,17 +65,23 @@ def requeue_orphans(session: Session) -> int:
     return len(orphans)
 
 
-def complete(session: Session, job_id: str) -> None:
-    job = session.get_one(Job, job_id)
+def _own(session: Session, tenant_id: str, job_id: str) -> Job:
+    return session.scalars(select(Job).where(Job.id == job_id, Job.tenant_id == tenant_id)).one()
+
+
+def complete(session: Session, tenant_id: str, job_id: str) -> None:
+    job = _own(session, tenant_id, job_id)
     job.status = "done"
     job.finished_at = datetime.now(UTC)
     job.last_error = None
     session.commit()
 
 
-def fail(session: Session, job_id: str, error: str, *, retryable: bool = True) -> Job:
+def fail(
+    session: Session, tenant_id: str, job_id: str, error: str, *, retryable: bool = True
+) -> Job:
     """Record the error. Re-queue with backoff until max_attempts, then mark failed."""
-    job = session.get_one(Job, job_id)
+    job = _own(session, tenant_id, job_id)
     job.last_error = error
     if retryable and job.attempts < job.max_attempts:
         job.status = "queued"

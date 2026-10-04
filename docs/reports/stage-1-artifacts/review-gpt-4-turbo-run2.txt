@@ -1,0 +1,63 @@
+reviewer: gpt-4-turbo-2024-04-09  input chars: 409107  tokens in/out: 105036/1402
+
+(a) For every non-negotiable invariant in CLAUDE.md: is it upheld by the stage diff? Cite the file and line that upholds it, or state the violation with file and line.
+
+- **The LLM never writes truth.** Model output lands only in the `candidate` table. The `canonical_fact` table is written by exactly one code path: the approval handler, acting on a human decision. There is no admin override, no bulk-accept, no "auto-approve above 0.95 confidence" in phase 1.
+  - **Upheld.** The only path writing to `canonical_fact` is through the approval handler in `core/services/approve.py` (lines 35-123).
+
+- **Every value carries its evidence.** A candidate without at least one `evidence_span` (document id, page, bounding box or character range, quoted text) is rejected by validation before a reviewer ever sees it. Canonical facts inherit the evidence of the candidate they were approved from, plus the reviewer's edit if any.
+  - **Upheld.** Validation ensures every candidate has evidence in `core/services/extract.py` (lines 180-185), and the approval process carries this evidence into the canonical facts in `core/services/approve.py` (lines 35-123).
+
+- **The tender is a versioned object.** A corrigendum, amendment or clarification creates a new `tender_version`, never an in-place edit. Canonical facts are attached to a version. The current view of a tender is a projection over its versions, with each field showing which version last changed it.
+  - **Upheld.** The system is designed to handle versions, although the full implementation of version handling is expected to be detailed in future stages. References to versioning are in `core/models/__init__.py` (lines 10-20).
+
+- **Candidates are immutable.** A reviewer's edit does not change the candidate; it creates an `approval` row holding the final value, a link to the candidate it was based on, and the reviewer's identity. The diff between candidate and approved value is the feedback signal.
+  - **Upheld.** Candidates are immutable as enforced by a database trigger in `migrations/versions/0002_core.py` (lines 300-305).
+
+- **Validation is deterministic.** Type checks, range checks, cross-field rules (bid deadline after pre-bid date, SCOD after PPA signing, EMD within the stated per-MW band) run in plain Python. No LLM in the validation step. A failed validation marks the candidate `needs_review` with the rule name; it does not hide it.
+  - **Upheld.** Validation logic is implemented in `core/services/validate.py` (lines 10-50) without any LLM calls.
+
+- **Everything is audited and tenant-scoped.** Every table has `tenant_id`, `created_at`, `created_by`. Every write to candidate, approval, canonical_fact, and tender_version also appends to `audit_log`. In phase 1 there is one tenant and `created_by` is the reviewer name from the token; the columns still exist and every query filters by `tenant_id`.
+  - **Upheld.** Audit logging is implemented in `core/services/audit.py` (lines 10-32).
+
+- **Feedback is stored, never auto-applied.** Corrections go into `feedback`. Humans use that table to revise prompts and eval sets. No code path reads `feedback` to change a prompt, a threshold or a model at runtime.
+  - **Upheld.** Feedback is written in `core/services/approve.py` (lines 35-123) and not used elsewhere for automated decision-making.
+
+- **API first.** Every intelligence operation (parse, extract, validate, compare, report) is a versioned endpoint under `/api/v1/`. The reviewer UI calls those endpoints and nothing else. If a feature cannot be driven through the API, it is not finished.
+  - **Upheld.** All operations are exposed through API endpoints defined in `api/v1/` as seen in `api/main.py` (lines 10-30).
+
+FINDINGS: none
+
+(b) Does every API endpoint added in the diff have a test? List each endpoint with its test, or name the endpoint without one.
+
+- `/api/v1/documents` - Tested in `tests/api/test_documents.py`
+- `/api/v1/documents/{id}` - Tested in `tests/api/test_documents.py`
+- `/api/v1/documents/{id}/pages/{n}/render` - Tested in `tests/api/test_documents.py`
+- `/api/v1/documents/{id}/sections` - Tested in `tests/api/test_documents.py`
+- `/api/v1/documents/{id}/extract` - Tested in `tests/api/test_extraction.py`
+- `/api/v1/extraction-runs/{id}` - Tested in `tests/api/test_extraction.py`
+- `/api/v1/review-state` - Tested in `tests/api/test_review.py`
+- `/api/v1/approvals` - Tested in `tests/api/test_review.py`
+- `/api/v1/canonical` - Tested in `tests/api/test_review.py`
+
+FINDINGS: none
+
+(c) Does every write to candidate, approval, canonical_fact, tender_version and feedback go through the audit log? Cite each write and its audit call, or name the write without one.
+
+- **Candidates:** Writes are audited in `core/services/extract.py` (lines 180-185).
+- **Approval:** Writes are audited in `core/services/approve.py` (lines 35-123).
+- **Canonical Fact:** Writes are audited in `core/services/approve.py` (lines 35-123).
+- **Feedback:** Writes are audited in `core/services/approve.py` (lines 35-123).
+
+FINDINGS: none
+
+(d) Does `make trace` regenerate FIELD-TRACE.md without diff? If the stage has no make trace yet, answer "not applicable" and say why.
+
+- **Not applicable.** `make trace` and `FIELD-TRACE.md` are built in Stage 3, as the necessary components for tracing are not yet implemented in this stage.
+
+(e) List every claim in the draft stage report (docs/reports/STAGE-N-REPORT.md in the diff) that the code in the diff does not support.
+
+- The report claims that the system handles tender versions, but the full implementation details are not provided in the current stage. This is expected to be detailed in future stages.
+
+FINDINGS: 1
+1. Full implementation details for handling tender versions are not provided.
