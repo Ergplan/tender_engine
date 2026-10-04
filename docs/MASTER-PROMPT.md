@@ -35,6 +35,7 @@ You are building the Tender Intelligence Engine on a single GCP VM that you cont
 12. Reviewer accuracy beats everything else. When a choice trades speed of extraction against traceability of evidence, pick traceability.
 13. When uncertain about the tender domain, read the sample tenders in `/work/tenders/` before guessing. When uncertain about the architecture, re-read the invariants below. Do not invent fields that no tender in the sample set contains.
 14. Four living documents are kept current in the same commit as the code that changes them: `docs/ARCHITECTURE.md`, `docs/FIELD-TRACE.md` (generated, see section 5), `docs/DECISIONS.md` (one dated line per decision) and `docs/KNOWN-GAPS.md`. A stage is not done if any of them is stale; the CI job for FIELD-TRACE fails the build when it is.
+15. Independent review before each stage report, from Stage 1 onward. Run a reviewer with a model from a different family than the builder (OpenAI via OPENAI_API_KEY, or the reviewer the user names), in a fresh context with no access to this session. It receives only three things: the stage diff (git diff <stage-start-tag>..HEAD), CLAUDE.md, and the stage prompt. It answers a fixed checklist and nothing else: (a) every invariant in section 3 upheld, citing file and line, or the violation; (b) every API endpoint added has a test; (c) every write to candidate, approval, canonical_fact, tender_version and feedback goes through the audit log; (d) make trace regenerates FIELD-TRACE.md without diff; (e) any claim in the draft stage report that the code does not support. Fix every code defect it finds. Rerun until the reviewer reports no new code defect. Findings that cannot be resolved by code (by-design behaviour, statements a diff cannot prove, decisions pending from the user) are listed in the stage report with a one-line rationale and do not block the stage. Put the findings, the fixes and that list in the stage report under "Independent review". Tag the commit at each stage start (stage-N-start) so the diff is well defined.
 
 ## Non-negotiable invariants (goes in CLAUDE.md)
 
@@ -46,7 +47,7 @@ Model output stops at the candidate; a reviewer's decision is the only step that
 
 **The LLM never writes truth.** Model output lands only in the `candidate` table. The `canonical_fact` table is written by exactly one code path: the approval handler, acting on a human decision. There is no admin override, no bulk-accept, no "auto-approve above 0.95 confidence" in phase 1.
 
-**Every value carries its evidence.** A candidate without at least one `evidence_span` (document id, page, bounding box or character range, quoted text) is rejected by validation before a reviewer ever sees it. Canonical facts inherit the evidence of the candidate they were approved from, plus the reviewer's edit if any.
+**Every value carries its evidence.** A candidate that carries a value but no `evidence_span` (document id, page, bounding box or character range, quoted text) is rejected by validation before a reviewer ever sees it. A candidate without located evidence (its quote could not be found in the document, or the model returned no value) is shown, at capped confidence and marked with the reason, but cannot be approved without the reviewer supplying a page and quote that resolve. No canonical value exists without located evidence. Canonical facts inherit the evidence of the candidate they were approved from, plus the reviewer's edit and evidence if any.
 
 **The tender is a versioned object.** A corrigendum, amendment or clarification creates a new `tender_version`, never an in-place edit. Canonical facts are attached to a version. The current view of a tender is a projection over its versions, with each field showing which version last changed it.
 
@@ -105,10 +106,10 @@ tender_engine/
 │   └── validation/           # rule engine and generic rules
 ├── tender/                   # tender domain on top of core
 │   ├── models/               # tender, tender_version, tender_field_def, review_token, model_assumption
-│   ├── schemas/              # common.yaml + one yaml per tender type
-│   ├── prompts/              # per section-group extract prompts, summary prompt
-│   ├── services/             # tender, versioning, current_view, tokens
-│   └── validation/           # tender-specific rules
+│   ├── domain_packs/         # schemas, prompts and validators; one folder per pack
+│   │   ├── core/             # common.yaml, shared validators, section-group prompts, summary prompt
+│   │   └── power/            # pack.yaml, one yaml per tender type, prompts/, validation/, tests/
+│   └── services/             # tender, versioning, current_view, tokens
 ├── api/                      # FastAPI app; routes only, no business logic
 │   ├── main.py
 │   ├── deps.py               # tenant, reviewer, db session
@@ -144,9 +145,9 @@ tender_engine/
 
 | Field | UI (web/src) | API read / write | Middleware | Service (py) | DB candidate → approval → canonical | Producer | Evidence |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| key\_dates.bid\_submission\_deadline | review/FieldCard value (date) | GET /v1/tenders/{id}/review-state / POST /v1/approvals | review\_token, audit | core.services.extract.extract\_group('key\_dates') / core.services.approve.approve() | candidate.value → approval.final\_value → canonical\_fact.value | LLM extract/key\_dates v1; RULE date\_order | evidence\_span.page\_no, bbox |
-| summary.plain\_english\_summary | review/FieldCard value (long\_text) | same | same | tender.services.summary.write\_summary() / approve() | same | LLM summary v1 | evidence\_span (multi-page) |
-| ipp\_model.capex\_inr\_per\_mw | review/AssumptionPanel | GET, PUT /v1/tenders/{id}/assumptions | review\_token, audit | tender.services.assumptions.upsert() | model\_assumption.capex\_inr\_per\_mw (no candidate, no canonical) | HUMAN | none |
+| core.key\_dates.bid\_submission\_deadline | review/FieldCard value (date) | GET /v1/tenders/{id}/review-state / POST /v1/approvals | review\_token, audit | core.services.extract.extract\_group('key\_dates') / core.services.approve.approve() | candidate.value → approval.final\_value → canonical\_fact.value | LLM extract/key\_dates v1; RULE date\_order | evidence\_span.page\_no, bbox |
+| core.summary.plain\_english\_summary | review/FieldCard value (long\_text) | same | same | tender.services.summary.write\_summary() / approve() | same | LLM summary v1 | evidence\_span (multi-page) |
+| sector.power.ipp.capex\_inr\_per\_mw | review/AssumptionPanel | GET, PUT /v1/tenders/{id}/assumptions | review\_token, audit | tender.services.assumptions.upsert() | model\_assumption.capex\_inr\_per\_mw (no candidate, no canonical) | HUMAN | none |
 
 ## Seven-day plan
 
@@ -311,25 +312,27 @@ One day. Section 13 (the field catalogue) is read from the master prompt file wi
 
 Build tender/ on top of core/. Nothing in core/ changes except through a documented extension point; if you need one, add it to core/ with a test and note it in DECISIONS.md.
 
-## Data model (migration 0003)
+## Data model (migration 0005; 0003 and 0004 were used by Stage 1)
 
 - tender: id, tenant_id, tender_type (enum: fdre, solar, wind, hybrid, bess, transmission, generation, epc, ipp), issuing_agency, external_ref (RfS number), title, status (ingested/extracted/in_review/reviewed/published), current_version_id.
 - tender_version: tender_id, version_no, kind (original/corrigendum/amendment/clarification), document_id, issued_on, summary_of_change (text, human-written or approved), supersedes_version_id.
 - tender_field_def: generated from the schema YAML at startup for introspection, not hand-edited: tender_type, field_path, section, label, value_type, required, help_text, review_order.
 - Canonical facts for tenders use object_type='tender', object_id=tender.id, object_version=tender_version.version_no.
 
-## Schemas (tender/schemas/)
+## Schemas (tender/domain_packs/, see "Field namespace and domain packs" below)
 
 - One YAML per tender type: common.yaml plus fdre.yaml, solar.yaml, wind.yaml, hybrid.yaml, bess.yaml, transmission.yaml, generation.yaml, epc.yaml, ipp.yaml. Each type file lists the common sections it includes and its own additional fields. Seed every file from the field catalogue in the master prompt; do not add fields the catalogue does not name.
 - Each field: path, label, section, value_type (text, long_text, int, decimal, money_inr, percent, date, duration_months, enum[...], list_of[text], mw, mwh, kv, km), unit, required, help_text (one line a reviewer sees on hover), routing_hints (list of section kinds and keywords the extractor uses to pick pages), validation (range, regex, cross-field rule names), review_order.
 - A loader that compiles YAML into Pydantic models and registers them with core/ as schemas named tender.<type> v1. A test that every YAML loads and every field has a section and a value_type.
+- Amounts stated as a formula. Where a tender states EMD or PBG as a formula (per MW by component, or a percentage of project cost) rather than one figure, the schema holds the formula text in a dedicated field (for example core.guarantees.emd_formula) alongside the computed value field (core.guarantees.emd_per_mw_inr). The computed value is filled only where the tender itself states one; it is never derived by the model. Each of the two fields carries its own evidence.
+- Dates deferred to another document. Where the RfS defers a date to the NIT or to a later notification ("As per NIT on ISN-ETS portal"), the date field is null with a deferral note naming the document that will set it, with evidence for the deferral. Never a guessed date. The date is filled when that document is ingested as part of the tender version.
 
-## Extraction prompts (tender/prompts/)
+## Extraction prompts (tender/domain_packs/<pack>/prompts/)
 
 - One extract prompt per section group, not per field, so related fields share context: identity_and_scope, key_dates, eligibility, guarantees, commercial, penalties, connectivity_and_compliance, documents, and one per type-specific group (fdre_profile, bess_performance, transmission_elements, epc_scope, ipp_model_inputs, and so on). Each inherits the core extract prompt and adds domain guidance: Indian RE tender vocabulary, how SECI/NTPC/NHPC/SJVN/state agencies phrase the same thing differently, that corrigenda override the base RfS, that a per-MW figure may be stated in lakh or crore, that "months from Effective Date" and "months from PPA signing" are different fields.
 - A summary prompt that writes the four-line plain-English summary (what, how much, where, by when) with page evidence for each sentence. It is reviewed like any other field.
 
-## Validators (tender/validation/)
+## Validators (tender/domain_packs/<pack>/validation/)
 
 - Date order: nit_date <= pre_bid_date <= query_deadline <= bid_deadline <= technical_opening; scod_months > 0; ppa_tenure_years in [10, 35].
 - Money sanity: emd_per_mw and pbg_per_mw positive and within 10x of each other; tariff_ceiling in INR/kWh between 1 and 15.
@@ -349,7 +352,7 @@ Build tender/ on top of core/. Nothing in core/ changes except through a documen
 
 ## Run
 
-- Ingest all 11 tenders from /work/tenders/ via a management command, including any corrigenda as versions. Run extraction on all of them. Produce EXTRACTION-SUMMARY.md: per tender, fields extracted, fields with located evidence, fields failing validation, total tokens and cost.
+- Ingest all 11 tenders from /work/tenders/ via a management command, including any corrigenda as versions. Run extraction on all of them. Produce EXTRACTION-SUMMARY.md: per tender, fields extracted, evidence-location rate and answer rate (section 14), fields failing validation, total tokens and cost.
 
 ## Tests
 
@@ -357,7 +360,7 @@ Build tender/ on top of core/. Nothing in core/ changes except through a documen
 
 ## Done when
 
-- All 11 tenders are ingested and extracted, EXTRACTION-SUMMARY.md is written, tests green, STAGE-2-REPORT.md lists fields with evidence-location rate under 80% by tender type. STOP.
+- All 11 tenders are ingested and extracted, EXTRACTION-SUMMARY.md is written, tests green, STAGE-2-REPORT.md gives the evidence-location rate and the answer rate by tender type and lists the fields whose evidence-location rate is under 95%. STOP.
 
 ## Field namespace and domain packs
 
@@ -447,6 +450,7 @@ Days 6 and 7, then it keeps running as reviews complete. The output of this stag
 
 - A completed review snapshot becomes a gold record: evals/gold/<tender_type>/<tender_slug>.yaml with, per field: final_value, decision, evidence pages, reviewer, decided_at, and the candidate it was judged against (value, confidence, prompt_version). Written by a command `make gold TENDER=<id>` after the user confirms the review is trustworthy; not automatic on completion.
 - A gold record is versioned with the tender version it was reviewed against.
+- A field the document does not state is recorded with final_value null and decision not_in_document. A candidate that returned null for it is a correct answer and is scored as one.
 
 ## Scoring (evals/runner.py)
 
@@ -603,9 +607,9 @@ find_matching_tender never ingests or extracts from the user's document; it matc
 - find_matching_tender: informal phrasings ("the 4800 FDRE one", "SECI BESS tender", "FDRE IX") resolve correctly; near-misses return no_match with candidates rather than a wrong match.
 ```
 
-## Field catalogue (seed for tender/schemas/)
+## Field catalogue (seed for tender/domain_packs/)
 
-Stage 2 reads this section from the master prompt file. Field paths are snake\_case under their section. Mark a field required only if a reviewer would refuse to call the review complete without it.
+Stage 2 reads this section from the master prompt file. Field paths are snake\_case under their section; Stage 2 writes them into the schemas under the `core.*` and `sector.power.*` namespaces ("Field namespace and domain packs" in the Stage 2 prompt), so `key_dates.bid_submission_deadline` here becomes `core.key_dates.bid_submission_deadline` there. Mark a field required only if a reviewer would refuse to call the review complete without it.
 
 **Common to every tender type**
 
@@ -642,12 +646,19 @@ Stage 2 reads this section from the master prompt file. Field paths are snake\_c
 
 Claude Code runs these itself before writing the stage report; you check the ticks before pasting the next stage.
 
+Two numbers measure extraction in the table below and in every stage report from Stage 1 onward, always reported separately:
+
+- **Evidence-location rate** = values with located evidence / values returned. Target 95%.
+- **Answer rate** = fields with a value / fields in the schema. Reported, not targeted: it varies with what each document states. A field the document does not state returning null is a correct answer.
+
+Every stage report from Stage 2 onward also prints the real-model cost of the stage and the running total since Stage 1.
+
 | Stage | Checks before STOP |
 | --- | --- |
 | 0A | INHERITANCE.md names a file path for every keep/adapt; flaws list has at least five concrete items; stack recommendation stated |
 | 0B | static IP recorded; firewall shows only allowlisted ranges on 22 and 443; `make deploy` answers https://\<static-ip>/health from an allowed IP; `make test` green; 11 tenders in /work/tenders with manifests; one mocked LLM call writes an llm\_call\_log row; tests watcher running and writing .ci/status.json; ARCHITECTURE.md committed |
-| 1 | Candidate rows cannot be updated (test); every candidate has an evidence\_span (test); ApprovalService is the only writer to canonical\_fact (grep + test); e2e on one FDRE tender prints per-field value, confidence, page; evidence located for >= 80% of the 12 test fields |
-| 2 | All 9 schema YAMLs load; every validator has pass and fail tests; corrigendum carry-forward test green; all 11 tenders extracted; EXTRACTION-SUMMARY.md written with cost |
+| 1 | Candidate rows cannot be updated (test); every candidate has an evidence\_span (test); ApprovalService is the only writer to canonical\_fact (grep + test); e2e on one FDRE tender prints per-field value, confidence, page; evidence-location rate >= 95% on the 12 test fields; answer rate reported |
+| 2 | All 9 schema YAMLs load; every validator has pass and fail tests; corrigendum carry-forward test green; all 11 tenders extracted; EXTRACTION-SUMMARY.md written with cost; evidence-location rate >= 95% and answer rate reported, per tender |
 | 3 | Playwright suite green; user completes one real review from a token URL unaided; first PDF page under 3 s on the VM; no bulk-approve exists; make trace is clean and every schema field has a complete FIELD-TRACE row |
 | 4 | `make gold`, `make eval`, `make report` run end to end on two completed reviews; dashboard reachable; URL list for all 11 tenders delivered; FEEDBACK-REPORT.md lists top corrected fields |
 | 5A | Agent findings exist for every gold tender; no agent code path can write candidate or canonical\_fact (test) |

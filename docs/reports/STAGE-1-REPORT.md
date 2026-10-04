@@ -246,4 +246,16 @@ Checklist item (d): not applicable until Stage 3 (`make trace` does not exist ye
 5. **EMD and PBG as formulas** (NHPC) and **dates deferred to the NIT** (SECI): how should the Stage 2 schema hold them?
 6. **Independent review.** `gpt-6.1-sol` is now the reviewer. Some of its findings cannot reach "none" by fixing code: the deployed registry is empty until Stage 2, tests bypass the audit log, and run results are not provable from a diff. Do you accept Stage 1 with those recorded?
 
+## After acceptance (2026-10-04)
+
+Stage 1 was accepted with the findings above recorded. The answers to the open questions are in `docs/DECISIONS.md`. Changes made before the `stage-2-start` tag:
+
+- **Database guard on `canonical_fact`** (migration 0004, trigger `canonical_fact_guard`). An insert needs an active approval, not a rejection, of the same tenant, object, version and field. Deletes are refused. Updates are refused, with one exception: a current fact can be retired (`is_current`, `superseded_at`) once its approval has been superseded, which is how a later decision replaces an earlier fact; value, evidence and approval link never change. Tests in `tests/core/test_invariants.py` cover raw SQL, an ORM attribute write, deletes, inserts under a missing, superseded, rejecting or mismatched approval, and reviving a retired fact.
+- **Reason shown for unlocated evidence.** The validation message names the page: "evidence not located on p.47"; an empty required field reads "required field: the model returned no value".
+- **Wording.** Evidence invariant, operating rule 15, the `tender/domain_packs/` layout, the FIELD-TRACE example paths, the two acceptance numbers (evidence-location rate, target 95%; answer rate, reported), and the Stage 2 schema rules for formulas and deferred dates, in `docs/MASTER-PROMPT.md` and `CLAUDE.md`.
+- **The two numbers for this stage.** Evidence-location rate: 100% on both tenders (SECI 8 of 8, NHPC 9 of 9). Answer rate: SECI 67% (8 of 12), NHPC 75% (9 of 12).
+- **Cost.** Real-model cost per tender is in `docs/KNOWN-GAPS.md`. Running total at the end of Stage 1: about USD 22.
+
+These changes were not sent to the independent reviewer and the real-model e2e was not rerun after them.
+
 Stage 1 stops here. Next: `Run Stage 2 of docs/MASTER-PROMPT.md.`

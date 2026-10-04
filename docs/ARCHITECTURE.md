@@ -57,7 +57,7 @@ The layout in `CLAUDE.md` is authoritative. Additions made under operating rule 
 | `evidence_span` | where the value is written: document, page, bbox, char range, quote, how it was located (`stated_page/adjacent_page/window_page/unresolved`), match score | inserted by `ExtractService` only; **append-only** (trigger) | 1 |
 | `validation_result` | one row per rule per candidate: rule name, passed, message | `ValidationService.validate` | 1 |
 | `approval` | a reviewer's decision `approved/edited/not_in_document/rejected` with final value, reviewer, note; `active` or `superseded` | `ApprovalService.approve` only | 1 |
-| `canonical_fact` | truth: object, version, field, value, value_type, approval, evidence copied from the candidate (plus the reviewer's decision when it was not a plain approval), `is_current` | **`ApprovalService.approve` only** | 1 |
+| `canonical_fact` | truth: object, version, field, value, value_type, approval, evidence copied from the candidate (plus the reviewer's decision when it was not a plain approval), `is_current` | **`ApprovalService.approve` only**. Trigger `canonical_fact_guard` (migration 0004): a row is accepted only under a live approval (active, not a rejection) of the same tenant, object, version and field; afterwards it can be retired (`is_current`, `superseded_at`) once its approval is superseded, and never changed or deleted | 1 |
 | `feedback` | candidate value, final value, `delta_kind` (`format/wrong_value/missing/extra`), reviewer, prompt version | `ApprovalService.approve` only; nothing reads it at runtime | 1 |
 | `audit_log` | actor, action, table, row id, before, after, at | `core.services.audit.record`, called by extract, validate and approve; **append-only** (trigger) | 1 |
 | `job` | kind, payload, status `queued/running/done/failed`, attempts, max_attempts, last_error, run_after | `core.services.jobs` | 1 |
@@ -143,7 +143,9 @@ One GCE VM (`instance-20261004-081207`, asia-south2-b), static IP `34.131.65.108
 
 **Stage 1 (2026-10-04)**
 
-- Migration 0003: unique indexes for one active approval and one current canonical fact per field (the tender tables of Stage 2 therefore start at 0004).
+- Migration 0004 (after the stage was accepted): database guard on `canonical_fact`, see the data model table. The tender tables of Stage 2 therefore start at 0005.
+- Validation messages name the reason a candidate has no located evidence: "evidence not located on p.N" and "required field: the model returned no value".
+- Migration 0003: unique indexes for one active approval and one current canonical fact per field.
 - Migration 0002: document, page, section, extraction_run, candidate, evidence_span, validation_result, approval, canonical_fact, feedback, audit_log, job; `llm_call_log.extraction_run_id`; three database triggers for immutability.
 - `core/services/`: ingest, parse, section_map, extract, evidence, validate, approve, review_state, audit, jobs. `core/schemas/`, `core/storage/`, `core/validation/`.
 - Prompts `section_map/v1` and `extract/v1`.

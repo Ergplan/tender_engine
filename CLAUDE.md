@@ -16,7 +16,7 @@ You are building the Tender Intelligence Engine on a single GCP VM that you cont
 12. Reviewer accuracy beats everything else. When a choice trades speed of extraction against traceability of evidence, pick traceability.
 13. When uncertain about the tender domain, read the sample tenders in `/work/tenders/` before guessing. When uncertain about the architecture, re-read the invariants below. Do not invent fields that no tender in the sample set contains.
 14. Four living documents are kept current in the same commit as the code that changes them: `docs/ARCHITECTURE.md`, `docs/FIELD-TRACE.md` (generated, see section 5), `docs/DECISIONS.md` (one dated line per decision) and `docs/KNOWN-GAPS.md`. A stage is not done if any of them is stale; the CI job for FIELD-TRACE fails the build when it is.
-15. Independent review before each stage report, from Stage 1 onward. Run a reviewer with a model from a different family than the builder (OpenAI via OPENAI_API_KEY, or the reviewer the user names), in a fresh context with no access to this session. It receives only three things: the stage diff (git diff <stage-start-tag>..HEAD), CLAUDE.md, and the stage prompt. It answers a fixed checklist and nothing else: (a) every invariant in section 3 upheld, citing file and line, or the violation; (b) every API endpoint added has a test; (c) every write to candidate, approval, canonical_fact, tender_version and feedback goes through the audit log; (d) make trace regenerates FIELD-TRACE.md without diff; (e) any claim in the draft stage report that the code does not support. Fix every finding, rerun the reviewer until it reports none, then put the findings and the fixes in the stage report under "Independent review". Tag the commit at each stage start (stage-N-start) so the diff is well defined.
+15. Independent review before each stage report, from Stage 1 onward. Run a reviewer with a model from a different family than the builder (OpenAI via OPENAI_API_KEY, or the reviewer the user names), in a fresh context with no access to this session. It receives only three things: the stage diff (git diff <stage-start-tag>..HEAD), CLAUDE.md, and the stage prompt. It answers a fixed checklist and nothing else: (a) every invariant in section 3 upheld, citing file and line, or the violation; (b) every API endpoint added has a test; (c) every write to candidate, approval, canonical_fact, tender_version and feedback goes through the audit log; (d) make trace regenerates FIELD-TRACE.md without diff; (e) any claim in the draft stage report that the code does not support. Fix every code defect it finds. Rerun until the reviewer reports no new code defect. Findings that cannot be resolved by code (by-design behaviour, statements a diff cannot prove, decisions pending from the user) are listed in the stage report with a one-line rationale and do not block the stage. Put the findings, the fixes and that list in the stage report under "Independent review". Tag the commit at each stage start (stage-N-start) so the diff is well defined.
 
 ## Non-negotiable invariants (goes in CLAUDE.md)
 
@@ -28,7 +28,7 @@ Model output stops at the candidate; a reviewer's decision is the only step that
 
 **The LLM never writes truth.** Model output lands only in the `candidate` table. The `canonical_fact` table is written by exactly one code path: the approval handler, acting on a human decision. There is no admin override, no bulk-accept, no "auto-approve above 0.95 confidence" in phase 1.
 
-**Every value carries its evidence.** A candidate without at least one `evidence_span` (document id, page, bounding box or character range, quoted text) is rejected by validation before a reviewer ever sees it. Canonical facts inherit the evidence of the candidate they were approved from, plus the reviewer's edit if any.
+**Every value carries its evidence.** A candidate that carries a value but no `evidence_span` (document id, page, bounding box or character range, quoted text) is rejected by validation before a reviewer ever sees it. A candidate without located evidence (its quote could not be found in the document, or the model returned no value) is shown, at capped confidence and marked with the reason, but cannot be approved without the reviewer supplying a page and quote that resolve. No canonical value exists without located evidence. Canonical facts inherit the evidence of the candidate they were approved from, plus the reviewer's edit and evidence if any.
 
 **The tender is a versioned object.** A corrigendum, amendment or clarification creates a new `tender_version`, never an in-place edit. Canonical facts are attached to a version. The current view of a tender is a projection over its versions, with each field showing which version last changed it.
 
@@ -87,10 +87,10 @@ tender_engine/
 │   └── validation/           # rule engine and generic rules
 ├── tender/                   # tender domain on top of core
 │   ├── models/               # tender, tender_version, tender_field_def, review_token, model_assumption
-│   ├── schemas/              # common.yaml + one yaml per tender type
-│   ├── prompts/              # per section-group extract prompts, summary prompt
-│   ├── services/             # tender, versioning, current_view, tokens
-│   └── validation/           # tender-specific rules
+│   ├── domain_packs/         # schemas, prompts and validators; one folder per pack
+│   │   ├── core/             # common.yaml, shared validators, section-group prompts, summary prompt
+│   │   └── power/            # pack.yaml, one yaml per tender type, prompts/, validation/, tests/
+│   └── services/             # tender, versioning, current_view, tokens
 ├── api/                      # FastAPI app; routes only, no business logic
 │   ├── main.py
 │   ├── deps.py               # tenant, reviewer, db session
@@ -126,7 +126,7 @@ tender_engine/
 
 | Field | UI (web/src) | API read / write | Middleware | Service (py) | DB candidate → approval → canonical | Producer | Evidence |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| key\_dates.bid\_submission\_deadline | review/FieldCard value (date) | GET /v1/tenders/{id}/review-state / POST /v1/approvals | review\_token, audit | core.services.extract.extract\_group('key\_dates') / core.services.approve.approve() | candidate.value → approval.final\_value → canonical\_fact.value | LLM extract/key\_dates v1; RULE date\_order | evidence\_span.page\_no, bbox |
-| summary.plain\_english\_summary | review/FieldCard value (long\_text) | same | same | tender.services.summary.write\_summary() / approve() | same | LLM summary v1 | evidence\_span (multi-page) |
-| ipp\_model.capex\_inr\_per\_mw | review/AssumptionPanel | GET, PUT /v1/tenders/{id}/assumptions | review\_token, audit | tender.services.assumptions.upsert() | model\_assumption.capex\_inr\_per\_mw (no candidate, no canonical) | HUMAN | none |
+| core.key\_dates.bid\_submission\_deadline | review/FieldCard value (date) | GET /v1/tenders/{id}/review-state / POST /v1/approvals | review\_token, audit | core.services.extract.extract\_group('key\_dates') / core.services.approve.approve() | candidate.value → approval.final\_value → canonical\_fact.value | LLM extract/key\_dates v1; RULE date\_order | evidence\_span.page\_no, bbox |
+| core.summary.plain\_english\_summary | review/FieldCard value (long\_text) | same | same | tender.services.summary.write\_summary() / approve() | same | LLM summary v1 | evidence\_span (multi-page) |
+| sector.power.ipp.capex\_inr\_per\_mw | review/AssumptionPanel | GET, PUT /v1/tenders/{id}/assumptions | review\_token, audit | tender.services.assumptions.upsert() | model\_assumption.capex\_inr\_per\_mw (no candidate, no canonical) | HUMAN | none |
 
