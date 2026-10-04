@@ -115,3 +115,25 @@ def test_reordered_matching_refuses_a_different_number_and_very_short_quotes() -
         is None
     )
     assert locate("Time & Date", wrapped, 85) is None
+
+
+def test_a_quote_is_not_located_inside_a_longer_number_or_word() -> None:
+    amounts = page("EMD of Rs. 1250 Lakh for a Capacity of 250 MW and 50 MW blocks.")
+    assert locate("50 MW", amounts, 85) is not None
+    found = locate("50 MW", amounts, 85)
+    assert found is not None and amounts.text[found.char_start - 1] == " "
+    assert amounts.text[found.char_start - 4 : found.char_start] == "and "
+    assert locate("250", page("EMD of Rs. 1250 Lakh"), 85) is None
+
+
+def test_words_alone_are_never_matched_out_of_order() -> None:
+    clause = page("The seller shall not pay the buyer any amount under this clause.")
+    assert locate("the buyer shall not pay the seller any amount", clause, 85) is None
+
+
+def test_characters_that_lower_case_to_two_keep_the_index_map_aligned() -> None:
+    text = "İstanbul rate 12 percent"
+    normalised, index_map = normalise(text)
+    assert len(normalised) == len(index_map)
+    found = locate("rate 12 percent", page(text), 85)
+    assert found is not None and text[found.char_start : found.char_end] == "rate 12 percent"

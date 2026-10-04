@@ -57,7 +57,9 @@ def normalise(text: str) -> tuple[str, list[int]]:
                 index_map.append(index)
             previous_space = True
         else:
-            out.append(char.lower())
+            lowered = char.lower()
+            # A few characters lower-case to two; keep one so the index map stays aligned.
+            out.append(lowered if len(lowered) == 1 else char)
             index_map.append(index)
             previous_space = False
     if out and out[-1] == " ":
@@ -74,14 +76,18 @@ def locate(quote: str, page: PageText, threshold: float) -> Located | None:
     haystack, index_map = normalise(page.text)
     if not needle or not haystack:
         return None
-    start = haystack.find(needle)
+    start = _find_whole(needle, haystack)
     if start >= 0:
         end, score = start + len(needle), 100.0
     else:
         if len(needle) < MIN_FUZZY_QUOTE_CHARS:
             return None
         alignment = fuzz.partial_ratio_alignment(needle, haystack)
-        if alignment is not None and alignment.score >= threshold:
+        if (
+            alignment is not None
+            and alignment.score >= threshold
+            and _whole(haystack, alignment.dest_start, alignment.dest_end)
+        ):
             start, end, score = alignment.dest_start, alignment.dest_end, float(alignment.score)
         else:
             reordered = _locate_reordered(needle, haystack, threshold)
@@ -101,18 +107,45 @@ def locate(quote: str, page: PageText, threshold: float) -> Located | None:
     )
 
 
+def _whole(haystack: str, start: int, end: int) -> bool:
+    """Whether haystack[start:end] begins and ends on word boundaries."""
+    if end <= start:
+        return False
+    cut_before = start > 0 and haystack[start].isalnum() and haystack[start - 1].isalnum()
+    cut_after = end < len(haystack) and haystack[end - 1].isalnum() and haystack[end].isalnum()
+    return not (cut_before or cut_after)
+
+
+def _find_whole(needle: str, haystack: str) -> int:
+    """First occurrence of needle that does not start or end inside a word or a number:
+    "50 MW" is not evidence on a page that says "250 MW". Returns -1 if there is none."""
+    start = haystack.find(needle)
+    while start >= 0:
+        end = start + len(needle)
+        cut_before = start > 0 and needle[0].isalnum() and haystack[start - 1].isalnum()
+        cut_after = end < len(haystack) and needle[-1].isalnum() and haystack[end].isalnum()
+        if not (cut_before or cut_after):
+            return start
+        start = haystack.find(needle, start + 1)
+    return -1
+
+
 def _locate_reordered(
     needle: str, haystack: str, threshold: float
 ) -> tuple[int, int, float] | None:
     """The run of consecutive page words that best matches the quote's words in any order.
-    Every word of the quote that holds a digit must appear in the run unchanged, so a
-    neighbouring row with another date or amount is never taken for the quoted one.
+    Only for quotes that hold a number (a table row with a date or an amount): every such
+    word must appear in the run unchanged, so a neighbouring row is never taken for the
+    quoted one. A quote of words alone is not matched this way, because reordered words
+    can reverse a sentence's meaning.
     Returns (start, end, score) in the normalised haystack, or None below the threshold."""
     quoted = needle.split()
     wanted = len(quoted)
     if wanted < MIN_REORDERED_QUOTE_WORDS:
         return None
     numbers = {word for word in quoted if any(char.isdigit() for char in word)}
+    if not numbers:
+        return None
     words: list[tuple[int, int]] = []
     position = 0
     for word in haystack.split(" "):
