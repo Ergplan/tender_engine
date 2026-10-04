@@ -67,11 +67,14 @@ def run_command(command: tuple[str, ...], cwd: Path) -> tuple[int, str]:
 
 
 def first_failure(output: str) -> str:
-    """The first line that looks like a failure, else the last non-empty line."""
+    """The most specific failing line: a named failed test, then an error line, then the tail."""
     lines = [line.strip() for line in output.splitlines() if line.strip()]
-    markers = ("FAILED", "ERROR", "error", "Error", "would reformat", "FAIL", "✗", "×")
+    for prefixes in (("FAILED ", "ERROR "), ("E  ",), ("error", "Error", "FAIL", "×")):
+        for line in lines:
+            if line.startswith(prefixes) or (prefixes[0] == "error" and ": error" in line):
+                return line[:300]
     for line in lines:
-        if any(marker in line for marker in markers):
+        if "would reformat" in line or "error" in line.lower():
             return line[:300]
     return lines[-1][:300] if lines else "no output"
 
@@ -136,10 +139,37 @@ def scoped_pytest(changed: list[str]) -> None:
     print(f"scoped pytest {' '.join(targets)}: {verdict} {tail}", flush=True)
 
 
+def watched_files() -> list[Path]:
+    files = [ROOT / f for f in WATCH_FILES if (ROOT / f).is_file()]
+    for directory in WATCH_DIRS:
+        files += [
+            path
+            for path in (ROOT / directory).rglob("*")
+            if path.suffix in WATCH_SUFFIXES and path.is_file() and "__pycache__" not in path.parts
+        ]
+    return files
+
+
+def run_until_current(trigger: list[str]) -> None:
+    """Run all checks; repeat while any watched file was saved after the run started."""
+    while True:
+        started = time.time()
+        run_all(trigger)
+        late = sorted(
+            str(path.relative_to(ROOT))
+            for path in watched_files()
+            if path.stat().st_mtime > started
+        )
+        if not late:
+            return
+        print(f"saved during the run: {', '.join(late[:8])}", flush=True)
+        trigger = late
+
+
 def watch() -> None:
     from watchfiles import watch as watch_paths
 
-    run_all(["startup"])
+    run_until_current(["startup"])
     paths = [ROOT / d for d in WATCH_DIRS if (ROOT / d).exists()]
     paths += [ROOT / f for f in WATCH_FILES if (ROOT / f).exists()]
     for changes in watch_paths(*paths, debounce=1500, step=200):
@@ -154,7 +184,7 @@ def watch() -> None:
             continue
         print(f"changed: {', '.join(changed[:8])}", flush=True)
         scoped_pytest(changed)
-        run_all(changed)
+        run_until_current(changed)
 
 
 def main() -> int:
