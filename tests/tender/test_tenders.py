@@ -358,3 +358,107 @@ def test_field_defs_are_generated_from_the_packs_and_rewritten_only_on_change(
         ).one()
         == "Title"
     )
+
+
+def test_missing_required_is_judged_on_the_tender_not_on_each_version(
+    pipeline: Pipeline, db: Session
+) -> None:
+    from tender.services.current_view import missing_required
+    from tests.fixtures.tenders import RFS_ANSWERS
+
+    tender = extracted_tender(pipeline, db)
+    assert missing_required(db, pipeline.catalog, tender) == []
+    amended_tender(pipeline, db, tender)
+    # The amendment restates nothing but the deadline; nothing is missing on the tender,
+    # and no required field of version 2 is sent to review for being absent there.
+    assert missing_required(db, pipeline.catalog, tender) == []
+    second = live(db, tender.id, 2)
+    assert all(candidate.status != "needs_review" for candidate in second.values())
+
+    pipeline.sdk.answers = {k: v for k, v in RFS_ANSWERS.items() if k != "bid_submission_deadline"}
+    bare = pipeline.tenders.create(
+        db,
+        tender_type="solar",
+        issuing_agency="Acme",
+        external_ref=None,
+        title="A tender that prints no deadline",
+        created_by="pytest",
+    )
+    document = parsed(pipeline, db, [*RFS_PAGES, ["Annexure A"]], "rfs-without-deadline.pdf")
+    pipeline.tenders.add_version(db, bare, document, "original", None, created_by="pytest")
+    pipeline.tenders.start_extraction(db, bare, created_by="pytest", is_fixture=True)
+    pipeline.runner.run_until_idle()
+    assert missing_required(db, pipeline.catalog, bare) == [DEADLINE]
+    assert live(db, bare.id, 1)[DEADLINE].status == "needs_review"
+
+
+def test_an_amendment_no_keyword_matches_is_mapped_in_full_before_it_is_read(
+    pipeline: Pipeline, db: Session
+) -> None:
+    """Keywords find nothing in an oddly phrased amendment. A job maps the document
+    against the tender's sections, records the comparison, and queues the run."""
+    from core.models import Job
+    from tender.services.amendment_map import routing_records
+
+    tender = extracted_tender(pipeline, db)
+    odd = [["ADDENDUM", "The closing day for offers is moved to 15.04.2026.", "Rest unchanged."]]
+    document = parsed(pipeline, db, odd, "addendum.pdf")
+    pipeline.tenders.add_version(db, tender, document, "amendment", None, created_by="pytest")
+    pipeline.sdk.answers = {
+        "bid_submission_deadline": {
+            "value": "15.04.2026",
+            "confidence": 0.9,
+            "rationale": "The addendum moves the closing day.",
+            "evidence": [
+                {"page_no": 1, "quote": "The closing day for offers is moved to 15.04.2026"}
+            ],
+        }
+    }
+    pipeline.sdk.amendment_changes = [
+        {"clause": "Bid Information Sheet", "section": "key_dates", "summary": "x", "page_no": 1},
+        {"clause": "Cover", "section": "no_such_section", "summary": "ignored", "page_no": 1},
+        {"clause": "Cover", "section": "summary", "summary": "never re-read", "page_no": 1},
+    ]
+    runs = pipeline.tenders.start_extraction(db, tender, created_by="pytest", is_fixture=True)
+    assert runs == [], "no run until the document has been mapped"
+    queued = db.scalars(select(Job).where(Job.status == "queued")).one()
+    assert queued.kind == "amendment_plan"
+    pipeline.runner.run_until_idle()
+
+    (run,) = db.scalars(select(ExtractionRun).where(ExtractionRun.object_version == 2))
+    assert run.groups == ["key_dates"] and run.status == "validated"
+    assert live(db, tender.id, 2)[DEADLINE].value == "15.04.2026"
+    ((version_id, record),) = routing_records(db, "ergplan")
+    assert version_id == pipeline.tenders.versions(db, tender)[1].version.id
+    assert (record["by_keywords"], record["by_map"], record["agree"]) == ([], ["key_dates"], False)
+    assert record["only_map"] == ["key_dates"] and record["extracted"] == ["key_dates"]
+    assert [change["clause"] for change in record["changes"]] == ["Bid Information Sheet"]
+
+
+def test_a_long_amendment_is_read_for_the_union_of_keywords_and_map(
+    pipeline: Pipeline, db: Session
+) -> None:
+    from tender.services.amendment_map import routing_records
+    from tender.services.tenders import AMENDMENT_MAP_PAGE_THRESHOLD, needs_map
+
+    assert needs_map("amendment", AMENDMENT_MAP_PAGE_THRESHOLD, ["key_dates"]) is False
+    assert needs_map("amendment", AMENDMENT_MAP_PAGE_THRESHOLD, []) is True
+    assert needs_map("clarification", AMENDMENT_MAP_PAGE_THRESHOLD + 1, ["key_dates"]) is True
+    assert needs_map("rfs", 200, []) is False, "only amending documents are mapped"
+    assert AMENDMENT_MAP_PAGE_THRESHOLD == 0, "every amending document is mapped"
+
+    tender = extracted_tender(pipeline, db)
+    filler = [[f"Blank sheet {n}"] for n in range(3)]
+    document = parsed(pipeline, db, [*AMENDMENT_PAGES, *filler], "long-amendment.pdf")
+    pipeline.tenders.add_version(db, tender, document, "amendment", None, created_by="pytest")
+    pipeline.sdk.answers = {}
+    pipeline.sdk.amendment_changes = [
+        {"clause": "16", "section": "guarantees", "summary": "EMD revised", "page_no": 3}
+    ]
+    assert pipeline.tenders.start_extraction(db, tender, created_by="pytest", is_fixture=True) == []
+    pipeline.runner.run_until_idle()
+    (run,) = db.scalars(select(ExtractionRun).where(ExtractionRun.object_version == 2))
+    assert run.groups == ["guarantees", "key_dates"]
+    ((_, record),) = routing_records(db, "ergplan")
+    assert (record["only_keywords"], record["only_map"]) == (["key_dates"], ["guarantees"])
+    assert record["extracted"] == ["key_dates", "guarantees"]

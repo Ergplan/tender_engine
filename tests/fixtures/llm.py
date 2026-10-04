@@ -105,6 +105,8 @@ class ScriptedSDK:
         self.answers = dict(GOOD_ANSWERS if answers is None else answers)
         self.sections = DEFAULT_SECTIONS if sections is None else sections
         self.before_call = before_call
+        # What the amendment map returns: a list of {clause, section, summary, page_no}.
+        self.amendment_changes: list[dict[str, Any]] = []
         self.calls: list[dict[str, Any]] = []
         self.messages = self
 
@@ -115,6 +117,8 @@ class ScriptedSDK:
         model = kwargs["output_format"]
         if model is SectionMapOutput:
             parsed = SectionMapOutput.model_validate({"sections": self.sections})
+        elif model.__name__ == "AmendmentMapOutput":
+            parsed = model.model_validate({"changes": self.amendment_changes})
         else:
             parsed = model.model_validate(
                 {key: self.answers.get(key, NOT_FOUND) for key in model.model_fields}
@@ -130,7 +134,12 @@ class ScriptedSDK:
         )
 
     def extract_calls(self) -> list[dict[str, Any]]:
-        return [call for call in self.calls if call["output_format"] is not SectionMapOutput]
+        return [
+            call
+            for call in self.calls
+            if call["output_format"] is not SectionMapOutput
+            and call["output_format"].__name__ != "AmendmentMapOutput"
+        ]
 
     def as_sdk(self) -> anthropic.Anthropic:
         return cast(anthropic.Anthropic, self)

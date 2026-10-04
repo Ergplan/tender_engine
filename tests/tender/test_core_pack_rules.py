@@ -19,8 +19,14 @@ def test_date_order_passes_for_dates_in_order() -> None:
             OPENING: "2026-03-30",
         }
     )
-    assert len(outcomes) == 4 and all(outcome.passed for outcome in outcomes)
-    assert outcomes[0].field_paths == (NIT, PRE_BID)
+    assert [o.field_paths for o in outcomes] == [
+        (NIT, PRE_BID),
+        (PRE_BID, DEADLINE),
+        (DEADLINE, OPENING),
+        (NIT, QUERIES),
+        (QUERIES, DEADLINE),
+    ]
+    assert all(outcome.passed and not outcome.warning for outcome in outcomes)
 
 
 def test_date_order_fails_the_pair_that_is_out_of_order_and_only_that_pair() -> None:
@@ -32,6 +38,11 @@ def test_date_order_fails_the_pair_that_is_out_of_order_and_only_that_pair() -> 
     assert outcomes[1].message == (
         "pre-bid meeting (2026-04-02) is after bid submission deadline (2026-03-30)"
     )
+    assert not outcomes[1].warning
+    late_queries = date_order({QUERIES: "2026-04-05", DEADLINE: "2026-03-30"})
+    assert [(o.field_paths, o.passed, o.warning) for o in late_queries] == [
+        ((QUERIES, DEADLINE), False, False)
+    ]
 
 
 def test_date_order_compares_the_dates_present_and_needs_two() -> None:
@@ -39,6 +50,18 @@ def test_date_order_compares_the_dates_present_and_needs_two() -> None:
     assert date_order({}) == []
     skipped = date_order({NIT: "2026-05-01", OPENING: "2026-04-01"})
     assert [(o.field_paths, o.passed) for o in skipped] == [((NIT, OPENING), False)]
+
+
+def test_queries_closing_before_the_pre_bid_meeting_is_a_warning_not_a_failure() -> None:
+    """NHPC FDRE-II: queries close on 26.03.2024, the pre-bid meeting is on 28.03.2024."""
+    outcomes = date_order(
+        {NIT: "2024-03-15", QUERIES: "2024-03-26", PRE_BID: "2024-03-28", DEADLINE: "2024-04-12"}
+    )
+    failed = [outcome for outcome in outcomes if not outcome.passed]
+    assert [(o.field_paths, o.warning) for o in failed] == [((PRE_BID, QUERIES), True)]
+    assert "queries close (2024-03-26) before the pre-bid meeting (2024-03-28)" in failed[0].message
+    in_order = date_order({QUERIES: "2024-03-29", PRE_BID: "2024-03-28", DEADLINE: "2024-04-12"})
+    assert all(outcome.passed for outcome in in_order)
 
 
 def test_emd_and_pbg_within_ten_times_of_each_other_pass() -> None:

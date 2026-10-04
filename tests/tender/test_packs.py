@@ -211,3 +211,59 @@ def test_malformed_type_files_are_refused(tmp_path: Path, text: str, message: st
     pack = write_pack(tmp_path, a=text)
     with pytest.raises(PackError, match=message):
         compile_type(pack, "a", tmp_path / "core")
+
+
+def test_epc_leaves_out_the_ppa_tenure_and_the_ceiling_tariff(catalog: Catalog) -> None:
+    """An EPC works contract has no PPA and no tariff; its O&M period is in epc_scope."""
+    epc = {field.path for field in catalog.get("epc").fields}
+    dropped = {
+        "sector.power.common.ppa_tenure_years",
+        "sector.power.common.tariff_ceiling_inr_per_kwh",
+    }
+    assert not dropped & epc
+    assert {
+        "sector.power.epc.om_period_months",
+        "sector.power.epc.milestone_payment_schedule",
+        "core.commercial.payment_security_mechanism",
+    } <= epc
+    for tender_type in ("solar", "fdre", "bess", "transmission"):
+        assert dropped <= {field.path for field in catalog.get(tender_type).fields}
+
+
+def test_a_period_or_amount_that_can_be_stated_two_ways_carries_its_basis(
+    catalog: Catalog,
+) -> None:
+    fields = {field.path: field for field in catalog.get("solar").fields}
+    pairs = {
+        "core.key_dates.bid_validity": ("core.key_dates.bid_validity_unit", ["days", "months"]),
+        "sector.power.common.financial_closure_months": (
+            "sector.power.common.financial_closure_reference",
+            ["effective_date", "ppa_signing", "loa", "before_scod"],
+        ),
+        "core.eligibility.turnover_requirement_inr": (
+            "core.eligibility.turnover_basis",
+            ["absolute", "per_mw"],
+        ),
+        "core.eligibility.liquidity_requirement_inr": (
+            "core.eligibility.liquidity_basis",
+            ["absolute", "per_mw"],
+        ),
+    }
+    for value_path, (basis_path, values) in pairs.items():
+        assert fields[value_path].section == fields[basis_path].section
+        assert fields[basis_path].value_type == "enum"
+        assert fields[basis_path].enum_values == values
+        assert fields[basis_path].review_order == fields[value_path].review_order + 1
+    assert "core.key_dates.bid_validity_days" not in fields
+
+
+def test_a_type_can_only_exclude_a_common_field_it_would_otherwise_have(tmp_path: Path) -> None:
+    good = type_yaml("a", "sector.demo.a.x") + "excludes: [core.identity.number]\n"
+    pack = write_pack(tmp_path, a=good)
+    extra = "  core.identity.title: {section: identity, label: Title, type: text}\n"
+    (tmp_path / "core" / "common.yaml").write_text(CORE + extra)
+    compiled = compile_type(pack, "a", tmp_path / "core")
+    assert [field.path for field in compiled.fields] == ["core.identity.title", "sector.demo.a.x"]
+    (pack / "a.yaml").write_text(type_yaml("a", "sector.demo.a.x") + "excludes: [core.x.y]\n")
+    with pytest.raises(PackError, match="excludes field"):
+        compile_type(pack, "a", tmp_path / "core")

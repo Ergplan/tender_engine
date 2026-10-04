@@ -153,9 +153,9 @@ def test_ingest_extract_and_summary_on_a_tender_folder(
     started = ingest_tenders.extract(services)
     assert started == [
         "acme-solar-600 v1: 2 run(s), 12 group call(s)",
-        "acme-solar-600 v2: 1 run(s), 1 group call(s)",
+        "acme-solar-600 v2: 0 run(s), 0 group call(s); mapped first",
     ]
-    assert ingest_tenders.extract(services) == [], "versions that have runs are left alone"
+    assert ingest_tenders.extract(services) == [], "versions with runs or a map queued are left"
     assert ingest_tenders.extract(services, only={"another"}, force=True) == []
     pipeline.runner.run_until_idle()
     assert set(db.scalars(select(ExtractionRun.status))) == {"validated"}
@@ -189,7 +189,9 @@ def test_resume_continues_a_failed_run_without_repeating_finished_groups(
     budget = {"calls": 4}
 
     def out_of_credit(number: int, request: dict[str, Any]) -> None:
-        if request["output_format"] is not SectionMapOutput:
+        if request["output_format"] is not SectionMapOutput and "Extract_" in str(
+            request["output_format"]
+        ):
             budget["calls"] -= 1
             if budget["calls"] < 0:
                 raise anthropic.BadRequestError(
@@ -221,3 +223,105 @@ def test_resume_continues_a_failed_run_without_repeating_finished_groups(
     assert set(db.scalars(select(ExtractionRun.error))) == {None}
     # 12 + 1 group calls in all; the four that succeeded before are not repeated.
     assert len(pipeline.sdk.extract_calls()) - done_before == 13 - 4
+
+
+def test_groups_narrow_a_re_extraction_to_those_sections_of_each_document(
+    pipeline: Pipeline, db: Session, tmp_path: Path
+) -> None:
+    root = tmp_path / "tenders"
+    write_folder(root)
+    services = services_of(pipeline)
+    pipeline.sdk.answers = dict(RFS_ANSWERS)
+    ingest_tenders.ingest(services, root)
+    pipeline.runner.run_until_idle()
+    ingest_tenders.extract(services)
+    pipeline.runner.run_until_idle()
+    calls = len(pipeline.sdk.extract_calls())
+
+    again = ingest_tenders.extract(services, force=True, groups=["key_dates", "eligibility"])
+    assert again == [
+        "acme-solar-600 v1: 1 run(s), 2 group call(s)",
+        "acme-solar-600 v2: 1 run(s), 1 group call(s)",
+    ], "the PPA is not read for these sections; the amendment only for the one it touches"
+    pipeline.runner.run_until_idle()
+    assert len(pipeline.sdk.extract_calls()) - calls == 3
+    narrowed = db.scalars(
+        select(ExtractionRun).order_by(ExtractionRun.created_at.desc(), ExtractionRun.id).limit(2)
+    ).all()
+    assert sorted(tuple(run.groups or []) for run in narrowed) == [
+        ("eligibility", "key_dates"),
+        ("key_dates",),
+    ]
+
+
+def test_amendment_routing_records_the_comparison_for_every_amending_document(
+    pipeline: Pipeline, db: Session, tmp_path: Path
+) -> None:
+    root = tmp_path / "tenders"
+    write_folder(root)
+    services = services_of(pipeline)
+    pipeline.sdk.answers = dict(RFS_ANSWERS)
+    ingest_tenders.ingest(services, root)
+    pipeline.runner.run_until_idle()
+    ingest_tenders.extract(services)
+    pipeline.runner.run_until_idle()
+    runs_before = db.scalar(select(func.count()).select_from(ExtractionRun))
+
+    pipeline.sdk.amendment_changes = [
+        {"clause": "BIS", "section": "key_dates", "summary": "deadline", "page_no": 1},
+        {"clause": "16", "section": "guarantees", "summary": "EMD", "page_no": 1},
+    ]
+    assert ingest_tenders.amendment_routing(services) == ["acme-solar-600 v2: amendment-01.pdf"]
+    pipeline.runner.run_until_idle()
+    assert db.scalar(select(func.count()).select_from(ExtractionRun)) == runs_before
+    first, line = ingest_tenders.routing_report(services)
+    assert first.startswith("DISAGREE | amendment-01.pdf (1 p) | keywords only: ['key_dates']")
+    assert line == (
+        "DISAGREE | amendment-01.pdf (1 p) | keywords only: [] | map only: ['guarantees'] | "
+        "both: ['key_dates']"
+    )
+    ingest_tenders.amendment_routing(services, mode="missing")
+    pipeline.runner.run_until_idle()
+    newest = db.scalars(
+        select(ExtractionRun).order_by(ExtractionRun.created_at.desc(), ExtractionRun.id).limit(1)
+    ).one()
+    assert newest.groups == ["guarantees"] and newest.object_version == 2
+
+
+def test_resume_puts_a_failed_amendment_map_back_in_the_queue(
+    make_pipeline: Callable[..., Pipeline], db: Session, tmp_path: Path
+) -> None:
+    from core.models import Job
+
+    root = tmp_path / "tenders"
+    write_folder(root)
+    refuse = {"on": True}
+
+    def no_maps(number: int, request: dict[str, Any]) -> None:
+        if refuse["on"] and "AmendmentMapOutput" in str(request["output_format"]):
+            raise anthropic.BadRequestError(
+                "Your credit balance is too low",
+                response=httpx2.Response(400, request=httpx2.Request("POST", "http://x")),
+                body=None,
+            )
+
+    pipeline = make_pipeline(ScriptedSDK(dict(RFS_ANSWERS), before_call=no_maps))
+    services = services_of(pipeline)
+    ingest_tenders.ingest(services, root)
+    pipeline.runner.run_until_idle()
+    ingest_tenders.extract(services)
+    pipeline.runner.run_until_idle()
+    failed = db.scalars(select(Job).where(Job.status == "failed")).one()
+    assert failed.kind == "amendment_plan"
+    assert (
+        db.scalar(
+            select(func.count()).select_from(ExtractionRun).where(ExtractionRun.object_version == 2)
+        )
+        == 0
+    )
+    refuse["on"] = False
+    assert ingest_tenders.resume(services) == ["acme-solar-600 v2: amendment map queued again"]
+    pipeline.runner.run_until_idle()
+    db.expire_all()
+    (run,) = db.scalars(select(ExtractionRun).where(ExtractionRun.object_version == 2))
+    assert run.status == "validated" and run.groups == ["key_dates"]

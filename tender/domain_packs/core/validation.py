@@ -10,28 +10,48 @@ from core.models import Candidate, EvidenceSpan, ExtractionRun
 from core.schemas import CandidateOutcome, CrossFieldRule, RuleOutcome, RunRule
 from tender.models import TenderVersion, TenderVersionDocument
 
-DATE_CHAIN = (
-    ("core.key_dates.nit_date", "date of issue"),
-    ("core.key_dates.pre_bid_meeting_date", "pre-bid meeting"),
-    ("core.key_dates.query_deadline", "last date for queries"),
-    ("core.key_dates.bid_submission_deadline", "bid submission deadline"),
-    ("core.key_dates.technical_opening_date", "technical bid opening"),
-)
+NIT = "core.key_dates.nit_date"
+PRE_BID = "core.key_dates.pre_bid_meeting_date"
+QUERIES = "core.key_dates.query_deadline"
+DEADLINE = "core.key_dates.bid_submission_deadline"
+OPENING = "core.key_dates.technical_opening_date"
+LABELS = {
+    NIT: "date of issue",
+    PRE_BID: "pre-bid meeting",
+    QUERIES: "last date for queries",
+    DEADLINE: "bid submission deadline",
+    OPENING: "technical bid opening",
+}
+# The main chain, and the last date for queries, which falls between the issue and the
+# bid deadline on either side of the pre-bid meeting.
+DATE_CHAIN = (NIT, PRE_BID, DEADLINE, OPENING)
+QUERY_CHAIN = (NIT, QUERIES, DEADLINE)
 EMD = "core.guarantees.emd_per_mw_inr"
 PBG = "core.guarantees.pbg_per_mw_inr"
 
 
 def date_order(values: dict[str, Any]) -> list[RuleOutcome]:
-    """Issue <= pre-bid <= queries <= bid deadline <= technical opening, for the dates
-    that have a value. Each neighbouring pair is one outcome."""
-    present = [(path, label, values[path]) for path, label in DATE_CHAIN if path in values]
+    """Issue <= pre-bid <= bid deadline <= technical opening, and issue <= queries <= bid
+    deadline, for the dates that have a value; each neighbouring pair is one outcome.
+    Queries closing before the pre-bid meeting is normal (questions are sent in so they
+    can be answered at the meeting) and only raises a warning."""
     outcomes = []
-    for (path_a, label_a, a), (path_b, label_b, b) in zip(present, present[1:], strict=False):
-        if a <= b:
-            message = f"{label_a} ({a}) is not after {label_b} ({b})"
-        else:
-            message = f"{label_a} ({a}) is after {label_b} ({b})"
-        outcomes.append(RuleOutcome((path_a, path_b), a <= b, message))
+    chains = [DATE_CHAIN, QUERY_CHAIN] if QUERIES in values else [DATE_CHAIN]
+    for chain in chains:
+        present = [path for path in chain if path in values]
+        for earlier, later in zip(present, present[1:], strict=False):
+            if chain is QUERY_CHAIN and QUERIES not in (earlier, later):
+                continue
+            a, b = values[earlier], values[later]
+            relation = "is not after" if a <= b else "is after"
+            message = f"{LABELS[earlier]} ({a}) {relation} {LABELS[later]} ({b})"
+            outcomes.append(RuleOutcome((earlier, later), a <= b, message))
+    if PRE_BID in values and QUERIES in values and values[QUERIES] < values[PRE_BID]:
+        message = (
+            f"queries close ({values[QUERIES]}) before the pre-bid meeting "
+            f"({values[PRE_BID]}); usual when questions are answered at the meeting"
+        )
+        outcomes.append(RuleOutcome((PRE_BID, QUERIES), False, message, warning=True))
     return outcomes
 
 

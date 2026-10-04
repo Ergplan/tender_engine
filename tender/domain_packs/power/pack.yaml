@@ -92,7 +92,13 @@ fields:
     unit: months
     min: 1
     max: 120
-    help: Months allowed to reach financial closure; the rationale says from which date.
+    help: Months the tender gives for financial closure, counted as financial_closure_reference says.
+  sector.power.common.financial_closure_reference:
+    section: key_dates
+    label: Financial closure counted
+    type: enum
+    enum: [effective_date, ppa_signing, loa, before_scod]
+    help: Whether the months run forward from the effective date, the PPA signing or the LoA, or back from the scheduled commissioning date.
   sector.power.common.scod_months:
     section: key_dates
     label: Scheduled commissioning

@@ -12,7 +12,7 @@ from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from core.models import CanonicalFact
+from core.models import Candidate, CanonicalFact, ExtractionRun
 from tender.models import Tender, TenderVersion
 from tender.services.packs import Catalog
 from tender.services.tenders import OBJECT_TYPE
@@ -96,3 +96,44 @@ def current_view(session: Session, catalog: Catalog, tender: Tender) -> TenderVi
         total=len(fields),
         fields=fields,
     )
+
+
+def missing_required(
+    session: Session, catalog: Catalog, tender: Tender, version_no: int | None = None
+) -> list[str]:
+    """Required fields the tender does not have up to the given version (the latest by
+    default): no live candidate with a value in any of its versions, and no canonical
+    fact with a value. A corrigendum need not restate a required field; the tender must
+    have it."""
+    compiled = catalog.get(tender.tender_type)
+    required = [field.path for field in compiled.fields if field.required]
+    limit = version_no if version_no is not None else 10**9
+    stated = set(
+        session.scalars(
+            select(Candidate.field_path)
+            .join(ExtractionRun, Candidate.extraction_run_id == ExtractionRun.id)
+            .where(
+                Candidate.tenant_id == tender.tenant_id,
+                ExtractionRun.tenant_id == tender.tenant_id,
+                ExtractionRun.object_type == OBJECT_TYPE,
+                ExtractionRun.object_id == tender.id,
+                ExtractionRun.object_version <= limit,
+                Candidate.field_path.in_(required),
+                Candidate.value.is_not(None),
+                Candidate.status.in_(("validated", "needs_review")),
+            )
+        )
+    )
+    stated |= set(
+        session.scalars(
+            select(CanonicalFact.field_path).where(
+                CanonicalFact.tenant_id == tender.tenant_id,
+                CanonicalFact.object_type == OBJECT_TYPE,
+                CanonicalFact.object_id == tender.id,
+                CanonicalFact.object_version <= limit,
+                CanonicalFact.is_current.is_(True),
+                CanonicalFact.value.is_not(None),
+            )
+        )
+    )
+    return [path for path in required if path not in stated]

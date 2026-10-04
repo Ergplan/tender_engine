@@ -13,7 +13,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from core.models import Approval, Document, ExtractionRun, Page
-from core.services import audit
+from core.services import audit, jobs
 from core.services.extract import ExtractService
 from tender.models import (
     DOCUMENT_ROLES,
@@ -25,6 +25,21 @@ from tender.models import (
 )
 from tender.services.packs import Catalog
 from tender.services.versioning import CHANGE_ROLES, plan_groups
+
+JOB_KIND = "amendment_plan"
+# An amending document longer than this many pages is mapped in full as well as matched by
+# keywords. Zero: every amending document is. On the first eleven amendments the map found
+# a section the keywords missed in seven, most of them under six pages long.
+AMENDMENT_MAP_PAGE_THRESHOLD = 0
+
+
+def needs_map(role: str, page_count: int | None, keyword_groups: list[str]) -> bool:
+    """Whether the keyword answer for an amending document needs a second opinion: when it
+    selects no section, or the document is longer than the threshold."""
+    if role not in CHANGE_ROLES:
+        return False
+    return not keyword_groups or (page_count or 0) > AMENDMENT_MAP_PAGE_THRESHOLD
+
 
 OBJECT_TYPE = "tender"
 DEFAULT_ROLE = {
@@ -236,10 +251,15 @@ class TenderService:
         version_no: int | None = None,
         prompt_version: str = "v1",
         created_by: str,
+        groups: list[str] | None = None,
         is_fixture: bool = False,
     ) -> list[ExtractionRun]:
         """Queue the extraction of one version (the latest by default): one run per document
-        that has groups to read. A later version is read only where it touches the tender."""
+        that has groups to read. A later version is read only where it touches the tender.
+        An amending document for which keywords find no section, or which is long, is not
+        given a run here: a job maps it in full first and then queues its run.
+        `groups` narrows the extraction to those sections of what each document would be
+        read for (a re-extraction after a schema or prompt change); no map is made then."""
         compiled = self._catalog.get(tender.tender_type)
         entries = self.versions(session, tender)
         if not entries:
@@ -264,14 +284,34 @@ class TenderService:
                     .order_by(Page.page_no)
                 )
             )
-            groups = plan_groups(
+            planned = plan_groups(
                 compiled,
                 version_no=entry.version.version_no,
                 role=link.role,
                 page_texts=page_texts,
             )
-            if groups:
-                plan.append((document, groups))
+            if groups is not None:
+                narrowed = [name for name in planned if name in groups]
+                if narrowed:
+                    plan.append((document, narrowed))
+            elif needs_map(link.role, document.page_count, planned):
+                jobs.enqueue(
+                    session,
+                    tenant_id=self._tenant_id,
+                    kind=JOB_KIND,
+                    payload={
+                        "tender_id": tender.id,
+                        "version_no": entry.version.version_no,
+                        "document_id": document.id,
+                        "prompt_version": prompt_version,
+                        "created_by": created_by,
+                        "is_fixture": is_fixture,
+                    },
+                    created_by=created_by,
+                )
+            elif planned:
+                plan.append((document, planned))
+        session.commit()
         return [
             self._extract.start_run(
                 session,
@@ -283,10 +323,10 @@ class TenderService:
                 object_type=OBJECT_TYPE,
                 object_id=tender.id,
                 object_version=entry.version.version_no,
-                groups=groups,
+                groups=run_groups,
                 is_fixture=is_fixture,
             )
-            for document, groups in plan
+            for document, run_groups in plan
         ]
 
     def refresh_status(self, session: Session, tender: Tender) -> str:

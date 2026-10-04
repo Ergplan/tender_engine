@@ -134,14 +134,19 @@ fields:
     label: Dates deferred to another document
     type: long_text
     help: Which dates this document does not print, and the document or notice that will set them (for example the NIT on the portal).
-  core.key_dates.bid_validity_days:
+  core.key_dates.bid_validity:
     section: key_dates
     label: Bid validity
     type: int
-    unit: days
     min: 1
     max: 730
-    help: Days the bid must stay valid after the submission deadline.
+    help: How long the bid must stay valid after the submission deadline, as the number the tender prints; the unit is in bid_validity_unit.
+  core.key_dates.bid_validity_unit:
+    section: key_dates
+    label: Bid validity unit
+    type: enum
+    enum: [days, months]
+    help: Whether the tender states the bid validity in days or in months.
   core.key_dates.loa_timeline:
     section: key_dates
     label: Letter of Award timeline
@@ -158,13 +163,25 @@ fields:
     label: Turnover requirement
     type: money_inr
     unit: INR
-    help: Minimum annual turnover as a fixed amount; leave empty when stated per MW.
+    help: Minimum annual turnover, as the amount the tender prints; turnover_basis says whether it is a fixed amount or per MW.
+  core.eligibility.turnover_basis:
+    section: eligibility
+    label: Turnover stated as
+    type: enum
+    enum: [absolute, per_mw]
+    help: Whether the turnover requirement is a fixed amount or an amount per MW of quoted capacity.
   core.eligibility.liquidity_requirement_inr:
     section: eligibility
     label: Liquidity requirement
     type: money_inr
     unit: INR
-    help: Minimum liquidity (internal resource generation, PBDIT or line of credit) as a fixed amount; leave empty when stated per MW.
+    help: Minimum liquidity (internal resource generation, PBDIT or line of credit), as the amount the tender prints; liquidity_basis says whether it is a fixed amount or per MW.
+  core.eligibility.liquidity_basis:
+    section: eligibility
+    label: Liquidity stated as
+    type: enum
+    enum: [absolute, per_mw]
+    help: Whether the liquidity requirement is a fixed amount or an amount per MW of quoted capacity.
   core.eligibility.consortium_allowed:
     section: eligibility
     label: Consortium allowed

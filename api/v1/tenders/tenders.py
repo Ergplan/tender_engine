@@ -32,7 +32,7 @@ from core.services.extract import ExtractionError
 from core.services.ingest import IngestError
 from tender.models import Tender, TenderVersion
 from tender.services import extraction_summary
-from tender.services.current_view import TenderView, current_view
+from tender.services.current_view import TenderView, current_view, missing_required
 from tender.services.extraction_summary import ExtractionSummary
 from tender.services.tenders import OBJECT_TYPE, TenderError, TenderService, VersionDocuments
 
@@ -217,7 +217,9 @@ def start_extraction(
     actor: ActorDep,
 ) -> list[ExtractionRun]:
     """Queue the extraction of one version (the latest by default): one run per document.
-    A version after the original is read only for the sections its documents touch."""
+    A version after the original is read only for the sections its documents touch. A long
+    amendment, or one whose text matches no section keyword, is first mapped in full by a
+    background job, which then queues its run; such a run is not in this response."""
     tender = _tender(tenders, session, tender_id)
     try:
         return tenders.start_extraction(
@@ -239,6 +241,7 @@ def get_review_state(
     session: SessionDep,
     tenders: TendersDep,
     review_state: ReviewStateDep,
+    catalog: CatalogDep,
     tenant_id: TenantDep,
     version: int | None = None,
 ) -> TenderReviewState:
@@ -261,6 +264,9 @@ def get_review_state(
             for field in state.fields
             if field.candidate is not None and field.candidate.value is not None
         ],
+        missing_required=missing_required(
+            session, catalog, tender, state.object_version if state.run else version
+        ),
         state=state,
     )
 

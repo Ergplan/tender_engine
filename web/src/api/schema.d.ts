@@ -287,7 +287,9 @@ export interface paths {
         /**
          * Start Extraction
          * @description Queue the extraction of one version (the latest by default): one run per document.
-         *     A version after the original is read only for the sections its documents touch.
+         *     A version after the original is read only for the sections its documents touch. A long
+         *     amendment, or one whose text matches no section keyword, is first mapped in full by a
+         *     background job, which then queues its run; such a run is not in this response.
          */
         post: operations["start_extraction_api_v1_tenders__tender_id__extract_post"];
         delete?: never;
@@ -555,6 +557,8 @@ export interface components {
             document_id: string;
             /** Id */
             id: string;
+            /** Match Method */
+            match_method: string | null;
             /** Match Score */
             match_score: number | null;
             /** Page No */
@@ -852,11 +856,14 @@ export interface components {
          * TenderReviewState
          * @description Core's review state for one version of a tender. For a version after the original,
          *     changed_fields lists the fields that version gives a value for; every other field
-         *     keeps what the earlier versions say.
+         *     keeps what the earlier versions say. A required field is required of the tender, not
+         *     of each version: missing_required lists those no version up to this one states.
          */
         TenderReviewState: {
             /** Changed Fields */
             changed_fields?: string[];
+            /** Missing Required */
+            missing_required?: string[];
             state: components["schemas"]["ReviewState"];
             /** Tender Id */
             tender_id: string;
@@ -951,6 +958,8 @@ export interface components {
             passed: boolean;
             /** Rule Name */
             rule_name: string;
+            /** Severity */
+            severity: string;
         };
         /** VersionDocumentOut */
         VersionDocumentOut: {

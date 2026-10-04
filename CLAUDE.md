@@ -83,6 +83,7 @@ tender_engine/
 │   ├── models/               # SQLAlchemy tables: document, page, section, candidate, evidence_span, approval, canonical_fact, feedback, audit_log, job, llm_call_log
 │   ├── services/             # ingest, parse, section_map, extract, validate, approve, review_state
 │   ├── llm/                  # client.py, registry.py, prompts/<name>/vN.md
+│   ├── evidence/             # standalone quote resolver (no ORM, no settings) and its corpus loader
 │   ├── storage/              # local and gcs behind one interface
 │   └── validation/           # rule engine and generic rules
 ├── tender/                   # tender domain on top of core

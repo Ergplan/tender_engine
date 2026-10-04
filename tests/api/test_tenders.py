@@ -241,6 +241,7 @@ def test_review_state_delegates_to_core_for_one_version(
     assert by_path[EMD]["candidate"]["evidence"][0]["page_no"] == 3
     assert by_path[EMD]["group"] == "guarantees"
     assert EMD in body["changed_fields"] and len(body["changed_fields"]) == len(RFS_ANSWERS)
+    assert body["missing_required"] == []
     assert client.get(f"/api/v1/tenders/{'0' * 32}/review-state").status_code == 404
 
 
@@ -269,13 +270,16 @@ def test_full_tender_flow_with_an_amendment_through_the_http_api(
     )
     assert added.status_code == 201
     pipeline.runner.run_until_idle()
-    (run,) = client.post(f"/api/v1/tenders/{tid}/extract", json={}, headers=ASHA).json()
-    assert (run["object_version"], run["status"]) == (2, "queued")
+    started = client.post(f"/api/v1/tenders/{tid}/extract", json={}, headers=ASHA)
+    assert started.status_code == 202 and started.json() == [], (
+        "an amending document is mapped by a background job, which then queues its run"
+    )
     pipeline.runner.run_until_idle()
 
     latest = client.get(f"/api/v1/tenders/{tid}/review-state").json()
     assert (latest["version_no"], latest["version_kind"]) == (2, "amendment")
     assert latest["changed_fields"] == [DEADLINE]
+    assert latest["missing_required"] == [], "the amendment need not restate required fields"
     second = {field["field_path"]: field for field in latest["state"]["fields"]}
     assert second[DEADLINE]["candidate"]["value"] == "15.04.2026"
     assert second[EMD]["candidate"] is None

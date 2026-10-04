@@ -3,7 +3,7 @@ COMPOSE := docker compose
 STATIC_IP := $(shell cat infra/STATIC-IP.txt)
 RUN_TESTS := $(COMPOSE) run --rm --no-deps -T tests
 
-.PHONY: up down test test-e2e check watch migrate deploy logs smoke client hooks
+.PHONY: up down test test-e2e check watch migrate deploy logs smoke client hooks evidence-corpus
 
 up: hooks ## start the app and the test watcher
 	$(COMPOSE) up -d --build
@@ -46,6 +46,9 @@ logs: ## follow logs of every service
 
 smoke: ## one real, logged call to the extraction model
 	$(COMPOSE) run --rm -T api python -m scripts.llm_smoke $(PDF)
+
+evidence-corpus: ## pass rate of the evidence resolver on tests/core/evidence_corpus
+	$(RUN_TESTS) python -m scripts.evidence_corpus run --failures
 
 client: ## regenerate the OpenAPI document and the TypeScript client types
 	$(RUN_TESTS) python -m scripts.export_openapi --write

@@ -1,7 +1,9 @@
 """Management command: ingest the tender set, extract it, and write the extraction summary.
 
   python -m scripts.ingest_tenders ingest  [--root /work/tenders] [--only slug,slug]
-  python -m scripts.ingest_tenders extract [--only slug,slug] [--force]
+  python -m scripts.ingest_tenders extract [--only slug,slug] [--force] [--groups a,b]
+  python -m scripts.ingest_tenders amendment-routing [--only slug,slug] [--mode none|missing|union]
+  python -m scripts.ingest_tenders routing-report
   python -m scripts.ingest_tenders resume  [--only slug,slug]
   python -m scripts.ingest_tenders wait    [--timeout seconds]
   python -m scripts.ingest_tenders summary [--out docs/reports/EXTRACTION-SUMMARY.md]
@@ -18,7 +20,7 @@ import argparse
 import sys
 import time
 from dataclasses import dataclass
-from datetime import date
+from datetime import UTC, date, datetime
 from pathlib import Path
 from typing import Any
 
@@ -36,8 +38,9 @@ from core.services.ingest import IngestService
 from core.services.review_state import ReviewStateService
 from core.storage import make_storage
 from tender.services import extraction_summary
+from tender.services.amendment_map import routing_records
 from tender.services.packs import Catalog, build_registry
-from tender.services.tenders import OBJECT_TYPE, TenderError, TenderService
+from tender.services.tenders import JOB_KIND, OBJECT_TYPE, TenderError, TenderService
 from tender.services.versioning import CHANGE_ROLES
 
 ACTOR = "ingest_tenders"
@@ -50,6 +53,9 @@ class ManifestFile:
     path: Path
     role: str
     issued_on: date | None
+    # "latest": the file belongs to the tender's latest version, whatever its date (a
+    # published notice shows the dates as they stand after every amendment).
+    attach_to: str | None = None
 
 
 @dataclass(frozen=True)
@@ -107,6 +113,7 @@ def read_manifests(root: Path, only: set[str] | None = None) -> list[Manifest]:
                 path=path.parent / item["file"],
                 role=item["role"],
                 issued_on=date.fromisoformat(item["issued_on"]) if item.get("issued_on") else None,
+                attach_to=item.get("attach_to"),
             )
             for item in raw["files"]
         ]
@@ -129,7 +136,8 @@ def plan_versions(manifest: Manifest) -> list[PlannedVersion]:
     earliest date. Each amendment or clarification after that is its own version, in date
     order; a base document issued later (a revised RfS, a revised annexure) joins the
     version issued on the same date, or becomes an amendment version of its own."""
-    base = [item for item in manifest.files if item.role not in CHANGE_ROLES]
+    dated_files = [item for item in manifest.files if item.attach_to != "latest"]
+    base = [item for item in dated_files if item.role not in CHANGE_ROLES]
     dated = [item.issued_on for item in base if item.issued_on is not None]
     first_date = min(dated) if dated else None
     original = [item for item in base if item.issued_on in (None, first_date)]
@@ -138,7 +146,7 @@ def plan_versions(manifest: Manifest) -> list[PlannedVersion]:
     versions = [PlannedVersion("original", first_date, original)]
     order = {id(item): index for index, item in enumerate(manifest.files)}
     later = sorted(
-        (item for item in manifest.files if item not in original),
+        (item for item in dated_files if item not in original),
         key=lambda item: (
             item.issued_on or date.max,
             item.role not in CHANGE_ROLES,
@@ -153,6 +161,7 @@ def plan_versions(manifest: Manifest) -> list[PlannedVersion]:
             latest.files.append(item)
         else:
             versions.append(PlannedVersion("amendment", item.issued_on, [item]))
+    versions[-1].files.extend(item for item in manifest.files if item.attach_to == "latest")
     return versions
 
 
@@ -204,8 +213,15 @@ def ingest(services: Services, root: Path, only: set[str] | None = None) -> list
     return lines
 
 
-def extract(services: Services, only: set[str] | None = None, force: bool = False) -> list[str]:
-    """Queue extraction for every version that has no run yet (every version with --force)."""
+def extract(
+    services: Services,
+    only: set[str] | None = None,
+    force: bool = False,
+    groups: list[str] | None = None,
+) -> list[str]:
+    """Queue extraction for every version that has no run yet (every version with --force).
+    With `groups`, only those sections are read again, from the documents that are read
+    for them."""
     lines = []
     with services.session_factory() as session:
         for tender in services.tenders.all(session):
@@ -223,17 +239,31 @@ def extract(services: Services, only: set[str] | None = None, force: bool = Fals
                         ExtractionRun.object_version == number,
                     )
                 )
-                if has_runs and not force:
+                being_mapped = session.scalar(
+                    select(func.count())
+                    .select_from(Job)
+                    .where(
+                        Job.tenant_id == services.settings.tenant_id,
+                        Job.kind == JOB_KIND,
+                        Job.status.in_(("queued", "running")),
+                        Job.payload["tender_id"].astext == tender.id,
+                        Job.payload["version_no"].astext == str(number),
+                    )
+                )
+                if (has_runs or being_mapped) and not force:
                     continue
                 try:
                     runs = services.tenders.start_extraction(
-                        session, tender, version_no=number, created_by=ACTOR
+                        session, tender, version_no=number, created_by=ACTOR, groups=groups
                     )
                 except TenderError as exc:
                     lines.append(f"{tender.slug} v{number}: skipped, {exc}")
                     continue
-                groups = sum(len(run.groups or []) for run in runs)
-                lines.append(f"{tender.slug} v{number}: {len(runs)} run(s), {groups} group call(s)")
+                calls = sum(len(run.groups or []) for run in runs)
+                mapped = "" if runs or entry.version.version_no == 1 else "; mapped first"
+                lines.append(
+                    f"{tender.slug} v{number}: {len(runs)} run(s), {calls} group call(s){mapped}"
+                )
     return lines
 
 
@@ -268,7 +298,68 @@ def resume(services: Services, only: set[str] | None = None) -> list[str]:
                 created_by=ACTOR,
             )
             lines.append(f"{slug} v{run.object_version}: run {run.id} queued again")
+        # An amendment whose map failed has no run yet: its job is put back instead.
+        for job in session.scalars(
+            select(Job).where(
+                Job.tenant_id == tenant_id, Job.kind == JOB_KIND, Job.status == "failed"
+            )
+        ):
+            slug = slugs.get(job.payload.get("tender_id"))
+            if only and slug not in only:
+                continue
+            job.status = "queued"
+            job.attempts = 0
+            job.run_after = datetime.now(UTC)
+            job.finished_at = None
+            lines.append(f"{slug} v{job.payload.get('version_no')}: amendment map queued again")
         session.commit()
+    return lines
+
+
+def amendment_routing(
+    services: Services, only: set[str] | None = None, mode: str = "none"
+) -> list[str]:
+    """Queue the full map of every amending document, to compare it with the keyword
+    routing. mode: none (record the comparison only), missing (also read the sections only
+    the map found) or union."""
+    lines = []
+    with services.session_factory() as session:
+        for tender in services.tenders.all(session):
+            if only and tender.slug not in only:
+                continue
+            for entry in services.tenders.versions(session, tender):
+                for link, document in entry.documents:
+                    if link.role not in CHANGE_ROLES or entry.version.version_no == 1:
+                        continue
+                    jobs.enqueue(
+                        session,
+                        tenant_id=services.settings.tenant_id,
+                        kind=JOB_KIND,
+                        payload={
+                            "tender_id": tender.id,
+                            "version_no": entry.version.version_no,
+                            "document_id": document.id,
+                            "created_by": ACTOR,
+                            "start_runs": mode,
+                        },
+                        created_by=ACTOR,
+                    )
+                    lines.append(f"{tender.slug} v{entry.version.version_no}: {document.filename}")
+        session.commit()
+    return lines
+
+
+def routing_report(services: Services) -> list[str]:
+    """One line per recorded comparison of keyword routing with the full map."""
+    lines = []
+    with services.session_factory() as session:
+        for _, record in routing_records(session, services.settings.tenant_id):
+            verdict = "agree" if record["agree"] else "DISAGREE"
+            lines.append(
+                f"{verdict} | {record['filename']} ({record['pages']} p) | "
+                f"keywords only: {record['only_keywords']} | map only: {record['only_map']} | "
+                f"both: {[g for g in record['by_keywords'] if g in record['by_map']]}"
+            )
     return lines
 
 
@@ -309,10 +400,23 @@ def summary(services: Services, out: Path) -> str:
 
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(prog="ingest_tenders", description=__doc__)
-    parser.add_argument("command", choices=("ingest", "extract", "resume", "wait", "summary"))
+    parser.add_argument(
+        "command",
+        choices=(
+            "ingest",
+            "extract",
+            "resume",
+            "wait",
+            "summary",
+            "amendment-routing",
+            "routing-report",
+        ),
+    )
     parser.add_argument("--root", type=Path, default=DEFAULT_ROOT)
     parser.add_argument("--only", default="", help="comma-separated tender slugs")
     parser.add_argument("--force", action="store_true", help="extract versions that have runs")
+    parser.add_argument("--groups", default="", help="comma-separated sections to read again")
+    parser.add_argument("--mode", default="none", choices=("none", "missing", "union"))
     parser.add_argument("--timeout", type=float, default=6 * 3600)
     parser.add_argument("--out", type=Path, default=DEFAULT_SUMMARY)
     args = parser.parse_args(argv[1:])
@@ -321,7 +425,12 @@ def main(argv: list[str]) -> int:
     if args.command == "ingest":
         print("\n".join(ingest(services, args.root, only)))
     elif args.command == "extract":
-        print("\n".join(extract(services, only, args.force)))
+        groups = [name.strip() for name in args.groups.split(",") if name.strip()] or None
+        print("\n".join(extract(services, only, args.force, groups)))
+    elif args.command == "amendment-routing":
+        print("\n".join(amendment_routing(services, only, args.mode)))
+    elif args.command == "routing-report":
+        print("\n".join(routing_report(services)))
     elif args.command == "resume":
         print("\n".join(resume(services, only)))
     elif args.command == "wait":

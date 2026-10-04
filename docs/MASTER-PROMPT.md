@@ -102,6 +102,7 @@ tender_engine/
 │   ├── models/               # SQLAlchemy tables: document, page, section, candidate, evidence_span, approval, canonical_fact, feedback, audit_log, job, llm_call_log
 │   ├── services/             # ingest, parse, section_map, extract, validate, approve, review_state
 │   ├── llm/                  # client.py, registry.py, prompts/<name>/vN.md
+│   ├── evidence/             # standalone quote resolver (no ORM, no settings) and its corpus loader
 │   ├── storage/              # local and gcs behind one interface
 │   └── validation/           # rule engine and generic rules
 ├── tender/                   # tender domain on top of core
@@ -399,6 +400,19 @@ One day. The reviewer is a domain expert, not a software user. Every design choi
 ```markdown
 # STAGE 3: reviewer UI (web/) and review tokens
 
+## Before the UI: cost of extraction (user decision, 2026-10-04)
+
+Stage 4 re-runs the corpus on every prompt revision, so the cost per run is reduced first. The Stage 2 run sent 14.2M input tokens for 3,455 pages because pages are re-sent across the field groups of a run.
+
+- Prompt caching in core/llm/: a page window shared by several field groups of one run is sent as a cached prefix, so the groups after the first read it at the cached price. Order the calls of a run so that groups with the same window follow each other; where windows differ only slightly, prefer one shared window per document over many near-identical ones if the page cap allows.
+- Batch API for runs no human waits for (extraction by the management command, evals): the worker submits a run's calls as a batch and collects the results; synchronous calls stay where a reviewer waits. llm_call_log records the mode and the cached tokens of every call.
+- Measure on at least two tenders, before and after: input tokens, cached tokens, cost, wall-clock time, and that the candidates do not get worse (same evidence-location rate, answer rate within noise). Report the effect in STAGE-3-REPORT.md.
+
+## What the tender review state already gives the UI
+
+- GET /tenders/{id}/review-state returns, for a version after the original, `changed_fields` (the fields that version gives a value for) and `missing_required` (required fields the tender as a whole lacks). The UI shows only the changed fields of a later version; a required field is flagged on the tender, never on a corrigendum that does not restate it.
+- A validation result has a severity. A warning (queries closing before the pre-bid meeting) is shown in amber and does not block; an error is the red note.
+
 ## Tokens (api/)
 
 - review_token: token (32 random url-safe chars), tender_id, reviewer_name, created_at, expires_at (30 days), completed_at. One active token per tender; creating a second revokes the first.
@@ -652,6 +666,8 @@ Two numbers measure extraction in the table below and in every stage report from
 - **Answer rate** = fields with a value / fields in the schema. Reported, not targeted: it varies with what each document states. A field the document does not state returning null is a correct answer.
 
 Every stage report from Stage 2 onward also prints the real-model cost of the stage and the running total since Stage 1.
+
+Every stage report from Stage 3 onward also gives, separately from the extraction numbers, the pass rate of the evidence resolver on its corpus (`make evidence-corpus`, `tests/core/evidence_corpus/`): cases passed of cases in the corpus, with the known failures named.
 
 | Stage | Checks before STOP |
 | --- | --- |

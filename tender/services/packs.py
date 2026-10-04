@@ -74,6 +74,8 @@ class RawFile(_Strict):
     subdomains: list[str] = Field(default_factory=list)
     type: str | None = None
     includes: list[str] = Field(default_factory=list)
+    # Common fields this type leaves out because they do not apply to it.
+    excludes: list[str] = Field(default_factory=list)
     inherits: list[str] = Field(default_factory=list)
     required: list[str] = Field(default_factory=list)
     sections: dict[str, SectionDef] = Field(default_factory=dict)
@@ -194,6 +196,7 @@ def _type_file(pack_dir: Path, tender_type: str, seen: tuple[str, ...] = ()) -> 
     fields: dict[str, RawField] = {}
     includes: list[str] = []
     required: list[str] = []
+    excludes: list[str] = []
     rules: list[str] = []
     for parent_name in raw.inherits:
         parent = _type_file(pack_dir, parent_name, (*seen, tender_type))
@@ -201,11 +204,13 @@ def _type_file(pack_dir: Path, tender_type: str, seen: tuple[str, ...] = ()) -> 
         _merge(fields, parent.fields, "field", path)
         includes += [name for name in parent.includes if name not in includes]
         required += [name for name in parent.required if name not in required]
+        excludes += [name for name in parent.excludes if name not in excludes]
         rules += [name for name in parent.cross_field_rules if name not in rules]
     _merge(sections, raw.sections, "section", path)
     _merge(fields, raw.fields, "field", path)
     includes += [name for name in raw.includes if name not in includes]
     required += [name for name in raw.required if name not in required]
+    excludes += [name for name in raw.excludes if name not in excludes]
     rules += [name for name in raw.cross_field_rules if name not in rules]
     return raw.model_copy(
         update={
@@ -213,6 +218,7 @@ def _type_file(pack_dir: Path, tender_type: str, seen: tuple[str, ...] = ()) -> 
             "fields": fields,
             "includes": includes,
             "required": required,
+            "excludes": excludes,
             "cross_field_rules": rules,
             "inherits": [],
         }
@@ -246,11 +252,15 @@ def compile_type(pack_dir: Path, tender_type: str, core_dir: Path | None = None)
     fields: list[TenderField] = []
     defs: list[FieldDef] = []
     seen: set[str] = set()
+    excluded: set[str] = set()
     sources = ((core, core_path), (pack, pack_dir / "pack.yaml"), (own, pack_dir))
     for section_name in included:
         for raw, where in sources:
             for path, field in raw.fields.items():
                 if field.section != section_name:
+                    continue
+                if path in own.excludes and raw is not own:
+                    excluded.add(path)
                     continue
                 if path in seen:
                     raise PackError(f"{where}: field {path!r} is defined twice")
@@ -304,6 +314,11 @@ def compile_type(pack_dir: Path, tender_type: str, core_dir: Path | None = None)
         stray = sorted({f.section for f in raw.fields.values()} - set(sections))
         if stray:
             raise PackError(f"{where}: field(s) name unknown section(s) {stray}")
+    unknown_excluded = sorted(set(own.excludes) - excluded)
+    if unknown_excluded:
+        raise PackError(
+            f"{pack_dir}: {tender_type!r} excludes field(s) it would not have: {unknown_excluded}"
+        )
     unknown_required = sorted(set(own.required) - seen)
     if unknown_required:
         raise PackError(f"{pack_dir}: {tender_type!r} requires unknown field(s) {unknown_required}")

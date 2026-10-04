@@ -172,4 +172,56 @@ I stopped after three runs: the last run found no code defect, and what remains 
 5. **Periods in other units** (validity in months, closure counted back from SCSD, turnover per MW): change the schema now, or after the first reviews show how often it matters?
 6. **Date-order rule.** Keep "pre-bid before queries close", or drop that pair?
 
+## After acceptance (2026-10-04)
+
+Stage 2 was accepted. The answers to the open questions are in `docs/DECISIONS.md`. What was done before the `stage-3-start` tag:
+
+| Decision | Done |
+| --- | --- |
+| 2. Add the NITs | The published notice of each of the nine tenders was fetched from the agency's tender page and filed as a `nit` document on the tender's latest version; key dates were read again. **All 13 tenders now have a bid submission deadline candidate with located evidence.** SECI and NTPC publish the notice as a web page, so each document is a PDF of the page's own text with its URL and retrieval date |
+| 3. Required fields in core | A required field is checked against the whole object: an empty candidate is not flagged when another document or an earlier version states the field. The tender review state lists `missing_required`. After the run the only required field missing on any tender is the tender number of the Beed RFP, which prints none |
+| 4. EPC | PPA tenure and ceiling tariff are excluded from the `epc` type |
+| 5. Basis fields | Bid validity with unit; financial closure with reference; turnover and liquidity with basis. Key dates and eligibility were extracted again on every document that is read for them |
+| 6. Date rule | Queries closing before the pre-bid meeting is a warning (new `severity` on validation results); it no longer sends NHPC FDRE-II to review |
+| Amendment routing | Every amending document is mapped in full by the model and read for the union of the map and the keywords; each comparison is logged. See below |
+| Evidence resolver | Standalone package `core/evidence/`, with a corpus of 220 cases. See below |
+| 1. Caching and batch API | Not built. Written into the Stage 3 prompt, with the measurement to report |
+| VM resize | Not done: it needs the VM stopped, which ends my session. Commands below |
+
+**The two numbers after these changes** (`EXTRACTION-SUMMARY.md` is regenerated): evidence-location rate 99.8% (800 of 802 values; the two misses are the same two as before, in a section that was not read again); answer rate 70% (802 of 1,146 fields), from 33% to 88% per tender. Fields flagged for review by validation: 7, down from 21.
+
+**Amendment routing, keywords against the full map**, on the 11 amending documents of the set (`python -m scripts.ingest_tenders routing-report`):
+
+| Document | Pages | Keywords only | Map only |
+| --- | --- | --- | --- |
+| Ramagiri Amendment-02 | 18 | key_dates | none |
+| Ramagiri Amendment-03 | 13 | commercial | eligibility |
+| CfD-I Amendment-01 | 2 | identity_and_scope | documents |
+| CfD-I Amendment-02 | 5 | none | none |
+| FDRE-IX Amendment-01 | 4 | eligibility | key_dates |
+| RTC-V Amendment-01 | 18 | none | none |
+| RTC-V Amendment-02 | 5 | none | eligibility, documents |
+| C&I-1 pre-bid notification | 1 | commercial | none |
+| RTC-V Clarifications-01 | 2 | five sections | eligibility |
+| RTC-V Amendment-03 | 15 | none | eligibility |
+| Wind-XX Amendment-01 | 4 | eligibility, commercial | documents |
+
+The two methods agree on 2 of 11. The map found a section the keywords had missed on 7; reading those sections returned one real change (Ramagiri Amendment-03 revises the technical qualification) and otherwise restatements. You asked for the map when keywords find nothing or the document is long; because six of those seven documents are 5 pages or fewer, I set the page threshold to 0, so every amending document is mapped. Say if you want a higher threshold. The behaviour is in KNOWN-GAPS.md as unproven.
+
+**Evidence resolver corpus:** 218 of 220 cases pass (99.1%): 188 of 190 real cases from this stage's extraction (all 17 quotes that were unlocated at extraction except two, all 63 near misses, all 110 quotes the exact matcher does not find) and 30 of 30 deliberate cases (hyphenation, ligatures, special spaces, smart quotes and dashes, reformatted numbers, two-column tables, wrapped cells, a page boundary, repeated quotes, quotes not on the page). The two failures are a watermark printed through a heading and a wrapped cell read out of order without a number. While building it I found and closed a real defect: the fuzzy matcher accepted a quote whose number differed from the page.
+
+**Cost of this work:** USD 32.92 (80 model calls). Running total: about USD 260.
+
+**Not rerun:** the independent reviewer and the real-model end-to-end tests were not run on these changes. 360 Python tests and the watcher's eight checks are green.
+
+**VM resize, for you to run** from your laptop or Cloud Shell (the VM is `instance-20261004-081207` in `asia-south2-b`; the static IP stays attached):
+
+```
+gcloud compute instances stop instance-20261004-081207 --zone asia-south2-b
+gcloud compute instances set-machine-type instance-20261004-081207 --zone asia-south2-b --machine-type e2-standard-4
+gcloud compute instances start instance-20261004-081207 --zone asia-south2-b
+```
+
+Then on the VM: `cd /work/tender_engine && make up`, which starts the app and the watcher.
+
 Stage 2 stops here. Next: `Run Stage 3 of docs/MASTER-PROMPT.md.`

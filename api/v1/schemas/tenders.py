@@ -55,12 +55,15 @@ class TenderExtractRequest(BaseModel):
 class TenderReviewState(BaseModel):
     """Core's review state for one version of a tender. For a version after the original,
     changed_fields lists the fields that version gives a value for; every other field
-    keeps what the earlier versions say."""
+    keeps what the earlier versions say. A required field is required of the tender, not
+    of each version: missing_required lists those no version up to this one states."""
 
     tender_id: str
     version_no: int | None
     version_kind: str | None
     changed_fields: list[str] = Field(default_factory=list)
+    # Required fields the tender as a whole lacks up to this version.
+    missing_required: list[str] = Field(default_factory=list)
     state: ReviewState
 
 

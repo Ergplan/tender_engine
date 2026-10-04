@@ -37,6 +37,7 @@ class Runner:
         storage: Storage,
         schemas: SchemaRegistry,
         llm: LLMClient,
+        extra_handlers: dict[str, Handler] | None = None,
     ) -> None:
         self._settings = settings
         self._session_factory = session_factory
@@ -49,6 +50,8 @@ class Runner:
             "section_map": lambda s, p: _ignore(self._section_map.map(s, p["document_id"])),
             "extract": lambda s, p: _ignore(self._extract.extract(s, p["extraction_run_id"])),
             "validate": lambda s, p: _ignore(self._validate.validate(s, p["extraction_run_id"])),
+            # Job kinds of the domain layer, handed in by whoever builds the runner.
+            **(extra_handlers or {}),
         }
 
     def run_once(self) -> bool:

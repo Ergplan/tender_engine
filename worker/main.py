@@ -7,7 +7,9 @@ import threading
 from core.config import Settings
 from core.db import make_engine, make_session_factory
 from core.llm.client import LLMClient
+from core.services.extract import ExtractService
 from core.storage import make_storage
+from tender.services.amendment_map import AmendmentMapper, job_handlers
 from tender.services.packs import build_registry
 from worker.runner import Runner
 
@@ -15,13 +17,12 @@ from worker.runner import Runner
 def build_runner(settings: Settings) -> Runner:
     session_factory = make_session_factory(make_engine(settings))
     schemas, catalog = build_registry()
-    return Runner(
-        settings,
-        session_factory,
-        make_storage(settings),
-        schemas,
-        LLMClient(settings, session_factory, prompt_roots=catalog.prompt_roots),
+    storage = make_storage(settings)
+    llm = LLMClient(settings, session_factory, prompt_roots=catalog.prompt_roots)
+    mapper = AmendmentMapper(
+        llm, catalog, ExtractService(llm, storage, schemas, settings), settings.tenant_id
     )
+    return Runner(settings, session_factory, storage, schemas, llm, job_handlers(mapper))
 
 
 def main() -> None:

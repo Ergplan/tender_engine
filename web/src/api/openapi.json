@@ -556,6 +556,17 @@
             "title": "Id",
             "type": "string"
           },
+          "match_method": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Match Method"
+          },
           "match_score": {
             "anyOf": [
               {
@@ -589,7 +600,8 @@
           "char_end",
           "quote",
           "resolution",
-          "match_score"
+          "match_score",
+          "match_method"
         ],
         "title": "EvidenceView",
         "type": "object"
@@ -1458,13 +1470,20 @@
         "type": "object"
       },
       "TenderReviewState": {
-        "description": "Core's review state for one version of a tender. For a version after the original,\nchanged_fields lists the fields that version gives a value for; every other field\nkeeps what the earlier versions say.",
+        "description": "Core's review state for one version of a tender. For a version after the original,\nchanged_fields lists the fields that version gives a value for; every other field\nkeeps what the earlier versions say. A required field is required of the tender, not\nof each version: missing_required lists those no version up to this one states.",
         "properties": {
           "changed_fields": {
             "items": {
               "type": "string"
             },
             "title": "Changed Fields",
+            "type": "array"
+          },
+          "missing_required": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Missing Required",
             "type": "array"
           },
           "state": {
@@ -1747,12 +1766,17 @@
           "rule_name": {
             "title": "Rule Name",
             "type": "string"
+          },
+          "severity": {
+            "title": "Severity",
+            "type": "string"
           }
         },
         "required": [
           "rule_name",
           "passed",
-          "message"
+          "message",
+          "severity"
         ],
         "title": "ValidationView",
         "type": "object"
@@ -2601,7 +2625,7 @@
     },
     "/api/v1/tenders/{tender_id}/extract": {
       "post": {
-        "description": "Queue the extraction of one version (the latest by default): one run per document.\nA version after the original is read only for the sections its documents touch.",
+        "description": "Queue the extraction of one version (the latest by default): one run per document.\nA version after the original is read only for the sections its documents touch. A long\namendment, or one whose text matches no section keyword, is first mapped in full by a\nbackground job, which then queues its run; such a run is not in this response.",
         "operationId": "start_extraction_api_v1_tenders__tender_id__extract_post",
         "parameters": [
           {
