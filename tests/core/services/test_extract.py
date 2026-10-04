@@ -429,3 +429,66 @@ def test_an_older_run_that_finishes_after_a_newer_one_does_not_take_over(
     state = pipeline.review_state.for_object(db, "document", document.id)
     assert state.run is not None and state.run.id == newer.id
     assert all(field.candidate is not None for field in state.fields)
+
+
+def test_a_run_limited_to_groups_extracts_only_those_groups(
+    pipeline: Pipeline, db: Session
+) -> None:
+    document = pipeline.parsed_document(db)
+    run = pipeline.start_run(db, document, groups=["dates"])
+    pipeline.runner.run_until_idle()
+    db.refresh(run)
+    assert run.status == "validated" and run.groups == ["dates"]
+    assert len(pipeline.sdk.extract_calls()) == 1
+    assert sorted(candidates(db, run)) == ["dates.bid_deadline", "dates.pre_bid_date"]
+    with pytest.raises(ExtractionError, match="no group"):
+        pipeline.start_run(db, document, groups=["nope"])
+    with pytest.raises(ExtractionError, match="no group"):
+        pipeline.start_run(db, document, groups=[])
+
+
+def test_a_later_run_supersedes_only_the_fields_it_covers(pipeline: Pipeline, db: Session) -> None:
+    full = pipeline.extracted_run(db)
+    from core.models import Document
+
+    partial = pipeline.start_run(db, db.get_one(Document, full.document_id), groups=["dates"])
+    pipeline.runner.run_until_idle()
+    db.expire_all()
+    statuses = {path: c.status for path, c in candidates(db, full).items()}
+    assert {path for path, status in statuses.items() if status == "superseded"} == {
+        "dates.bid_deadline",
+        "dates.pre_bid_date",
+    }
+    assert {c.status for c in candidates(db, partial).values()} == {"validated"}
+    state = pipeline.review_state.for_object(db, "document", full.document_id)
+    assert [r.id for r in state.runs] == [partial.id, full.id]
+    live = {f.field_path: f.candidate.id for f in state.fields if f.candidate}
+    assert len(live) == 7
+    assert live["dates.bid_deadline"] == candidates(db, partial)["dates.bid_deadline"].id
+    assert live["security.emd_per_mw"] == candidates(db, full)["security.emd_per_mw"].id
+
+
+def test_runs_on_two_documents_of_one_object_keep_both_documents_candidates(
+    pipeline: Pipeline, db: Session
+) -> None:
+    """An object version may hold several documents: a run on one of them leaves the
+    candidates from the other alone, and review state reads across both."""
+    first = pipeline.parsed_document(db)
+    second = pipeline.parsed_document(db, make_pdf([PAGE_1, PAGE_2, PAGE_3, ["Appendix"]]))
+    run_a = pipeline.start_run(db, first, object_type="thing", object_id="a" * 32)
+    pipeline.runner.run_until_idle()
+    run_b = pipeline.start_run(
+        db, second, object_type="thing", object_id="a" * 32, groups=["security"]
+    )
+    pipeline.runner.run_until_idle()
+    db.expire_all()
+    assert {c.status for c in candidates(db, run_a).values()} == {"validated"}
+    assert {c.status for c in candidates(db, run_b).values()} == {"validated"}
+    state = pipeline.review_state.for_object(db, "thing", "a" * 32)
+    emd = next(f for f in state.fields if f.field_path == "security.emd_per_mw")
+    assert emd.candidate is not None and emd.alternative_candidates == 1
+    assert emd.candidate.document_id in (first.id, second.id)
+    assert {r.document_id for r in state.runs} == {first.id, second.id}
+    issuer = next(f for f in state.fields if f.field_path == "identity.issuer")
+    assert issuer.candidate is not None and issuer.candidate.document_id == first.id
+    assert issuer.alternative_candidates == 0

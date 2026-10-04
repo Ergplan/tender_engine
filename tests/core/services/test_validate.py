@@ -1,6 +1,7 @@
 from collections.abc import Callable
 from typing import Any
 
+import pytest
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
@@ -41,7 +42,7 @@ def test_clean_candidates_are_validated_with_a_result_per_rule(
     status, rules = results(db, run, "identity.agreement_number")
     assert status == "validated" and rules["regex"][0] is True
     status, rules = results(db, run, "dates.pre_bid_date")
-    assert status == "validated" and rules["date_order"][0] is True
+    assert status == "validated" and rules["contract_date_order"][0] is True
     assert all(
         row.tenant_id == "ergplan" and row.created_by == "validation"
         for row in db.scalars(select(ValidationResult))
@@ -57,7 +58,7 @@ def test_a_value_of_the_wrong_type_needs_review_with_the_rule_name(
     status, rules = results(db, run, "dates.bid_deadline")
     assert status == "needs_review"
     assert rules["type"] == (False, "not a valid date: unrecognised date 'end of March'")
-    assert "date_order" not in rules
+    assert "contract_date_order" not in rules
 
 
 def test_out_of_range_and_pattern_failures_need_review(
@@ -85,7 +86,7 @@ def test_a_cross_field_failure_marks_both_fields(make_pipeline: MakePipeline, db
     for path in ("dates.pre_bid_date", "dates.bid_deadline"):
         status, rules = results(db, run, path)
         assert status == "needs_review"
-        assert rules["date_order"] == (
+        assert rules["contract_date_order"] == (
             False,
             "pre-bid date 2026-04-12 is after bid deadline 2026-03-30",
         )
@@ -125,7 +126,7 @@ def test_a_required_field_the_model_did_not_find_is_flagged_but_an_optional_one_
     assert status == "needs_review", "a failed validation marks the candidate needs_review"
     assert rules == {"required_present": (False, "required field: the model returned no value")}
     assert results(db, run, "identity.issuer") == ("not_found", {})
-    assert "date_order" not in results(db, run, "dates.pre_bid_date")[1]
+    assert "contract_date_order" not in results(db, run, "dates.pre_bid_date")[1]
 
 
 def test_a_rejected_candidate_gets_the_evidence_required_result(
@@ -221,4 +222,64 @@ def test_a_cross_field_failure_is_written_on_every_candidate_of_the_fields(
                 ValidationResult.candidate_id == row.id, ValidationResult.passed.is_(False)
             )
         ).all()
-        assert "date_order" in failed and row.status == "needs_review"
+        assert "contract_date_order" in failed and row.status == "needs_review"
+
+
+def test_a_run_rule_sees_the_run_and_its_valued_candidates_and_can_fail_one(
+    make_pipeline: MakePipeline, db: Session
+) -> None:
+    from collections.abc import Sequence
+
+    from core.schemas import CandidateOutcome
+    from tests.fixtures.schemas import contract_schema
+
+    seen: list[tuple[str, list[str]]] = []
+
+    def no_emd(
+        session: Session, run: ExtractionRun, valued: Sequence[Candidate]
+    ) -> list[CandidateOutcome]:
+        seen.append((run.schema_name, sorted(c.field_path for c in valued)))
+        return [
+            CandidateOutcome(c.id, c.field_path != "security.emd_per_mw", "checked by run rule")
+            for c in valued
+        ]
+
+    pipeline = make_pipeline(ScriptedSDK({k: v for k, v in GOOD_ANSWERS.items() if k != "issuer"}))
+    pipeline.schemas.register_run_rule("no_emd", no_emd)
+    with pytest.raises(ValueError, match="already registered"):
+        pipeline.schemas.register_run_rule("no_emd", no_emd)
+    with pytest.raises(ValueError, match="unregistered run rule"):
+        pipeline.schemas.register(
+            contract_schema().model_copy(update={"name": "test.bad", "run_rules": ["missing"]})
+        )
+    schema = contract_schema().model_copy(update={"name": "test.runrule", "run_rules": ["no_emd"]})
+    pipeline.schemas.register(schema)
+    document = pipeline.parsed_document(db)
+    run = pipeline.extract.start_run(
+        db,
+        document_id=document.id,
+        schema_name="test.runrule",
+        schema_version="v1",
+        prompt_version="v1",
+        created_by="pytest",
+        is_fixture=True,
+    )
+    pipeline.runner.run_until_idle()
+    assert seen == [
+        (
+            "test.runrule",
+            [
+                "dates.bid_deadline",
+                "dates.pre_bid_date",
+                "identity.agreement_number",
+                "security.capacity_mw",
+                "security.emd_per_mw",
+                "security.tenure_years",
+            ],
+        )
+    ]
+    status, rules = results(db, run, "security.emd_per_mw")
+    assert status == "needs_review" and rules["no_emd"] == (False, "checked by run rule")
+    status, rules = results(db, run, "security.capacity_mw")
+    assert status == "validated" and rules["no_emd"] == (True, "checked by run rule")
+    assert "no_emd" not in results(db, run, "identity.issuer")[1]

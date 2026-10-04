@@ -175,9 +175,11 @@ class ExtractService:
         object_type: str = "document",
         object_id: str | None = None,
         object_version: int = 1,
+        groups: list[str] | None = None,
         is_fixture: bool = False,
     ) -> ExtractionRun:
-        """Create the run and enqueue it. Refuses unknown schemas and unregistered prompts."""
+        """Create the run and enqueue it. Refuses unknown schemas and unregistered prompts.
+        `groups` limits the run to those field groups of the schema."""
         tenant_id = self._settings.tenant_id
         document = session.scalar(
             select(Document).where(Document.id == document_id, Document.tenant_id == tenant_id)
@@ -194,7 +196,11 @@ class ExtractService:
         if not has_sections:
             raise ExtractionError("document has no section map yet")
         schema = self._schemas.get(schema_name, schema_version)
-        for group in schema.groups:
+        if groups is not None:
+            unknown = sorted(set(groups) - {group.name for group in schema.groups})
+            if unknown or not groups:
+                raise ExtractionError(f"schema {schema.name} has no group(s) {unknown}")
+        for group in _run_groups(schema, groups):
             self._llm.prompt(group.prompt_name, prompt_version)
         run = ExtractionRun(
             tenant_id=tenant_id,
@@ -206,6 +212,7 @@ class ExtractService:
             schema_name=schema.name,
             schema_version=schema.version,
             prompt_version=prompt_version,
+            groups=sorted(set(groups)) if groups is not None else None,
             model=self._llm.model,
             status="queued",
             is_fixture=is_fixture,
@@ -262,7 +269,7 @@ class ExtractService:
         pdf = self._storage.get(document.storage_path)
         pages = _PageCache(session, document.id, tenant_id)
 
-        for group in schema.groups:
+        for group in _run_groups(schema, run.groups):
             fields = schema.fields_in(group.name)
             done = set(
                 session.scalars(
@@ -524,47 +531,58 @@ class ExtractService:
         }
 
     def _supersede_earlier_runs(self, session: Session, run: ExtractionRun) -> None:
-        """The newest run of an object keeps the live candidates. A run that finishes
-        supersedes the candidates of runs started before it; if a run started after it
-        has already finished, this run's own candidates are superseded instead."""
-        same_object = (
-            ExtractionRun.tenant_id == run.tenant_id,
-            ExtractionRun.object_type == run.object_type,
-            ExtractionRun.object_id == run.object_id,
-            ExtractionRun.object_version == run.object_version,
-            ExtractionRun.schema_name == run.schema_name,
-            ExtractionRun.id != run.id,
-        )
-        newer_finished = session.scalar(
-            select(ExtractionRun.id)
-            .where(
-                *same_object,
-                ExtractionRun.created_at > run.created_at,
-                ExtractionRun.status.in_(("extracted", "validated")),
-            )
-            .limit(1)
-        )
-        if newer_finished is not None:
-            outdated = session.scalars(
-                select(Candidate).where(
-                    Candidate.extraction_run_id == run.id,
-                    Candidate.tenant_id == run.tenant_id,
-                    Candidate.status.in_(LIVE_STATUSES),
+        """For each field and document, the newest run keeps the live candidates. A run that
+        finishes supersedes the candidates that runs started before it produced from the
+        same document for the fields it covers; where a run started after it has already
+        finished for a field, this run's own candidates for that field are superseded
+        instead. Candidates from the object's other documents are left alone."""
+        schema = self._schemas.get(run.schema_name, run.schema_version)
+        mine = _run_fields(schema, run.groups)
+        others = list(
+            session.scalars(
+                select(ExtractionRun).where(
+                    ExtractionRun.tenant_id == run.tenant_id,
+                    ExtractionRun.object_type == run.object_type,
+                    ExtractionRun.object_id == run.object_id,
+                    ExtractionRun.object_version == run.object_version,
+                    ExtractionRun.schema_name == run.schema_name,
+                    ExtractionRun.document_id == run.document_id,
+                    ExtractionRun.id != run.id,
                 )
             )
-        else:
-            outdated = session.scalars(
-                select(Candidate)
-                .join(ExtractionRun, Candidate.extraction_run_id == ExtractionRun.id)
-                .where(
-                    *same_object,
-                    ExtractionRun.created_at <= run.created_at,
-                    Candidate.tenant_id == run.tenant_id,
-                    Candidate.status.in_(LIVE_STATUSES),
+        )
+        lost: dict[str, str] = {}
+        for other in others:
+            if other.created_at > run.created_at and other.status in ("extracted", "validated"):
+                for path in mine & _run_fields(schema, other.groups):
+                    lost.setdefault(path, other.id)
+        outdated: list[tuple[Candidate, str]] = []
+        if lost:
+            outdated += [
+                (candidate, lost[candidate.field_path])
+                for candidate in session.scalars(
+                    select(Candidate).where(
+                        Candidate.extraction_run_id == run.id,
+                        Candidate.tenant_id == run.tenant_id,
+                        Candidate.field_path.in_(lost),
+                        Candidate.status.in_(LIVE_STATUSES),
+                    )
                 )
-            )
-        superseded_by = newer_finished or run.id
-        for candidate in outdated:
+            ]
+        earlier = [other.id for other in others if other.created_at <= run.created_at]
+        if earlier:
+            outdated += [
+                (candidate, lost.get(candidate.field_path, run.id))
+                for candidate in session.scalars(
+                    select(Candidate).where(
+                        Candidate.extraction_run_id.in_(earlier),
+                        Candidate.tenant_id == run.tenant_id,
+                        Candidate.field_path.in_(mine),
+                        Candidate.status.in_(LIVE_STATUSES),
+                    )
+                )
+            ]
+        for candidate, superseded_by in outdated:
             before = candidate.status
             candidate.status = "superseded"
             audit.record(
@@ -577,6 +595,14 @@ class ExtractService:
                 before={"status": before},
                 after={"status": "superseded", "superseded_by_run": superseded_by},
             )
+
+
+def _run_groups(schema: ExtractionSchema, groups: list[str] | None) -> list[FieldGroup]:
+    return [group for group in schema.groups if groups is None or group.name in groups]
+
+
+def _run_fields(schema: ExtractionSchema, groups: list[str] | None) -> set[str]:
+    return {field.path for field in schema.fields if groups is None or field.group in groups}
 
 
 class _PageCache:

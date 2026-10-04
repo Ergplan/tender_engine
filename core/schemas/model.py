@@ -25,6 +25,8 @@ class FieldDef(BaseModel):
     required: bool = False
     help_text: str = ""
     enum_values: list[str] | None = None
+    # For a list type whose items are records: the keys every item may carry.
+    item_keys: list[str] | None = None
     validation: FieldValidation = Field(default_factory=FieldValidation)
     review_order: int = 0
 
@@ -49,6 +51,8 @@ class ExtractionSchema(BaseModel):
     groups: list[FieldGroup]
     fields: list[FieldDef]
     cross_field_rules: list[str] = Field(default_factory=list)
+    # Rules that see a whole run (its object, its candidates and their evidence).
+    run_rules: list[str] = Field(default_factory=list)
 
     @model_validator(mode="after")
     def _consistent(self) -> "ExtractionSchema":

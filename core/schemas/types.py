@@ -55,7 +55,8 @@ def _text(raw: Any, field: FieldDef) -> str:
     return raw.strip()
 
 
-def _number(raw: Any) -> float | int:
+def parse_number(raw: Any) -> float | int:
+    """A number from a number or a numeric string (thousands separators allowed)."""
     if isinstance(raw, bool):
         raise ValueError("expected a number, got a boolean")
     if isinstance(raw, int | float):
@@ -68,11 +69,11 @@ def _number(raw: Any) -> float | int:
 
 
 def _decimal(raw: Any, field: FieldDef) -> float | int:
-    return _number(raw)
+    return parse_number(raw)
 
 
 def _int(raw: Any, field: FieldDef) -> int:
-    number = _number(raw)
+    number = parse_number(raw)
     if not isinstance(number, int):
         raise ValueError(f"expected a whole number, got {raw!r}")
     return number

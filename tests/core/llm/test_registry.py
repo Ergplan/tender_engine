@@ -55,3 +55,29 @@ def test_later_roots_are_searched(tmp_path: Path) -> None:
     (tmp_path / "extra" / "v2.md").write_text(HEADER + "Second root body.\n")
     prompt = load_prompt("extra", "v2", roots=(tmp_path / "nowhere", tmp_path))
     assert prompt.text == "Second root body."
+
+
+def test_a_prompt_that_extends_another_carries_the_parents_text_and_a_hash_of_both(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "base").mkdir()
+    (tmp_path / "base" / "v1.md").write_text(HEADER + "Base rules.\n")
+    (tmp_path / "child" / "sub").mkdir(parents=True)
+    child = tmp_path / "child" / "sub" / "v1.md"
+    child.write_text(HEADER.replace("---\n", "---\nextends: base/v1\n", 1) + "Domain guidance.\n")
+    parent = load_prompt("base", "v1", roots=(tmp_path,))
+    prompt = load_prompt("child/sub", "v1", roots=(tmp_path,))
+    assert prompt.text == "Base rules.\n\nDomain guidance."
+    assert prompt.header["extends"] == "base/v1" and prompt.sha256 != parent.sha256
+    (tmp_path / "base" / "v1.md").write_text(HEADER + "Base rules, changed.\n")
+    assert load_prompt("child/sub", "v1", roots=(tmp_path,)).sha256 != prompt.sha256
+
+
+def test_a_prompt_cannot_extend_itself_or_an_unregistered_prompt(tmp_path: Path) -> None:
+    for name, parent in (("loop", "loop/v1"), ("orphan", "missing/v1")):
+        (tmp_path / name).mkdir()
+        (tmp_path / name / "v1.md").write_text(
+            HEADER.replace("---\n", f"---\nextends: {parent}\n", 1) + "Body.\n"
+        )
+        with pytest.raises(UnregisteredPromptError):
+            load_prompt(name, "v1", roots=(tmp_path,))

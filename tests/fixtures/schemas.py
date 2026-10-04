@@ -104,12 +104,12 @@ def contract_schema() -> ExtractionSchema:
                 review_order=7,
             ),
         ],
-        cross_field_rules=["date_order"],
+        cross_field_rules=["contract_date_order"],
     )
 
 
 def make_registry() -> SchemaRegistry:
     registry = SchemaRegistry()
-    registry.register_rule("date_order", date_order)
+    registry.register_rule("contract_date_order", date_order)
     registry.register(contract_schema())
     return registry

@@ -43,12 +43,12 @@ def test_registering_twice_is_refused() -> None:
     with pytest.raises(ValueError, match="already registered"):
         registry.register(contract_schema())
     with pytest.raises(ValueError, match="already registered"):
-        registry.register_rule("date_order", date_order)
+        registry.register_rule("contract_date_order", date_order)
 
 
 def test_schema_with_an_unregistered_rule_or_type_is_refused() -> None:
     registry = SchemaRegistry()
-    with pytest.raises(ValueError, match="unregistered rule 'date_order'"):
+    with pytest.raises(ValueError, match="unregistered rule 'contract_date_order'"):
         registry.register(contract_schema())
     with pytest.raises(ValueError, match="unknown value type 'money'"):
         registry.register(

@@ -7,10 +7,18 @@ from core.schemas.model import (
     FieldValidation,
     RoutingHints,
 )
-from core.schemas.registry import CrossFieldRule, RuleOutcome, SchemaRegistry, UnknownSchemaError
+from core.schemas.registry import (
+    CandidateOutcome,
+    CrossFieldRule,
+    RuleOutcome,
+    RunRule,
+    SchemaRegistry,
+    UnknownSchemaError,
+)
 from core.schemas.types import ValueType, ValueTypeRegistry
 
 __all__ = [
+    "CandidateOutcome",
     "CrossFieldRule",
     "ExtractionSchema",
     "FieldDef",
@@ -18,6 +26,7 @@ __all__ = [
     "FieldValidation",
     "RoutingHints",
     "RuleOutcome",
+    "RunRule",
     "SchemaRegistry",
     "UnknownSchemaError",
     "ValueType",

@@ -1,4 +1,5 @@
-"""ValidationService: type coercion, required fields, range and regex rules, cross-field rules.
+"""ValidationService: type coercion, required fields, range and regex rules, cross-field
+rules and run rules.
 
 Deterministic: no model call. A failed rule marks the candidate needs_review with the rule
 name; it never hides the candidate.
@@ -96,6 +97,13 @@ class ValidationService:
 
         best = _best_per_field(candidates, coerced)
         self._cross_field(schema, best, candidates, coerced, results)
+        valued = [candidate for candidate in candidates if candidate.id in coerced]
+        for rule_name in schema.run_rules:
+            for verdict in self._schemas.run_rule(rule_name)(session, run, valued):
+                if verdict.candidate_id in coerced:
+                    results[verdict.candidate_id].append(
+                        (rule_name, verdict.passed, verdict.message)
+                    )
 
         for candidate in candidates:
             for rule_name, passed, message in results[candidate.id]:

@@ -4,6 +4,7 @@ from logging.config import fileConfig
 
 from alembic import context
 
+import tender.models  # noqa: F401  (registers the tender tables on Base.metadata)
 from core.config import Settings
 from core.db import make_engine
 from core.models import Base

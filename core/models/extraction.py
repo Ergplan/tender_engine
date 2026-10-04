@@ -17,7 +17,10 @@ REVIEWABLE_STATUSES = ("validated", "needs_review")
 
 
 class ExtractionRun(IdMixin, TenantAuditMixin, Base):
-    """One extraction of one document with one schema and prompt version, for one object."""
+    """One extraction of one document with one schema and prompt version, for one object.
+
+    groups limits the run to the named field groups of the schema; null means all of them.
+    An object version may be extracted by several runs, one per document it holds."""
 
     __tablename__ = "extraction_run"
 
@@ -28,6 +31,7 @@ class ExtractionRun(IdMixin, TenantAuditMixin, Base):
     schema_name: Mapped[str] = mapped_column(String(100), nullable=False)
     schema_version: Mapped[str] = mapped_column(String(20), nullable=False)
     prompt_version: Mapped[str] = mapped_column(String(20), nullable=False)
+    groups: Mapped[list[str] | None] = mapped_column(JSONB(none_as_null=True), nullable=True)
     model: Mapped[str] = mapped_column(String(100), nullable=False)
     status: Mapped[str] = mapped_column(String(20), nullable=False, default="queued")
     started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)

@@ -2,6 +2,9 @@
 
 A prompt that is not on disk under a registered root cannot be run. The version string
 is stored on every llm_call_log row (and, from Stage 1, on every candidate).
+
+A prompt may inherit another with the header line `extends: <name>/<version>`: its text is
+the parent's text followed by its own, and its hash covers both.
 """
 
 import hashlib
@@ -27,22 +30,29 @@ class Prompt(BaseModel):
     sha256: str
 
 
-def load_prompt(name: str, version: str, roots: tuple[Path, ...] = (CORE_PROMPT_ROOT,)) -> Prompt:
+def load_prompt(
+    name: str,
+    version: str,
+    roots: tuple[Path, ...] = (CORE_PROMPT_ROOT,),
+    _seen: tuple[tuple[str, str], ...] = (),
+) -> Prompt:
     """Load prompt <name>/<version>.md from the first root that has it, or refuse."""
     if not _NAME.match(name) or not _VERSION.match(version):
         raise UnregisteredPromptError(f"invalid prompt reference {name!r} {version!r}")
+    if (name, version) in _seen:
+        raise UnregisteredPromptError(f"prompt {name}/{version} extends itself")
     for root in roots:
         path = root / name / f"{version}.md"
         if path.is_file():
             raw = path.read_text(encoding="utf-8")
             header, text = _split(raw, path)
-            return Prompt(
-                name=name,
-                version=version,
-                header=header,
-                text=text,
-                sha256=hashlib.sha256(raw.encode("utf-8")).hexdigest(),
-            )
+            digest = hashlib.sha256(raw.encode("utf-8")).hexdigest()
+            if "extends" in header:
+                parent_name, _, parent_version = header["extends"].rpartition("/")
+                parent = load_prompt(parent_name, parent_version, roots, (*_seen, (name, version)))
+                text = f"{parent.text}\n\n{text}"
+                digest = hashlib.sha256(f"{parent.sha256}{digest}".encode()).hexdigest()
+            return Prompt(name=name, version=version, header=header, text=text, sha256=digest)
     raise UnregisteredPromptError(f"prompt {name}/{version} is not registered")
 
 

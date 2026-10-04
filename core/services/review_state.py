@@ -20,7 +20,7 @@ from core.models import (
     ValidationResult,
 )
 from core.models.extraction import REVIEWABLE_STATUSES
-from core.schemas import SchemaRegistry
+from core.schemas import ExtractionSchema, SchemaRegistry
 
 DECIDED = ("approved", "edited", "not_in_document")
 
@@ -45,6 +45,7 @@ class ValidationView(BaseModel):
 
 class CandidateView(BaseModel):
     id: str
+    document_id: str
     value: Any
     confidence: float
     rationale: str
@@ -86,6 +87,7 @@ class RunView(BaseModel):
     schema_name: str
     schema_version: str
     prompt_version: str
+    groups: list[str] | None
     model: str
     status: str
 
@@ -95,6 +97,7 @@ class ReviewState(BaseModel):
     object_id: str
     object_version: int
     run: RunView | None
+    runs: list[RunView]
     fields: list[FieldState]
     decided: int
     total: int
@@ -123,51 +126,76 @@ class ReviewStateService:
     def for_object(
         self, session: Session, object_type: str, object_id: str, version: int | None = None
     ) -> ReviewState:
-        """State from the latest finished extraction run of the object (latest version by
-        default). A newer run that is queued, running or failed does not hide the fields of
-        the last validated one; with no validated run, the latest run of any status is shown."""
+        """State of the object's latest version (or the one asked for): for every field, the
+        best live candidate among the runs of that version. A version is usually extracted
+        by one run; it may be extracted by several, one per document it holds, and a field
+        may then have candidates from more than one document. The schema is that of the
+        latest validated run (of the latest run when none is validated). A run that is
+        queued, running or failed hides nothing: live candidates stay live until a later
+        run of the same document finishes and supersedes them."""
         query = select(ExtractionRun).where(
             ExtractionRun.tenant_id == self._tenant_id,
             ExtractionRun.object_type == object_type,
             ExtractionRun.object_id == object_id,
         )
-        if version is not None:
-            query = query.where(ExtractionRun.object_version == version)
-        newest_first = (
-            ExtractionRun.object_version.desc(),
-            ExtractionRun.created_at.desc(),
-            ExtractionRun.id.desc(),
-        )
         if version is None:
-            latest_version = session.scalar(
+            version = session.scalar(
                 query.with_only_columns(ExtractionRun.object_version)
                 .order_by(ExtractionRun.object_version.desc())
                 .limit(1)
             )
-            if latest_version is not None:
-                query = query.where(ExtractionRun.object_version == latest_version)
-        run = session.scalar(
-            query.where(ExtractionRun.status == "validated").order_by(*newest_first).limit(1)
-        ) or session.scalar(query.order_by(*newest_first).limit(1))
+        newest_first = (ExtractionRun.created_at.desc(), ExtractionRun.id.desc())
+        all_runs = (
+            []
+            if version is None
+            else list(
+                session.scalars(
+                    query.where(ExtractionRun.object_version == version).order_by(*newest_first)
+                )
+            )
+        )
+        run = next((r for r in all_runs if r.status == "validated"), None) or next(
+            iter(all_runs), None
+        )
         if run is None:
             return ReviewState(
                 object_type=object_type,
                 object_id=object_id,
                 object_version=version or 1,
                 run=None,
+                runs=[],
                 fields=[],
                 decided=0,
                 total=0,
                 required_undecided=0,
             )
         schema = self._schemas.get(run.schema_name, run.schema_version)
+        runs = [
+            r
+            for r in all_runs
+            if (r.schema_name, r.schema_version) == (run.schema_name, run.schema_version)
+        ]
+        document_of = {r.id: r.document_id for r in runs}
         candidates = list(
             session.scalars(
                 select(Candidate).where(
-                    Candidate.tenant_id == self._tenant_id, Candidate.extraction_run_id == run.id
+                    Candidate.tenant_id == self._tenant_id,
+                    Candidate.extraction_run_id.in_(list(document_of)),
+                    Candidate.status.in_((*REVIEWABLE_STATUSES, "not_found")),
                 )
             )
         )
+        return self._state(session, run, runs, schema, candidates, document_of)
+
+    def _state(
+        self,
+        session: Session,
+        run: ExtractionRun,
+        runs: list[ExtractionRun],
+        schema: ExtractionSchema,
+        candidates: list[Candidate],
+        document_of: dict[str, str],
+    ) -> ReviewState:
         ids = [candidate.id for candidate in candidates]
         evidence: dict[str, list[EvidenceView]] = {cid: [] for cid in ids}
         for span in session.scalars(
@@ -207,8 +235,10 @@ class ReviewStateService:
         for field in sorted(schema.fields, key=lambda f: (f.review_order, f.path)):
             own = [c for c in candidates if c.field_path == field.path]
             reviewable = [c for c in own if c.status in REVIEWABLE_STATUSES]
-            best = _best(reviewable, evidence) or next(
-                (c for c in own if c.status == "not_found"), None
+            best = _best(reviewable, evidence) or min(
+                (c for c in own if c.status == "not_found"),
+                key=lambda c: (c.extraction_run_id != run.id, c.id),
+                default=None,
             )
             approval = approvals.get(field.path)
             fields.append(
@@ -226,6 +256,7 @@ class ReviewStateService:
                     if best is None
                     else CandidateView(
                         id=best.id,
+                        document_id=document_of[best.extraction_run_id],
                         value=best.value,
                         confidence=best.confidence,
                         rationale=best.rationale,
@@ -247,6 +278,7 @@ class ReviewStateService:
             object_id=run.object_id,
             object_version=run.object_version,
             run=RunView.model_validate(run, from_attributes=True),
+            runs=[RunView.model_validate(r, from_attributes=True) for r in runs],
             fields=fields,
             decided=decided,
             total=len(fields),
