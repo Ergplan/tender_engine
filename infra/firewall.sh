@@ -48,7 +48,7 @@ mapfile -t ADMINS < <(read_list admins)
 HTTPS_RANGES="$(join "${REVIEWERS[@]}" "${ADMINS[@]}")"
 SSH_RANGES="$(join "${ADMINS[@]}")"
 
-run() { if (( PRINT_ONLY )); then printf "%q " "$@"; echo; else printf "+ %q " "$@"; echo; "$@"; fi; }
+run() { if (( PRINT_ONLY )); then printf "%q " "$@"; echo; else printf "+ "; printf "%q " "$@"; echo; "$@"; fi; }
 
 rule_exists() { gcloud compute firewall-rules describe "$1" --project "$PROJECT" >/dev/null 2>&1; }
 
@@ -85,6 +85,6 @@ done
 
 if (( ! PRINT_ONLY )); then
   echo; echo "Resulting rules targeting tag $TAG:"
-  gcloud compute firewall-rules list --project "$PROJECT" --filter="targetTags:$TAG" \
+  gcloud compute firewall-rules list --project "$PROJECT" --filter="targetTags.list():$TAG" \
     --format="table(name,direction,sourceRanges.list(),allowed[].map().firewall_rule().list(),targetTags.list())"
 fi
