@@ -137,3 +137,69 @@ def test_characters_that_lower_case_to_two_keep_the_index_map_aligned() -> None:
     assert len(normalised) == len(index_map)
     found = locate("rate 12 percent", page(text), 85)
     assert found is not None and text[found.char_start : found.char_end] == "rate 12 percent"
+
+
+# An amendment table as the text layer gives it: "existing clause" and "amended clause"
+# side by side, read line by line across both columns.
+TWO_COLUMNS = (
+    "6. 5.1 A Bidder, including its Parent, Affiliate or Ultimate A Bidder, including its "
+    "Parent, Affiliate or\n"
+    "Parent or any Group Company shall submit a single Ultimate Parent or any Group Company\n"
+    "bid offering a minimum quantum of cumulative shall submit a single bid offering a\n"
+    "Contracted Capacity of 50 MW and a maximum minimum quantum of cumulative\n"
+    "quantum of 600 MW, … Contracted Capacity of 50 MW and a\n"
+    "maximum quantum of 750 MW, …"
+)
+AMENDED = (
+    "shall submit a single bid offering a minimum quantum of cumulative Contracted "
+    "Capacity of 50 MW and a maximum quantum of 750 MW"
+)
+
+
+def test_a_quote_read_down_one_column_of_a_two_column_table_is_located() -> None:
+    table = page(TWO_COLUMNS)
+    found = locate(AMENDED, table, 85)
+    assert found is not None and found.score == 100.0
+    located = TWO_COLUMNS[found.char_start : found.char_end]
+    assert located.startswith("shall submit a single bid offering a\n")
+    assert located.endswith("maximum quantum of 750 MW")
+    # The box is the union of the matched words: it starts at the amended column on the
+    # third line (y=140) and does not reach back to the lines above it.
+    assert found.bbox is not None and found.bbox[1] == 140.0
+    assert found.bbox[3] == 210.0
+
+
+def test_the_other_column_of_the_table_is_located_as_itself_not_as_its_neighbour() -> None:
+    existing = AMENDED.replace("750 MW", "600 MW")
+    found = locate(existing, page(TWO_COLUMNS), 85)
+    assert found is not None
+    located = TWO_COLUMNS[found.char_start : found.char_end]
+    assert "quantum of 600 MW" in located and "750" not in located
+
+
+def test_interleaved_matching_needs_every_number_and_nearly_every_word() -> None:
+    table = page(TWO_COLUMNS)
+    assert locate(AMENDED.replace("750 MW", "900 MW"), table, 85) is None
+    assert locate(AMENDED.replace("50 MW and", "75 MW and"), table, 85) is None
+    reworded = (
+        "must tender one offer for a least amount of total Contracted Capacity of 50 MW "
+        "and a largest amount of 750 MW"
+    )
+    assert locate(reworded, table, 85) is None
+
+
+def test_a_quote_whose_word_the_column_layout_broke_is_still_located() -> None:
+    """A narrow column hyphenates "e-Reverse" across two lines."""
+    text = (
+        "Contracted Capacity of 1200 MW will be carried Contracted Capacity of 1500 MW will be\n"
+        "out through e-bidding followed by e-Reverse carried out through e-bidding followed by e-\n"
+        "Auction (e-RA) process. Reverse Auction (e-RA) process."
+    )
+    quote = (
+        "Contracted Capacity of 1500 MW will be carried out through e-bidding followed by "
+        "e-Reverse Auction (e-RA) process."
+    )
+    found = locate(quote, page(text), 85)
+    assert found is not None and found.score >= 85
+    assert "1500 MW" in text[found.char_start : found.char_end]
+    assert locate(quote.replace("1500 MW", "1800 MW"), page(text), 85) is None

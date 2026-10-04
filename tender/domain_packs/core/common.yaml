@@ -35,13 +35,13 @@ sections:
     prompt: extract/guarantees
     roles: [rfs, contractual, nit]
     section_kinds: [financial_security]
-    keywords: [earnest money deposit, emd, performance bank guarantee, pbg, success charges, processing fee, bid security, contract performance security]
+    keywords: [earnest money deposit, emd, performance bank guarantee, pbg, success charges, processing fee, bid security, contract performance security, bid information sheet]
   commercial:
     label: Commercial
     prompt: extract/commercial
     roles: [rfs, contractual, nit, ppa, cfda]
     section_kinds: [commercial_terms]
-    keywords: [ceiling tariff, tariff, payment security, letter of credit, change in law, late payment surcharge, termination compensation, deemed generation, generation compensation, buying entity, terms of payment]
+    keywords: [ceiling tariff, tariff, payment security, letter of credit, change in law, late payment surcharge, termination compensation, deemed generation, generation compensation, buying entity, terms of payment, bid information sheet]
   penalties:
     label: Penalties
     prompt: extract/penalties
