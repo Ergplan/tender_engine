@@ -22,8 +22,17 @@ SECTIONS = [
 TEXTS = {n: "" for n in range(1, 11)} | {4: "EMD and EMD again", 8: "emd once", 9: "nothing"}
 
 
-def pages(routing: RoutingHints, max_pages: int = 80, fallback: int = 3) -> list[int]:
-    return select_pages(routing, SECTIONS, TEXTS, max_pages=max_pages, fallback_pages=fallback)
+def pages(
+    routing: RoutingHints, max_pages: int = 80, fallback: int = 3, keyword_pages: int = 0
+) -> list[int]:
+    return select_pages(
+        routing,
+        SECTIONS,
+        TEXTS,
+        max_pages=max_pages,
+        fallback_pages=fallback,
+        keyword_pages=keyword_pages,
+    )
 
 
 def test_sections_are_chosen_by_kind() -> None:
@@ -39,6 +48,18 @@ def test_sections_are_chosen_by_keyword_in_the_heading() -> None:
 
 def test_without_a_matching_section_pages_mentioning_the_keywords_are_used() -> None:
     assert pages(RoutingHints(keywords=["emd"])) == [4, 8]
+
+
+def test_pages_outside_the_matched_sections_that_mention_the_keywords_most_are_added() -> None:
+    """The clause can sit in a section the mapper labelled differently from the formats."""
+    routing = RoutingHints(section_kinds=["formats_and_annexures"], keywords=["emd"])
+    assert pages(routing) == [7, 8, 9, 10]
+    assert pages(routing, keyword_pages=1) == [4, 7, 8, 9, 10]
+    cover = RoutingHints(section_kinds=["cover_and_notice"], keywords=["emd"])
+    assert pages(cover, keyword_pages=1) == [1, 2, 4], "the page with most mentions first"
+    assert pages(cover, keyword_pages=5) == [1, 2, 4, 8]
+    both = RoutingHints(section_kinds=["cover_and_notice"], keywords=["emd", "nothing"])
+    assert pages(both, keyword_pages=2) == [1, 2, 4, 9], "each keyword gets its best page"
 
 
 def test_without_any_match_the_opening_pages_are_used() -> None:

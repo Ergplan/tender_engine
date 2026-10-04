@@ -95,9 +95,13 @@ def select_pages(
     *,
     max_pages: int,
     fallback_pages: int,
+    keyword_pages: int = 0,
 ) -> list[int]:
-    """Pages for a group: sections whose kind or heading the hints name; if none match,
-    the pages that mention the keywords most; if still none, the opening pages.
+    """Pages for a group: sections whose kind or heading the hints name, plus up to
+    `keyword_pages` pages outside them, taken keyword by keyword in turn (each keyword's
+    best page first), so the choice does not hang on how the section map happened to label
+    a clause and a frequent keyword cannot crowd out a rare one. If no section matches,
+    every page that mentions a keyword; if still none, the opening pages.
     sections are (start_page, end_page, heading, kind)."""
     kinds = {normalise_kind(kind) for kind in routing.section_kinds}
     keywords = [keyword.lower() for keyword in routing.keywords if keyword.strip()]
@@ -111,12 +115,38 @@ def select_pages(
             pages.update(p for p in range(start, end + 1) if p in page_texts)
     if not pages:
         pages = {page_no for page_no, count in hits.items() if count > 0}
+    else:
+        pages.update(_keyword_pages(keywords, page_texts, pages, keyword_pages))
     if not pages:
         pages = set(sorted(page_texts)[:fallback_pages])
     if len(pages) > max_pages:
         ranked = sorted(pages, key=lambda page_no: (-hits.get(page_no, 0), page_no))
         pages = set(ranked[:max_pages])
     return sorted(pages)
+
+
+def _keyword_pages(
+    keywords: list[str], page_texts: dict[int, str], taken: set[int], budget: int
+) -> list[int]:
+    """Up to `budget` pages not yet taken: round-robin over the keywords, each giving its
+    pages in order of most mentions."""
+    ranked = []
+    for keyword in keywords:
+        counts = {page_no: text.lower().count(keyword) for page_no, text in page_texts.items()}
+        ranked.append(
+            sorted(
+                (page_no for page_no, count in counts.items() if count > 0),
+                key=lambda page_no, counts=counts: (-counts[page_no], page_no),  # type: ignore[misc]
+            )
+        )
+    chosen: list[int] = []
+    for rank in range(max((len(pages) for pages in ranked), default=0)):
+        for pages in ranked:
+            if len(chosen) >= budget:
+                return chosen
+            if rank < len(pages) and pages[rank] not in taken and pages[rank] not in chosen:
+                chosen.append(pages[rank])
+    return chosen
 
 
 def chunked(pages: list[int], size: int) -> Iterator[list[int]]:
@@ -251,6 +281,7 @@ class ExtractService:
                 page_texts,
                 max_pages=self._settings.extract_max_pages_per_group,
                 fallback_pages=self._settings.extract_max_pages_per_call,
+                keyword_pages=self._settings.extract_keyword_pages,
             )
             drafts: dict[str, list[_Draft]] = {field.path: [] for field in fields}
             not_found: dict[str, list[str]] = {field.path: [] for field in fields}

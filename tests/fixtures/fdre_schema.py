@@ -71,8 +71,10 @@ def fdre12_schema() -> ExtractionSchema:
                     section_kinds=["commercial_terms", "technical_requirements"],
                     keywords=[
                         "scheduled commencement of supply",
-                        "power purchase agreement",
-                        "capacity utilization factor",
+                        "ppa period",
+                        "shall be valid for a period",
+                        "cuf",
+                        "ceiling tariff",
                     ],
                 ),
             ),

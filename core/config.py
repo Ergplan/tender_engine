@@ -22,6 +22,7 @@ class Settings(BaseSettings):
 
     extract_max_pages_per_call: int = 40
     extract_max_pages_per_group: int = 80
+    extract_keyword_pages: int = 12
     evidence_match_threshold: float = 85.0
     render_dpi: int = 150
     worker_poll_seconds: float = 2.0
