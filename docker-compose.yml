@@ -1,0 +1,100 @@
+name: tender-engine
+
+x-python: &python
+  build:
+    context: .
+    dockerfile: infra/docker/Dockerfile.python
+    target: app
+  image: tender-engine-python
+  env_file: .env
+  volumes:
+    - .:/app
+    - /data:/data
+    - /work/tenders:/work/tenders:ro
+  depends_on:
+    db:
+      condition: service_healthy
+  restart: unless-stopped
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: tender
+      POSTGRES_PASSWORD: tender
+      POSTGRES_DB: tender
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./infra/db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - "127.0.0.1:5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tender -d tender"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  api:
+    <<: *python
+    command: >
+      uvicorn api.main:create_app --factory --host 0.0.0.0 --port 8000
+      --reload --reload-dir api --reload-dir core --reload-dir tender
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  worker:
+    <<: *python
+    command: python -m worker.main
+
+  web:
+    build:
+      context: .
+      dockerfile: infra/docker/Dockerfile.web
+    image: tender-engine-web
+    volumes:
+      - ./web:/app/web
+      - web_node_modules:/app/web/node_modules
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2
+    ports:
+      - "443:443"
+    volumes:
+      - ./infra/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - api
+      - web
+    restart: unless-stopped
+
+  tests:
+    <<: *python
+    build:
+      context: .
+      dockerfile: infra/docker/Dockerfile.python
+      target: tests
+    image: tender-engine-tests
+    environment:
+      TEST_DATABASE_URL: postgresql+psycopg://tender:tender@db:5432/tender_ci
+    volumes:
+      - .:/app
+      - web_node_modules:/app/web/node_modules
+      - /work/tenders:/work/tenders:ro
+    command: python infra/ci/run_checks.py --watch
+    depends_on:
+      db:
+        condition: service_healthy
+      web:
+        condition: service_started
+
+volumes:
+  pgdata:
+  caddy_data:
+  caddy_config:
+  web_node_modules:

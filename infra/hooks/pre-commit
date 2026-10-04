@@ -1,0 +1,70 @@
+#!/usr/bin/env python3
+"""Refuse a commit when the watcher is red, missing, or has not yet seen the staged files.
+
+Enabled by `make hooks` (git config core.hooksPath infra/hooks).
+"""
+
+import json
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+ROOT = Path(subprocess.check_output(["git", "rev-parse", "--show-toplevel"], text=True).strip())
+STATUS = ROOT / ".ci" / "status.json"
+SUFFIXES = {".py", ".md", ".yaml", ".yml", ".toml", ".ini", ".ts", ".tsx", ".json", ".css"}
+WATCHED = ("core/", "tender/", "api/", "worker/", "tests/", "scripts/", "migrations/",
+           "infra/ci/", "web/src/", "pyproject.toml", "alembic.ini", "web/package.json",
+           "web/tsconfig.json")
+WAIT_SECONDS = 300
+
+
+def staged_watched_files() -> list[Path]:
+    names = subprocess.check_output(
+        ["git", "diff", "--cached", "--name-only", "--diff-filter=ACMR"], text=True
+    ).splitlines()
+    return [
+        ROOT / name
+        for name in names
+        if name.startswith(WATCHED) and Path(name).suffix in SUFFIXES and (ROOT / name).exists()
+    ]
+
+
+def read_status() -> dict | None:
+    try:
+        return json.loads(STATUS.read_text())
+    except (OSError, ValueError):
+        return None
+
+
+def main() -> int:
+    files = staged_watched_files()
+    newest = max((f.stat().st_mtime for f in files), default=0.0)
+    deadline = time.time() + WAIT_SECONDS
+    announced = False
+    while True:
+        status = read_status()
+        if status is None:
+            print("pre-commit: .ci/status.json is missing. Run `make up` or `make check`.")
+            return 1
+        fresh = status.get("state") == "done" and status.get("started_at", 0) >= newest
+        if fresh:
+            break
+        if time.time() > deadline:
+            print("pre-commit: the watcher has not checked the staged files. Is `make up` running?")
+            return 1
+        if not announced:
+            print("pre-commit: waiting for the watcher to check the staged files...")
+            announced = True
+        time.sleep(2)
+    red = [c for c in status.get("checks", []) if c.get("status") != "pass"]
+    if red:
+        print("pre-commit: watcher is RED, commit refused:")
+        for check in red:
+            print(f"  {check['name']}: {check.get('first_failure')}")
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

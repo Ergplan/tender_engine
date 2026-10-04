@@ -1,0 +1,39 @@
+name: ci
+on:
+  push:
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: tender
+          POSTGRES_PASSWORD: tender
+          POSTGRES_DB: tender_ci
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U tender -d tender_ci"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      TEST_DATABASE_URL: postgresql+psycopg://tender:tender@localhost:5432/tender_ci
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          version: "0.12.23"
+      - run: uv sync --frozen
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci --no-audit --no-fund
+        working-directory: web
+      # The same script the watcher runs on the VM: ruff, mypy, alembic check, pytest,
+      # OpenAPI drift, tsc, vitest. Slow tests that call the real LLM are excluded.
+      - run: uv run python infra/ci/run_checks.py --once
+      - if: always()
+        run: cat .ci/latest.log

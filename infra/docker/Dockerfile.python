@@ -1,0 +1,24 @@
+# One Python image for api and worker (target app) and the watcher (target tests).
+FROM python:3.12-slim-bookworm AS app
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    UV_PROJECT_ENVIRONMENT=/opt/venv \
+    UV_LINK_MODE=copy \
+    PATH=/opt/venv/bin:$PATH \
+    HOME=/tmp
+RUN pip install --no-cache-dir uv==0.12.23
+WORKDIR /app
+COPY pyproject.toml uv.lock ./
+RUN uv sync --frozen --no-dev --no-cache
+COPY . .
+USER 1000:1000
+
+FROM app AS tests
+USER root
+# Node is needed for tsc, vitest and the OpenAPI client drift check.
+COPY --from=node:22-bookworm-slim /usr/local/bin/node /usr/local/bin/node
+RUN apt-get update && apt-get install -y --no-install-recommends libstdc++6 git \
+    && rm -rf /var/lib/apt/lists/* \
+    && uv sync --frozen --no-cache
+ENV RUFF_CACHE_DIR=/tmp/ruff MYPY_CACHE_DIR=/tmp/mypy
+USER 1000:1000

@@ -1,0 +1,21 @@
+# TLS from Caddy's internal CA on the static IP. Reviewers see a certificate warning once;
+# docs/KNOWN-GAPS.md explains how to switch to a domain and Let's Encrypt.
+{
+	default_sni 34.131.65.108
+	auto_https disable_redirects
+}
+
+https://34.131.65.108 {
+	tls internal
+	encode gzip
+
+	handle /health {
+		reverse_proxy api:8000
+	}
+	handle /api/* {
+		reverse_proxy api:8000
+	}
+	handle {
+		reverse_proxy web:5173
+	}
+}
