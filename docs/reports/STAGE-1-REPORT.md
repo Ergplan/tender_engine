@@ -176,6 +176,7 @@ Checklist item (d): not applicable until Stage 3 (`make trace` does not exist ye
 - **`delta_kind = exact` is never written.** When the final value equals the candidate, no feedback row is created.
 - **Two extra candidate statuses**, `not_found` and `rejected` (DECISIONS.md).
 - **Objects instead of documents.** Candidates, approvals and facts hang on `(object_type, object_id, object_version)`; in Stage 1 the object is the document.
+- **Tender versions are not built.** No `tender` or `tender_version` table exists in Stage 1 and nothing here creates or compares versions; that is Stage 2. Core only stores the `object_version` number it is given, which is always 1 in Stage 1.
 - **`make trace`.** Still Stage 3; checklist item (d) of the independent review is not applicable.
 - **Scanned pages.** A page with fewer than 50 characters is flagged `has_text_layer = false`. The model still sees it, because extraction sends native PDF pages, but evidence cannot be located on it. No such page occurred in the two test tenders, so this path is covered by unit tests only.
 - **The e2e ran on two tenders, not one**, and has a 30-minute timeout.
