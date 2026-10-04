@@ -1,0 +1,702 @@
+[
+ {
+  "id": "syn-hyphen-linebreak",
+  "category": "hyphenation",
+  "lines": [
+   "The Project shall achieve commis-",
+   "sioning within 24 months of the Effective Date."
+  ],
+  "quote": "The Project shall achieve commissioning within 24 months of the Effective Date",
+  "expect": {
+   "located": true,
+   "method": "exact",
+   "contains": [
+    "24 months"
+   ]
+  }
+ },
+ {
+  "id": "syn-hyphen-compound-linebreak",
+  "category": "hyphenation",
+  "lines": [
+   "Selection will be through e-bidding followed by e-",
+   "Reverse Auction (e-RA) for 1500 MW."
+  ],
+  "quote": "followed by e-Reverse Auction (e-RA) for 1500 MW",
+  "expect": {
+   "located": true,
+   "contains": [
+    "1500 MW"
+   ]
+  }
+ },
+ {
+  "id": "syn-hyphen-number-split-by-column",
+  "category": "hyphenation",
+  "lines": [
+   [
+    [
+     72,
+     "demarcation between the Package 1 (Tender No. SECI/C&P/OP/11/0002/26-"
+    ]
+   ],
+   [
+    [
+     72,
+     "GCC Clause"
+    ],
+    [
+     200,
+     "27 dated 24.06.2026) and Package 2 scopes"
+    ]
+   ]
+  ],
+  "quote": "Package 1 (Tender No. SECI/C&P/OP/11/0002/26-27 dated 24.06.2026)",
+  "expect": {
+   "located": true,
+   "contains": [
+    "24.06.2026"
+   ]
+  }
+ },
+ {
+  "id": "syn-soft-hyphen-and-zero-width",
+  "category": "hyphenation",
+  "lines": [
+   "The Perform\u00adance Bank Guar\u200bantee shall be INR 2420000 per MW."
+  ],
+  "quote": "The Performance Bank Guarantee shall be INR 2420000 per MW",
+  "expect": {
+   "located": true,
+   "method": "exact"
+  }
+ },
+ {
+  "id": "syn-ligatures",
+  "category": "ligatures",
+  "lines": [
+   "The bidder shall furnish a certi\ufb01cate of \ufb01nancial closure and con\ufb01rm the \ufb02oor price of the o\ufb00er."
+  ],
+  "quote": "a certificate of financial closure and confirm the floor price of the offer",
+  "expect": {
+   "located": true,
+   "method": "exact"
+  }
+ },
+ {
+  "id": "syn-ligature-in-quote",
+  "category": "ligatures",
+  "lines": [
+   "Financial closure within 12 months of the Effective Date."
+  ],
+  "quote": "\ufb01nancial closure within 12 months",
+  "expect": {
+   "located": true,
+   "method": "exact"
+  }
+ },
+ {
+  "id": "syn-nbsp-and-thin-space",
+  "category": "spaces",
+  "lines": [
+   "EMD of INR\u00a09,28,000\u2009per\u202fMW shall be\u2003furnished."
+  ],
+  "quote": "EMD of INR 9,28,000 per MW shall be furnished",
+  "expect": {
+   "located": true,
+   "method": "exact"
+  }
+ },
+ {
+  "id": "syn-runs-of-spaces-and-tabs",
+  "category": "spaces",
+  "lines": [
+   "Bid   validity:\t180  days from the   last date of bid submission"
+  ],
+  "quote": "Bid validity: 180 days from the last date of bid submission",
+  "expect": {
+   "located": true,
+   "method": "exact"
+  }
+ },
+ {
+  "id": "syn-smart-quotes",
+  "category": "quotes_and_dashes",
+  "lines": [
+   "\u201cEffective Date\u201d shall mean the date of signing of the \u2018PPA\u2019 by both parties."
+  ],
+  "quote": "\"Effective Date\" shall mean the date of signing of the 'PPA' by both parties",
+  "expect": {
+   "located": true,
+   "method": "exact"
+  }
+ },
+ {
+  "id": "syn-en-dash-and-minus",
+  "category": "quotes_and_dashes",
+  "lines": [
+   "Peak Hours: 18:00 \u2013 22:00 hrs; tolerance \u221210% of the declared CUF \u2014 measured annually."
+  ],
+  "quote": "Peak Hours: 18:00 - 22:00 hrs; tolerance -10% of the declared CUF - measured annually",
+  "expect": {
+   "located": true,
+   "method": "exact"
+  }
+ },
+ {
+  "id": "syn-number-indian-grouping-vs-plain",
+  "category": "reformatted_numbers",
+  "lines": [
+   "Earnest Money Deposit of Rs. 9,28,000/- per MW shall be furnished."
+  ],
+  "quote": "Earnest Money Deposit of Rs. 928000/- per MW",
+  "expect": {
+   "located": true,
+   "method": "exact"
+  }
+ },
+ {
+  "id": "syn-number-plain-vs-western-grouping",
+  "category": "reformatted_numbers",
+  "lines": [
+   "Performance Bank Guarantee of INR 2420000 per MW."
+  ],
+  "quote": "Performance Bank Guarantee of INR 2,420,000 per MW",
+  "expect": {
+   "located": true,
+   "method": "exact"
+  }
+ },
+ {
+  "id": "syn-number-indian-vs-western-grouping",
+  "category": "reformatted_numbers",
+  "lines": [
+   "Net worth of Rs. 1,38,40,000 per MW of quoted capacity."
+  ],
+  "quote": "Net worth of Rs. 13,840,000 per MW of quoted capacity",
+  "expect": {
+   "located": true,
+   "method": "exact"
+  }
+ },
+ {
+  "id": "syn-number-different-value-is-not-evidence",
+  "category": "reformatted_numbers",
+  "lines": [
+   "Earnest Money Deposit of Rs. 9,28,000/- per MW shall be furnished."
+  ],
+  "quote": "Earnest Money Deposit of Rs. 9,38,000/- per MW shall be furnished",
+  "expect": {
+   "located": false
+  }
+ },
+ {
+  "id": "syn-number-inside-longer-number",
+  "category": "reformatted_numbers",
+  "lines": [
+   "EMD of Rs. 1250 Lakh for a capacity of 250 MW."
+  ],
+  "quote": "50 MW",
+  "expect": {
+   "located": false
+  }
+ },
+ {
+  "id": "syn-two-column-amended",
+  "category": "two_column",
+  "lines": [
+   [
+    [
+     72,
+     "6. 5.1 A Bidder, including its Parent, Affiliate or"
+    ],
+    [
+     372,
+     "A Bidder, including its Parent, Affiliate or"
+    ]
+   ],
+   [
+    [
+     72,
+     "Ultimate Parent or any Group Company shall submit a"
+    ],
+    [
+     372,
+     "Ultimate Parent or any Group Company"
+    ]
+   ],
+   [
+    [
+     72,
+     "single bid offering a minimum quantum of cumulative"
+    ],
+    [
+     372,
+     "shall submit a single bid offering a"
+    ]
+   ],
+   [
+    [
+     72,
+     "Contracted Capacity of 50 MW and a maximum"
+    ],
+    [
+     372,
+     "minimum quantum of cumulative"
+    ]
+   ],
+   [
+    [
+     72,
+     "quantum of 600 MW, \u2026"
+    ],
+    [
+     372,
+     "Contracted Capacity of 50 MW and a"
+    ]
+   ],
+   [
+    [
+     372,
+     "maximum quantum of 750 MW, \u2026"
+    ]
+   ]
+  ],
+  "quote": "shall submit a single bid offering a minimum quantum of cumulative Contracted Capacity of 50 MW and a maximum quantum of 750 MW",
+  "expect": {
+   "located": true,
+   "contains": [
+    "750 MW"
+   ],
+   "line": 2
+  }
+ },
+ {
+  "id": "syn-two-column-existing",
+  "category": "two_column",
+  "lines": [
+   [
+    [
+     72,
+     "6. 5.1 A Bidder, including its Parent, Affiliate or"
+    ],
+    [
+     372,
+     "A Bidder, including its Parent, Affiliate or"
+    ]
+   ],
+   [
+    [
+     72,
+     "Ultimate Parent or any Group Company shall submit a"
+    ],
+    [
+     372,
+     "Ultimate Parent or any Group Company"
+    ]
+   ],
+   [
+    [
+     72,
+     "single bid offering a minimum quantum of cumulative"
+    ],
+    [
+     372,
+     "shall submit a single bid offering a"
+    ]
+   ],
+   [
+    [
+     72,
+     "Contracted Capacity of 50 MW and a maximum"
+    ],
+    [
+     372,
+     "minimum quantum of cumulative"
+    ]
+   ],
+   [
+    [
+     72,
+     "quantum of 600 MW, \u2026"
+    ],
+    [
+     372,
+     "Contracted Capacity of 50 MW and a"
+    ]
+   ],
+   [
+    [
+     372,
+     "maximum quantum of 750 MW, \u2026"
+    ]
+   ]
+  ],
+  "quote": "shall submit a single bid offering a minimum quantum of cumulative Contracted Capacity of 50 MW and a maximum quantum of 600 MW",
+  "expect": {
+   "located": true,
+   "contains": [
+    "600 MW"
+   ],
+   "not_contains": [
+    "750"
+   ]
+  }
+ },
+ {
+  "id": "syn-two-column-number-on-neither-side",
+  "category": "two_column",
+  "lines": [
+   [
+    [
+     72,
+     "6. 5.1 A Bidder, including its Parent, Affiliate or"
+    ],
+    [
+     372,
+     "A Bidder, including its Parent, Affiliate or"
+    ]
+   ],
+   [
+    [
+     72,
+     "Ultimate Parent or any Group Company shall submit a"
+    ],
+    [
+     372,
+     "Ultimate Parent or any Group Company"
+    ]
+   ],
+   [
+    [
+     72,
+     "single bid offering a minimum quantum of cumulative"
+    ],
+    [
+     372,
+     "shall submit a single bid offering a"
+    ]
+   ],
+   [
+    [
+     72,
+     "Contracted Capacity of 50 MW and a maximum"
+    ],
+    [
+     372,
+     "minimum quantum of cumulative"
+    ]
+   ],
+   [
+    [
+     72,
+     "quantum of 600 MW, \u2026"
+    ],
+    [
+     372,
+     "Contracted Capacity of 50 MW and a"
+    ]
+   ],
+   [
+    [
+     372,
+     "maximum quantum of 750 MW, \u2026"
+    ]
+   ]
+  ],
+  "quote": "shall submit a single bid offering a minimum quantum of cumulative Contracted Capacity of 50 MW and a maximum quantum of 900 MW",
+  "expect": {
+   "located": false
+  }
+ },
+ {
+  "id": "syn-two-column-reworded",
+  "category": "two_column",
+  "lines": [
+   [
+    [
+     72,
+     "6. 5.1 A Bidder, including its Parent, Affiliate or"
+    ],
+    [
+     372,
+     "A Bidder, including its Parent, Affiliate or"
+    ]
+   ],
+   [
+    [
+     72,
+     "Ultimate Parent or any Group Company shall submit a"
+    ],
+    [
+     372,
+     "Ultimate Parent or any Group Company"
+    ]
+   ],
+   [
+    [
+     72,
+     "single bid offering a minimum quantum of cumulative"
+    ],
+    [
+     372,
+     "shall submit a single bid offering a"
+    ]
+   ],
+   [
+    [
+     72,
+     "Contracted Capacity of 50 MW and a maximum"
+    ],
+    [
+     372,
+     "minimum quantum of cumulative"
+    ]
+   ],
+   [
+    [
+     72,
+     "quantum of 600 MW, \u2026"
+    ],
+    [
+     372,
+     "Contracted Capacity of 50 MW and a"
+    ]
+   ],
+   [
+    [
+     372,
+     "maximum quantum of 750 MW, \u2026"
+    ]
+   ]
+  ],
+  "quote": "must tender one offer for a least amount of total Contracted Capacity of 50 MW and a largest amount of 750 MW",
+  "expect": {
+   "located": false
+  }
+ },
+ {
+  "id": "syn-wrapped-centred-cell",
+  "category": "table_cell_reading_order",
+  "lines": [
+   [
+    [
+     72,
+     "15 RfS 8.1 a"
+    ],
+    [
+     150,
+     "(i) a minimum DFR of 90% in each time-block during the Peak Hours;"
+    ],
+    [
+     560,
+     "It is important to note that the current CUF is far below"
+    ],
+    [
+     960,
+     "Clause has been suitably"
+    ]
+   ],
+   [
+    [
+     150,
+     "(ii) a minimum DFR of 80% in each time-block during the off-Peak Hours;"
+    ],
+    [
+     560,
+     "the proposed 90% DFR. Since the tender follows a thermal mimic structure,"
+    ],
+    [
+     966,
+     "modified. Kindly refer"
+    ]
+   ],
+   [
+    [
+     150,
+     "provided that the RPD may designate, by prior written notice, the hours"
+    ],
+    [
+     560,
+     "it is reasonable to request relaxation of this clause to ensure practicality."
+    ],
+    [
+     975,
+     "amendments-02."
+    ]
+   ]
+  ],
+  "quote": "Clause has been suitably modified. Kindly refer amendments-02.",
+  "expect": {
+   "located": true,
+   "method": "interleaved",
+   "contains": [
+    "amendments-02"
+   ]
+  }
+ },
+ {
+  "id": "syn-wrapped-cell-label-then-value",
+  "category": "table_cell_reading_order",
+  "lines": [
+   "v) Online Bid Submission Start 02.04.2024 (11:30 Hrs.)",
+   "Date & Time",
+   "vi) Online Bid Submission Closing 12.04.2024 (17:30 Hrs.)",
+   "Date & Time",
+   "vii) Last date of Offline submission 15.04.2024 (upto 17:00 Hrs.)"
+  ],
+  "quote": "Online Bid Submission Closing Date & Time 12.04.2024 (17:30 Hrs.)",
+  "expect": {
+   "located": true,
+   "contains": [
+    "12.04.2024"
+   ],
+   "not_contains": [
+    "02.04.2024"
+   ]
+  }
+ },
+ {
+  "id": "syn-wrapped-cell-wrong-date",
+  "category": "table_cell_reading_order",
+  "lines": [
+   "v) Online Bid Submission Start 02.04.2024 (11:30 Hrs.)",
+   "Date & Time",
+   "vi) Online Bid Submission Closing 12.04.2024 (17:30 Hrs.)",
+   "Date & Time",
+   "vii) Last date of Offline submission 15.04.2024 (upto 17:00 Hrs.)"
+  ],
+  "quote": "Online Bid Submission Closing Date & Time 19.05.2024 (10:00 Hrs.)",
+  "expect": {
+   "located": false
+  }
+ },
+ {
+  "id": "syn-wrapped-cell-words-only-out-of-order",
+  "category": "table_cell_reading_order",
+  "lines": [
+   [
+    [
+     72,
+     "x)"
+    ],
+    [
+     110,
+     "Date & Time of Start of e-"
+    ],
+    [
+     330,
+     "Shall be intimated separately by NHPC"
+    ]
+   ],
+   [
+    [
+     110,
+     "Reverse Auction"
+    ]
+   ]
+  ],
+  "quote": "Date & Time of Start of eReverse Auction Shall be intimated separately by NHPC",
+  "expect": {
+   "located": true,
+   "contains": [
+    "intimated separately"
+   ]
+  }
+ },
+ {
+  "id": "syn-page-boundary",
+  "category": "page_boundary",
+  "lines": [
+   "Clause 9.2: In case of delay in commencement of supply, the developer shall",
+   "be liable to pay liquidated damages at the rate of"
+  ],
+  "next_lines": [
+   "INR 100000 per MW per day of delay, subject to a maximum period of six months.",
+   "Clause 9.3: Extension of the scheduled date."
+  ],
+  "quote": "shall be liable to pay liquidated damages at the rate of INR 100000 per MW per day of delay",
+  "expect": {
+   "located": true,
+   "method": "page_boundary"
+  }
+ },
+ {
+  "id": "syn-page-boundary-all-on-second-page",
+  "category": "page_boundary",
+  "lines": [
+   "Clause 9.1: General."
+  ],
+  "next_lines": [
+   "The PPA shall be valid for 25 years from the SCSD."
+  ],
+  "quote": "The PPA shall be valid for 25 years from the SCSD",
+  "expect": {
+   "located": true,
+   "method": "exact",
+   "page_no": 2
+  }
+ },
+ {
+  "id": "syn-quote-twice-first-occurrence",
+  "category": "repeated_quote",
+  "lines": [
+   "RfS No. SECI/C&P/IPP/13/0006/26-27",
+   "Selection of RE Power Developers",
+   "Page 1 of 140",
+   "RfS No. SECI/C&P/IPP/13/0006/26-27"
+  ],
+  "quote": "RfS No. SECI/C&P/IPP/13/0006/26-27",
+  "expect": {
+   "located": true,
+   "method": "exact",
+   "line": 0
+  }
+ },
+ {
+  "id": "syn-quote-twice-rows-differ-by-number",
+  "category": "repeated_quote",
+  "lines": [
+   "Solar component: INR 9,68,000 per MW of installed capacity",
+   "Wind component: INR 13,68,000 per MW of installed capacity"
+  ],
+  "quote": "Wind component: INR 13,68,000 per MW of installed capacity",
+  "expect": {
+   "located": true,
+   "line": 1
+  }
+ },
+ {
+  "id": "syn-paraphrase",
+  "category": "not_on_page",
+  "lines": [
+   "The Earnest Money Deposit shall be INR 928000 per MW."
+  ],
+  "quote": "Bidders have to pay nine lakh rupees for each megawatt",
+  "expect": {
+   "located": false
+  }
+ },
+ {
+  "id": "syn-reversed-meaning",
+  "category": "not_on_page",
+  "lines": [
+   "The seller shall not pay the buyer any amount under this clause."
+  ],
+  "quote": "the buyer shall not pay the seller any amount",
+  "expect": {
+   "located": false
+  }
+ },
+ {
+  "id": "syn-absent",
+  "category": "not_on_page",
+  "lines": [
+   "Section 4: Qualifying requirements for bidders."
+  ],
+  "quote": "The ceiling tariff shall be INR 3.10 per kWh",
+  "expect": {
+   "located": false
+  }
+ }
+]

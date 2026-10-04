@@ -22,11 +22,14 @@ class UnknownSchemaError(LookupError):
 
 @dataclass(frozen=True)
 class RuleOutcome:
-    """Result of a cross-field rule for the fields it concerns."""
+    """Result of a cross-field rule for the fields it concerns. A failed outcome marked
+    `warning` is shown to the reviewer but does not send the candidate to needs_review:
+    it is for a pattern that is unusual, not wrong."""
 
     field_paths: tuple[str, ...]
     passed: bool
     message: str
+    warning: bool = False
 
 
 # A cross-field rule receives {field_path: coerced value} for the fields that have one.

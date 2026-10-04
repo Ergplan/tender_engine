@@ -11,7 +11,13 @@ from typing import Any
 from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
-from core.models import Candidate, EvidenceSpan, ExtractionRun, ValidationResult
+from core.models import (
+    Candidate,
+    CanonicalFact,
+    EvidenceSpan,
+    ExtractionRun,
+    ValidationResult,
+)
 from core.schemas import ExtractionSchema, SchemaRegistry
 from core.services import audit
 from core.validation.rules import FIELD_RULES
@@ -58,13 +64,21 @@ class ValidationService:
                 unlocated_pages[candidate_id].add(page_no)
 
         results: dict[str, list[tuple[str, bool, str]]] = {cid: [] for cid in ids}
+        # Rule names whose failure is a warning for that candidate, not an error.
+        warned: dict[str, set[str]] = {cid: set() for cid in ids}
         coerced: dict[str, Any] = {}
         for candidate in candidates:
             field = schema.field(candidate.field_path)
             if candidate.value is None and candidate.status in ("not_found", "needs_review"):
                 if field.required:
-                    message = "required field: the model returned no value"
-                    results[candidate.id].append(("required_present", False, message))
+                    # The object is required to have the value, not every document and
+                    # version of it: a corrigendum need not restate the bid deadline.
+                    if self._stated_elsewhere(session, run, candidate):
+                        message = "stated by another document or an earlier version of the object"
+                        results[candidate.id].append(("required_present", True, message))
+                    else:
+                        message = "required field: the model returned no value"
+                        results[candidate.id].append(("required_present", False, message))
                 continue
             if candidate.status == "rejected":
                 message = "a value came without evidence; it is not shown for review"
@@ -96,7 +110,7 @@ class ValidationService:
                     checks.append(outcome)
 
         best = _best_per_field(candidates, coerced)
-        self._cross_field(schema, best, candidates, coerced, results)
+        self._cross_field(schema, best, candidates, coerced, results, warned)
         valued = [candidate for candidate in candidates if candidate.id in coerced]
         for rule_name in schema.run_rules:
             for verdict in self._schemas.run_rule(rule_name)(session, run, valued):
@@ -107,6 +121,7 @@ class ValidationService:
 
         for candidate in candidates:
             for rule_name, passed, message in results[candidate.id]:
+                warning = not passed and rule_name in warned[candidate.id]
                 session.add(
                     ValidationResult(
                         tenant_id=run.tenant_id,
@@ -115,9 +130,13 @@ class ValidationService:
                         rule_name=rule_name,
                         passed=passed,
                         message=message,
+                        severity="warning" if warning else "error",
                     )
                 )
-            failed = any(not passed for _, passed, _ in results[candidate.id])
+            failed = any(
+                not passed and rule_name not in warned[candidate.id]
+                for rule_name, passed, _ in results[candidate.id]
+            )
             if candidate.value is None and candidate.status in ("not_found", "needs_review"):
                 # No value: a required field needs review, an optional one stays not_found.
                 self._set_status(session, candidate, "needs_review" if failed else "not_found")
@@ -135,6 +154,7 @@ class ValidationService:
         candidates: list[Candidate],
         coerced: dict[str, Any],
         results: dict[str, list[tuple[str, bool, str]]],
+        warned: dict[str, set[str]],
     ) -> None:
         """Rules run on the best value of each field. The outcome is written on every
         typed candidate of the fields concerned, so a failure cannot be hidden behind an
@@ -145,6 +165,45 @@ class ValidationService:
                 for candidate in candidates:
                     if candidate.id in coerced and candidate.field_path in outcome.field_paths:
                         results[candidate.id].append((rule_name, outcome.passed, outcome.message))
+                        if outcome.warning:
+                            warned[candidate.id].add(rule_name)
+
+    def _stated_elsewhere(self, session: Session, run: ExtractionRun, candidate: Candidate) -> bool:
+        """Whether the object already has a value for the field: a live candidate with a
+        value from another run of this version or of an earlier one, or a current
+        canonical fact with a value up to this version."""
+        other = session.scalar(
+            select(Candidate.id)
+            .join(ExtractionRun, Candidate.extraction_run_id == ExtractionRun.id)
+            .where(
+                Candidate.tenant_id == run.tenant_id,
+                ExtractionRun.tenant_id == run.tenant_id,
+                ExtractionRun.object_type == run.object_type,
+                ExtractionRun.object_id == run.object_id,
+                ExtractionRun.object_version <= run.object_version,
+                ExtractionRun.id != run.id,
+                Candidate.field_path == candidate.field_path,
+                Candidate.value.is_not(None),
+                Candidate.status.in_(("raw", "validated", "needs_review")),
+            )
+            .limit(1)
+        )
+        if other is not None:
+            return True
+        fact = session.scalar(
+            select(CanonicalFact.id)
+            .where(
+                CanonicalFact.tenant_id == run.tenant_id,
+                CanonicalFact.object_type == run.object_type,
+                CanonicalFact.object_id == run.object_id,
+                CanonicalFact.object_version <= run.object_version,
+                CanonicalFact.field_path == candidate.field_path,
+                CanonicalFact.is_current.is_(True),
+                CanonicalFact.value.is_not(None),
+            )
+            .limit(1)
+        )
+        return fact is not None
 
     def _set_status(self, session: Session, candidate: Candidate, status: str) -> None:
         if candidate.status == status:

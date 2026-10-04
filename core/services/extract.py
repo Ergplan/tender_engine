@@ -17,6 +17,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from core.config import Settings
+from core.evidence import Located, Match, PageText, locate, resolve_pair
 from core.llm.client import LLMClient, LLMRequest, PdfPart, TextPart
 from core.models import (
     Candidate,
@@ -30,7 +31,6 @@ from core.models import (
 from core.schemas import ExtractionSchema, FieldDef, FieldGroup, RoutingHints, SchemaRegistry
 from core.schemas.types import JsonKind
 from core.services import audit, jobs
-from core.services.evidence import Located, PageText, locate
 from core.services.section_map import normalise_kind
 from core.storage import Storage
 
@@ -518,7 +518,31 @@ class ExtractService:
                     "quote": quote.quote,
                     "resolution": resolution,
                     "match_score": best.score,
+                    "match_method": best.method,
                 }
+        # Last: a quote that runs from the foot of one page onto the head of the next.
+        if in_range:
+            for first_no in (stated, stated - 1):
+                first, second = pages.get(first_no), pages.get(first_no + 1)
+                across = (
+                    resolve_pair(quote.quote, first, second, threshold)
+                    if first and second
+                    else None
+                )
+                if isinstance(across, Match):
+                    return {
+                        "page_no": across.page_no,
+                        "stated_page_no": stated,
+                        "bbox": across.bbox,
+                        "char_start": across.char_start,
+                        "char_end": across.char_end,
+                        "quote": quote.quote,
+                        "resolution": "stated_page"
+                        if across.page_no == stated
+                        else "adjacent_page",
+                        "match_score": across.score,
+                        "match_method": across.method,
+                    }
         return {
             "page_no": stated,
             "stated_page_no": stated,
@@ -528,6 +552,7 @@ class ExtractService:
             "quote": quote.quote,
             "resolution": "unresolved",
             "match_score": None,
+            "match_method": None,
         }
 
     def _supersede_earlier_runs(self, session: Session, run: ExtractionRun) -> None:

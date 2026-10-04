@@ -35,12 +35,14 @@ class EvidenceView(BaseModel):
     quote: str
     resolution: str
     match_score: float | None
+    match_method: str | None
 
 
 class ValidationView(BaseModel):
     rule_name: str
     passed: bool
     message: str
+    severity: str
 
 
 class CandidateView(BaseModel):

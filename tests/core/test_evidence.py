@@ -1,6 +1,6 @@
 """Evidence resolution on a synthetic page."""
 
-from core.services.evidence import PageText, locate, normalise
+from core.evidence import PageText, locate, normalise
 
 LINE_1 = "The Earnest Money Deposit shall be INR 928000 per MW."
 LINE_2 = "Bids must be submitted on or before 30 March 2026."
@@ -46,7 +46,7 @@ def test_quote_spanning_two_lines_gets_a_box_covering_both() -> None:
 
 
 def test_a_small_transcription_error_is_matched_fuzzily_above_the_threshold() -> None:
-    found = locate("The Earnest Money Deposit shall be INR 928,000 per MW", page(), 85)
+    found = locate("The Earnest Money Deposits shall be INR 928000 per MW", page(), 85)
     assert found is not None and 85 <= found.score < 100
     assert "928000" in TEXT[found.char_start : found.char_end]
 
@@ -56,7 +56,7 @@ def test_a_paraphrase_is_not_located() -> None:
 
 
 def test_the_threshold_decides() -> None:
-    quote = "The Earnest Money Deposit shall be INR 928,000 per MW"
+    quote = "The Earnest Money Deposits shall be INR 928000 per MW"
     assert locate(quote, page(), 99.9) is None
     assert locate(quote, page(), 85) is not None
 
@@ -203,3 +203,50 @@ def test_a_quote_whose_word_the_column_layout_broke_is_still_located() -> None:
     assert found is not None and found.score >= 85
     assert "1500 MW" in text[found.char_start : found.char_end]
     assert locate(quote.replace("1500 MW", "1800 MW"), page(text), 85) is None
+
+
+def test_a_miss_reports_the_best_score_reached_and_a_match_its_method() -> None:
+    from core.evidence import Match, Miss, resolve
+
+    exact = resolve("INR 928000 per MW", page())
+    assert isinstance(exact, Match) and (exact.method, exact.score) == ("exact", 100.0)
+    fuzzy = resolve("The Earnest Money Deposits shall be INR 928000 per MW", page())
+    assert isinstance(fuzzy, Match) and fuzzy.method == "fuzzy"
+    near = resolve("The Earnest Money Deposit shall be INR 928500 for each MW", page())
+    assert isinstance(near, Miss) and near.reason == "not_found" and 50 < near.best_score < 100
+    far = resolve("Bidders have to pay nine lakh rupees for each megawatt", page())
+    assert isinstance(far, Miss) and far.best_score < near.best_score
+    assert resolve("anything", page(has_text_layer=False)) == Miss(7, 0.0, "no_text_layer")
+    assert resolve("  ", page()) == Miss(7, 0.0, "empty")
+
+
+def test_the_resolver_depends_on_nothing_else_in_the_project() -> None:
+    """No ORM, no settings, nothing from the rest of core: only the standard library and
+    rapidfuzz."""
+    import ast
+    from pathlib import Path
+
+    package = Path(__file__).resolve().parents[2] / "core" / "evidence"
+    imported: set[str] = set()
+    for path in package.glob("*.py"):
+        for node in ast.walk(ast.parse(path.read_text())):
+            if isinstance(node, ast.Import):
+                imported.update(alias.name.split(".")[0] for alias in node.names)
+            elif isinstance(node, ast.ImportFrom) and node.module:
+                imported.add(
+                    node.module if node.module.startswith("core") else node.module.split(".")[0]
+                )
+    assert {name for name in imported if name.startswith("core")} <= {
+        "core.evidence",
+        "core.evidence.resolver",
+    }
+    assert {name for name in imported if not name.startswith("core")} <= {
+        "re",
+        "bisect",
+        "dataclasses",
+        "typing",
+        "rapidfuzz",
+        "gzip",
+        "json",
+        "pathlib",
+    }

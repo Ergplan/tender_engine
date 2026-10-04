@@ -86,6 +86,8 @@ class EvidenceSpan(IdMixin, TenantAuditMixin, Base):
     quote: Mapped[str] = mapped_column(Text, nullable=False)
     resolution: Mapped[str] = mapped_column(String(20), nullable=False)
     match_score: Mapped[float | None] = mapped_column(Float, nullable=True)
+    # How the resolver found the quote: exact, fuzzy, reordered, interleaved, page_boundary.
+    match_method: Mapped[str | None] = mapped_column(String(20), nullable=True)
 
 
 class ValidationResult(IdMixin, TenantAuditMixin, Base):
@@ -97,3 +99,7 @@ class ValidationResult(IdMixin, TenantAuditMixin, Base):
     rule_name: Mapped[str] = mapped_column(String(100), nullable=False)
     passed: Mapped[bool] = mapped_column(Boolean, nullable=False)
     message: Mapped[str] = mapped_column(Text, nullable=False)
+    # error: a failure sends the candidate to needs_review. warning: it is only shown.
+    severity: Mapped[str] = mapped_column(
+        String(10), nullable=False, default="error", server_default="error"
+    )

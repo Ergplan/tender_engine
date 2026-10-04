@@ -1,0 +1,2852 @@
+[
+ {
+  "id": "real-0001",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Amendment-01-SECI-FDRE-IX-final_upload.pdf",
+   "page_no": 1,
+   "field": "sector.power.common.location_constraint"
+  },
+  "page": "549d8a6e20-p1",
+  "page_no": 1,
+  "quote": "SECI hereby invites proposals for setting up of ISTS-connected RE projects with assured Peak Supply of 6000 MWh (1500 MW x 4 Hrs.) in India on Build Own Operate (BOO) basis.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0002",
+  "category": "real_unlocated_at_extraction",
+  "source": {
+   "document": "Amendment-01-SECI-FDRE-IX-final_upload.pdf",
+   "page_no": 1,
+   "field": "core.commercial.offtaker"
+  },
+  "page": "549d8a6e20-p1",
+  "page_no": 1,
+  "quote": "Power procured by SECI from the above Projects has been provisioned to be sold to West Bengal State Electricity Distribution Company Limited (WBESDCL), Kerala State Electricity Board Limited (KSEBL) and other Buying Entities of India.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0003",
+  "category": "real_near_miss",
+  "source": {
+   "document": "Amendment-01-SECI-FDRE-IX-final_upload.pdf",
+   "page_no": 1,
+   "field": "core.identity.procurement_mode"
+  },
+  "page": "549d8a6e20-p1",
+  "page_no": 1,
+  "quote": "Contracted Capacity of 1500 MW will be carried out through e-bidding followed by e-Reverse Auction (e-RA) process.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0004",
+  "category": "real_unlocated_at_extraction",
+  "source": {
+   "document": "Amendment-01-SECI-FDRE-IX-final_upload.pdf",
+   "page_no": 1,
+   "field": "core.identity.procurement_mode"
+  },
+  "page": "549d8a6e20-p1",
+  "page_no": 1,
+  "quote": "Selection of RE Power Projects for a total Contracted Capacity of 1500 MW will be carried out through e-bidding followed by",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0005",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Amendment-01-SECI-FDRE-IX-final_upload.pdf",
+   "page_no": 1,
+   "field": "core.identity.issuing_agency"
+  },
+  "page": "549d8a6e20-p1",
+  "page_no": 1,
+  "quote": "As part of the above Guidelines, SECI hereby invites proposals for setting up of ISTS-connected RE projects",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0006",
+  "category": "real_unlocated_at_extraction",
+  "source": {
+   "document": "Amendment-01-SECI-FDRE-IX-final_upload.pdf",
+   "page_no": 1,
+   "field": "sector.power.common.min_bid_mw"
+  },
+  "page": "549d8a6e20-p1",
+  "page_no": 1,
+  "quote": "shall submit a single bid offering a minimum quantum of cumulative Contracted Capacity of 50 MW and a maximum quantum of 750 MW",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0007",
+  "category": "real_unlocated_at_extraction",
+  "source": {
+   "document": "Amendment-01-SECI-FDRE-IX-final_upload.pdf",
+   "page_no": 2,
+   "field": "sector.power.common.max_bid_mw"
+  },
+  "page": "549d8a6e20-p2",
+  "page_no": 2,
+  "quote": "The cumulative Contracted Capacity to be allocated to a Bidder including its Parent, Affiliate or Ultimate Parent or any Group Company shall be limited to 750 MW.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0008",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Amendment-01-SECI-FDRE-IX-final_upload.pdf",
+   "page_no": 2,
+   "field": "sector.power.common.max_bid_mw"
+  },
+  "page": "549d8a6e20-p2",
+  "page_no": 2,
+  "quote": "Affiliate or Ultimate Parent or any Group Company shall be limited to 750 MW.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0009",
+  "category": "real_near_miss",
+  "source": {
+   "document": "Amendment-01-SECI-RTC-TM-V-final_upload.pdf",
+   "page_no": 1,
+   "field": "core.identity.title"
+  },
+  "page": "ed2a9e026b-p1",
+  "page_no": 1,
+  "quote": "Amendment-01 to RfS for Selection of RE Power Developers for Supply of 1000 MW of Round-theClock Thermal Mimic (RTC-TM) Power from ISTS-connected Renewable Energy (RE) Power Projects",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0010",
+  "category": "real_unlocated_at_extraction",
+  "source": {
+   "document": "Amendment-01-SECI-RTC-TM-V-final_upload.pdf",
+   "page_no": 1,
+   "field": "sector.power.common.max_bid_mw"
+  },
+  "page": "ed2a9e026b-p1",
+  "page_no": 1,
+  "quote": "submit a single bid offering a minimum quantum of cumulative Contracted Capacity of 50 MW and a maximum quantum of 500 MW, …",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0011",
+  "category": "real_near_miss",
+  "source": {
+   "document": "Amendment-01-SECI-RTC-TM-V-final_upload.pdf",
+   "page_no": 1,
+   "field": "sector.power.common.total_capacity_mw"
+  },
+  "page": "ed2a9e026b-p1",
+  "page_no": 1,
+  "quote": "Supply of 1000 MW of Round-theClock Thermal Mimic (RTC-TM) Power from ISTS-connected Renewable Energy (RE) Power Projects",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0012",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Amendment-01-SECI-RTC-TM-V-final_upload.pdf",
+   "page_no": 3,
+   "field": "core.penalties.termination_delay_months"
+  },
+  "page": "ed2a9e026b-p3",
+  "page_no": 3,
+  "quote": "applicable penalty, shall be limited to the date as on 6 months from the respective",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0013",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Amendment-01-SECI-RTC-TM-V-final_upload.pdf",
+   "page_no": 3,
+   "field": "core.penalties.max_scod_extension_months"
+  },
+  "page": "ed2a9e026b-p3",
+  "page_no": 3,
+  "quote": "The maximum time period allowed for commencement of power supply from the respective Project components as specified at",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0014",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Amendment-01-SECI-RTC-TM-V-final_upload.pdf",
+   "page_no": 3,
+   "field": "core.penalties.pbg_encashment_triggers"
+  },
+  "page": "ed2a9e026b-p3",
+  "page_no": 3,
+  "quote": "In case of delay in commencement of power supply from the respective Project components as specified at Clause 9.2.a.(i) and 9.2.a.(ii) above beyond the respective",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0015",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Amendment-01-SECI-RTC-TM-V-final_upload.pdf",
+   "page_no": 12,
+   "field": "core.commercial.termination_compensation"
+  },
+  "page": "ed2a9e026b-p12",
+  "page_no": 12,
+  "quote": "lump-sum damages equivalent to 24 (twenty-four) months or balance PPA period, whichever is less, for the amount corresponding to aggregate energy shortfall arising from reduction in both the min. Peak and off-Peak Hours DFR obligation.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0016",
+  "category": "real_near_miss",
+  "source": {
+   "document": "Amendment-01-SECI-RTC-TM-V-final_upload.pdf",
+   "page_no": 12,
+   "field": "core.commercial.termination_compensation"
+  },
+  "page": "ed2a9e026b-p12",
+  "page_no": 12,
+  "quote": "the RPD shall be liable to pay to Buying Entity(ies), damages equivalent to 24 (twenty-four) months, or balance PPA period, whichever is less, for the amount corresponding to aggregate energy based on the min. Peak and off-Peak Hours DFR obligation.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0017",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Amendment-01-SECI-RTC-TM-V-final_upload.pdf",
+   "page_no": 12,
+   "field": "core.commercial.termination_compensation"
+  },
+  "page": "ed2a9e026b-p12",
+  "page_no": 12,
+  "quote": "then the RPD may terminate the PPA and at its discretion require SECI to pay to the RPD, damages, equivalent",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0018",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Amendment-01-SECI-RTC-TM-V-final_upload.pdf",
+   "page_no": 13,
+   "field": "core.commercial.termination_compensation"
+  },
+  "page": "ed2a9e026b-p13",
+  "page_no": 13,
+  "quote": "to 24 (twenty-four) months, or balance PPA period, whichever is less, for the amount corresponding to aggregate energy based on the min. Peak and off-Peak Hours DFR obligation.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0019",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Amendment-01_Wind-Tranche-XX-final_upload.pdf",
+   "page_no": 1,
+   "field": "sector.power.common.max_bid_mw"
+  },
+  "page": "87a96758c2-p1",
+  "page_no": 1,
+  "quote": "submit a single bid offering a minimum quantum of Contracted Capacity of 50 MW and a maximum quantum of 1000 MW",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0020",
+  "category": "real_near_miss",
+  "source": {
+   "document": "Amendment-01_Wind-Tranche-XX-final_upload.pdf",
+   "page_no": 1,
+   "field": "core.identity.title"
+  },
+  "page": "87a96758c2-p1",
+  "page_no": 1,
+  "quote": "Selection of Wind Power Developers for Setting up of 2000 MW ISTS-connected Wind Power Projects in India under Tariff-based Competitive Bidding (SECI-Tranche-XX)",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0021",
+  "category": "real_near_miss",
+  "source": {
+   "document": "Amendment-01_Wind-Tranche-XX-final_upload.pdf",
+   "page_no": 1,
+   "field": "core.identity.tender_type_as_stated"
+  },
+  "page": "87a96758c2-p1",
+  "page_no": 1,
+  "quote": "Setting up of 2000 MW ISTS-connected Wind Power Projects in India under Tariff-based Competitive Bidding (SECI-Tranche-XX)",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0022",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Amendment-01_Wind-Tranche-XX-final_upload.pdf",
+   "page_no": 1,
+   "field": "core.identity.procurement_mode"
+  },
+  "page": "87a96758c2-p1",
+  "page_no": 1,
+  "quote": "Selection of Wind Power Projects for a total capacity of 2000 MW will be carried out through e-bidding followed by e-Reverse Auction (e-RA) process.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0023",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Amendment-01_Wind-Tranche-XX-final_upload.pdf",
+   "page_no": 1,
+   "field": "sector.power.common.max_bid_mw"
+  },
+  "page": "87a96758c2-p1",
+  "page_no": 1,
+  "quote": "The cumulative Contracted Capacity to be allocated to a Bidder including its Parent, Affiliate or Ultimate Parent or any Group Company shall be limited to 1000 MW.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0024",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Amendment-02-SECI-CfD-I-final_upload.pdf",
+   "page_no": 1,
+   "field": "sector.power.fdre.storage_mandatory"
+  },
+  "page": "f16f85ea4b-p1",
+  "page_no": 1,
+  "quote": "For a ‘X’ MW Contracted Capacity, RPD shall mandatorily install ESS of ‘X’ MW/ ‘2X’ MWh capacity as part of the Project.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0025",
+  "category": "real_near_miss",
+  "source": {
+   "document": "Amendment-02-SECI-CfD-I-final_upload.pdf",
+   "page_no": 2,
+   "field": "sector.power.common.scod_months"
+  },
+  "page": "f16f85ea4b-p2",
+  "page_no": 2,
+  "quote": "The Scheduled Commissioning Date (SCD) for commissioning of the full capacity of the ESS component of the Project shall be the date as on 15 months from the Effective Date of the CfDA",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0026",
+  "category": "real_near_miss",
+  "source": {
+   "document": "Amendment-02-SECI-CfD-I-final_upload.pdf",
+   "page_no": 2,
+   "field": "core.penalties.max_scod_extension_months"
+  },
+  "page": "f16f85ea4b-p2",
+  "page_no": 2,
+  "quote": "The maximum time period allowed for commissioning of full capacity of the ESS component of the Project with applicable penalty, shall be limited to the date as on 3 months from the SCD.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0027",
+  "category": "real_near_miss",
+  "source": {
+   "document": "Amendment-02-SECI-RTC-TM-V-final_upload.pdf",
+   "page_no": 1,
+   "field": "core.identity.title"
+  },
+  "page": "67886a619e-p1",
+  "page_no": 1,
+  "quote": "Amendment-02 to RfS for Selection of RE Power Developers for Supply of 1000 MW of Round-the-Clock Thermal Mimic (RTC-TM) Power from ISTS-connected Renewable Energy (RE) Power Projects in India, under Tariff-based Competitive Bidding (SECI-RTC-TM-V)",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0028",
+  "category": "real_near_miss",
+  "source": {
+   "document": "Amendment-02-SECI-RTC-TM-V-final_upload.pdf",
+   "page_no": 1,
+   "field": "sector.power.common.total_capacity_mw"
+  },
+  "page": "67886a619e-p1",
+  "page_no": 1,
+  "quote": "Supply of 1000 MW of Round-the-Clock Thermal Mimic (RTC-TM) Power from ISTS-connected Renewable Energy (RE) Power Projects",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0029",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Amendment-02-SECI-RTC-TM-V-final_upload.pdf",
+   "page_no": 2,
+   "field": "core.penalties.max_scod_extension_months"
+  },
+  "page": "67886a619e-p2",
+  "page_no": 2,
+  "quote": "shall be limited to the date as on 6 months from the SCSD or the extended SCSD (if applicable) (for e.g., if SCSD is 07.06.2028, then the above deadline for commencement of power supply shall be 07.12.2028).",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0030",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Amendment-02-SECI-RTC-TM-V-final_upload.pdf",
+   "page_no": 2,
+   "field": "core.penalties.pbg_encashment_triggers"
+  },
+  "page": "67886a619e-p2",
+  "page_no": 2,
+  "quote": "as part of the penalty, the total PBG amount for the Project shall be encashed on pro-rata basis and proportionate to the Contracted Capacity that has not commenced supply of power.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0031",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Amendment-02-SECI-RTC-TM-V-final_upload.pdf",
+   "page_no": 2,
+   "field": "core.penalties.termination_delay_months"
+  },
+  "page": "67886a619e-p2",
+  "page_no": 2,
+  "quote": "The maximum time period allowed for commencement of power supply from the full Project Capacity with applicable penalty, shall be limited to the date as on 6 months from the SCSD or the extended SCSD",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0032",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Amendment-02-SECI-RTC-TM-V-final_upload.pdf",
+   "page_no": 2,
+   "field": "sector.power.common.scod_reference"
+  },
+  "page": "67886a619e-p2",
+  "page_no": 2,
+  "quote": "months from the Effective Date of the PPA (for e.g., if Effective Date of the PPA is 07.06.2026, then SCSD shall be 07.06.2028).",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0033",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Amendment-02-SECI-RTC-TM-V-final_upload.pdf",
+   "page_no": 2,
+   "field": "sector.power.common.scod_months"
+  },
+  "page": "67886a619e-p2",
+  "page_no": 2,
+  "quote": "The Scheduled Commencement of Supply Date (SCSD) for supplying power from the full Project capacity shall be the date as on 24 months from the Effective Date of the PPA",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0034",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Amendment-02-SECI-RTC-TM-V-final_upload.pdf",
+   "page_no": 2,
+   "field": "sector.power.fdre.peak_window_definition"
+  },
+  "page": "67886a619e-p2",
+  "page_no": 2,
+  "quote": "Buying Entity shall specify the Peak Hours on daily basis, and such power shall be",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0035",
+  "category": "real_near_miss",
+  "source": {
+   "document": "Amendment-02-SECI-RTC-TM-V-final_upload.pdf",
+   "page_no": 3,
+   "field": "core.guarantees.pbg_formula"
+  },
+  "page": "67886a619e-p3",
+  "page_no": 3,
+  "quote": "PBG amount = Rs. [24,20,000* S + 34,20,000* W + 6,00,000 * E]",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0036",
+  "category": "real_near_miss",
+  "source": {
+   "document": "Amendment-02-SECI-RTC-TM-V-final_upload.pdf",
+   "page_no": 3,
+   "field": "core.guarantees.emd_formula"
+  },
+  "page": "67886a619e-p3",
+  "page_no": 3,
+  "quote": "EMD amount = Rs. [9,68,000 * S + 13,68,000 * W + 2,40,000 * E]",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0037",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Amendment-02-SECI-RTC-TM-V-final_upload.pdf",
+   "page_no": 5,
+   "field": "sector.power.fdre.peak_window_definition"
+  },
+  "page": "67886a619e-p5",
+  "page_no": 5,
+  "quote": "the PPA, Buying Entity shall specify the Peak Hours on daily basis, and such power shall be purchased at the following tariffs:",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0038",
+  "category": "real_near_miss",
+  "source": {
+   "document": "Amendment02_to_70_MW_BoS_tender_Package_1_Solar_paired_with_BESS_28082026.pdf",
+   "page_no": 1,
+   "field": "core.identity.tender_type_as_stated"
+  },
+  "page": "ee0890d863-p1",
+  "page_no": 1,
+  "quote": "TURNKEY BASIS ALONG WITH 5 (FIVE) YEARS COMPREHENSIVE OPERATION AND MAINTENANCE, (SUPPLY OF MODULES IS UNDER OWNER’S SCOPE).",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0039",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Amendment02_to_70_MW_BoS_tender_Package_1_Solar_paired_with_BESS_28082026.pdf",
+   "page_no": 2,
+   "field": "sector.power.epc.scope_matrix"
+  },
+  "page": "ee0890d863-p2",
+  "page_no": 2,
+  "quote": "Procurement & Supply of Equipment and Materials (excluding PV Modules), Testing at Manufacturers Works",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0040",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Amendment02_to_70_MW_BoS_tender_Package_1_Solar_paired_with_BESS_28082026.pdf",
+   "page_no": 2,
+   "field": "sector.power.epc.scope_matrix"
+  },
+  "page": "ee0890d863-p2",
+  "page_no": 2,
+  "quote": "Associated Civil Works, Services, Permits, Licences, Installation and Incidentals, Insurance at all Stages",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0041",
+  "category": "real_near_miss",
+  "source": {
+   "document": "Amendment02_to_70_MW_BoS_tender_Package_1_Solar_paired_with_BESS_28082026.pdf",
+   "page_no": 2,
+   "field": "sector.power.epc.scope_matrix"
+  },
+  "page": "ee0890d863-p2",
+  "page_no": 2,
+  "quote": "and performance demonstration with associated equipment and materials on turnkey basis along with 5 (five) years comprehensive Operation and Maintenance",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0042",
+  "category": "real_near_miss",
+  "source": {
+   "document": "Amendment02_to_70_MW_BoS_tender_Package_1_Solar_paired_with_BESS_28082026.pdf",
+   "page_no": 3,
+   "field": "sector.power.epc.om_period_months"
+  },
+  "page": "ee0890d863-p3",
+  "page_no": 3,
+  "quote": "Performance demonstration with associated equipment and materials on turnkey basis along with 5 (five) years comprehensive Operation and Maintenance.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0043",
+  "category": "real_unlocated_at_extraction",
+  "source": {
+   "document": "Amendment02_to_70_MW_BoS_tender_Package_1_Solar_paired_with_BESS_28082026.pdf",
+   "page_no": 4,
+   "field": "sector.power.epc.om_period_months"
+  },
+  "page": "ee0890d863-p4",
+  "page_no": 4,
+  "quote": "For providing Comprehensive operation & maintenance of this project (Package-1) for 5 (Five) years from the date as per the information given in technical specification",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0044",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Amendment02_to_70_MW_BoS_tender_Package_1_Solar_paired_with_BESS_28082026.pdf",
+   "page_no": 4,
+   "field": "core.eligibility.consortium_allowed"
+  },
+  "page": "ee0890d863-p4",
+  "page_no": 4,
+  "quote": "In order to avail the exemption in Tender Processing Fee in case of consortium/ JV, all the members should be registered as MSE Vendors under NSIC/ Udyog Aadhaar Category/DIC.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0045",
+  "category": "real_near_miss",
+  "source": {
+   "document": "Amendment02_to_70_MW_BoS_tender_Package_1_Solar_paired_with_BESS_28082026.pdf",
+   "page_no": 4,
+   "field": "core.documents.draft_agreements_referenced"
+  },
+  "page": "ee0890d863-p4",
+  "page_no": 4,
+  "quote": "The value of the Contract Performance Security shall be 10% (Ten percent) of the Contract Value (i.e., total sum of the Supply & Service Contract).",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0046",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Amendment02_to_70_MW_BoS_tender_Package_1_Solar_paired_with_BESS_28082026.pdf",
+   "page_no": 4,
+   "field": "core.guarantees.pbg_formula"
+  },
+  "page": "ee0890d863-p4",
+  "page_no": 4,
+  "quote": "First Stage (Supply and Services): The value of the Contract Performance Security shall be 10% (Ten percent) of the Contract Value (i.e., total sum of the Supply & Service Contract).",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0047",
+  "category": "real_unlocated_at_extraction",
+  "source": {
+   "document": "Amendment02_to_70_MW_BoS_tender_Package_1_Solar_paired_with_BESS_28082026.pdf",
+   "page_no": 4,
+   "field": "core.documents.draft_agreements_referenced"
+  },
+  "page": "ee0890d863-p4",
+  "page_no": 4,
+  "quote": "(ii) Second Contract (O&M Part): For providing Comprehensive operation & maintenance of this project (Package-1) for 5 (Five) years from the date as per the information given in technical specification",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0048",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Amendment02_to_70_MW_BoS_tender_Package_1_Solar_paired_with_BESS_28082026.pdf",
+   "page_no": 4,
+   "field": "core.eligibility.parent_affiliate_credentials_allowed"
+  },
+  "page": "ee0890d863-p4",
+  "page_no": 4,
+  "quote": "In case the consortium/JV proposes to meet the qualifying requirements based on the credentials of its Parent/Holding/Subsidiary/Affiliate and any of its Parent/Holding/Subsidiary/ Affiliate is not an MSE",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0049",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Amendment02_to_70_MW_BoS_tender_Package_1_Solar_paired_with_BESS_28082026.pdf",
+   "page_no": 5,
+   "field": "core.penalties.pbg_encashment_triggers"
+  },
+  "page": "ee0890d863-p5",
+  "page_no": 5,
+  "quote": "During the O&M period, if the security or part thereof is encashed due to shortfall in generation, the Contractor shall within 03 months, shall enhance the security to the value as specified above",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0050",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Amendment02_to_70_MW_BoS_tender_Package_1_Solar_paired_with_BESS_28082026.pdf",
+   "page_no": 5,
+   "field": "core.guarantees.pbg_schedule"
+  },
+  "page": "ee0890d863-p5",
+  "page_no": 5,
+  "quote": "period of 29 Months (14 Months Project commissioning period + 12 months DLP + 03 Months additional) from the date of its issuance.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0051",
+  "category": "real_near_miss",
+  "source": {
+   "document": "Amendment02_to_70_MW_BoS_tender_Package_1_Solar_paired_with_BESS_28082026.pdf",
+   "page_no": 5,
+   "field": "core.guarantees.pbg_schedule"
+  },
+  "page": "ee0890d863-p5",
+  "page_no": 5,
+  "quote": "Second Stage (O&M): The Contractor shall at least 15 days prior to the part or full commissioning of the Project, provide performance security for O&M Contract",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0052",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Amendment02_to_70_MW_BoS_tender_Package_1_Solar_paired_with_BESS_28082026.pdf",
+   "page_no": 5,
+   "field": "core.guarantees.bg_release_conditions"
+  },
+  "page": "ee0890d863-p5",
+  "page_no": 5,
+  "quote": "Further, the Contract Performance Security of First Stage will only be returned to the Contractor only after the enhancement of Contract Performance Security provided against the O&M Contract to the amount as mentioned above.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0053",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Amendment02_to_70_MW_BoS_tender_Package_1_Solar_paired_with_BESS_28082026.pdf",
+   "page_no": 5,
+   "field": "core.guarantees.pbg_formula"
+  },
+  "page": "ee0890d863-p5",
+  "page_no": 5,
+  "quote": "performance security for O&M Contract for the value of 10% of the O&M Contract Value including GST for a total period of 63 Months (60 Months Project O&M period + 03 Months additional) from the date of commissioning of full project.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0054",
+  "category": "real_near_miss",
+  "source": {
+   "document": "Amendment02_to_70_MW_BoS_tender_Package_1_Solar_paired_with_BESS_28082026.pdf",
+   "page_no": 5,
+   "field": "core.guarantees.pbg_formula"
+  },
+  "page": "ee0890d863-p5",
+  "page_no": 5,
+  "quote": "shall enhance the amount of this security to 10%*INR4.5/kWh*Annual Generation in units (kWh). This Bank Guarantee shall be taken from the Contractor by way of enhancement of value of Contract Performance Security for O&M Contract.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0055",
+  "category": "real_near_miss",
+  "source": {
+   "document": "Amendment02_to_70_MW_BoS_tender_Package_1_Solar_paired_with_BESS_28082026.pdf",
+   "page_no": 6,
+   "field": "core.commercial.payment_security_mechanism"
+  },
+  "page": "ee0890d863-p6",
+  "page_no": 6,
+  "quote": "Contract Performance Security in the form of Bank Guarantee with initial validity period of 36 Months and the same may be extended for the balance period or further 36 months, within 60 days of expiry of the original CPS.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0056",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Amendment02_to_70_MW_BoS_tender_Package_1_Solar_paired_with_BESS_28082026.pdf",
+   "page_no": 10,
+   "field": "sector.power.epc.taxes_duties_treatment"
+  },
+  "page": "ee0890d863-p10",
+  "page_no": 10,
+  "quote": "shall be considered fixed for the entire tendering process and shall not be subject to any change by SECI throughout the tendering process",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0057",
+  "category": "real_near_miss",
+  "source": {
+   "document": "Amendment-03 package-1 Solar plus BESS 15092026.pdf",
+   "page_no": 1,
+   "field": "core.documents.required_documents"
+  },
+  "page": "9e8ff0b1a3-p1",
+  "page_no": 1,
+  "quote": "The list of projects commissioned at least 6 months prior to the last date of Bid Submission, indicating whether the project is grid connected, along with a scanned copy of the Commissioning certificate",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0058",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Amendment-03 package-1 Solar plus BESS 15092026.pdf",
+   "page_no": 1,
+   "field": "core.documents.required_documents"
+  },
+  "page": "9e8ff0b1a3-p1",
+  "page_no": 1,
+  "quote": "Bidder shall also submit a certificate of successful completion and operation from the Owner.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0059",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Amendment-03 package-1 Solar plus BESS 15092026.pdf",
+   "page_no": 2,
+   "field": "sector.power.epc.om_period_months"
+  },
+  "page": "9e8ff0b1a3-p2",
+  "page_no": 2,
+  "quote": "Comprehensive operation & maintenance of the ground mounted SPV plant with BESS for a period of 5 (Five) years as mentioned in detailed Technical Specification/ scope of work.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0060",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Amendment-03 package-1 Solar plus BESS 15092026.pdf",
+   "page_no": 2,
+   "field": "core.documents.draft_agreements_referenced"
+  },
+  "page": "9e8ff0b1a3-p2",
+  "page_no": 2,
+  "quote": "14 (Fourteen) Months from the Date of the signing of Contract Agreement or as mentioned in Notification of Award.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0061",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Amendment-03 package-1 Solar plus BESS 15092026.pdf",
+   "page_no": 2,
+   "field": "core.documents.required_documents"
+  },
+  "page": "9e8ff0b1a3-p2",
+  "page_no": 2,
+  "quote": "The Performance Certificate/Joint meter reading (JMR) reports shall have been issued by any state/ central owned agencies or state power departments",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0062",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Amendment-03 package-1 Solar plus BESS 15092026.pdf",
+   "page_no": 3,
+   "field": "sector.power.common.line_to_pooling_station_responsibility"
+  },
+  "page": "9e8ff0b1a3-p3",
+  "page_no": 3,
+  "quote": "transmission line/cable to the grid substation, grid interconnection facilities, SCADA/plant controller, and all works necessary for power evacuation and grid code compliance, within the scope of the Package 1 Contractor.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0063",
+  "category": "real_unlocated_at_extraction",
+  "source": {
+   "document": "Amendment-03 package-1 Solar plus BESS 15092026.pdf",
+   "page_no": 3,
+   "field": "core.identity.tender_number"
+  },
+  "page": "9e8ff0b1a3-p3",
+  "page_no": 3,
+  "quote": "Package 1 (Tender No. SECI/C&P/OP/11/0002/26-27 dated 24.06.2026)",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0064",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Amendment-03 package-1 Solar plus BESS 15092026.pdf",
+   "page_no": 4,
+   "field": "core.documents.annexure_formats"
+  },
+  "page": "9e8ff0b1a3-p4",
+  "page_no": 4,
+  "quote": "completion of all tests specified in General Annexure E: Plant Documentation, Commissioning and Test Procedure up to and including the Interface Point",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0065",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Amendment-03 package-1 Solar plus BESS 15092026.pdf",
+   "page_no": 5,
+   "field": "sector.power.common.total_capacity_mwh"
+  },
+  "page": "9e8ff0b1a3-p5",
+  "page_no": 5,
+  "quote": "Date of successful commissioning for Package-1 (i.e. 70 MW Solar+ 25MW/50MWh BESS)",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0066",
+  "category": "real_near_miss",
+  "source": {
+   "document": "Amendment-03 package-1 Solar plus BESS 15092026.pdf",
+   "page_no": 9,
+   "field": "core.documents.draft_agreements_referenced"
+  },
+  "page": "9e8ff0b1a3-p9",
+  "page_no": 9,
+  "quote": "BoS equipment failure, or operational/scheduling deficiencies shall remain within Contractor scope and LD shall apply as per O&M Agreement.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0067",
+  "category": "real_near_miss",
+  "source": {
+   "document": "Amendment-03 package-1 Solar plus BESS 15092026.pdf",
+   "page_no": 11,
+   "field": "sector.power.epc.ld_performance"
+  },
+  "page": "9e8ff0b1a3-p11",
+  "page_no": 11,
+  "quote": "This indemnity shall be subject to a maximum of five percent (5%) of the revenue from the Target Generation (GTN), calculated at the ceiling tariff specified below.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0068",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Amendment-03 package-1 Solar plus BESS 15092026.pdf",
+   "page_no": 11,
+   "field": "core.documents.annexure_formats"
+  },
+  "page": "9e8ff0b1a3-p11",
+  "page_no": 11,
+  "quote": "SA-A (Revised): Tentative Land Layout (Solar + BESS) supersedes and replaces the earlier",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0069",
+  "category": "real_near_miss",
+  "source": {
+   "document": "Amendment-03 package-1 Solar plus BESS 15092026.pdf",
+   "page_no": 11,
+   "field": "core.penalties.shortfall_penalty_basis"
+  },
+  "page": "9e8ff0b1a3-p11",
+  "page_no": 11,
+  "quote": "indemnify the Employer by paying liquidated damages - not as a penalty - equivalent to the estimated energy loss. This indemnity shall be subject to a maximum of five percent (5%) of the revenue from the Target Generation (GTN)",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0070",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Amendment-03-SECI-FDRE-RTC-V-final_upload.pdf",
+   "page_no": 2,
+   "field": "sector.power.common.gna_requirement"
+  },
+  "page": "7f65782551-p2",
+  "page_no": 2,
+  "quote": "To mitigate any mismatch between SCSD and connectivity start date timelines, the RPD shall submit, within 10 days of invitation for PPA signing by SECI as per Clause 20.4 of the RfS, a copy of in-principle/ final grant of connectivity",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0071",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Amendment-03-SECI-FDRE-RTC-V-final_upload.pdf",
+   "page_no": 2,
+   "field": "sector.power.common.gna_requirement"
+  },
+  "page": "7f65782551-p2",
+  "page_no": 2,
+  "quote": "The RPD must follow the timelines mentioned in the GNA regulation with respect to connectivity.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0072",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Amendment-03-SECI-FDRE-RTC-V-final_upload.pdf",
+   "page_no": 2,
+   "field": "core.documents.required_documents"
+  },
+  "page": "7f65782551-p2",
+  "page_no": 2,
+  "quote": "An undertaking to this effect shall be submitted by the Bidder as part of Format-7.1 Covering Letter.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0073",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Amendment-03-SECI-FDRE-RTC-V-final_upload.pdf",
+   "page_no": 3,
+   "field": "core.commercial.offtaker"
+  },
+  "page": "7f65782551-p3",
+  "page_no": 3,
+  "quote": "The RPD shall schedule power on day-ahead basis. The Buying Entities shall compulsorily off-take all the power during Peak Hours and Remaining Hours,",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0074",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Amendment-03-SECI-FDRE-RTC-V-final_upload.pdf",
+   "page_no": 3,
+   "field": "sector.power.fdre.availability_shortfall_penalty"
+  },
+  "page": "7f65782551-p3",
+  "page_no": 3,
+  "quote": "In a particular Contract Year, the aggregate penalty for shortfall in the minimum DFR requirements for Peak, Solar and Remaining Hours shall be levied on the RPD.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0075",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Amendment-03-SECI-FDRE-RTC-V-final_upload.pdf",
+   "page_no": 4,
+   "field": "core.commercial.offtaker"
+  },
+  "page": "7f65782551-p4",
+  "page_no": 4,
+  "quote": "In case such power is purchased by the Buying Entity, it shall be purchased at the PPA tariff (plus SECI’s trading margin) for the excess supply during Peak and Remaining Hours,",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0076",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Amendment-03-SECI-FDRE-RTC-V-final_upload.pdf",
+   "page_no": 5,
+   "field": "core.documents.annexure_formats"
+  },
+  "page": "7f65782551-p5",
+  "page_no": 5,
+  "quote": "submitted in the Covering Letter (Format 7.1), shall be at the risk and cost of the Successful Bidder.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0077",
+  "category": "real_near_miss",
+  "source": {
+   "document": "Amendment-03-SECI-FDRE-RTC-V-final_upload.pdf",
+   "page_no": 9,
+   "field": "core.commercial.termination_compensation"
+  },
+  "page": "7f65782551-p9",
+  "page_no": 9,
+  "quote": "the RPD shall be liable to pay to Buying Entity(ies), damages equivalent to 24 (twenty-four) months, or balance PPA period,",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0078",
+  "category": "real_near_miss",
+  "source": {
+   "document": "Amendment-03-SECI-FDRE-RTC-V-final_upload.pdf",
+   "page_no": 9,
+   "field": "core.commercial.termination_compensation"
+  },
+  "page": "7f65782551-p9",
+  "page_no": 9,
+  "quote": "shall be liable to pay to Buying Entity(ies), lump-sum damages equivalent to 24 (twenty-four) months or balance PPA period, whichever is less, for the amount corresponding to aggregate energy shortfall",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0079",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Amendment-03-SECI-FDRE-RTC-V-final_upload.pdf",
+   "page_no": 11,
+   "field": "core.commercial.termination_compensation"
+  },
+  "page": "7f65782551-p11",
+  "page_no": 11,
+  "quote": "equivalent to 24 (twenty-four) months, or balance PPA period, whichever is less, for the amount corresponding to aggregate energy based on the min. Peak, Solar and Remaining Hours DFR obligation.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0080",
+  "category": "real_unlocated_at_extraction",
+  "source": {
+   "document": "Clarifications-01_RTC-TM-V-_final_upload.pdf",
+   "page_no": 1,
+   "field": "core.identity.issuing_agency"
+  },
+  "page": "87780f2bdb-p1",
+  "page_no": 1,
+  "quote": "SOLAR ENERGY CORPORATION OF INDIA LIMITED",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0081",
+  "category": "real_unlocated_at_extraction",
+  "source": {
+   "document": "Clarifications-01_RTC-TM-V-_final_upload.pdf",
+   "page_no": 2,
+   "field": "core.key_dates.dates_deferred_note"
+  },
+  "page": "87780f2bdb-p2",
+  "page_no": 2,
+  "quote": "Clause has been suitably modified. Kindly refer amendments-02.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0082",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Contractual_Documents_70MW_Package-1_24062026_1.pdf",
+   "page_no": 2,
+   "field": "core.documents.annexure_formats"
+  },
+  "page": "fa203485ca-p2",
+  "page_no": 2,
+  "quote": "Annexure to Bid Data Sheet (BDS): Qualifying Requirements (QR)",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0083",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Contractual_Documents_70MW_Package-1_24062026_1.pdf",
+   "page_no": 11,
+   "field": "core.identity.tender_number"
+  },
+  "page": "fa203485ca-p11",
+  "page_no": 11,
+  "quote": "(B) TENDER NO. & DATE SECI/C&P/OP/11/0002/26-27 dated 24.06.2026",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0084",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Contractual_Documents_70MW_Package-1_24062026_1.pdf",
+   "page_no": 12,
+   "field": "core.key_dates.dates_deferred_note"
+  },
+  "page": "fa203485ca-p12",
+  "page_no": 12,
+  "quote": "To be intimated subsequent to the shortlisting of Techno Commercial Bids",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0085",
+  "category": "real_near_miss",
+  "source": {
+   "document": "Contractual_Documents_70MW_Package-1_24062026_1.pdf",
+   "page_no": 69,
+   "field": "core.guarantees.bg_validity_months"
+  },
+  "page": "fa203485ca-p69",
+  "page_no": 69,
+  "quote": "The bid validity period shall be 180 (One Hundred and Eighty Days) from the date of opening of",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0086",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Contractual_Documents_70MW_Package-1_24062026_1.pdf",
+   "page_no": 69,
+   "field": "core.guarantees.emd_form"
+  },
+  "page": "fa203485ca-p69",
+  "page_no": 69,
+  "quote": "16.11 The EMD can also been submitted in the from of Surety Bond towards EMD as per Format F-31",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0087",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Contractual_Documents_70MW_Package-1_24062026_1.pdf",
+   "page_no": 70,
+   "field": "core.documents.draft_agreements_referenced"
+  },
+  "page": "fa203485ca-p70",
+  "page_no": 70,
+  "quote": "State of which stamp paper is required for Contract Agreement: New Delhi The value of stamp paper will be INR 100/-",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0088",
+  "category": "real_near_miss",
+  "source": {
+   "document": "Contractual_Documents_70MW_Package-1_24062026_1.pdf",
+   "page_no": 70,
+   "field": "core.documents.draft_agreements_referenced"
+  },
+  "page": "fa203485ca-p70",
+  "page_no": 70,
+  "quote": "SECI will award the Contract Agreement (CA) for complete site to the successful Bidder, whose Bid has been determined to be substantially responsive",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0089",
+  "category": "real_near_miss",
+  "source": {
+   "document": "Contractual_Documents_70MW_Package-1_24062026_1.pdf",
+   "page_no": 170,
+   "field": "sector.power.epc.ld_delay"
+  },
+  "page": "fa203485ca-p170",
+  "page_no": 170,
+  "quote": "the Contractor shall pay to the Owner a sum equivalent to half percent (0.5%) per week of the commissioned part of the facilities, that’s the proportionate uncommissioned contract price",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0090",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Contractual_Documents_70MW_Package-1_24062026_1.pdf",
+   "page_no": 170,
+   "field": "sector.power.common.land_responsibility"
+  },
+  "page": "fa203485ca-p170",
+  "page_no": 170,
+  "quote": "The contractor shall make own arrangement at his cost for the duration of the execution of the work near the site as per SECI terms and conditions for construction of Contractor's Temporary Field Office, godowns, workshops and assembly yard",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0091",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Contractual_Documents_70MW_Package-1_24062026_1.pdf",
+   "page_no": 174,
+   "field": "sector.power.common.connectivity_responsibility"
+  },
+  "page": "fa203485ca-p174",
+  "page_no": 174,
+  "quote": "In the matter of connectivity of Plant to DISCOM’s substation, the Owner will take the necessary connectivity permission, however, all the other permissions and clearances as deemed required by the State Agency/DISCOM",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0092",
+  "category": "real_near_miss",
+  "source": {
+   "document": "Contractual_Documents_70MW_Package-1_24062026_1.pdf",
+   "page_no": 184,
+   "field": "core.documents.annexure_formats"
+  },
+  "page": "fa203485ca-p184",
+  "page_no": 184,
+  "quote": "F-29 FORMAT FOR UNDERTAKING REGARDING CONFIRMATION ON INSPECTION OF MODULE UNDER CONTRACTOR SCOPE F-30 Form of Undertaking by the Bidder and the Firm",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0093",
+  "category": "real_near_miss",
+  "source": {
+   "document": "Contractual_Documents_70MW_Package-1_24062026_1.pdf",
+   "page_no": 184,
+   "field": "core.documents.annexure_formats"
+  },
+  "page": "fa203485ca-p184",
+  "page_no": 184,
+  "quote": "F-0 COVERING LETTER F-1 BIDDER’S GENERAL INFORMATION F-4A PROFORMA OF \"BANK GUARANTEE\" FOR \"EARNEST MONEY DEPOSIT (EMD)”",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0094",
+  "category": "real_near_miss",
+  "source": {
+   "document": "Contractual_Documents_70MW_Package-1_24062026_1.pdf",
+   "page_no": 184,
+   "field": "core.documents.annexure_formats"
+  },
+  "page": "fa203485ca-p184",
+  "page_no": 184,
+  "quote": "F-17 FORMAT FOR JOINT VENTURE AGREEMENT F-17A FORMAT FOR POWER OF ATTORNEY FOR JOINT VENTURE AGREEMENT F-18 FORMAT FOR CONSORTIUM AGREEMENT",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0095",
+  "category": "real_near_miss",
+  "source": {
+   "document": "Contractual_tender_document_60_MW_Gaya.pdf",
+   "page_no": 1,
+   "field": "sector.power.common.total_capacity_mw"
+  },
+  "page": "b07317d8c1-p1",
+  "page_no": 1,
+  "quote": "60 MW (AC) Solar PV Plant at Gaya, Bihar",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0096",
+  "category": "real_near_miss",
+  "source": {
+   "document": "Contractual_tender_document_60_MW_Gaya.pdf",
+   "page_no": 10,
+   "field": "core.guarantees.processing_fee_inr"
+  },
+  "page": "b07317d8c1-p10",
+  "page_no": 10,
+  "quote": "INR 25,000.00/- + applicable GST (Indian Rupees Twenty-Five Thousand only plus applicable GST)",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0097",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Contractual_tender_document_60_MW_Gaya.pdf",
+   "page_no": 10,
+   "field": "core.guarantees.emd_formula"
+  },
+  "page": "b07317d8c1-p10",
+  "page_no": 10,
+  "quote": "Amount: INR 6,43,60,000.00/- (Indian Rupees Six Crore Forty-Three Lakh Sixty Thousand only)",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0098",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Contractual_tender_document_60_MW_Gaya.pdf",
+   "page_no": 10,
+   "field": "core.identity.procurement_mode"
+  },
+  "page": "b07317d8c1-p10",
+  "page_no": 10,
+  "quote": "“Single Stage Two Envelope” online Bidding system followed by e-Reverse Auction.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0099",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Contractual_tender_document_60_MW_Gaya.pdf",
+   "page_no": 11,
+   "field": "core.key_dates.dates_deferred_note"
+  },
+  "page": "b07317d8c1-p11",
+  "page_no": 11,
+  "quote": "To be intimated subsequent to the shortlisting of Techno Commercial Bids",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0100",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Contractual_tender_document_60_MW_Gaya.pdf",
+   "page_no": 32,
+   "field": "core.commercial.offtaker"
+  },
+  "page": "b07317d8c1-p32",
+  "page_no": 32,
+  "quote": "Executive Director (C&P) Solar Energy Corporation of India Limited (A Government of India Enterprise)",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0101",
+  "category": "real_near_miss",
+  "source": {
+   "document": "Contractual_tender_document_60_MW_Gaya.pdf",
+   "page_no": 67,
+   "field": "core.guarantees.bg_validity_months"
+  },
+  "page": "b07317d8c1-p67",
+  "page_no": 67,
+  "quote": "The bid validity period shall be 180 (One Hundred and Eighty Days) from the last date of bid submission deadline.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0102",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Contractual_tender_document_60_MW_Gaya.pdf",
+   "page_no": 68,
+   "field": "core.documents.draft_agreements_referenced"
+  },
+  "page": "b07317d8c1-p68",
+  "page_no": 68,
+  "quote": "State of which stamp paper is required for Contract Agreement: New Delhi",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0103",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Contractual_tender_document_60_MW_Gaya.pdf",
+   "page_no": 68,
+   "field": "core.documents.draft_agreements_referenced"
+  },
+  "page": "b07317d8c1-p68",
+  "page_no": 68,
+  "quote": "SECI will award the Contract Agreement (CA) for complete site to the successful Bidder, whose Bid has been determined to be substantially responsive",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0104",
+  "category": "real_near_miss",
+  "source": {
+   "document": "Contractual_tender_document_60_MW_Gaya.pdf",
+   "page_no": 124,
+   "field": "core.commercial.termination_compensation"
+  },
+  "page": "b07317d8c1-p124",
+  "page_no": 124,
+  "quote": "the Contract Price, properly attributable to the supplies executed by the Bidder as of thedate of termination",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0105",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Contractual_tender_document_60_MW_Gaya.pdf",
+   "page_no": 207,
+   "field": "sector.power.common.connectivity_responsibility"
+  },
+  "page": "b07317d8c1-p207",
+  "page_no": 207,
+  "quote": "In the matter of connectivity of Plant to ISTS substation, the Owner will take the necessary connectivity permission, however, all the other permissions and clearances as deemed required by the CTUIL/CEA,",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0106",
+  "category": "real_near_miss",
+  "source": {
+   "document": "Contractual_tender_document_60_MW_Gaya.pdf",
+   "page_no": 217,
+   "field": "core.documents.annexure_formats"
+  },
+  "page": "b07317d8c1-p217",
+  "page_no": 217,
+  "quote": "F-9 DECLARATION REGARDING THE PROCUREMENT OF SOLAR INVERTERS & SOLAR MODULES FROM CLASS I LOCAL SUPPLIERS",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0107",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Contractual_tender_document_60_MW_Gaya.pdf",
+   "page_no": 217,
+   "field": "core.documents.annexure_formats"
+  },
+  "page": "b07317d8c1-p217",
+  "page_no": 217,
+  "quote": "F-12 FORMAT OF CHARTERED ACCOUNTANT CERTIFICATE FOR FINANCIAL CAPABILITY OF THE BIDDER",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0108",
+  "category": "real_near_miss",
+  "source": {
+   "document": "job_45811.pdf",
+   "page_no": 2,
+   "field": "core.key_dates.pre_bid_meeting_date"
+  },
+  "page": "15aa4ba1eb-p2",
+  "page_no": 2,
+  "quote": "Pre-Bid Conference and Last Date for receipt of \nqueries from prospective Bidders 01.09.2026",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0109",
+  "category": "real_not_exact",
+  "source": {
+   "document": "job_45811.pdf",
+   "page_no": 2,
+   "field": "core.key_dates.bid_submission_deadline"
+  },
+  "page": "15aa4ba1eb-p2",
+  "page_no": 2,
+  "quote": "Last Date and Time for receipt of bids comprising \nboth Techno-Commercial Bid and Price Bid 15.09.2026 15:00:00 (IST)",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0110",
+  "category": "real_near_miss",
+  "source": {
+   "document": "job_45811.pdf",
+   "page_no": 2,
+   "field": "core.key_dates.technical_opening_date"
+  },
+  "page": "15aa4ba1eb-p2",
+  "page_no": 2,
+  "quote": "Date & Time of opening of Techno-Commercial \nBid 15.09.2026 15:30:00 (IST)",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0111",
+  "category": "real_not_exact",
+  "source": {
+   "document": "job_45811.pdf",
+   "page_no": 2,
+   "field": "core.summary.plain_english_summary"
+  },
+  "page": "15aa4ba1eb-p2",
+  "page_no": 2,
+  "quote": "both Techno-Commercial Bid and Price Bid 15.09.2026 15:00:00 (IST)",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0112",
+  "category": "real_not_exact",
+  "source": {
+   "document": "job_45811.pdf",
+   "page_no": 5,
+   "field": "core.identity.portal"
+  },
+  "page": "15aa4ba1eb-p5",
+  "page_no": 5,
+  "quote": "Interested parties are required to get registered with M/s ISN Electronic Tender Services (ETS) website https://www.bharat-electronictender.com (if not already registered).",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0113",
+  "category": "real_near_miss",
+  "source": {
+   "document": "NTPC-1200-MW-Wind-Solar-Hybrid-Pan-India-Oct-2024.pdf",
+   "page_no": 8,
+   "field": "core.identity.portal"
+  },
+  "page": "f351b3bbeb-p8",
+  "page_no": 8,
+  "quote": "The portal is also referred to as Electronic Tender System® (ETS).",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0114",
+  "category": "real_not_exact",
+  "source": {
+   "document": "NTPC-1200-MW-Wind-Solar-Hybrid-Pan-India-Oct-2024.pdf",
+   "page_no": 21,
+   "field": "core.key_dates.pre_bid_meeting_date"
+  },
+  "page": "f351b3bbeb-p21",
+  "page_no": 21,
+  "quote": "On 18.11.2024 at 15:30 Hrs (IST) Online through MS Teams",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0115",
+  "category": "real_not_exact",
+  "source": {
+   "document": "NTPC-1200-MW-Wind-Solar-Hybrid-Pan-India-Oct-2024.pdf",
+   "page_no": 21,
+   "field": "core.key_dates.pre_bid_meeting_date"
+  },
+  "page": "f351b3bbeb-p21",
+  "page_no": 21,
+  "quote": "Last date for receipt of queries on RfS from the prospective bidders and Pre- bid Conference Date and time",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0116",
+  "category": "real_not_exact",
+  "source": {
+   "document": "NTPC-1200-MW-Wind-Solar-Hybrid-Pan-India-Oct-2024.pdf",
+   "page_no": 21,
+   "field": "core.key_dates.nit_date"
+  },
+  "page": "f351b3bbeb-p21",
+  "page_no": 21,
+  "quote": "Registration and Downloading of RfS document Date & Timing From 30.10.2024 to 15.11.2024",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0117",
+  "category": "real_near_miss",
+  "source": {
+   "document": "NTPC-1200-MW-Wind-Solar-Hybrid-Pan-India-Oct-2024.pdf",
+   "page_no": 21,
+   "field": "core.key_dates.bid_submission_deadline"
+  },
+  "page": "f351b3bbeb-p21",
+  "page_no": 21,
+  "quote": "Last date and Time for a) Online submission of bid and b) All documents as per Clause 3.15 physically at NTPC office, Greater Noida",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0118",
+  "category": "real_near_miss",
+  "source": {
+   "document": "Revised_RfS_for_1000_MWh_assured_Peak_Supply_under_CfD_Mechanism_(CfD-I).pdf",
+   "page_no": 3,
+   "field": "sector.power.common.total_capacity_mwh"
+  },
+  "page": "8f56020a6b-p3",
+  "page_no": 3,
+  "quote": "1000 MWh (500 MW x 2 Hrs.) from ISTS-Connected RE Projects in India under Tariff-based Competitive Bidding",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0119",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Revised_RfS_for_1000_MWh_assured_Peak_Supply_under_CfD_Mechanism_(CfD-I).pdf",
+   "page_no": 3,
+   "field": "core.identity.tender_type_as_stated"
+  },
+  "page": "8f56020a6b-p3",
+  "page_no": 3,
+  "quote": "Selection of RE Power Developers under Contract for Difference (CfD) Mechanism for assured Peak Supply of 1000 MWh (500 MW x 2 Hrs.) from ISTS-Connected RE Projects in India under Tariff-based Competitive Bidding (SECI-CfD-I)",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0120",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Revised_RfS_for_1000_MWh_assured_Peak_Supply_under_CfD_Mechanism_(CfD-I).pdf",
+   "page_no": 4,
+   "field": "core.key_dates.dates_deferred_note"
+  },
+  "page": "8f56020a6b-p4",
+  "page_no": 4,
+  "quote": "Scheduled as per NIT on ISN-ETS portal and/or SECI website.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0121",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Revised_RfS_for_1000_MWh_assured_Peak_Supply_under_CfD_Mechanism_(CfD-I).pdf",
+   "page_no": 36,
+   "field": "core.guarantees.bg_release_conditions"
+  },
+  "page": "8f56020a6b-p36",
+  "page_no": 36,
+  "quote": "In case of part-commissioning of the Project, PBG corresponding to such part capacity shall be released within 45 days of the actual date of commissioning of such part",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0122",
+  "category": "real_unlocated_at_extraction",
+  "source": {
+   "document": "RFP_Beed_05052026.pdf",
+   "page_no": 3,
+   "field": "core.summary.plain_english_summary"
+  },
+  "page": "31c08a222b-p3",
+  "page_no": 3,
+  "quote": "24 Months from Effective Date",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0123",
+  "category": "real_not_exact",
+  "source": {
+   "document": "RFP_Beed_05052026.pdf",
+   "page_no": 10,
+   "field": "core.documents.annexure_formats"
+  },
+  "page": "31c08a222b-p10",
+  "page_no": 10,
+  "quote": "Format for Clarifications / Amendments on the RFP / RFP Project Documents",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0124",
+  "category": "real_not_exact",
+  "source": {
+   "document": "RFP_Beed_05052026.pdf",
+   "page_no": 10,
+   "field": "core.guarantees.emd_form"
+  },
+  "page": "31c08a222b-p10",
+  "page_no": 10,
+  "quote": "Format of Payment on Order Instrument to be issued by IREDA/REC/PFC",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0125",
+  "category": "real_near_miss",
+  "source": {
+   "document": "RFP_Beed_05052026.pdf",
+   "page_no": 18,
+   "field": "sector.power.transmission.elements"
+  },
+  "page": "31c08a222b-p18",
+  "page_no": 18,
+  "quote": "765 kV Bus Reactor Bay: 1 No. 765 kV Line Bays: 4 Nos. 400 kV Line Bays: 4 Nos.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0126",
+  "category": "real_not_exact",
+  "source": {
+   "document": "RFP_Beed_05052026.pdf",
+   "page_no": 18,
+   "field": "sector.power.transmission.elements"
+  },
+  "page": "31c08a222b-p18",
+  "page_no": 18,
+  "quote": "765 kV ICT Bays: 3 Nos. 400 kV ICT Bays: 3 Nos.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0127",
+  "category": "real_not_exact",
+  "source": {
+   "document": "RFP_Beed_05052026.pdf",
+   "page_no": 41,
+   "field": "sector.power.transmission.element_wise_cod"
+  },
+  "page": "31c08a222b-p41",
+  "page_no": 41,
+  "quote": "All Elements are required to be commissioned simultaneously as their utilization is dependent on commissioning of each other.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0128",
+  "category": "real_near_miss",
+  "source": {
+   "document": "RFP_Beed_05052026.pdf",
+   "page_no": 44,
+   "field": "core.guarantees.emd_form"
+  },
+  "page": "31c08a222b-p44",
+  "page_no": 44,
+  "quote": "Each Biddershallsubmit the Bid accompanied by Bid Bond issued by any of the Banks listed in Annexure-17.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0129",
+  "category": "real_near_miss",
+  "source": {
+   "document": "RfS-ESS-IV-final_upload.pdf",
+   "page_no": 3,
+   "field": "core.summary.plain_english_summary"
+  },
+  "page": "7e6c27ee90-p3",
+  "page_no": 3,
+  "quote": "Selection of Battery Energy Storage System Developers (BESSDs) for Supply of Energy from 800 MW/ 3200 MWh Standalone Battery Energy Storage Systems in India",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0130",
+  "category": "real_not_exact",
+  "source": {
+   "document": "RfS-ESS-IV-final_upload.pdf",
+   "page_no": 4,
+   "field": "core.key_dates.dates_deferred_note"
+  },
+  "page": "7e6c27ee90-p4",
+  "page_no": 4,
+  "quote": "Will be informed to eligible bidders. Date and time of e-RA shall be intimated through email.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0131",
+  "category": "real_not_exact",
+  "source": {
+   "document": "RfS-ESS-IV-final_upload.pdf",
+   "page_no": 4,
+   "field": "core.key_dates.dates_deferred_note"
+  },
+  "page": "7e6c27ee90-p4",
+  "page_no": 4,
+  "quote": "Scheduled as per NIT on ISN-ETS portal and/or SECI website.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0132",
+  "category": "real_not_exact",
+  "source": {
+   "document": "RfS-ESS-IV-final_upload.pdf",
+   "page_no": 18,
+   "field": "sector.power.bess.degradation_obligation"
+  },
+  "page": "7e6c27ee90-p18",
+  "page_no": 18,
+  "quote": "Min. Dispatchable Capacity at the end of Year (as a % of Capacity at the Beginning of Life/COD)",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0133",
+  "category": "real_near_miss",
+  "source": {
+   "document": "RfS-ESS-IV-final_upload.pdf",
+   "page_no": 22,
+   "field": "core.penalties.pbg_encashment_triggers"
+  },
+  "page": "7e6c27ee90-p22",
+  "page_no": 22,
+  "quote": "In case of nonpayment by the BESSD within the above deadline, the PBG will be encashed by SECI on the next business day.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0134",
+  "category": "real_near_miss",
+  "source": {
+   "document": "RfS-ESS-IV-final_upload.pdf",
+   "page_no": 22,
+   "field": "core.penalties.termination_delay_months"
+  },
+  "page": "7e6c27ee90-p22",
+  "page_no": 22,
+  "quote": "the entire PBG/POI will be encashed by SECI, and the PPA for the Project shall stand terminated for the balance uncommissioned capacity.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0135",
+  "category": "real_near_miss",
+  "source": {
+   "document": "RfS-ESS-IV-final_upload.pdf",
+   "page_no": 135,
+   "field": "core.documents.required_documents"
+  },
+  "page": "7e6c27ee90-p135",
+  "page_no": 135,
+  "quote": "Bank Guarantee/ POI/ Surety Bond against EMD as per Format-7.3A/ 7.3B/ 7.3C",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0136",
+  "category": "real_not_exact",
+  "source": {
+   "document": "RfS-ESS-IV-final_upload.pdf",
+   "page_no": 136,
+   "field": "core.documents.required_documents"
+  },
+  "page": "7e6c27ee90-p136",
+  "page_no": 136,
+  "quote": "Copy of the Certificate of Incorporation of the Bidding Company/ all members of Bidding Consortium",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0137",
+  "category": "real_near_miss",
+  "source": {
+   "document": "RfS_FDRE_1200MW_NHPC_Tranche-II.pdf",
+   "page_no": 21,
+   "field": "core.guarantees.emd_form"
+  },
+  "page": "0f3827087c-p21",
+  "page_no": 21,
+  "quote": "In the form of DD/BG/POI/Insurance Surety Bond for the amount derived as per the following formula subject to maximum of Rs. 10 Crores per Project:",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0138",
+  "category": "real_not_exact",
+  "source": {
+   "document": "RfS_FDRE_1200MW_NHPC_Tranche-II.pdf",
+   "page_no": 22,
+   "field": "core.key_dates.query_deadline"
+  },
+  "page": "0f3827087c-p22",
+  "page_no": 22,
+  "quote": "Last date of Receipt of queries /clarification on bid. 26.03.2024 (upto 17:30 Hrs.)",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0139",
+  "category": "real_not_exact",
+  "source": {
+   "document": "RfS_FDRE_1200MW_NHPC_Tranche-II.pdf",
+   "page_no": 22,
+   "field": "core.key_dates.dates_deferred_note"
+  },
+  "page": "0f3827087c-p22",
+  "page_no": 22,
+  "quote": "Venue, Date & time to be intimated later to the bidders whose Techno-commercial Bids will be found responsive",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0140",
+  "category": "real_not_exact",
+  "source": {
+   "document": "RfS_FDRE_1200MW_NHPC_Tranche-II.pdf",
+   "page_no": 22,
+   "field": "core.key_dates.bid_submission_deadline"
+  },
+  "page": "0f3827087c-p22",
+  "page_no": 22,
+  "quote": "Online Bid Submission Closing Date & Time 12.04.2024 (17:30 Hrs.)",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0141",
+  "category": "real_near_miss",
+  "source": {
+   "document": "RfS_FDRE_1200MW_NHPC_Tranche-II.pdf",
+   "page_no": 22,
+   "field": "core.key_dates.technical_opening_date"
+  },
+  "page": "0f3827087c-p22",
+  "page_no": 22,
+  "quote": "Date, Time & Venue of Online/ Offline Bid (Technical Bid (PartI) submission 17.04.2024 (11:30 Hrs.)",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0142",
+  "category": "real_unlocated_at_extraction",
+  "source": {
+   "document": "RfS_FDRE_1200MW_NHPC_Tranche-II.pdf",
+   "page_no": 22,
+   "field": "core.key_dates.dates_deferred_note"
+  },
+  "page": "0f3827087c-p22",
+  "page_no": 22,
+  "quote": "Date & Time of Start of eReverse Auction Shall be intimated separately by NHPC",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0143",
+  "category": "real_not_exact",
+  "source": {
+   "document": "RfS_FDRE_1200MW_NHPC_Tranche-II.pdf",
+   "page_no": 22,
+   "field": "core.key_dates.bid_submission_deadline"
+  },
+  "page": "0f3827087c-p22",
+  "page_no": 22,
+  "quote": "Last date of Offline submission (date, time and address) 15.04.2024 (upto 17:00 Hrs.)",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0144",
+  "category": "real_not_exact",
+  "source": {
+   "document": "RfS_FDRE_1200MW_NHPC_Tranche-II.pdf",
+   "page_no": 118,
+   "field": "sector.power.fdre.component_disclosure_required"
+  },
+  "page": "0f3827087c-p118",
+  "page_no": 118,
+  "quote": "Break up of Solar / Wind / any other RE resource components",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0145",
+  "category": "real_not_exact",
+  "source": {
+   "document": "RfS_FDRE_1200MW_NHPC_Tranche-II.pdf",
+   "page_no": 119,
+   "field": "sector.power.common.tariff_structure"
+  },
+  "page": "0f3827087c-p119",
+  "page_no": 119,
+  "quote": "Indicative Tariff in Rupees per kWh (unit) of Electrical Power (single Tariff to be quoted for entire capacity applied for)",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0146",
+  "category": "real_near_miss",
+  "source": {
+   "document": "RfS_FDRE_1200MW_NHPC_Tranche-II.pdf",
+   "page_no": 162,
+   "field": "sector.power.common.delivery_point"
+  },
+  "page": "0f3827087c-p162",
+  "page_no": 162,
+  "quote": "Shall mean the point at 220 kV or above at the CTU Sub Station where the power from the RE Power Project is injected into the Inter State Transmission System (ISTS).",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0147",
+  "category": "real_not_exact",
+  "source": {
+   "document": "RfS_FDRE_1200MW_NHPC_Tranche-II.pdf",
+   "page_no": 163,
+   "field": "sector.power.fdre.storage_mandatory"
+  },
+  "page": "0f3827087c-p163",
+  "page_no": 163,
+  "quote": "shall mean the system(s) installed in addition to the RE power capacity as part of the Project, that can capture energy produced at one time for use at a later time",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0148",
+  "category": "real_not_exact",
+  "source": {
+   "document": "RfS_FDRE_1200MW_NHPC_Tranche-II.pdf",
+   "page_no": 163,
+   "field": "sector.power.fdre.firmness_definition"
+  },
+  "page": "0f3827087c-p163",
+  "page_no": 163,
+  "quote": "shall mean the power profile configuration that is defined in the RfS, which matches the demand profile specified by the Buying Entity for the particular time-block of the day, to be met by RE power sources",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0149",
+  "category": "real_not_exact",
+  "source": {
+   "document": "RfS_FDRE_1200MW_NHPC_Tranche-II.pdf",
+   "page_no": 187,
+   "field": "sector.power.common.deemed_generation_clause"
+  },
+  "page": "0f3827087c-p187",
+  "page_no": 187,
+  "quote": "Grid unavailability beyond 175 hours in a year",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0150",
+  "category": "real_not_exact",
+  "source": {
+   "document": "RfS_for_1000_MW-RTC-V-final_upload.pdf",
+   "page_no": 3,
+   "field": "core.identity.tender_type_as_stated"
+  },
+  "page": "ee10c82897-p3",
+  "page_no": 3,
+  "quote": "Selection of RE Power Developers for Supply of 1000 MW Round-the-Clock Thermal Mimic (RTC-TM) Power from ISTS-connected RE Projects in India",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0151",
+  "category": "real_not_exact",
+  "source": {
+   "document": "RfS_for_1000_MW-RTC-V-final_upload.pdf",
+   "page_no": 4,
+   "field": "core.key_dates.dates_deferred_note"
+  },
+  "page": "ee10c82897-p4",
+  "page_no": 4,
+  "quote": "Will be informed to eligible bidders. Date and time of e-RA shall be intimated through email.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0152",
+  "category": "real_near_miss",
+  "source": {
+   "document": "RfS_for_1000_MW-RTC-V-final_upload.pdf",
+   "page_no": 4,
+   "field": "core.key_dates.dates_deferred_note"
+  },
+  "page": "ee10c82897-p4",
+  "page_no": 4,
+  "quote": "OFFLINE & ONLINE BIDSUBMISSION DEADLINE As per NIT on ISN-ETS portal",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0153",
+  "category": "real_not_exact",
+  "source": {
+   "document": "RfS_for_1000_MW-RTC-V-final_upload.pdf",
+   "page_no": 4,
+   "field": "core.key_dates.dates_deferred_note"
+  },
+  "page": "ee10c82897-p4",
+  "page_no": 4,
+  "quote": "Scheduled as per NIT on ISN-ETS portal and/or SECI website.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0154",
+  "category": "real_near_miss",
+  "source": {
+   "document": "RfS_for_1000_MW-RTC-V-final_upload.pdf",
+   "page_no": 10,
+   "field": "core.identity.tender_type_as_stated"
+  },
+  "page": "ee10c82897-p10",
+  "page_no": 10,
+  "quote": "the RE Power Developer (RPD) shall be required to set up ISTS-connected RE Power Project(s) with Energy Storage System (ESS)",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0155",
+  "category": "real_near_miss",
+  "source": {
+   "document": "RfS_for_1000_MW-RTC-V-final_upload.pdf",
+   "page_no": 17,
+   "field": "sector.power.fdre.firmness_definition"
+  },
+  "page": "ee10c82897-p17",
+  "page_no": 17,
+  "quote": "It is mandated to make available the Project to the Buying Entity on a Round-the-Clock basis. The generated energy shall be dispatched through scheduling of power by the Buying Entity.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0156",
+  "category": "real_not_exact",
+  "source": {
+   "document": "RfS_for_1000_MW-RTC-V-final_upload.pdf",
+   "page_no": 69,
+   "field": "sector.power.fdre.component_disclosure_required"
+  },
+  "page": "ee10c82897-p69",
+  "page_no": 69,
+  "quote": "Installed Capacity to be committed under the PPA (Rated capacities of respective components)",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0157",
+  "category": "real_not_exact",
+  "source": {
+   "document": "RfS_for_1200_MW_Wind_Tranche-XX.pdf",
+   "page_no": 4,
+   "field": "core.key_dates.dates_deferred_note"
+  },
+  "page": "0946dcf9a5-p4",
+  "page_no": 4,
+  "quote": "Scheduled as per NIT on ISN-ETS portal and/or SECI website.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0158",
+  "category": "real_not_exact",
+  "source": {
+   "document": "RfS_for_1200_MW_Wind_Tranche-XX.pdf",
+   "page_no": 4,
+   "field": "core.key_dates.dates_deferred_note"
+  },
+  "page": "0946dcf9a5-p4",
+  "page_no": 4,
+  "quote": "Will be informed to eligible bidders. Date and time of e-RA shall be intimated through email.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0159",
+  "category": "real_near_miss",
+  "source": {
+   "document": "RfS_for_1200_MW_Wind_Tranche-XX.pdf",
+   "page_no": 6,
+   "field": "core.identity.tender_type_as_stated"
+  },
+  "page": "0946dcf9a5-p6",
+  "page_no": 6,
+  "quote": "SECI hereby invites proposals for setting up of ISTS-connected Wind power projects in India, on Build Own Operate (BOO) basis for an aggregate capacity of 1200 MW.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0160",
+  "category": "real_near_miss",
+  "source": {
+   "document": "RfS_for_1200_MW_Wind_Tranche-XX.pdf",
+   "page_no": 6,
+   "field": "core.identity.issuing_agency"
+  },
+  "page": "0946dcf9a5-p6",
+  "page_no": 6,
+  "quote": "As part of the above Guidelines, SECI hereby invites proposals for setting up of ISTS-connected Wind power projects in India, on Build Own Operate (BOO) basis",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0161",
+  "category": "real_not_exact",
+  "source": {
+   "document": "RfS_for_1500_MWh_assured_Peak_Supply_under_CfD_Mechanism_(CfD-I)-final_upload.pdf",
+   "page_no": 3,
+   "field": "core.summary.plain_english_summary"
+  },
+  "page": "2572fc61a8-p3",
+  "page_no": 3,
+  "quote": "Selection of RE Power Developers under Contract for Difference (CfD) Mechanism for assured Peak Supply of 1500 MWh (500 MW x 3 Hrs.) from ISTS-Connected RE Projects in India under Tariff-based Competitive Bidding (SECI-CfD-I)",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0162",
+  "category": "real_not_exact",
+  "source": {
+   "document": "RfS_for_1500_MWh_assured_Peak_Supply_under_CfD_Mechanism_(CfD-I)-final_upload.pdf",
+   "page_no": 3,
+   "field": "core.identity.tender_type_as_stated"
+  },
+  "page": "2572fc61a8-p3",
+  "page_no": 3,
+  "quote": "Selection of RE Power Developers under Contract for Difference (CfD) Mechanism for assured Peak Supply of 1500 MWh (500 MW x 3 Hrs.) from ISTS-Connected RE Projects in India under Tariff-based Competitive Bidding",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0163",
+  "category": "real_not_exact",
+  "source": {
+   "document": "RfS_for_1500_MWh_assured_Peak_Supply_under_CfD_Mechanism_(CfD-I)-final_upload.pdf",
+   "page_no": 4,
+   "field": "core.identity.procurement_mode"
+  },
+  "page": "2572fc61a8-p4",
+  "page_no": 4,
+  "quote": "Will be informed to eligible bidders. Date and time of e-RA shall be intimated through email.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0164",
+  "category": "real_not_exact",
+  "source": {
+   "document": "RfS_for_1500_MWh_assured_Peak_Supply_under_CfD_Mechanism_(CfD-I)-final_upload.pdf",
+   "page_no": 4,
+   "field": "core.key_dates.dates_deferred_note"
+  },
+  "page": "2572fc61a8-p4",
+  "page_no": 4,
+  "quote": "Scheduled as per NIT on ISN-ETS portal and/or SECI website.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0165",
+  "category": "real_near_miss",
+  "source": {
+   "document": "RfS_for_1500_MWh_assured_Peak_Supply_under_CfD_Mechanism_(CfD-I)-final_upload.pdf",
+   "page_no": 53,
+   "field": "sector.power.common.min_bid_mw"
+  },
+  "page": "2572fc61a8-p53",
+  "page_no": 53,
+  "quote": "However, in no case, shall the capacity of a single Project selected under this RfS, be less than 50 MW.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0166",
+  "category": "real_near_miss",
+  "source": {
+   "document": "RfS_for_4800_MWh_Peak_Supply_(FDRE-IX)-_final_upload.pdf",
+   "page_no": 1,
+   "field": "core.identity.tender_type_as_stated"
+  },
+  "page": "debc01a1ec-p1",
+  "page_no": 1,
+  "quote": "RfS for assured Peak Supply of 4800 MWh from ISTS-Connected RE Projects (SECI-FDRE-IX)",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0167",
+  "category": "real_unlocated_at_extraction",
+  "source": {
+   "document": "RfS_for_4800_MWh_Peak_Supply_(FDRE-IX)-_final_upload.pdf",
+   "page_no": 2,
+   "field": "sector.power.common.total_capacity_mwh"
+  },
+  "page": "debc01a1ec-p2",
+  "page_no": 2,
+  "quote": "RfS for assured Peak Supply of 4800 MWh from ISTS-Connected RE Projects (SECI-FDRE-IX)",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0168",
+  "category": "real_near_miss",
+  "source": {
+   "document": "RfS_for_4800_MWh_Peak_Supply_(FDRE-IX)-_final_upload.pdf",
+   "page_no": 3,
+   "field": "core.summary.plain_english_summary"
+  },
+  "page": "debc01a1ec-p3",
+  "page_no": 3,
+  "quote": "Selection of RE Power Developers for assured Peak Supply of 4800 MWh (1200 MW x 4 Hrs.)",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0169",
+  "category": "real_unlocated_at_extraction",
+  "source": {
+   "document": "RfS_for_4800_MWh_Peak_Supply_(FDRE-IX)-_final_upload.pdf",
+   "page_no": 4,
+   "field": "core.key_dates.dates_deferred_note"
+  },
+  "page": "debc01a1ec-p4",
+  "page_no": 4,
+  "quote": "Scheduled as per NIT on ISN-ETS portal and/or SECI website.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0170",
+  "category": "real_unlocated_at_extraction",
+  "source": {
+   "document": "RfS_for_4800_MWh_Peak_Supply_(FDRE-IX)-_final_upload.pdf",
+   "page_no": 4,
+   "field": "core.identity.procurement_mode"
+  },
+  "page": "debc01a1ec-p4",
+  "page_no": 4,
+  "quote": "Will be informed to eligible Bidders. Date and time of e-RA shall be intimated through email.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0171",
+  "category": "real_not_exact",
+  "source": {
+   "document": "RfS_for_4800_MWh_Peak_Supply_(FDRE-IX)-_final_upload.pdf",
+   "page_no": 134,
+   "field": "sector.power.fdre.assured_availability_percent"
+  },
+  "page": "debc01a1ec-p134",
+  "page_no": 134,
+  "quote": "[= (0.9 x No. of days in the month x 4,00,000 kWh) / 10,00,000]",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0172",
+  "category": "real_not_exact",
+  "source": {
+   "document": "RfS_for_700_MW_SPV_Projects_CnI_T1.pdf",
+   "page_no": 4,
+   "field": "core.identity.procurement_mode"
+  },
+  "page": "6cd03c6c1a-p4",
+  "page_no": 4,
+  "quote": "Will be informed to eligible Bidders. Date and time of e-RA shall be intimated through email.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0173",
+  "category": "real_not_exact",
+  "source": {
+   "document": "RfS_for_700_MW_SPV_Projects_CnI_T1.pdf",
+   "page_no": 4,
+   "field": "core.key_dates.dates_deferred_note"
+  },
+  "page": "6cd03c6c1a-p4",
+  "page_no": 4,
+  "quote": "Scheduled as per NIT on ISN-ETS portal and/or SECI website.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0174",
+  "category": "real_near_miss",
+  "source": {
+   "document": "RfS_for_700_MW_SPV_Projects_CnI_T1.pdf",
+   "page_no": 45,
+   "field": "core.eligibility.technical_experience_requirement"
+  },
+  "page": "6cd03c6c1a-p45",
+  "page_no": 45,
+  "quote": "Detailed technical parameters for Solar PV Projects to be met by SPDs are at AnnexureB. The Bidders shall strictly comply with the technical parameters detailed in the Annexure-B.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0175",
+  "category": "real_near_miss",
+  "source": {
+   "document": "RfS_for_700_MW_SPV_Projects_CnI_T1.pdf",
+   "page_no": 45,
+   "field": "core.documents.annexure_formats"
+  },
+  "page": "6cd03c6c1a-p45",
+  "page_no": 45,
+  "quote": "Detailed technical parameters for Solar PV Projects to be met by SPDs are at Annexure-B.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0176",
+  "category": "real_near_miss",
+  "source": {
+   "document": "RfS_for_700_MW_SPV_Projects_CnI_T1.pdf",
+   "page_no": 53,
+   "field": "sector.power.common.min_bid_mw"
+  },
+  "page": "6cd03c6c1a-p53",
+  "page_no": 53,
+  "quote": "However, in no case shall the capacity of a single Project selected under this RfS be less than 50 MW.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0177",
+  "category": "real_not_exact",
+  "source": {
+   "document": "SECI_PPA_Solar_CnI_T1.pdf",
+   "page_no": 6,
+   "field": "core.commercial.offtaker"
+  },
+  "page": "9969b009fe-p6",
+  "page_no": 6,
+  "quote": "shall mean an End Procurer i.e. C&I Consumer who has agreed to purchase Solar Power from SECI and has signed/will sign the Power Sale Agreement with SECI.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0178",
+  "category": "real_not_exact",
+  "source": {
+   "document": "SECI_PPA_Solar_CnI_T1.pdf",
+   "page_no": 32,
+   "field": "sector.power.common.deemed_generation_clause"
+  },
+  "page": "9969b009fe-p32",
+  "page_no": 32,
+  "quote": "Generation Compensation = [Applicable Tariff x Solar PV Power (MW) offered but not scheduled by the Buying Entity)*1000 X No. of hours Backdown]",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0179",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Standard_PPA-RTC-V-final_upload.pdf",
+   "page_no": 5,
+   "field": "core.commercial.offtaker"
+  },
+  "page": "a3297508b2-p5",
+  "page_no": 5,
+  "quote": "shall mean an End Procurer as defined in the Guidelines who has agreed to purchase Round-the-Clock RE power from SECI",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0180",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Standard_PPA-RTC-V-final_upload.pdf",
+   "page_no": 38,
+   "field": "sector.power.common.deemed_generation_clause"
+  },
+  "page": "a3297508b2-p38",
+  "page_no": 38,
+  "quote": "((Applicable Tariff x RE power (MW) offered but not scheduled by Buying Entity) X 1000 X No. of hours of grid unavailability)",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0181",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Standard_PPA-RTC-V-final_upload.pdf",
+   "page_no": 38,
+   "field": "sector.power.common.deemed_generation_clause"
+  },
+  "page": "a3297508b2-p38",
+  "page_no": 38,
+  "quote": "Grid unavailability beyond 175 hours in a Contract Year (as defined in Article 1)",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0182",
+  "category": "real_unlocated_at_extraction",
+  "source": {
+   "document": "Standard_SECI_PPA_FDRE-IX-_final_upload.pdf",
+   "page_no": 5,
+   "field": "core.commercial.offtaker"
+  },
+  "page": "b0a713e071-p5",
+  "page_no": 5,
+  "quote": "shall mean an End Procurer as defined in the Guidelines who has agreed to purchase the RE Power from SECI and has signed/will sign the Power Sale Agreement with SECI.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0183",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Standard_SECI_PPA_FDRE-IX-_final_upload.pdf",
+   "page_no": 35,
+   "field": "sector.power.common.deemed_generation_clause"
+  },
+  "page": "b0a713e071-p35",
+  "page_no": 35,
+  "quote": "((Applicable Tariff X RE Power (MW) offered but not scheduled by the Buying Entity)) X 1000 X No. of hours of grid unavailability.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0184",
+  "category": "real_unlocated_at_extraction",
+  "source": {
+   "document": "Standard_SECI_PPA_FDRE-IX-_final_upload.pdf",
+   "page_no": 35,
+   "field": "sector.power.common.deemed_generation_clause"
+  },
+  "page": "b0a713e071-p35",
+  "page_no": 35,
+  "quote": "Grid unavailability beyond 175 hours in a Contract Year (as defined in Article 1)",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0185",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Standard_SECI-PPA-Wind-Tranche-XX-_final_upload.pdf",
+   "page_no": 33,
+   "field": "sector.power.common.deemed_generation_clause"
+  },
+  "page": "9563ec96b7-p33",
+  "page_no": 33,
+  "quote": "(Applicable Tariff X RE power (MW) offered but not scheduled by the Buying Entity) X 1000 X No. of hours of grid unavailability.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0186",
+  "category": "real_not_exact",
+  "source": {
+   "document": "tech_job_45811.pdf",
+   "page_no": 1,
+   "field": "sector.power.wind.hub_height_or_tech_restrictions"
+  },
+  "page": "0ebdd6ff71-p1",
+  "page_no": 1,
+  "quote": "Latest ALMM (Wind) Listed Turbine Machine of Individual Minimum Capacity of 3.0 MW",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0187",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Technical_Documents_Package-1_Solar_BESS_NDMC_3.pdf",
+   "page_no": 11,
+   "field": "sector.power.epc.scope_matrix"
+  },
+  "page": "c7aaf8c9fe-p11",
+  "page_no": 11,
+  "quote": "Design, Supply & Installation/ Erection of the DC Side of the BESS: Fully-Equipped BESS Containers, Fire Protection System, Cabling from BESS to PCS (DC Cables), etc.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0188",
+  "category": "real_not_exact",
+  "source": {
+   "document": "Technical_Documents_Package-1_Solar_BESS_NDMC_3.pdf",
+   "page_no": 12,
+   "field": "sector.power.epc.scope_matrix"
+  },
+  "page": "c7aaf8c9fe-p12",
+  "page_no": 12,
+  "quote": "Design, Supply & Installation/ Erection of Module Mounting Structure, Module, ICR, etc.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0189",
+  "category": "real_near_miss",
+  "source": {
+   "document": "Technical_Documents_Package-1_Solar_BESS_NDMC_3.pdf",
+   "page_no": 231,
+   "field": "sector.power.epc.ld_performance"
+  },
+  "page": "c7aaf8c9fe-p231",
+  "page_no": 231,
+  "quote": "This indemnity shall be subject to a maximum of five percent (5%) of the revenue from the Target Generation (GTN), calculated at the ceiling tariff specified below.",
+  "expect": {
+   "located": true
+  }
+ },
+ {
+  "id": "real-0190",
+  "category": "real_near_miss",
+  "source": {
+   "document": "Technical_tender_document_60_MW_Gaya.pdf",
+   "page_no": 337,
+   "field": "sector.power.epc.ld_performance"
+  },
+  "page": "c578a8a8f3-p337",
+  "page_no": 337,
+  "quote": "the Contractor shall be liable for liquidated damages to the Employer as per below (subject to a maximum of five percent (5%) of the revenue from the Target Generation, GTN):",
+  "expect": {
+   "located": true
+  }
+ }
+]
