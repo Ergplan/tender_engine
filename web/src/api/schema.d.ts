@@ -329,9 +329,11 @@ export interface paths {
         /**
          * Add Version
          * @description Upload a document as a new version of the tender: the original first, then one
-         *     version per corrigendum, amendment or clarification. With `version_no`, the document
-         *     is added to that existing version instead (a PPA or a technical volume), and `role`
-         *     is required. The document is parsed in the background; start extraction once it is.
+         *     version per corrigendum, amendment or clarification; `kind` is required. With
+         *     `version_no`, the document is added to that existing version instead (a PPA or a
+         *     technical volume): `role` is required and `kind`, if sent, must be that version's own
+         *     kind, so a change to the tender can never be filed inside an existing version. The
+         *     document is parsed in the background; start extraction once it is.
          */
         post: operations["add_version_api_v1_tenders__tender_id__versions_post"];
         delete?: never;
@@ -438,7 +440,7 @@ export interface components {
             /** Issued On */
             issued_on?: string | null;
             /** Kind */
-            kind: string;
+            kind?: string | null;
             /** Role */
             role?: string | null;
             /** Summary Of Change */

@@ -1,0 +1,25 @@
+status | count | tokens_in | tokens_out | min | max
+error | 30 | 0 | 0 | 2026-10-04 15:44:37.510172+00 | 2026-10-04 15:44:48.617275+00
+ok | 309 | 15123228 | 1041585 | 2026-10-04 09:33:34.357642+00 | 2026-10-04 16:35:25.921075+00
+(2 rows)
+prompt_name | count | tokens_in | tokens_out
+extract/bess_performance | 1 | 93703 | 5127
+extract/commercial | 39 | 2190840 | 133405
+extract/connectivity_and_compliance | 23 | 1088359 | 81130
+extract/documents | 34 | 2662434 | 144820
+extract/eligibility | 20 | 1019051 | 56715
+extract/epc_scope | 14 | 1197367 | 85652
+extract/fdre_profile | 12 | 667698 | 53916
+extract/gen_tech | 1 | 10012 | 2550
+extract/guarantees | 23 | 1194854 | 77951
+extract/hybrid_mix | 1 | 70953 | 2198
+extract/identity_and_scope | 26 | 1003687 | 120942
+extract/key_dates | 23 | 1027028 | 70890
+extract/penalties | 28 | 1119148 | 79080
+extract/solar_tech | 1 | 47324 | 2646
+extract/tbcb_elements | 2 | 144007 | 11585
+extract/wind_tech | 3 | 81945 | 7579
+section_map | 42 | 899817 | 73144
+smoke | 1 | 462 | 45
+summary | 15 | 604539 | 32210
+(19 rows)

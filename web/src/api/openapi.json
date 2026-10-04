@@ -212,8 +212,15 @@
             "title": "Issued On"
           },
           "kind": {
-            "title": "Kind",
-            "type": "string"
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kind"
           },
           "role": {
             "anyOf": [
@@ -250,8 +257,7 @@
           }
         },
         "required": [
-          "file",
-          "kind"
+          "file"
         ],
         "title": "Body_add_version_api_v1_tenders__tender_id__versions_post",
         "type": "object"
@@ -2771,7 +2777,7 @@
         ]
       },
       "post": {
-        "description": "Upload a document as a new version of the tender: the original first, then one\nversion per corrigendum, amendment or clarification. With `version_no`, the document\nis added to that existing version instead (a PPA or a technical volume), and `role`\nis required. The document is parsed in the background; start extraction once it is.",
+        "description": "Upload a document as a new version of the tender: the original first, then one\nversion per corrigendum, amendment or clarification; `kind` is required. With\n`version_no`, the document is added to that existing version instead (a PPA or a\ntechnical volume): `role` is required and `kind`, if sent, must be that version's own\nkind, so a change to the tender can never be filed inside an existing version. The\ndocument is parsed in the background; start extraction once it is.",
         "operationId": "add_version_api_v1_tenders__tender_id__versions_post",
         "parameters": [
           {

@@ -1,0 +1,75 @@
+ Container tender-engine-tests-run-231ee89e4df3 Creating 
+ Container tender-engine-tests-run-231ee89e4df3 Created 
+reviewer: gpt-6.1-sol  input chars: 412785  tokens in/out: 107405/3325
+
+## (a) Non-negotiable invariants
+
+| Invariant | Assessment |
+|---|---|
+| **The LLM never writes truth** | Upheld by the added production paths shown: `current_view` reads only canonical facts (`tender/services/current_view.py:58–72`). The HTTP test checks that extraction produces no truth before approval (`tests/api/test_tenders.py:249–261`). The unchanged approval handler’s exclusive-writer guarantee cannot be independently verified from this diff. |
+| **Every value carries its evidence** | The added later-version rule checks located evidence against that version’s documents (`tender/domain_packs/core/validation.py:51–92`), and the current view exposes inherited canonical evidence (`tender/services/current_view.py:89`). Missing-evidence rejection, confidence capping and approval-time enforcement are unchanged implementations not supplied in full; complete enforcement cannot be verified. |
+| **The tender is a versioned object** | `add_version` inserts a numbered version linked to its predecessor (`tender/services/tenders.py:170–200`); the current view reports each canonical fact’s source version (`tender/services/current_view.py:85–89`). There is an existing-version attachment bypass described below. |
+| **Candidates are immutable** | No added reviewer path mutates candidate values. Supersession changes lifecycle status and audits it (`core/services/extract.py:582–595`). Carry-forward tests check that earlier canonical values and evidence remain unchanged (`tests/tender/test_tenders.py:203–264`). The unchanged reviewer-edit implementation cannot be fully verified here. |
+| **Validation is deterministic** | Added validators use plain Python and tenant-filtered database reads, not model calls (`tender/domain_packs/core/validation.py:24–92`; `tender/domain_packs/power/validation/rules.py:11–39`). Run-rule outcomes retain their rule names (`core/services/validate.py:100–106`); failure visibility is tested (`tests/core/services/test_validate.py:277–285`). |
+| **Everything is audited and tenant-scoped** | All four added tables inherit `TenantAuditMixin` (`tender/models/tender.py:34,54,73,91`); migration columns are present (`migrations/versions/0005_tender_domain.py:28–31,50–53,67–70,84–87`). Added production queries shown filter by tenant, including document joins (`tender/services/tenders.py:108–132`) and canonical reads (`tender/services/current_view.py:50–66`). Protected-write audit coverage is listed in (c). Reviewer attribution is demonstrated through `X-Reviewer`, not through the required token mapping. |
+| **Feedback is stored, never auto-applied** | No added production path reads feedback to adjust prompts, thresholds or models. Feedback storage remains in the unchanged approval implementation, which is not supplied. |
+| **API first** | Added extraction, current-view, review-state and report operations have router endpoints (`api/v1/tenders/tenders.py:182–263`). HTTP tests address them under `/api/v1/` (`tests/api/test_tenders.py:188–298,344–363`). No reviewer UI implementation is added. |
+
+FINDINGS: 2
+1. `api/v1/tenders/tenders.py:163–168`; `tender/services/tenders.py:214–232`: when `version_no` is supplied, the request’s `kind` is ignored. The service refuses change documents only by `role`. A request explicitly declaring `kind="amendment"` or `"clarification"` can therefore attach to an existing version by supplying an accepted non-change role such as `"rfs"`, rather than creating a new version.
+2. `api/v1/tenders/tenders.py:95–106`; `tests/api/test_tenders.py:29–34,72–79`: the added write route accepts actor attribution that the contract test obtains solely from `X-Reviewer: Asha`, without a review token. This does not uphold the invariant that phase-1 reviewer identity comes from the token.
+
+## (b) Tests for every added API endpoint
+
+All ten added endpoints have HTTP tests in `tests/api/test_tenders.py`.
+
+| Endpoint | Test and lines |
+|---|---|
+| `POST /api/v1/tenders` | `test_create_get_and_list_tenders`, lines 72–85; invalid inputs, lines 88–93 |
+| `GET /api/v1/tenders` | `test_create_get_and_list_tenders`, lines 72–85 |
+| `GET /api/v1/tenders/{id}` | `test_create_get_and_list_tenders`, lines 72–85 |
+| `POST /api/v1/tenders/{id}/versions` | `test_versions_are_added_listed_and_ordered`, lines 96–125; attachment and change-document refusal, lines 128–153 |
+| `GET /api/v1/tenders/{id}/versions` | `test_versions_are_added_listed_and_ordered`, lines 96–125 |
+| `GET /api/v1/tenders/{id}/view` | `test_full_tender_flow_with_an_amendment_through_the_http_api`, lines 245–298 |
+| `POST /api/v1/tenders/{id}/extract` | `test_extract_queues_one_run_per_document_and_the_worker_completes_them`, lines 188–217 |
+| `GET /api/v1/tenders/{id}/review-state` | `test_review_state_delegates_to_core_for_one_version`, lines 220–242 |
+| `GET /api/v1/schemas/tender/{type}` | `test_schema_endpoint_returns_the_compiled_field_list`, lines 301–319 |
+| `GET /api/v1/reports/extraction-summary` | `test_extraction_summary_is_served_as_data_and_as_the_markdown_report`, lines 344–363 |
+
+Test execution results are not supplied.
+
+FINDINGS: none
+
+## (c) Audit coverage for protected-table writes
+
+| Write shown in the diff | Audit coverage |
+|---|---|
+| Candidate lifecycle update, `candidate.status = "superseded"` | Write at `core/services/extract.py:584`; immediately followed by `audit.record` at lines 585–595. |
+| Insert of `TenderVersion` | Construction and insertion at `tender/services/tenders.py:170–181`; `audit.record` at lines 182–196, before commit at line 199. |
+| Addition of a document to a version through the link table | Link insertion at `tender/services/tenders.py:353–362`; `audit.record` against `tender_version` at lines 363–370. |
+
+No direct approval, canonical-fact or feedback writes are added in the supplied production diff. Tests invoke the unchanged approval service, but its internal writes and audit calls are not supplied. Unchanged candidate insertion and validation-state writes likewise cannot be independently checked from these hunks.
+
+FINDINGS: none
+
+## (d) `make trace`
+
+**not applicable** — `docs/KNOWN-GAPS.md:17` explicitly defers `make trace` and `FIELD-TRACE.md` to Stage 3, when UI components exist. No trace implementation or regeneration result is supplied in this stage diff.
+
+FINDINGS: none
+
+## (e) Draft stage-report claims unsupported by the supplied code
+
+The diff supports the existence of the schemas, services, endpoints, management-command operations and tests. It does not establish their actual execution, deployment or real-data results. The checked-in extraction summary repeats measurements; it is not independent execution evidence.
+
+FINDINGS: 10
+1. `docs/reports/STAGE-2-REPORT.md:12,63–78`: the actual ingestion and completed extraction of 13 tenders, 25 versions, 42 PDFs and 3,455 pages; all 38 runs being validated; the stated original/amendment/clarification breakdown; and every per-version section/value count are unsupported by supplied run artifacts or database contents.
+2. `docs/reports/STAGE-2-REPORT.md:14–15,23–41`: every reported real-tender field count, returned-value count, located count, evidence-location rate and answer rate—including per-type aggregates and the two under-95% fields—is unsupported by supplied database contents. The exact RTC-V amendment, version, page, confidence and displayed failure reason are likewise unverified.
+3. `docs/reports/STAGE-2-REPORT.md:17`: “339 Python tests and 3 web tests pass” and “the watcher's eight checks are green” have no supplied execution/status evidence. The “green” carry-forward result at line 11 is also unverified; its test exists.
+4. `docs/reports/STAGE-2-REPORT.md:43`: the actual FDRE-IX pilot and repeat extraction, their individual costs, and the claimed timing after the evidence-matcher change are not established by the code.
+5. `docs/reports/STAGE-2-REPORT.md:48`: “Fields are seeded from the field catalogue” cannot be checked because the master prompt’s field catalogue is not supplied. The code establishes the three named formula/deferral fields, but not their catalogue provenance.
+6. `docs/reports/STAGE-2-REPORT.md:82–100`: the actual 21 failing fields, 39 flags, each rule’s flag count, their tender-specific causes, the nine filled NIT deferral notes, FDRE formula-field results, unit-related omissions and short-notice observations are unsupported by supplied candidate/validation data.
+7. `docs/reports/STAGE-2-REPORT.md:111–113`: the watcher being stopped twice and restarted; full checks before each affected commit; the credit interruption’s time and 30 failed runs; the account refill and successful resumption; and no duplicate payment during the interruption are operational claims not established by this diff.
+8. `docs/reports/STAGE-2-REPORT.md:117`: the real-model e2e test actually running once, passing in 4 minutes 36 seconds, returning 30 of 82 fields with all 30 located, costing USD 1.79, and not being rerun after the matcher change are unsupported by supplied execution artifacts. The test implementation exists.
+9. `docs/reports/STAGE-2-REPORT.md:23–37,123–131,143`: all measured dollar costs, stage/running totals and real-run token-log provenance are unsupported by supplied logs or database contents. The code shows a cost-calculation mechanism, not those actual expenditures.
+10. `docs/reports/STAGE-2-REPORT.md:18,135–139`: successful `make deploy`, rebuilt images, migration `0005 (head)`, recreated/scaled containers, the live static-IP health response, every stated deployed-API result, 759 stored field-definition rows, and candidates being ready in the app database are unsupported by supplied deployment or database evidence.

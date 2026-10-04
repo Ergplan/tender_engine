@@ -136,7 +136,6 @@ def test_a_document_is_added_to_an_existing_version_with_its_role(client: TestCl
     )
     assert attached.status_code == 201, attached.text
     assert [d["role"] for d in attached.json()["documents"]] == ["rfs", "ppa"]
-    assert len(client.get(f"/api/v1/tenders/{tender['id']}/versions").json()) == 1
     as_change = add_version(
         client,
         tender["id"],
@@ -147,7 +146,19 @@ def test_a_document_is_added_to_an_existing_version_with_its_role(client: TestCl
         role="amendment",
     )
     assert as_change.status_code == 422, "an amendment is a new version, never an attachment"
-    assert "add it as a new version" in as_change.json()["detail"]
+    assert "a new version" in as_change.json()["detail"]
+    disguised = add_version(
+        client, tender["id"], AMENDMENT_PAGES, "a.pdf", kind="amendment", version_no="1", role="rfs"
+    )
+    assert disguised.status_code == 422 and "is 'original'" in disguised.json()["detail"]
+    by_role = add_version(
+        client, tender["id"], AMENDMENT_PAGES, "a.pdf", version_no="1", role="amendment"
+    )
+    assert by_role.status_code == 422 and "add it as a new version" in by_role.json()["detail"]
+    no_kind = add_version(
+        client, tender["id"], [["Technical volume"]], "t.pdf", version_no="1", role="technical"
+    )
+    assert no_kind.status_code == 201, "kind may be left out when adding to a version"
     assert len(client.get(f"/api/v1/tenders/{tender['id']}/versions").json()) == 1
 
 
@@ -159,7 +170,8 @@ def test_bad_version_requests_are_422_or_404(client: TestClient) -> None:
     )
     assert not_pdf.status_code == 422 and "not a PDF" in not_pdf.json()["detail"]
     assert add_version(client, tender["id"], RFS_PAGES, "r.pdf", kind="rewrite").status_code == 422
-    assert add_version(client, tender["id"], RFS_PAGES, "r.pdf").status_code == 422, "kind missing"
+    missing = add_version(client, tender["id"], RFS_PAGES, "r.pdf")
+    assert missing.status_code == 422 and "`kind` is required" in missing.json()["detail"]
     bad_role = add_version(client, tender["id"], RFS_PAGES, "r.pdf", kind="original", role="novel")
     assert bad_role.status_code == 422
     bad_date = add_version(

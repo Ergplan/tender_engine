@@ -133,7 +133,26 @@ The three workers used for the run were scaled back to one. The extracted candid
 
 ## Independent review (operating rule 15)
 
-REVIEW_PLACEHOLDER
+Reviewer: `scripts/independent_review.py` on `gpt-6.1-sol`, given only the stage diff, CLAUDE.md and the stage prompt. Outputs are in `docs/reports/stage-2-artifacts/`.
+
+**Run 1** (on the code, before the full extraction and before this report existed): (b), (c) none; (d) not applicable; (a) 2 findings; (e) 1.
+
+| # | Finding | Outcome |
+| --- | --- | --- |
+| a1 | A document of role amendment or clarification could be added to an existing version instead of creating a new one | Fixed: `TenderService.attach_document` refuses those roles; tests added |
+| a2 | The extraction summary was only a management command, not an API operation | Fixed: `GET /api/v1/reports/extraction-summary`; test added |
+| e1 | No stage report in the diff | The report did not exist yet |
+
+**Run 2** (on the draft report): (b), (c) none; (d) not applicable; (a) 2; (e) 10.
+
+| # | Finding | Outcome |
+| --- | --- | --- |
+| a1 | With `version_no`, the request's `kind` was ignored: a document declared as an amendment could still be filed in an existing version under another role | Fixed: `kind`, when sent with `version_no`, must be that version's own kind; `kind` is required for a new version; tests added |
+| a2 | Write routes take the actor from the `X-Reviewer` header, not from a review token | Not resolvable by code in this stage: the token middleware is Stage 3 by the master prompt. Until then the header is the phase-1 identity (ARCHITECTURE.md, API surface) |
+| e1 to e4, e6 to e10 | Run results, rates, counts, test results, costs, the interruption and the deployment are not provable from a diff | Statements of this report. To support them, three listings from the app database are now committed: `extraction-runs.txt` (every run with tokens and cost), `validation-failures.txt`, `model-calls.txt`; and `EXTRACTION-SUMMARY.md` is generated from the database |
+| e5 | "Seeded from the field catalogue" cannot be checked because the catalogue is not in the reviewer's input | The catalogue is in `docs/MASTER-PROMPT.md`, outside the stage prompt section the reviewer receives |
+
+RUN3_PLACEHOLDER
 
 ## Open questions
 

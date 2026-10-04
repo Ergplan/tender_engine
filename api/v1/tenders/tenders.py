@@ -128,27 +128,47 @@ def get_tender(tender_id: str, session: SessionDep, tenders: TendersDep) -> Tend
 async def add_version(
     tender_id: str,
     file: UploadFile,
-    kind: Annotated[str, Form()],
     session: SessionDep,
     tenders: TendersDep,
     ingest: IngestDep,
     actor: ActorDep,
+    kind: Annotated[str | None, Form()] = None,
     issued_on: Annotated[date | None, Form()] = None,
     role: Annotated[str | None, Form()] = None,
     summary_of_change: Annotated[str | None, Form()] = None,
     version_no: Annotated[int | None, Form()] = None,
 ) -> VersionOut:
     """Upload a document as a new version of the tender: the original first, then one
-    version per corrigendum, amendment or clarification. With `version_no`, the document
-    is added to that existing version instead (a PPA or a technical volume), and `role`
-    is required. The document is parsed in the background; start extraction once it is."""
+    version per corrigendum, amendment or clarification; `kind` is required. With
+    `version_no`, the document is added to that existing version instead (a PPA or a
+    technical volume): `role` is required and `kind`, if sent, must be that version's own
+    kind, so a change to the tender can never be filed inside an existing version. The
+    document is parsed in the background; start extraction once it is."""
     tender = _tender(tenders, session, tender_id)
     data = await file.read()
     try:
+        if version_no is None and kind is None:
+            raise TenderError("`kind` is required for a new version")
+        if version_no is not None:
+            existing = next(
+                (
+                    entry.version
+                    for entry in tenders.versions(session, tender)
+                    if entry.version.version_no == version_no
+                ),
+                None,
+            )
+            if existing is None:
+                raise LookupError(f"tender {tender.id} has no version {version_no}")
+            if kind is not None and kind != existing.kind:
+                raise TenderError(
+                    f"version {version_no} is {existing.kind!r}; a {kind!r} document is a "
+                    "new version, not an addition to this one"
+                )
         document, _ = ingest.upload(
             session, filename=file.filename or "upload.pdf", data=data, created_by=actor
         )
-        if version_no is None:
+        if version_no is None and kind is not None:
             version = tenders.add_version(
                 session,
                 tender,
@@ -159,7 +179,7 @@ async def add_version(
                 role=role,
                 summary_of_change=summary_of_change,
             )
-        else:
+        elif version_no is not None:
             if role is None:
                 raise TenderError("`role` is required when adding a document to a version")
             version = tenders.attach_document(

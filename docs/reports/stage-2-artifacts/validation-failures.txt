@@ -1,0 +1,41 @@
+slug | v | field_path | status | rule_name | message
+nhpc-fdre-ii | 1 | core.key_dates.pre_bid_meeting_date | needs_review | date_order | pre-bid meeting (2024-03-28) is after last date for queries (2024-03-26)
+nhpc-fdre-ii | 1 | core.key_dates.query_deadline | needs_review | date_order | pre-bid meeting (2024-03-28) is after last date for queries (2024-03-26)
+nhpc-fdre-ii | 1 | core.key_dates.dates_deferred_note | needs_review | evidence_not_located | 1 of 3 quotes not located (stated on p.22)
+recpdcl-beed-tbcb | 1 | core.summary.plain_english_summary | needs_review | evidence_not_located | 1 of 9 quotes not located (stated on p.3)
+seci-fdre-rtc-v | 2 | sector.power.common.min_bid_mw | needs_review | evidence_not_located | evidence not located on p.1
+seci-fdre-rtc-v | 2 | sector.power.common.max_bid_mw | needs_review | evidence_not_located | evidence not located on p.1
+seci-fdre-rtc-v | 4 | core.key_dates.dates_deferred_note | needs_review | evidence_not_located | 1 of 2 quotes not located (stated on p.2)
+seci-fdre-rtc-v | 4 | core.identity.issuing_agency | needs_review | evidence_not_located | evidence not located on p.1
+seci-ramagiri-70mw-bess | 2 | core.documents.draft_agreements_referenced | needs_review | evidence_not_located | 1 of 2 quotes not located (stated on p.4)
+seci-ramagiri-70mw-bess | 2 | sector.power.epc.om_period_months | needs_review | evidence_not_located | 1 of 2 quotes not located (stated on p.4)
+seci-ramagiri-70mw-bess | 2 | sector.power.epc.scope_matrix | needs_review | evidence_not_located | 1 of 4 quotes not located (stated on p.4)
+seci-ramagiri-70mw-bess | 3 | core.identity.tender_number | needs_review | evidence_not_located | 1 of 2 quotes not located (stated on p.3)
+seci-gaya-60mw | 1 | sector.power.common.ppa_tenure_years | needs_review | range | 5 is below the minimum 10
+seci-ramagiri-70mw-bess | 1 | sector.power.common.ppa_tenure_years | needs_review | range | 5 is below the minimum 10
+ntpc-phes-2000mw | 1 | core.key_dates.bid_submission_deadline | needs_review | required_present | required field: the model returned no value
+recpdcl-beed-tbcb | 1 | core.identity.tender_number | needs_review | required_present | required field: the model returned no value
+seci-cfd-i | 1 | core.key_dates.bid_submission_deadline | needs_review | required_present | required field: the model returned no value
+seci-cfd-i | 2 | core.key_dates.bid_submission_deadline | needs_review | required_present | required field: the model returned no value
+seci-cfd-i | 4 | sector.power.fdre.availability_shortfall_penalty | needs_review | required_present | required field: the model returned no value
+seci-cfd-i | 4 | core.key_dates.bid_submission_deadline | needs_review | required_present | required field: the model returned no value
+seci-cni-1-700mw | 1 | core.key_dates.bid_submission_deadline | needs_review | required_present | required field: the model returned no value
+seci-ess-iv | 1 | core.key_dates.bid_submission_deadline | needs_review | required_present | required field: the model returned no value
+seci-fdre-ix | 1 | core.key_dates.bid_submission_deadline | needs_review | required_present | required field: the model returned no value
+seci-fdre-rtc-v | 1 | core.key_dates.bid_submission_deadline | needs_review | required_present | required field: the model returned no value
+seci-fdre-rtc-v | 2 | core.key_dates.bid_submission_deadline | needs_review | required_present | required field: the model returned no value
+seci-fdre-rtc-v | 3 | sector.power.fdre.availability_shortfall_penalty | needs_review | required_present | required field: the model returned no value
+seci-fdre-rtc-v | 3 | core.key_dates.bid_submission_deadline | needs_review | required_present | required field: the model returned no value
+seci-fdre-rtc-v | 3 | sector.power.fdre.demand_profile | needs_review | required_present | required field: the model returned no value
+seci-fdre-rtc-v | 4 | core.key_dates.bid_submission_deadline | needs_review | required_present | required field: the model returned no value
+seci-fdre-rtc-v | 4 | sector.power.fdre.demand_profile | needs_review | required_present | required field: the model returned no value
+seci-fdre-rtc-v | 4 | sector.power.fdre.availability_shortfall_penalty | needs_review | required_present | required field: the model returned no value
+seci-fdre-rtc-v | 5 | core.key_dates.bid_submission_deadline | needs_review | required_present | required field: the model returned no value
+seci-gaya-60mw | 1 | core.key_dates.bid_submission_deadline | needs_review | required_present | required field: the model returned no value
+seci-ramagiri-70mw-bess | 1 | core.key_dates.bid_submission_deadline | needs_review | required_present | required field: the model returned no value
+seci-ramagiri-70mw-bess | 2 | core.key_dates.bid_submission_deadline | needs_review | required_present | required field: the model returned no value
+seci-ramagiri-70mw-bess | 3 | core.key_dates.bid_submission_deadline | needs_review | required_present | required field: the model returned no value
+seci-wind-tranche-xx | 1 | core.key_dates.bid_submission_deadline | needs_review | required_present | required field: the model returned no value
+seci-cfd-i | 2 | sector.power.common.named_states_or_sites | needs_review | type | not a valid list_text: expected at least one item
+seci-fdre-ix | 1 | sector.power.common.named_states_or_sites | needs_review | type | not a valid list_text: expected at least one item
+(39 rows)
