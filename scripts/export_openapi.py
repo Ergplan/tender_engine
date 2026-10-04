@@ -14,8 +14,8 @@ from pathlib import Path
 
 from fastapi import FastAPI
 
+from api.main import V1_ROUTERS
 from api.middleware import errors
-from api.v1.core import health
 
 ROOT = Path(__file__).resolve().parents[1]
 API_DIR = ROOT / "web" / "src" / "api"
@@ -28,7 +28,8 @@ def build_document() -> str:
     """The versioned API only; built without a database connection."""
     app = FastAPI(title="Tender Intelligence Engine", version="0.1.0")
     errors.install(app)
-    app.include_router(health.router, prefix="/api/v1")
+    for router in V1_ROUTERS:
+        app.include_router(router, prefix="/api/v1")
     return json.dumps(app.openapi(), indent=2, sort_keys=True) + "\n"
 
 

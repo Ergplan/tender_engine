@@ -4,6 +4,158 @@
  */
 
 export interface paths {
+    "/api/v1/approvals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Post Approval
+         * @description Record a reviewer's decision. This is the only route that produces a canonical fact.
+         *     An identical repeat returns the existing approval with 200 and writes nothing.
+         */
+        post: operations["post_approval_api_v1_approvals_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/canonical": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Canonical
+         * @description Current canonical facts of an object: approved by a human, with their evidence.
+         */
+        get: operations["get_canonical_api_v1_canonical_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/documents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upload Document
+         * @description Upload a PDF. The same file uploaded twice returns the first document with 200.
+         */
+        post: operations["upload_document_api_v1_documents_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/documents/{document_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Document */
+        get: operations["get_document_api_v1_documents__document_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/documents/{document_id}/extract": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start Extraction
+         * @description Queue an extraction run. The worker runs it; poll GET /extraction-runs/{id}.
+         */
+        post: operations["start_extraction_api_v1_documents__document_id__extract_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/documents/{document_id}/pages/{page_no}/render": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Page Render
+         * @description The page as a PNG at the configured render resolution.
+         */
+        get: operations["get_page_render_api_v1_documents__document_id__pages__page_no__render_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/documents/{document_id}/sections": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Sections */
+        get: operations["get_sections_api_v1_documents__document_id__sections_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/extraction-runs/{run_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Extraction Run */
+        get: operations["get_extraction_run_api_v1_extraction_runs__run_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/health": {
         parameters: {
             query?: never;
@@ -24,10 +176,269 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/review-state": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Review State
+         * @description Every field of the object with its best candidate, evidence, validation and approval.
+         */
+        get: operations["get_review_state_api_v1_review_state_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** ApprovalOut */
+        ApprovalOut: {
+            /** Candidate Id */
+            candidate_id: string;
+            /** Canonical Fact Id */
+            canonical_fact_id: string | null;
+            /** Created */
+            created: boolean;
+            /**
+             * Decided At
+             * Format: date-time
+             */
+            decided_at: string;
+            /** Decision */
+            decision: string;
+            /** Feedback Delta Kind */
+            feedback_delta_kind: string | null;
+            /** Field Path */
+            field_path: string;
+            /** Final Value */
+            final_value: unknown;
+            /** Id */
+            id: string;
+            /** Note */
+            note: string | null;
+            /** Reviewer */
+            reviewer: string;
+            /** Status */
+            status: string;
+        };
+        /** ApprovalRequest */
+        ApprovalRequest: {
+            /** Candidate Id */
+            candidate_id: string;
+            /**
+             * Decision
+             * @enum {string}
+             */
+            decision: "approved" | "edited" | "not_in_document" | "rejected";
+            /** Final Value */
+            final_value?: unknown;
+            /** Note */
+            note?: string | null;
+        };
+        /** ApprovalView */
+        ApprovalView: {
+            /** Candidate Id */
+            candidate_id: string;
+            /**
+             * Decided At
+             * Format: date-time
+             */
+            decided_at: string;
+            /** Decision */
+            decision: string;
+            /** Final Value */
+            final_value: unknown;
+            /** Id */
+            id: string;
+            /** Note */
+            note: string | null;
+            /** Reviewer */
+            reviewer: string;
+        };
+        /** Body_upload_document_api_v1_documents_post */
+        Body_upload_document_api_v1_documents_post: {
+            /** File */
+            file: string;
+        };
+        /** CandidateView */
+        CandidateView: {
+            /** Confidence */
+            confidence: number;
+            /** Evidence */
+            evidence: components["schemas"]["EvidenceView"][];
+            /** Id */
+            id: string;
+            /** Prompt Name */
+            prompt_name: string;
+            /** Prompt Version */
+            prompt_version: string;
+            /** Rationale */
+            rationale: string;
+            /** Status */
+            status: string;
+            /** Validation */
+            validation: components["schemas"]["ValidationView"][];
+            /** Value */
+            value: unknown;
+        };
+        /** CanonicalFactView */
+        CanonicalFactView: {
+            /** Approval Id */
+            approval_id: string;
+            /** Created By */
+            created_by: string;
+            /**
+             * Effective At
+             * Format: date-time
+             */
+            effective_at: string;
+            /** Evidence */
+            evidence: {
+                [key: string]: unknown;
+            }[];
+            /** Field Path */
+            field_path: string;
+            /** Id */
+            id: string;
+            /** Object Id */
+            object_id: string;
+            /** Object Type */
+            object_type: string;
+            /** Object Version */
+            object_version: number;
+            /** Value */
+            value: unknown;
+            /** Value Type */
+            value_type: string;
+        };
+        /** DocumentOut */
+        DocumentOut: {
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Created By */
+            created_by: string;
+            /** Error */
+            error: string | null;
+            /** Filename */
+            filename: string;
+            /** Id */
+            id: string;
+            /** Mime */
+            mime: string;
+            /** Page Count */
+            page_count: number | null;
+            /** Sha256 */
+            sha256: string;
+            /** Status */
+            status: string;
+        };
+        /** EvidenceView */
+        EvidenceView: {
+            /** Bbox */
+            bbox: number[] | null;
+            /** Char End */
+            char_end: number | null;
+            /** Char Start */
+            char_start: number | null;
+            /** Document Id */
+            document_id: string;
+            /** Id */
+            id: string;
+            /** Match Score */
+            match_score: number | null;
+            /** Page No */
+            page_no: number;
+            /** Quote */
+            quote: string;
+            /** Resolution */
+            resolution: string;
+        };
+        /** ExtractRequest */
+        ExtractRequest: {
+            /** Prompt Version */
+            prompt_version: string;
+            /** Schema Name */
+            schema_name: string;
+            /** Schema Version */
+            schema_version: string;
+        };
+        /** ExtractionRunOut */
+        ExtractionRunOut: {
+            /** Cost Usd */
+            cost_usd: string;
+            /** Document Id */
+            document_id: string;
+            /** Error */
+            error: string | null;
+            /** Finished At */
+            finished_at: string | null;
+            /** Id */
+            id: string;
+            /** Model */
+            model: string;
+            /** Object Id */
+            object_id: string;
+            /** Object Type */
+            object_type: string;
+            /** Object Version */
+            object_version: number;
+            /** Prompt Version */
+            prompt_version: string;
+            /** Schema Name */
+            schema_name: string;
+            /** Schema Version */
+            schema_version: string;
+            /** Started At */
+            started_at: string | null;
+            /** Status */
+            status: string;
+            /** Token In */
+            token_in: number;
+            /** Token Out */
+            token_out: number;
+        };
+        /** FieldState */
+        FieldState: {
+            /** Alternative Candidates */
+            alternative_candidates: number;
+            approval: components["schemas"]["ApprovalView"] | null;
+            candidate: components["schemas"]["CandidateView"] | null;
+            /** Enum Values */
+            enum_values: string[] | null;
+            /** Field Path */
+            field_path: string;
+            /** Group */
+            group: string;
+            /** Help Text */
+            help_text: string;
+            /** Label */
+            label: string;
+            /** Required */
+            required: boolean;
+            /** Review Order */
+            review_order: number;
+            /** Unit */
+            unit: string | null;
+            /** Value Type */
+            value_type: string;
+        };
+        /** HTTPValidationError */
+        HTTPValidationError: {
+            /** Detail */
+            detail?: components["schemas"]["ValidationError"][];
+        };
         /** HealthResponse */
         HealthResponse: {
             /**
@@ -43,6 +454,78 @@ export interface components {
             /** Tenant Id */
             tenant_id: string;
         };
+        /** ReviewState */
+        ReviewState: {
+            /** Decided */
+            decided: number;
+            /** Fields */
+            fields: components["schemas"]["FieldState"][];
+            /** Object Id */
+            object_id: string;
+            /** Object Type */
+            object_type: string;
+            /** Object Version */
+            object_version: number;
+            /** Required Undecided */
+            required_undecided: number;
+            run: components["schemas"]["RunView"] | null;
+            /** Total */
+            total: number;
+        };
+        /** RunView */
+        RunView: {
+            /** Document Id */
+            document_id: string;
+            /** Id */
+            id: string;
+            /** Model */
+            model: string;
+            /** Prompt Version */
+            prompt_version: string;
+            /** Schema Name */
+            schema_name: string;
+            /** Schema Version */
+            schema_version: string;
+            /** Status */
+            status: string;
+        };
+        /** SectionOut */
+        SectionOut: {
+            /** Confidence */
+            confidence: number;
+            /** End Page */
+            end_page: number;
+            /** Heading */
+            heading: string;
+            /** Id */
+            id: string;
+            /** Kind */
+            kind: string;
+            /** Start Page */
+            start_page: number;
+        };
+        /** ValidationError */
+        ValidationError: {
+            /** Context */
+            ctx?: Record<string, never>;
+            /** Input */
+            input?: unknown;
+            /** Location */
+            loc: (string | number)[];
+            /** Message */
+            msg: string;
+            /** Error Type */
+            type: string;
+        };
+        /** ValidationView */
+        ValidationView: {
+            /** Message */
+            message: string;
+            /** Passed */
+            passed: boolean;
+            /** Rule Name */
+            rule_name: string;
+        };
     };
     responses: never;
     parameters: never;
@@ -52,6 +535,271 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    post_approval_api_v1_approvals_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-reviewer"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ApprovalRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApprovalOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_canonical_api_v1_canonical_get: {
+        parameters: {
+            query: {
+                object_type: string;
+                object_id: string;
+                version?: number | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CanonicalFactView"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    upload_document_api_v1_documents_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-reviewer"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_upload_document_api_v1_documents_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DocumentOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_document_api_v1_documents__document_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DocumentOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    start_extraction_api_v1_documents__document_id__extract_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-reviewer"?: string | null;
+            };
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExtractRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExtractionRunOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_page_render_api_v1_documents__document_id__pages__page_no__render_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                document_id: string;
+                page_no: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_sections_api_v1_documents__document_id__sections_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SectionOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_extraction_run_api_v1_extraction_runs__run_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExtractionRunOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     health_api_v1_health_get: {
         parameters: {
             query?: never;
@@ -68,6 +816,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HealthResponse"];
+                };
+            };
+        };
+    };
+    get_review_state_api_v1_review_state_get: {
+        parameters: {
+            query: {
+                object_type: string;
+                object_id: string;
+                version?: number | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewState"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
