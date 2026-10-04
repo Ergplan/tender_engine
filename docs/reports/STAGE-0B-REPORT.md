@@ -8,7 +8,7 @@ Date: 2026-10-04. The stack is running on the VM at `https://34.131.65.108/`.
 | --- | --- |
 | Static IP recorded | `34.131.65.108` in `infra/STATIC-IP.txt` and `docs/DECISIONS.md`; address `tender-engine-ip` is `IN_USE` |
 | Firewall shows only allowlisted ranges on 22 and 443 | 22: `35.235.240.0/20` (IAP) only. 443: `0.0.0.0/0` plus the IAP range. **443 is open to the world by user decision**, which departs from the locked decision; recorded in DECISIONS.md and KNOWN-GAPS.md |
-| `make deploy` answers `https://<static-ip>/health` | Yes, from the VM: `{"status":"ok","tenant_id":"ergplan","database":"ok"}`. **Not yet confirmed from a browser outside the VM**; see "What I need from you" |
+| `make deploy` answers `https://<static-ip>/health` | Yes, from the VM: `{"status":"ok","tenant_id":"ergplan","database":"ok"}`. Confirmed from the user's browser outside the VM on 2026-10-04: the page showed "API and database are up. Tenant: ergplan" |
 | `make test` green | 33 Python tests and 3 web tests pass |
 | 11 tenders in `/work/tenders` with manifests | 12 tenders, 41 PDFs, 3191 pages, 12 manifests (done in Stage 0A) |
 | One mocked LLM call writes an `llm_call_log` row | `tests/core/llm/test_client.py`, 14 cases: success, refusal, truncation, schema failure, four API error classes, unregistered prompt |
@@ -59,8 +59,9 @@ Model returned: `claude-fable-5-1`. The key works and native PDF input works.
 3. Guard for the admin dashboard now that 443 is public. Needed by Stage 4.
 4. Disk resized to 200 GB (done). The machine type is still 2 vCPU and 3.9 GB RAM; change it only if Stage 1 runs short of memory.
 
-## What I need from you
+## Closed after the report
 
-Open `https://34.131.65.108/` in your browser. Accept the certificate warning once (internal CA, see KNOWN-GAPS.md). You should see "API and database are up. Tenant: ergplan". That closes the last unverified check: reachability from outside the VM.
+- External reachability confirmed by the user in a browser on 2026-10-04.
+- Disk grown to 200 GB; NHPC FDRE-II added as the 13th tender; tender documents-with-roles decision and operating rule 15 recorded (see DECISIONS.md).
 
-Stopped here. Next: `Run Stage 1 of docs/MASTER-PROMPT.md.`
+Stage 0 is complete. Next: `Run Stage 1 of docs/MASTER-PROMPT.md.`
