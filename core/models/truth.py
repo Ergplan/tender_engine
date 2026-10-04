@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Any
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text, func
+from sqlalchemy import Boolean, DateTime, ForeignKey, Index, Integer, String, Text, func, text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -15,6 +15,19 @@ class Approval(IdMixin, TenantAuditMixin, Base):
     """A reviewer's decision on a candidate. A later decision supersedes the earlier one."""
 
     __tablename__ = "approval"
+    # The database refuses a second active decision for one field of one object version.
+    __table_args__ = (
+        Index(
+            "uq_approval_one_active_per_field",
+            "tenant_id",
+            "object_type",
+            "object_id",
+            "object_version",
+            "field_path",
+            unique=True,
+            postgresql_where=text("status = 'active'"),
+        ),
+    )
 
     candidate_id: Mapped[str] = mapped_column(
         ForeignKey("candidate.id"), nullable=False, index=True
@@ -40,6 +53,18 @@ class CanonicalFact(IdMixin, TenantAuditMixin, Base):
     """Truth. Written only by core.services.approve.ApprovalService.approve()."""
 
     __tablename__ = "canonical_fact"
+    __table_args__ = (
+        Index(
+            "uq_canonical_fact_one_current_per_field",
+            "tenant_id",
+            "object_type",
+            "object_id",
+            "object_version",
+            "field_path",
+            unique=True,
+            postgresql_where=text("is_current"),
+        ),
+    )
 
     object_type: Mapped[str] = mapped_column(String(50), nullable=False)
     object_id: Mapped[str] = mapped_column(String(32), nullable=False, index=True)

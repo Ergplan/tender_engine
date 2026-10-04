@@ -10,11 +10,12 @@ from datetime import UTC, datetime
 from typing import Any
 
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from core.models import Approval, Candidate, CanonicalFact, EvidenceSpan, ExtractionRun, Feedback
 from core.models.truth import DECISIONS
-from core.schemas import SchemaRegistry
+from core.schemas import FieldDef, SchemaRegistry
 from core.services import audit
 
 DECIDABLE_STATUSES = ("validated", "needs_review", "not_found")
@@ -82,7 +83,7 @@ class ApprovalService:
                 raise ApprovalError(
                     f"the value is not a valid {field.value_type}; edit it before approving"
                 )
-            if final_value is not None and final_value != candidate_value:
+            if final_value is not None and self._coerced(final_value, field) != candidate_value:
                 raise ApprovalError("an approval cannot change the value; use decision 'edited'")
             final: Any = candidate_value
         elif decision == "edited":
@@ -119,7 +120,10 @@ class ApprovalService:
             current.note,
         ) == (candidate.id, decision, final, reviewer, note):
             existing_fact = session.scalar(
-                select(CanonicalFact).where(CanonicalFact.approval_id == current.id)
+                select(CanonicalFact).where(
+                    CanonicalFact.approval_id == current.id,
+                    CanonicalFact.tenant_id == self._tenant_id,
+                )
             )
             session.rollback()
             return ApprovalOutcome(current, existing_fact, None, created=False)
@@ -145,7 +149,15 @@ class ApprovalService:
             supersedes_approval_id=current.id if current else None,
         )
         session.add(approval)
-        session.flush()
+        try:
+            session.flush()
+        except IntegrityError as exc:
+            # Two first decisions on one field at the same moment: the unique index lets
+            # one through. Nothing of this request has been written.
+            session.rollback()
+            raise ApprovalError(
+                "another decision on this field was recorded at the same moment; reload"
+            ) from exc
         self._audit(session, reviewer, "insert", "approval", approval.id, after=_dump(approval))
 
         fact: CanonicalFact | None = None
@@ -220,7 +232,9 @@ class ApprovalService:
         )
         for fact in session.scalars(
             select(CanonicalFact).where(
-                CanonicalFact.approval_id == current.id, CanonicalFact.is_current.is_(True)
+                CanonicalFact.approval_id == current.id,
+                CanonicalFact.tenant_id == self._tenant_id,
+                CanonicalFact.is_current.is_(True),
             )
         ):
             fact.is_current = False
@@ -234,6 +248,9 @@ class ApprovalService:
                 before={"is_current": True},
                 after={"is_current": False},
             )
+        # The earlier decision must be closed in the database before the new one is
+        # inserted, or the one-active-per-field index would refuse the insert.
+        session.flush()
 
     def _evidence(
         self, session: Session, candidate: Candidate, decision: str, reviewer: str, note: str | None
@@ -252,7 +269,10 @@ class ApprovalService:
             }
             for span in session.scalars(
                 select(EvidenceSpan)
-                .where(EvidenceSpan.candidate_id == candidate.id)
+                .where(
+                    EvidenceSpan.candidate_id == candidate.id,
+                    EvidenceSpan.tenant_id == self._tenant_id,
+                )
                 .order_by(EvidenceSpan.page_no, EvidenceSpan.id)
             )
         ]
@@ -266,6 +286,13 @@ class ApprovalService:
                 }
             )
         return evidence
+
+    def _coerced(self, value: Any, field: FieldDef) -> Any:
+        """The value in the field's type, or the value itself when it is not of that type."""
+        try:
+            return self._schemas.value_types.coerce(value, field)
+        except ValueError:
+            return value
 
     def _audit(
         self,

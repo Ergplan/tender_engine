@@ -3,6 +3,7 @@ from typing import Any
 
 import pytest
 from sqlalchemy import func, select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from core.models import Approval, AuditLog, Candidate, CanonicalFact, ExtractionRun, Feedback
@@ -317,3 +318,62 @@ def test_a_superseded_candidate_cannot_be_decided(pipeline: Pipeline, db: Sessio
     pipeline.runner.run_until_idle()
     with pytest.raises(ApprovalError, match="a superseded candidate cannot be decided"):
         pipeline.approvals.approve(db, candidate_id=old.id, decision="approved", reviewer="Asha")
+
+
+def test_the_database_refuses_a_second_active_approval_or_current_fact_for_one_field(
+    pipeline: Pipeline, db: Session
+) -> None:
+    """Two first decisions arriving together cannot both stay active: unique indexes."""
+    run = pipeline.extracted_run(db)
+    target = candidate(db, run, "dates.pre_bid_date")
+    first = pipeline.approvals.approve(
+        db, candidate_id=target.id, decision="approved", reviewer="Asha"
+    ).approval
+    same_field = {
+        "tenant_id": first.tenant_id,
+        "created_by": "Ravi",
+        "object_type": first.object_type,
+        "object_id": first.object_id,
+        "object_version": first.object_version,
+        "field_path": first.field_path,
+    }
+    db.add(
+        Approval(
+            **same_field,
+            candidate_id=target.id,
+            final_value="2026-03-13",
+            decision="edited",
+            reviewer="Ravi",
+            status="active",
+        )
+    )
+    with pytest.raises(IntegrityError, match="uq_approval_one_active_per_field"):
+        db.flush()
+    db.rollback()
+    db.add(
+        CanonicalFact(
+            **same_field,
+            value="2026-03-13",
+            value_type="date",
+            approval_id=first.id,
+            evidence=[],
+            is_current=True,
+        )
+    )
+    with pytest.raises(IntegrityError, match="uq_canonical_fact_one_current_per_field"):
+        db.flush()
+    db.rollback()
+    assert count(db, Approval) == 1 and count(db, CanonicalFact) == 1
+
+
+def test_an_approval_may_repeat_the_value_in_the_form_the_document_uses(
+    pipeline: Pipeline, db: Session
+) -> None:
+    run = pipeline.extracted_run(db)
+    target = candidate(db, run, "dates.pre_bid_date")
+    assert target.value == "12.03.2026"
+    outcome = pipeline.approvals.approve(
+        db, candidate_id=target.id, decision="approved", final_value="12.03.2026", reviewer="Asha"
+    )
+    assert outcome.created and outcome.approval.final_value == "2026-03-12"
+    assert outcome.feedback is None
