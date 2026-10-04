@@ -167,7 +167,12 @@ Two reviews were run, both with only the three inputs rule 15 names (stage diff,
 
 (Twenty findings as counted by the reviewer; some rows above merge two.)
 
-**3. OpenAI reviewer rerun** on the final diff and this report: (pending; recorded after this commit.)
+**3. OpenAI reviewer rerun** on the final diff and this report: run twice.
+
+- Rerun 1: (a), (b), (c) "FINDINGS: none"; (d) not applicable; (e) one finding: "Full implementation details for handling tender versions are not provided." The report made no such claim, but a line was added under "Skipped or changed" saying plainly that tender versions are Stage 2.
+- Rerun 2, after that change: (a), (b), (c) none; (d) not applicable; (e) the same finding again: "Tender versioning and linking canonical facts to versions are claimed but not supported in this stage."
+
+**The reviewer has therefore not reported "none" on (e), and rule 15 is not fully met.** I could not find the claim it objects to: this report and DECISIONS.md say that no tender version exists in Stage 1. The diff it reads also contains ARCHITECTURE.md's section on Stage 2 tender documents and the master-prompt amendment, which describe versioning as future work and may be what it is reading as a claim. I stopped rerunning rather than reword documents until the reviewer goes quiet. The line numbers it cites in (a) and (c) do not match the files (for example, candidate audit "extract.py lines 180-185"), so its "none" answers there carry little weight either; the second review above is the one that examined the code.
 
 Checklist item (d): not applicable until Stage 3 (`make trace` does not exist yet).
 
@@ -197,6 +202,6 @@ Checklist item (d): not applicable until Stage 3 (`make trace` does not exist ye
 3. **Stage 5D base text.** The file had no Stage 5D; the two sub-sections were added as a new block. The MCP server and the base tools (search_tenders, get_tender, get_field, get_document_page, list_changes, compare_tenders, reliability_report) are not specified anywhere yet.
 4. **The 80% line.** It is not met when counted over all 12 fields because the documents do not state some of them. Is "located evidence for every value returned, and null for what the document does not state" the bar you want, or should the test schema be changed to fields every FDRE RfS states?
 5. **EMD and PBG as formulas** (NHPC) and **dates deferred to the NIT** (SECI): how should the Stage 2 schema hold them?
-6. **Reviewer model.** The OpenAI key exposes only `gpt-4-turbo` and `gpt-4`. Enable a current model if you want a stronger independent review.
+6. **Independent review.** The OpenAI key exposes only `gpt-4-turbo` and `gpt-4`. Its review was shallow and its one repeated finding is not a claim the report makes (see "Independent review"). Do you accept Stage 1 on that basis, or enable a current model on the OpenAI project so the review can be rerun with `python -m scripts.independent_review --stage 1 --model <name>`?
 
 Stage 1 stops here. Next: `Run Stage 2 of docs/MASTER-PROMPT.md.`
