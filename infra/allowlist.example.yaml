@@ -1,0 +1,7 @@
+# Copy to infra/allowlist.yaml (gitignored) and fill in real addresses.
+# Each entry is an IP or CIDR. Bare IPs are treated as /32.
+# Apply with: infra/firewall.sh   (needs gcloud with compute permissions)
+reviewers:        # may reach the app on tcp:443
+  - 203.0.113.10        # example reviewer
+admins:           # may SSH on tcp:22 (and also reach 443)
+  - 198.51.100.0/24     # example office range

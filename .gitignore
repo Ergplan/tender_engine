@@ -1,0 +1,21 @@
+# secrets and machine-local config
+.env
+infra/allowlist.yaml
+
+# python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# node
+node_modules/
+web/dist/
+
+# watcher output
+.ci/
+
+# data
+/data/
