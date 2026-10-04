@@ -14,6 +14,8 @@ from core.services.extract import ExtractService
 from core.services.ingest import IngestService
 from core.services.review_state import ReviewStateService
 from core.storage import Storage
+from tender.services.packs import Catalog
+from tender.services.tenders import TenderService
 
 
 def get_settings(request: Request) -> Settings:
@@ -91,3 +93,18 @@ IngestDep = Annotated[IngestService, Depends(get_ingest)]
 ExtractDep = Annotated[ExtractService, Depends(get_extract)]
 ApprovalsDep = Annotated[ApprovalService, Depends(get_approvals)]
 ReviewStateDep = Annotated[ReviewStateService, Depends(get_review_state)]
+
+
+def get_catalog(request: Request) -> Catalog:
+    catalog: Catalog = request.app.state.catalog
+    return catalog
+
+
+CatalogDep = Annotated[Catalog, Depends(get_catalog)]
+
+
+def get_tenders(catalog: CatalogDep, extract: ExtractDep, tenant_id: TenantDep) -> TenderService:
+    return TenderService(catalog, extract, tenant_id)
+
+
+TendersDep = Annotated[TenderService, Depends(get_tenders)]

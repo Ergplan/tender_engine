@@ -1,0 +1,208 @@
+# Power pack: fields whose meaning depends on the power sector.
+# Field paths are sector.power.<subdomain>.<field>; this file holds subdomain `common`,
+# the power fields every tender type shares. Each tender type has its own YAML.
+pack: power
+version: v1
+sector: power
+subdomains: [common, solar, wind, hybrid, fdre, bess, transmission, generation, epc, ipp]
+
+# Section groups this pack adds to the core ones.
+sections:
+  connectivity_and_compliance:
+    label: Connectivity and compliance
+    prompt: extract/connectivity_and_compliance
+    roles: [rfs, contractual, nit]
+    section_kinds: [connectivity_and_compliance, technical_requirements]
+    keywords: [connectivity, general network access, gna, ists charges, waiver, pooling substation, transmission line, almm, domestic content, land, clearances, interconnection point]
+
+fields:
+  sector.power.common.total_capacity_mw:
+    section: identity_and_scope
+    label: Total capacity
+    type: mw
+    unit: MW
+    min: 0.1
+    max: 100000
+    help: Total capacity tendered, in MW.
+  sector.power.common.total_capacity_mwh:
+    section: identity_and_scope
+    label: Total energy capacity
+    type: mwh
+    unit: MWh
+    min: 0.1
+    max: 1000000
+    help: Total energy or storage capacity tendered, in MWh, when the tender states one.
+  sector.power.common.min_bid_mw:
+    section: identity_and_scope
+    label: Minimum bid capacity
+    type: mw
+    unit: MW
+    min: 0.1
+    max: 100000
+    help: Smallest capacity one bidder may quote.
+  sector.power.common.max_bid_mw:
+    section: identity_and_scope
+    label: Maximum bid capacity
+    type: mw
+    unit: MW
+    min: 0.1
+    max: 100000
+    help: Largest capacity one bidder (with its affiliates) may quote or be awarded.
+  sector.power.common.max_projects_per_bidder:
+    section: identity_and_scope
+    label: Maximum projects per bidder
+    type: int
+    min: 1
+    max: 1000
+    help: Largest number of projects one bidder may offer, if limited.
+  sector.power.common.location_constraint:
+    section: identity_and_scope
+    label: Location constraint
+    type: enum
+    enum: [ists_anywhere, state_specific, named_substation, named_site]
+    help: Where the project may be located.
+  sector.power.common.named_states_or_sites:
+    section: identity_and_scope
+    label: Named states or sites
+    type: list_text
+    help: States, substations or sites the tender names for the project.
+  sector.power.common.delivery_point:
+    section: identity_and_scope
+    label: Delivery point
+    type: text
+    help: Where the power is delivered, as defined in the tender.
+  sector.power.common.metering_point:
+    section: identity_and_scope
+    label: Metering point
+    type: text
+    help: Where energy is metered, as defined in the tender.
+
+  sector.power.common.ppa_signing_window_days:
+    section: key_dates
+    label: PPA signing window
+    type: int
+    unit: days
+    min: 1
+    max: 730
+    help: Days from the Letter of Award within which the PPA is to be signed.
+  sector.power.common.financial_closure_months:
+    section: key_dates
+    label: Financial closure
+    type: duration_months
+    unit: months
+    min: 1
+    max: 120
+    help: Months allowed to reach financial closure; the rationale says from which date.
+  sector.power.common.scod_months:
+    section: key_dates
+    label: Scheduled commissioning
+    type: duration_months
+    unit: months
+    min: 1
+    max: 120
+    help: Months to scheduled commissioning or commencement of supply, counted from the scod_reference.
+  sector.power.common.scod_reference:
+    section: key_dates
+    label: Commissioning counted from
+    type: enum
+    enum: [effective_date, ppa_signing, loa]
+    help: The date the commissioning period is counted from.
+  sector.power.common.ppa_tenure_years:
+    section: key_dates
+    label: PPA tenure
+    type: int
+    unit: years
+    min: 10
+    max: 35
+    help: Term of the power purchase or service agreement in years.
+
+  sector.power.common.min_commissioned_mw:
+    section: eligibility
+    label: Minimum commissioned capacity
+    type: mw
+    unit: MW
+    min: 0
+    max: 100000
+    help: Capacity a bidder must have commissioned to qualify, if required.
+  sector.power.common.under_construction_counts:
+    section: eligibility
+    label: Under-construction projects count
+    type: bool
+    help: Whether projects under construction count towards technical experience.
+  sector.power.common.net_worth_per_mw_inr:
+    section: eligibility
+    label: Net worth per MW
+    type: money_inr
+    unit: INR per MW
+    min: 1000
+    max: 1000000000
+    help: Minimum net worth per MW of quoted capacity.
+
+  sector.power.common.tariff_ceiling_inr_per_kwh:
+    section: commercial
+    label: Ceiling tariff
+    type: decimal
+    unit: INR per kWh
+    min: 1
+    max: 15
+    help: Ceiling tariff, if the tender sets one.
+  sector.power.common.tariff_structure:
+    section: commercial
+    label: Tariff structure
+    type: enum
+    enum: [fixed, escalating, two_part, capacity_charge]
+    help: Shape of the quoted tariff.
+  sector.power.common.deemed_generation_clause:
+    section: commercial
+    label: Deemed generation
+    type: long_text
+    help: Compensation for grid unavailability or backdown.
+
+  sector.power.common.connectivity_responsibility:
+    section: connectivity_and_compliance
+    label: Connectivity responsibility
+    type: enum
+    enum: [developer, procurer, shared]
+    help: Who obtains grid connectivity.
+  sector.power.common.gna_requirement:
+    section: connectivity_and_compliance
+    label: GNA requirement
+    type: long_text
+    help: What the tender requires on General Network Access and who bears it.
+  sector.power.common.ists_waiver_cutoff_date:
+    section: connectivity_and_compliance
+    label: ISTS waiver cut-off date
+    type: date
+    help: Commissioning date up to which the ISTS charges waiver applies, if printed.
+  sector.power.common.line_to_pooling_station_responsibility:
+    section: connectivity_and_compliance
+    label: Line to pooling station
+    type: text
+    help: Who builds and pays for the line up to the interconnection or pooling point.
+  sector.power.common.almm_required:
+    section: connectivity_and_compliance
+    label: ALMM required
+    type: bool
+    help: Whether modules (or cells) must come from the Approved List of Models and Manufacturers.
+  sector.power.common.dcr_required:
+    section: connectivity_and_compliance
+    label: Domestic content required
+    type: bool
+    help: Whether a domestic content requirement applies.
+  sector.power.common.local_content_rule:
+    section: connectivity_and_compliance
+    label: Local content rule
+    type: long_text
+    help: The local content or Make in India rule, as stated.
+  sector.power.common.land_responsibility:
+    section: connectivity_and_compliance
+    label: Land responsibility
+    type: text
+    help: Who arranges the land.
+  sector.power.common.clearances_responsibility:
+    section: connectivity_and_compliance
+    label: Clearances responsibility
+    type: text
+    help: Who obtains statutory clearances and approvals.
+
+cross_field_rules: [bid_capacity_order]

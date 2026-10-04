@@ -1,0 +1,16 @@
+type: wind
+pack: power
+includes: [summary, identity_and_scope, key_dates, eligibility, guarantees, commercial, penalties, connectivity_and_compliance, documents]
+sections:
+  wind_tech:
+    label: Wind technology
+    prompt: extract/wind_tech
+    roles: [rfs, contractual, nit, technical]
+    section_kinds: [technical_requirements]
+    keywords: [rlmm, wind turbine, cuf, capacity utilisation, hub height, wind resource, type certificate]
+fields:
+  sector.power.wind.rlmm_requirement: {section: wind_tech, label: RLMM requirement, type: text, help: "Whether turbines must be on the Revised List of Models and Manufacturers."}
+  sector.power.wind.min_cuf_percent: {section: wind_tech, label: Minimum CUF, type: percent, unit: percent, help: "Lowest annual CUF the developer may declare."}
+  sector.power.wind.resource_data_obligation: {section: wind_tech, label: Resource data obligation, type: text, help: "What wind resource data the developer must collect or submit."}
+  sector.power.wind.hub_height_or_tech_restrictions: {section: wind_tech, label: Hub height or technology restrictions, type: text, help: "Restrictions on turbine technology, rating or hub height."}
+  sector.power.wind.site_transmission_constraints: {section: wind_tech, label: Site and transmission constraints, type: text, help: "Constraints on site or evacuation named in the tender."}

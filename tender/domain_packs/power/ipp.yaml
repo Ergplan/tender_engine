@@ -1,0 +1,21 @@
+type: ipp
+pack: power
+includes: [summary, identity_and_scope, key_dates, eligibility, guarantees, commercial, penalties, connectivity_and_compliance, documents]
+sections:
+  ipp_model_inputs:
+    label: IPP model inputs
+    prompt: extract/ipp_model_inputs
+    roles: [rfs, contractual, nit, ppa]
+    section_kinds: [commercial_terms, technical_requirements, financial_security]
+    keywords: [ceiling tariff, cuf, capacity utilisation, scheduled commissioning, ppa period, degradation, performance bank guarantee, ists charges, payment security]
+fields:
+  sector.power.ipp.tariff_ceiling_inr_per_kwh: {section: ipp_model_inputs, label: Ceiling tariff, type: decimal, unit: INR per kWh, min: 1, max: 15, help: "Ceiling tariff used as the revenue cap in the model."}
+  sector.power.ipp.cuf_floor_percent: {section: ipp_model_inputs, label: CUF floor, type: percent, unit: percent, help: "Lowest annual CUF allowed."}
+  sector.power.ipp.cuf_ceiling_percent: {section: ipp_model_inputs, label: CUF ceiling, type: percent, unit: percent, help: "Highest annual CUF paid at full tariff."}
+  sector.power.ipp.scod_months: {section: ipp_model_inputs, label: Scheduled commissioning, type: duration_months, unit: months, min: 1, max: 120, help: "Months to scheduled commissioning."}
+  sector.power.ipp.ppa_tenure_years: {section: ipp_model_inputs, label: PPA tenure, type: int, unit: years, min: 10, max: 35, help: "Term of the PPA in years."}
+  sector.power.ipp.degradation_cap_percent: {section: ipp_model_inputs, label: Degradation cap, type: percent, unit: percent, help: "Largest yearly degradation allowed."}
+  sector.power.ipp.pbg_cost_basis: {section: ipp_model_inputs, label: PBG cost basis, type: text, help: "The basis on which the PBG amount is set."}
+  sector.power.ipp.pbg_duration_months: {section: ipp_model_inputs, label: PBG duration, type: duration_months, unit: months, min: 1, max: 600, help: "Months the PBG stays in force."}
+  sector.power.ipp.ists_waiver_status: {section: ipp_model_inputs, label: ISTS waiver status, type: text, help: "Whether the ISTS charges waiver applies to the project."}
+  sector.power.ipp.payment_security_mechanism: {section: ipp_model_inputs, label: Payment security mechanism, type: text, help: "Payment security available to the developer."}

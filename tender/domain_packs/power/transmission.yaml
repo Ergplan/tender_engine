@@ -1,0 +1,22 @@
+type: transmission
+pack: power
+includes: [summary, identity_and_scope, key_dates, eligibility, guarantees, commercial, penalties, connectivity_and_compliance, documents]
+sections:
+  tbcb_elements:
+    label: Transmission elements
+    prompt: extract/tbcb_elements
+    roles: [rfs, contractual, nit]
+    section_kinds: [introduction_and_scope, technical_requirements, evaluation]
+    keywords: [transmission scheme, scope of the project, kv, substation, bid process coordinator, scheduled cod, transmission charges, right of way, forest clearance, transmission service agreement, spv, ctu]
+cross_field_rules: [elements_have_kv]
+fields:
+  sector.power.transmission.elements: {section: tbcb_elements, label: Transmission elements, type: record_list, item_keys: [name, kind, kv, route_km], required: true, help: "Each line, substation or bay with its kind, voltage and route length."}
+  sector.power.transmission.element_wise_cod: {section: tbcb_elements, label: Element-wise COD, type: list_text, help: "Scheduled commissioning of each element."}
+  sector.power.transmission.process_stages: {section: tbcb_elements, label: Process stages, type: enum, enum: [rfq_rfp, single], help: "Whether the bid process has separate RfQ and RfP stages."}
+  sector.power.transmission.evaluation_basis: {section: tbcb_elements, label: Evaluation basis, type: enum, enum: [levelised_charge, npv_annual_charges], help: "How financial bids are compared."}
+  sector.power.transmission.row_responsibility: {section: tbcb_elements, label: Right-of-way responsibility, type: text, help: "Who obtains right of way."}
+  sector.power.transmission.forest_clearance_responsibility: {section: tbcb_elements, label: Forest clearance responsibility, type: text, help: "Who obtains forest clearance."}
+  sector.power.transmission.tsa_tenure_years: {section: tbcb_elements, label: TSA tenure, type: int, unit: years, min: 1, max: 60, help: "Term of the transmission service agreement."}
+  sector.power.transmission.spv_acquisition_terms: {section: tbcb_elements, label: SPV acquisition terms, type: text, help: "How and at what price the selected bidder acquires the project SPV."}
+  sector.power.transmission.bpc: {section: tbcb_elements, label: Bid process coordinator, type: text, help: "The bid process coordinator."}
+  sector.power.transmission.ctu_role: {section: tbcb_elements, label: CTU role, type: text, help: "The role of the Central Transmission Utility or nodal agency."}

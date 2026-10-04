@@ -7,19 +7,20 @@ import threading
 from core.config import Settings
 from core.db import make_engine, make_session_factory
 from core.llm.client import LLMClient
-from core.schemas import SchemaRegistry
 from core.storage import make_storage
+from tender.services.packs import build_registry
 from worker.runner import Runner
 
 
 def build_runner(settings: Settings) -> Runner:
     session_factory = make_session_factory(make_engine(settings))
+    schemas, catalog = build_registry()
     return Runner(
         settings,
         session_factory,
         make_storage(settings),
-        SchemaRegistry(),
-        LLMClient(settings, session_factory),
+        schemas,
+        LLMClient(settings, session_factory, prompt_roots=catalog.prompt_roots),
     )
 
 

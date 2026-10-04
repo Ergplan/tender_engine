@@ -1,0 +1,25 @@
+type: bess
+pack: power
+includes: [summary, identity_and_scope, key_dates, eligibility, guarantees, commercial, penalties, connectivity_and_compliance, documents]
+sections:
+  bess_performance:
+    label: BESS performance
+    prompt: extract/bess_performance
+    roles: [rfs, contractual, nit, technical]
+    section_kinds: [technical_requirements, commercial_terms, penalties_and_remedies]
+    keywords: [round trip efficiency, rte, availability, cycles, capacity charges, viability gap, vgf, degradation, augmentation, state of charge, dispatch, warranty]
+fields:
+  sector.power.bess.capacity_mw: {section: bess_performance, label: Storage power capacity, type: mw, unit: MW, min: 0.1, max: 100000, help: "Power rating of the storage tendered."}
+  sector.power.bess.capacity_mwh: {section: bess_performance, label: Storage energy capacity, type: mwh, unit: MWh, min: 0.1, max: 1000000, required: true, help: "Energy rating of the storage tendered."}
+  sector.power.bess.cycles_per_day: {section: bess_performance, label: Cycles per day, type: decimal, min: 0.1, max: 10, required: true, help: "Charge-discharge cycles per day the system must deliver."}
+  sector.power.bess.round_trip_efficiency_guarantee_percent: {section: bess_performance, label: Round-trip efficiency guarantee, type: percent, unit: percent, help: "Minimum round-trip efficiency."}
+  sector.power.bess.availability_floor_percent: {section: bess_performance, label: Availability floor, type: percent, unit: percent, help: "Minimum availability."}
+  sector.power.bess.availability_penalty: {section: bess_performance, label: Availability penalty, type: long_text, help: "Penalty when availability falls short."}
+  sector.power.bess.capacity_charge_inr_lakh_per_mw_month: {section: bess_performance, label: Capacity charge ceiling, type: decimal, unit: INR lakh per MW per month, min: 0, max: 100, help: "Ceiling or fixed capacity charge, if the tender states one."}
+  sector.power.bess.vgf_inr: {section: bess_performance, label: Viability gap funding, type: money_inr, unit: INR per MWh, help: "Viability gap funding available, per MWh of capacity."}
+  sector.power.bess.degradation_obligation: {section: bess_performance, label: Degradation obligation, type: text, help: "Capacity the developer must maintain over the term."}
+  sector.power.bess.augmentation_obligation: {section: bess_performance, label: Augmentation obligation, type: text, help: "Whether and how capacity must be augmented."}
+  sector.power.bess.dispatch_control: {section: bess_performance, label: Dispatch control, type: enum, enum: [procurer, developer, sldc], help: "Who decides charging and discharging."}
+  sector.power.bess.soc_constraints: {section: bess_performance, label: State-of-charge constraints, type: text, help: "Limits on state of charge or depth of discharge."}
+  sector.power.bess.warranty_years: {section: bess_performance, label: Warranty, type: int, unit: years, min: 0, max: 40, help: "Warranty period required."}
+  sector.power.bess.end_of_life_terms: {section: bess_performance, label: End-of-life terms, type: text, help: "What happens to the system at the end of the term."}

@@ -1,0 +1,21 @@
+type: fdre
+pack: power
+includes: [summary, identity_and_scope, key_dates, eligibility, guarantees, commercial, penalties, connectivity_and_compliance, documents]
+sections:
+  fdre_profile:
+    label: FDRE profile
+    prompt: extract/fdre_profile
+    roles: [rfs, contractual, nit]
+    section_kinds: [technical_requirements, introduction_and_scope, penalties_and_remedies]
+    keywords: [peak hours, demand profile, demand fulfilment, availability, firm and dispatchable, energy storage, excess energy, shortfall, capacity addition, component]
+fields:
+  sector.power.fdre.demand_profile: {section: fdre_profile, label: Demand profile, type: long_text, required: true, help: "The supply or demand profile the developer must meet."}
+  sector.power.fdre.peak_window_definition: {section: fdre_profile, label: Peak window, type: text, help: "How peak hours are defined."}
+  sector.power.fdre.assured_availability_percent: {section: fdre_profile, label: Assured availability, type: percent, unit: percent, help: "Availability or demand fulfilment ratio the developer must maintain."}
+  sector.power.fdre.firmness_definition: {section: fdre_profile, label: Firmness definition, type: long_text, help: "What the tender means by firm and dispatchable supply."}
+  sector.power.fdre.availability_shortfall_penalty: {section: fdre_profile, label: Availability shortfall penalty, type: long_text, required: true, help: "Penalty when the assured supply or availability is not met."}
+  sector.power.fdre.storage_mandatory: {section: fdre_profile, label: Storage mandatory, type: bool, help: "Whether an energy storage system is mandatory."}
+  sector.power.fdre.excess_energy_price_inr_per_kwh: {section: fdre_profile, label: Excess energy price, type: decimal, unit: INR per kWh, min: 0, max: 15, help: "Price of energy above the contracted quantity when stated as a fixed rate."}
+  sector.power.fdre.component_disclosure_required: {section: fdre_profile, label: Component disclosure required, type: bool, help: "Whether the bidder must declare the solar, wind and storage components."}
+  sector.power.fdre.shortfall_compensation_multiple: {section: fdre_profile, label: Shortfall compensation multiple, type: decimal, min: 0, max: 10, help: "Multiple of the tariff payable per unit of shortfall."}
+  sector.power.fdre.capacity_addition_flexibility: {section: fdre_profile, label: Capacity addition flexibility, type: text, help: "Whether components may be added or changed after award."}

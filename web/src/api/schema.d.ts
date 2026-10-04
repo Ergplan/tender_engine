@@ -196,6 +196,150 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/schemas/tender/{tender_type}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Schema
+         * @description The compiled field list of a tender type, in review order.
+         */
+        get: operations["get_schema_api_v1_schemas_tender__tender_type__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tenders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Tenders */
+        get: operations["list_tenders_api_v1_tenders_get"];
+        put?: never;
+        /**
+         * Create Tender
+         * @description Create a tender. Its documents are added as versions.
+         */
+        post: operations["create_tender_api_v1_tenders_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tenders/{tender_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Tender */
+        get: operations["get_tender_api_v1_tenders__tender_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tenders/{tender_id}/extract": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start Extraction
+         * @description Queue the extraction of one version (the latest by default): one run per document.
+         *     A version after the original is read only for the sections its documents touch.
+         */
+        post: operations["start_extraction_api_v1_tenders__tender_id__extract_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tenders/{tender_id}/review-state": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Review State
+         * @description Core's review state for one version of the tender (the latest extracted by default).
+         */
+        get: operations["get_review_state_api_v1_tenders__tender_id__review_state_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tenders/{tender_id}/versions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Versions */
+        get: operations["list_versions_api_v1_tenders__tender_id__versions_get"];
+        put?: never;
+        /**
+         * Add Version
+         * @description Upload a document as a new version of the tender: the original first, then one
+         *     version per corrigendum, amendment or clarification. With `version_no`, the document
+         *     is added to that existing version instead (a PPA or a technical volume), and `role`
+         *     is required. The document is parsed in the background; start extraction once it is.
+         */
+        post: operations["add_version_api_v1_tenders__tender_id__versions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tenders/{tender_id}/view": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get View
+         * @description The current view: per field, the canonical value from the latest version that set
+         *     it, with that version's number and kind. Canonical facts only, never candidates.
+         */
+        get: operations["get_view_api_v1_tenders__tender_id__view_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -266,6 +410,21 @@ export interface components {
             /** Reviewer */
             reviewer: string;
         };
+        /** Body_add_version_api_v1_tenders__tender_id__versions_post */
+        Body_add_version_api_v1_tenders__tender_id__versions_post: {
+            /** File */
+            file: string;
+            /** Issued On */
+            issued_on?: string | null;
+            /** Kind */
+            kind: string;
+            /** Role */
+            role?: string | null;
+            /** Summary Of Change */
+            summary_of_change?: string | null;
+            /** Version No */
+            version_no?: number | null;
+        };
         /** Body_upload_document_api_v1_documents_post */
         Body_upload_document_api_v1_documents_post: {
             /** File */
@@ -275,6 +434,8 @@ export interface components {
         CandidateView: {
             /** Confidence */
             confidence: number;
+            /** Document Id */
+            document_id: string;
             /** Evidence */
             evidence: components["schemas"]["EvidenceView"][];
             /** Id */
@@ -321,6 +482,19 @@ export interface components {
             value: unknown;
             /** Value Type */
             value_type: string;
+        };
+        /** CompiledSection */
+        CompiledSection: {
+            /** Label */
+            label: string;
+            /** Name */
+            name: string;
+            /** Order */
+            order: number;
+            /** Prompt */
+            prompt: string;
+            /** Roles */
+            roles: string[];
         };
         /** DocumentOut */
         DocumentOut: {
@@ -436,6 +610,37 @@ export interface components {
             /** Value Type */
             value_type: string;
         };
+        /** FieldView */
+        FieldView: {
+            /** Approval Id */
+            approval_id: string | null;
+            /** Canonical Fact Id */
+            canonical_fact_id: string | null;
+            /** Decided */
+            decided: boolean;
+            /** Effective At */
+            effective_at: string | null;
+            /** Evidence */
+            evidence: {
+                [key: string]: unknown;
+            }[];
+            /** Field Path */
+            field_path: string;
+            /** Label */
+            label: string;
+            /** Section */
+            section: string;
+            /** Unit */
+            unit: string | null;
+            /** Value */
+            value: unknown;
+            /** Value Type */
+            value_type: string;
+            /** Version Kind */
+            version_kind: string | null;
+            /** Version No */
+            version_no: number | null;
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -471,6 +676,8 @@ export interface components {
             /** Required Undecided */
             required_undecided: number;
             run: components["schemas"]["RunView"] | null;
+            /** Runs */
+            runs: components["schemas"]["RunView"][];
             /** Total */
             total: number;
         };
@@ -488,6 +695,8 @@ export interface components {
         RunView: {
             /** Document Id */
             document_id: string;
+            /** Groups */
+            groups: string[] | null;
             /** Id */
             id: string;
             /** Model */
@@ -516,6 +725,132 @@ export interface components {
             /** Start Page */
             start_page: number;
         };
+        /** TenderCreate */
+        TenderCreate: {
+            /** Agency */
+            agency: string;
+            /** External Ref */
+            external_ref?: string | null;
+            /** Title */
+            title: string;
+            /** Type */
+            type: string;
+        };
+        /** TenderExtractRequest */
+        TenderExtractRequest: {
+            /**
+             * Prompt Version
+             * @default v1
+             */
+            prompt_version: string;
+            /** Version No */
+            version_no?: number | null;
+        };
+        /**
+         * TenderField
+         * @description One compiled field of a tender type, with where it comes from.
+         */
+        TenderField: {
+            /** Domain */
+            domain: string | null;
+            /** Enum Values */
+            enum_values: string[] | null;
+            /** Help Text */
+            help_text: string;
+            /** Item Keys */
+            item_keys: string[] | null;
+            /** Label */
+            label: string;
+            /** Namespace */
+            namespace: string;
+            /** Path */
+            path: string;
+            /** Required */
+            required: boolean;
+            /** Review Order */
+            review_order: number;
+            /** Section */
+            section: string;
+            /** Subdomain */
+            subdomain: string | null;
+            /** Unit */
+            unit: string | null;
+            /** Value Type */
+            value_type: string;
+        };
+        /** TenderOut */
+        TenderOut: {
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Created By */
+            created_by: string;
+            /** Current Version No */
+            current_version_no: number | null;
+            /** External Ref */
+            external_ref: string | null;
+            /** Id */
+            id: string;
+            /** Issuing Agency */
+            issuing_agency: string;
+            /** Slug */
+            slug: string | null;
+            /** Status */
+            status: string;
+            /** Tender Type */
+            tender_type: string;
+            /** Title */
+            title: string;
+        };
+        /**
+         * TenderReviewState
+         * @description Core's review state for one version of a tender. For a version after the original,
+         *     changed_fields lists the fields that version gives a value for; every other field
+         *     keeps what the earlier versions say.
+         */
+        TenderReviewState: {
+            /** Changed Fields */
+            changed_fields?: string[];
+            state: components["schemas"]["ReviewState"];
+            /** Tender Id */
+            tender_id: string;
+            /** Version Kind */
+            version_kind: string | null;
+            /** Version No */
+            version_no: number | null;
+        };
+        /** TenderSchemaOut */
+        TenderSchemaOut: {
+            /** Fields */
+            fields: components["schemas"]["TenderField"][];
+            /** Pack */
+            pack: string;
+            /** Schema Name */
+            schema_name: string;
+            /** Schema Version */
+            schema_version: string;
+            /** Sections */
+            sections: components["schemas"]["CompiledSection"][];
+            /** Tender Type */
+            tender_type: string;
+        };
+        /** TenderView */
+        TenderView: {
+            /** Current Version No */
+            current_version_no: number | null;
+            /** Decided */
+            decided: number;
+            /** Fields */
+            fields: components["schemas"]["FieldView"][];
+            /** Tender Id */
+            tender_id: string;
+            /** Tender Type */
+            tender_type: string;
+            /** Total */
+            total: number;
+        };
         /** ValidationError */
         ValidationError: {
             /** Context */
@@ -537,6 +872,38 @@ export interface components {
             passed: boolean;
             /** Rule Name */
             rule_name: string;
+        };
+        /** VersionDocumentOut */
+        VersionDocumentOut: {
+            /** Document Id */
+            document_id: string;
+            /** Filename */
+            filename: string;
+            /** Page Count */
+            page_count: number | null;
+            /** Role */
+            role: string;
+            /** Status */
+            status: string;
+        };
+        /** VersionOut */
+        VersionOut: {
+            /** Documents */
+            documents: components["schemas"]["VersionDocumentOut"][];
+            /** Id */
+            id: string;
+            /** Issued On */
+            issued_on: string | null;
+            /** Kind */
+            kind: string;
+            /** Summary Of Change */
+            summary_of_change: string | null;
+            /** Supersedes Version Id */
+            supersedes_version_id: string | null;
+            /** Tender Id */
+            tender_id: string;
+            /** Version No */
+            version_no: number;
         };
     };
     responses: never;
@@ -852,6 +1219,292 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ReviewState"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_schema_api_v1_schemas_tender__tender_type__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tender_type: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TenderSchemaOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_tenders_api_v1_tenders_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TenderOut"][];
+                };
+            };
+        };
+    };
+    create_tender_api_v1_tenders_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-reviewer"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TenderCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TenderOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_tender_api_v1_tenders__tender_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tender_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TenderOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    start_extraction_api_v1_tenders__tender_id__extract_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-reviewer"?: string | null;
+            };
+            path: {
+                tender_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TenderExtractRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExtractionRunOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_review_state_api_v1_tenders__tender_id__review_state_get: {
+        parameters: {
+            query?: {
+                version?: number | null;
+            };
+            header?: never;
+            path: {
+                tender_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TenderReviewState"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_versions_api_v1_tenders__tender_id__versions_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tender_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VersionOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_version_api_v1_tenders__tender_id__versions_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-reviewer"?: string | null;
+            };
+            path: {
+                tender_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_add_version_api_v1_tenders__tender_id__versions_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VersionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_view_api_v1_tenders__tender_id__view_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tender_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TenderView"];
                 };
             };
             /** @description Validation Error */

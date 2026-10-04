@@ -1,0 +1,330 @@
+# Core pack: fields that keep their meaning in any sector. Seeded from the field catalogue
+# in docs/MASTER-PROMPT.md. Field paths are core.<catalogue section>.<field>.
+pack: core
+version: v1
+
+# A section is what a reviewer sees as one block and what the extractor reads in one call.
+# roles: the document roles of a tender version this section is extracted from.
+sections:
+  summary:
+    label: Summary
+    prompt: summary
+    roles: [rfs, contractual, nit]
+    section_kinds: [cover_and_notice, introduction_and_scope]
+    keywords: [bid information sheet, scope of work, brief scope]
+  identity_and_scope:
+    label: Identity and scope
+    prompt: extract/identity_and_scope
+    roles: [rfs, contractual, nit]
+    section_kinds: [cover_and_notice, introduction_and_scope]
+    keywords: [rfs no, tender no, bid information sheet, capacity, delivery point, metering point, maximum capacity, minimum capacity]
+  key_dates:
+    label: Key dates
+    prompt: extract/key_dates
+    roles: [rfs, contractual, nit]
+    section_kinds: [cover_and_notice, dates_and_schedule]
+    keywords: [pre-bid, bid submission, last date, techno-commercial bid, bid validity, validity of bid, letter of award, financial closure, scheduled commissioning, scheduled commencement, signing of ppa, ppa period, effective date]
+  eligibility:
+    label: Eligibility
+    prompt: extract/eligibility
+    roles: [rfs, contractual, nit]
+    section_kinds: [eligibility]
+    keywords: [eligibility criteria, qualifying requirement, net worth, turnover, liquidity, consortium, technical eligibility, shareholding, lock-in, affiliate]
+  guarantees:
+    label: Guarantees
+    prompt: extract/guarantees
+    roles: [rfs, contractual, nit]
+    section_kinds: [financial_security]
+    keywords: [earnest money deposit, emd, performance bank guarantee, pbg, success charges, processing fee, bid security, contract performance security]
+  commercial:
+    label: Commercial
+    prompt: extract/commercial
+    roles: [rfs, contractual, nit, ppa, cfda]
+    section_kinds: [commercial_terms]
+    keywords: [ceiling tariff, tariff, payment security, letter of credit, change in law, late payment surcharge, termination compensation, deemed generation, generation compensation, buying entity, terms of payment]
+  penalties:
+    label: Penalties
+    prompt: extract/penalties
+    roles: [rfs, contractual, nit, ppa, cfda]
+    section_kinds: [penalties_and_remedies]
+    keywords: [liquidated damages, delay in commissioning, delay in commencement, encash, shortfall, extension of scsd, extension of scd, termination, penalty]
+  documents:
+    label: Documents
+    prompt: extract/documents
+    roles: [rfs, contractual, nit]
+    section_kinds: [table_of_contents, bidding_process]
+    keywords: [documents to be submitted, covering letter, format 7, annexure, power purchase agreement, power sale agreement, draft agreement, checklist]
+
+fields:
+  core.summary.plain_english_summary:
+    section: summary
+    label: Plain-English summary
+    type: long_text
+    required: true
+    help: "Four sentences: what is being procured, how much, where, and by when."
+
+  core.identity.tender_number:
+    section: identity_and_scope
+    label: Tender number
+    type: text
+    required: true
+    help: The RfS, RfP, NIT or tender reference number as printed.
+  core.identity.issuing_agency:
+    section: identity_and_scope
+    label: Issuing agency
+    type: text
+    required: true
+    help: The organisation that issues the tender.
+  core.identity.title:
+    section: identity_and_scope
+    label: Title
+    type: text
+    required: true
+    help: The title of the tender as printed on the cover.
+  core.identity.procurement_mode:
+    section: identity_and_scope
+    label: Procurement mode
+    type: enum
+    enum: [single_stage_two_envelope, two_stage, e_reverse_auction, other]
+    help: How bids are invited and evaluated; e-reverse auction if one follows the financial bid.
+  core.identity.portal:
+    section: identity_and_scope
+    label: Bidding portal
+    type: text
+    help: The e-tendering portal bids are submitted on.
+  core.identity.tender_type_as_stated:
+    section: identity_and_scope
+    label: Tender type as stated
+    type: text
+    help: How the document itself describes what is tendered (for example FDRE, BESS, EPC).
+
+  core.key_dates.nit_date:
+    section: key_dates
+    label: Date of issue
+    type: date
+    help: Date the NIT or tender document was issued.
+  core.key_dates.pre_bid_meeting_date:
+    section: key_dates
+    label: Pre-bid meeting date
+    type: date
+    help: Date of the pre-bid meeting.
+  core.key_dates.query_deadline:
+    section: key_dates
+    label: Last date for queries
+    type: date
+    help: Last date for bidders to send queries or clarification requests.
+  core.key_dates.bid_submission_deadline:
+    section: key_dates
+    label: Bid submission deadline
+    type: date
+    required: true
+    help: Last date for online bid submission.
+  core.key_dates.technical_opening_date:
+    section: key_dates
+    label: Technical bid opening date
+    type: date
+    help: Date the techno-commercial bids are opened.
+  core.key_dates.era_date:
+    section: key_dates
+    label: e-Reverse auction date
+    type: date
+    help: Date of the e-reverse auction, if one is printed.
+  core.key_dates.dates_deferred_note:
+    section: key_dates
+    label: Dates deferred to another document
+    type: long_text
+    help: Which dates this document does not print, and the document or notice that will set them (for example the NIT on the portal).
+  core.key_dates.bid_validity_days:
+    section: key_dates
+    label: Bid validity
+    type: int
+    unit: days
+    min: 1
+    max: 730
+    help: Days the bid must stay valid after the submission deadline.
+  core.key_dates.loa_timeline:
+    section: key_dates
+    label: Letter of Award timeline
+    type: text
+    help: When the Letter of Award is issued, as the document states it.
+
+  core.eligibility.technical_experience_requirement:
+    section: eligibility
+    label: Technical experience requirement
+    type: long_text
+    help: The technical eligibility clause in summary, or that there is none.
+  core.eligibility.turnover_requirement_inr:
+    section: eligibility
+    label: Turnover requirement
+    type: money_inr
+    unit: INR
+    help: Minimum annual turnover as a fixed amount; leave empty when stated per MW.
+  core.eligibility.liquidity_requirement_inr:
+    section: eligibility
+    label: Liquidity requirement
+    type: money_inr
+    unit: INR
+    help: Minimum liquidity (internal resource generation, PBDIT or line of credit) as a fixed amount; leave empty when stated per MW.
+  core.eligibility.consortium_allowed:
+    section: eligibility
+    label: Consortium allowed
+    type: bool
+    help: Whether a bidding consortium may bid.
+  core.eligibility.max_consortium_members:
+    section: eligibility
+    label: Maximum consortium members
+    type: int
+    min: 1
+    max: 20
+    help: Largest number of members a consortium may have, if limited.
+  core.eligibility.parent_affiliate_credentials_allowed:
+    section: eligibility
+    label: Parent or affiliate credentials allowed
+    type: bool
+    help: Whether a bidder may rely on the credentials of its parent, affiliate or group company.
+  core.eligibility.shareholding_lock_in:
+    section: eligibility
+    label: Shareholding lock-in
+    type: long_text
+    help: Minimum shareholding the bidder must keep, and for how long.
+
+  core.guarantees.emd_per_mw_inr:
+    section: guarantees
+    label: EMD per MW
+    type: money_inr
+    unit: INR per MW
+    min: 1000
+    max: 100000000
+    help: Earnest money deposit as one amount per MW; empty when the tender gives a formula or a lump sum.
+  core.guarantees.emd_formula:
+    section: guarantees
+    label: EMD formula or amount as stated
+    type: long_text
+    help: The EMD as the tender states it when it is not one per-MW figure (component rates, a percentage, a lump sum).
+  core.guarantees.emd_form:
+    section: guarantees
+    label: Form of EMD
+    type: enum
+    enum: [bg, insurance_surety, cash, other]
+    help: "Instrument accepted for EMD; other when several are accepted (say which in the rationale)."
+  core.guarantees.pbg_per_mw_inr:
+    section: guarantees
+    label: PBG per MW
+    type: money_inr
+    unit: INR per MW
+    min: 1000
+    max: 1000000000
+    help: Performance bank guarantee as one amount per MW; empty when the tender gives a formula or a percentage.
+  core.guarantees.pbg_formula:
+    section: guarantees
+    label: PBG formula or amount as stated
+    type: long_text
+    help: The PBG as the tender states it when it is not one per-MW figure (component rates, a percentage of contract value).
+  core.guarantees.pbg_schedule:
+    section: guarantees
+    label: PBG schedule
+    type: long_text
+    help: When the PBG is submitted and in what parts.
+  core.guarantees.success_charge_inr:
+    section: guarantees
+    label: Success charges
+    type: money_inr
+    unit: INR per MW
+    help: Success charges payable by the selected bidder, per MW, excluding tax.
+  core.guarantees.processing_fee_inr:
+    section: guarantees
+    label: Bid processing fee
+    type: money_inr
+    unit: INR
+    help: Bid processing fee as a fixed amount excluding tax; the lowest slab when it varies by capacity (say so in the rationale).
+  core.guarantees.bg_validity_months:
+    section: guarantees
+    label: EMD validity
+    type: duration_months
+    unit: months
+    min: 1
+    max: 120
+    help: Months the EMD bank guarantee must stay valid.
+  core.guarantees.bg_release_conditions:
+    section: guarantees
+    label: Guarantee release conditions
+    type: long_text
+    help: When the EMD and the PBG are returned.
+
+  core.commercial.payment_security_mechanism:
+    section: commercial
+    label: Payment security mechanism
+    type: long_text
+    help: Letter of credit, payment security fund, state guarantee and their size.
+  core.commercial.change_in_law_clause:
+    section: commercial
+    label: Change in law
+    type: long_text
+    help: What counts as change in law and how the developer is compensated.
+  core.commercial.late_payment_surcharge:
+    section: commercial
+    label: Late payment surcharge
+    type: text
+    help: Surcharge on delayed payment, as stated.
+  core.commercial.termination_compensation:
+    section: commercial
+    label: Termination compensation
+    type: long_text
+    help: What is payable on termination for each party's default.
+  core.commercial.offtaker:
+    section: commercial
+    label: Offtaker
+    type: text
+    help: Who buys the power or service (the buying entity or the owner).
+
+  core.penalties.delay_ld_per_mw_per_day_inr:
+    section: penalties
+    label: Delay LD per MW per day
+    type: money_inr
+    unit: INR per MW per day
+    help: Liquidated damages for delay as one amount per MW per day; empty when stated as PBG encashment or a percentage.
+  core.penalties.max_scod_extension_months:
+    section: penalties
+    label: Maximum extension with penalty
+    type: duration_months
+    unit: months
+    min: 0
+    max: 60
+    help: Longest delay allowed beyond the scheduled date before termination.
+  core.penalties.shortfall_penalty_basis:
+    section: penalties
+    label: Shortfall penalty basis
+    type: long_text
+    help: How a shortfall in supply, generation or performance is penalised.
+  core.penalties.pbg_encashment_triggers:
+    section: penalties
+    label: PBG encashment triggers
+    type: long_text
+    help: Events that let the procurer encash the PBG.
+  core.penalties.termination_delay_months:
+    section: penalties
+    label: Delay that leads to termination
+    type: duration_months
+    unit: months
+    min: 0
+    max: 60
+    help: Months of delay after which the agreement may be terminated.
+
+  core.documents.required_documents:
+    section: documents
+    label: Required documents
+    type: list_text
+    help: Documents and formats a bidder must submit with the bid.
+  core.documents.annexure_formats:
+    section: documents
+    label: Annexures and formats
+    type: list_text
+    help: Annexures and standard formats included in the tender document.
+  core.documents.draft_agreements_referenced:
+    section: documents
+    label: Draft agreements referenced
+    type: list_text
+    help: Draft agreements the tender refers to (PPA, PSA, contract agreement).
+
+cross_field_rules: [date_order, emd_pbg_within_10x]
+run_rules: [later_version_evidence]

@@ -1,0 +1,25 @@
+type: epc
+pack: power
+includes: [summary, identity_and_scope, key_dates, eligibility, guarantees, commercial, penalties, connectivity_and_compliance, documents]
+sections:
+  epc_scope:
+    label: EPC scope
+    prompt: extract/epc_scope
+    roles: [technical, contractual, rfs, nit]
+    section_kinds: [introduction_and_scope, commercial_terms, penalties_and_remedies, technical_requirements]
+    keywords: [scope of work, price schedule, bill of quantities, terms of payment, retention, defect liability, performance ratio, liquidated damages, warranty, approval of drawings, taxes and duties, operation and maintenance]
+fields:
+  sector.power.epc.scope_matrix: {section: epc_scope, label: Scope matrix, type: record_list, item_keys: [item, supply, erection, commissioning, om], help: "Main scope items and whether supply, erection, commissioning and O&M are in the contractor's scope."}
+  sector.power.epc.boq_structure: {section: epc_scope, label: BoQ structure, type: text, help: "How the bill of quantities is organised."}
+  sector.power.epc.price_schedule_structure: {section: epc_scope, label: Price schedule structure, type: text, help: "The price schedules a bidder fills in."}
+  sector.power.epc.supply_service_split: {section: epc_scope, label: Supply and service split, type: bool, help: "Whether supply and services are priced or contracted separately."}
+  sector.power.epc.milestone_payment_schedule: {section: epc_scope, label: Milestone payment schedule, type: long_text, help: "Payment milestones and their percentages."}
+  sector.power.epc.retention_percent: {section: epc_scope, label: Retention, type: percent, unit: percent, help: "Share of each payment retained, if any."}
+  sector.power.epc.defect_liability_months: {section: epc_scope, label: Defect liability period, type: duration_months, unit: months, min: 0, max: 240, help: "Defect liability period in months."}
+  sector.power.epc.performance_ratio_guarantee_percent: {section: epc_scope, label: Performance ratio guarantee, type: percent, unit: percent, help: "Guaranteed performance ratio at acceptance."}
+  sector.power.epc.ld_delay: {section: epc_scope, label: LD for delay, type: text, help: "Liquidated damages for delay in completion, with the cap."}
+  sector.power.epc.ld_performance: {section: epc_scope, label: LD for performance, type: text, help: "Liquidated damages for shortfall in performance."}
+  sector.power.epc.warranty_terms: {section: epc_scope, label: Warranty terms, type: text, help: "Warranties required on main equipment."}
+  sector.power.epc.drawing_approval_cycle: {section: epc_scope, label: Drawing approval cycle, type: text, help: "Time allowed for approval of drawings and documents."}
+  sector.power.epc.taxes_duties_treatment: {section: epc_scope, label: Taxes and duties, type: text, help: "How taxes and duties are treated in the price."}
+  sector.power.epc.om_period_months: {section: epc_scope, label: O&M period, type: duration_months, unit: months, min: 0, max: 600, help: "Operation and maintenance period in the contractor's scope."}

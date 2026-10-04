@@ -1,0 +1,19 @@
+type: solar
+pack: power
+includes: [summary, identity_and_scope, key_dates, eligibility, guarantees, commercial, penalties, connectivity_and_compliance, documents]
+sections:
+  solar_tech:
+    label: Solar technology
+    prompt: extract/solar_tech
+    roles: [rfs, contractual, nit, technical]
+    section_kinds: [technical_requirements]
+    keywords: [almm, domestic content, cuf, capacity utilisation, degradation, repowering, augmentation, land]
+fields:
+  sector.power.solar.almm_list_requirement: {section: solar_tech, label: ALMM list requirement, type: text, help: "Which ALMM list applies (List-I modules, List-II cells) and from when."}
+  sector.power.solar.dcr_share_percent: {section: solar_tech, label: Domestic content share, type: percent, unit: percent, help: "Share of domestic content required, if stated."}
+  sector.power.solar.min_cuf_percent: {section: solar_tech, label: Minimum CUF, type: percent, unit: percent, help: "Lowest annual CUF the developer may declare."}
+  sector.power.solar.max_cuf_percent: {section: solar_tech, label: Maximum CUF, type: percent, unit: percent, help: "Highest annual CUF, if the tender caps it."}
+  sector.power.solar.annual_degradation_cap_percent: {section: solar_tech, label: Annual degradation cap, type: percent, unit: percent, help: "Largest yearly degradation allowed, if stated."}
+  sector.power.solar.land_type_restrictions: {section: solar_tech, label: Land type restrictions, type: text, help: "Restrictions on the kind of land the project may use."}
+  sector.power.solar.repowering_allowed: {section: solar_tech, label: Repowering allowed, type: bool, help: "Whether repowering is permitted during the PPA term."}
+  sector.power.solar.augmentation_rules: {section: solar_tech, label: Augmentation rules, type: text, help: "Rules for adding DC capacity or modules later."}

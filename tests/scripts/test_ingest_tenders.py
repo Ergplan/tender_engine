@@ -1,0 +1,173 @@
+"""The management command on a synthetic tender folder, with the scripted model."""
+
+from datetime import date
+from pathlib import Path
+
+import yaml
+from sqlalchemy import func, select
+from sqlalchemy.orm import Session
+
+from core.models import Document, ExtractionRun
+from scripts import ingest_tenders
+from scripts.ingest_tenders import Manifest, ManifestFile, Services, plan_versions
+from tender.models import Tender, TenderVersion
+from tests.conftest import Pipeline
+from tests.fixtures.pdfs import make_pdf
+from tests.fixtures.tenders import AMENDMENT_ANSWERS, AMENDMENT_PAGES, RFS_ANSWERS, RFS_PAGES
+
+PPA_PAGES = [["DRAFT POWER PURCHASE AGREEMENT", "Article 10: the tariff is fixed for the term."]]
+
+
+def services_of(pipeline: Pipeline) -> Services:
+    return Services(
+        settings=pipeline.settings,
+        session_factory=pipeline.session_factory,
+        catalog=pipeline.catalog,
+        ingest=pipeline.ingest,
+        tenders=pipeline.tenders,
+        review=pipeline.review_state,
+    )
+
+
+def write_folder(root: Path) -> None:
+    folder = root / "solar" / "acme-solar-600"
+    folder.mkdir(parents=True)
+    (folder / "rfs.pdf").write_bytes(make_pdf(RFS_PAGES))
+    (folder / "ppa.pdf").write_bytes(make_pdf(PPA_PAGES))
+    (folder / "amendment-01.pdf").write_bytes(make_pdf(AMENDMENT_PAGES))
+    manifest = {
+        "slug": "acme-solar-600",
+        "type": "solar",
+        "agency": "Acme Renewables Agency",
+        "external_ref": "ACME/RE/2026/007",
+        "title": "Selection of solar power developers for 600 MW solar PV projects",
+        "files": [
+            {"file": "rfs.pdf", "role": "rfs", "issued_on": "2026-03-01", "pages": 3},
+            {"file": "amendment-01.pdf", "role": "amendment", "issued_on": "2026-03-20"},
+            {"file": "ppa.pdf", "role": "ppa", "issued_on": None, "pages": 1},
+        ],
+    }
+    (folder / "manifest.yaml").write_text(yaml.safe_dump(manifest))
+
+
+def files(*items: tuple[str, str, str | None]) -> Manifest:
+    return Manifest(
+        slug="x",
+        tender_type="fdre",
+        agency="A",
+        external_ref=None,
+        title="T",
+        files=[
+            ManifestFile(Path(name), role, date.fromisoformat(day) if day else None)
+            for name, role, day in items
+        ],
+    )
+
+
+def shape(manifest: Manifest) -> list[tuple[str, list[str]]]:
+    return [(v.kind, [f.path.name for f in v.files]) for v in plan_versions(manifest)]
+
+
+def test_undated_agreements_belong_to_the_original_and_each_change_is_a_version() -> None:
+    manifest = files(
+        ("rfs", "rfs", "2026-03-10"),
+        ("a1", "amendment", "2026-04-02"),
+        ("a2", "amendment", "2026-04-27"),
+        ("a3", "amendment", "2026-06-25"),
+        ("c1", "clarification", "2026-04-27"),
+        ("ppa", "ppa", None),
+        ("psa", "psa", None),
+    )
+    assert shape(manifest) == [
+        ("original", ["rfs", "ppa", "psa"]),
+        ("amendment", ["a1"]),
+        ("amendment", ["a2"]),
+        ("clarification", ["c1"]),
+        ("amendment", ["a3"]),
+    ]
+
+
+def test_a_revised_base_document_is_its_own_version_and_annexures_join_their_amendment() -> None:
+    revised = files(
+        ("rfs", "rfs", "2026-04-19"),
+        ("revised-rfs", "rfs", "2026-07-15"),
+        ("a1", "amendment", "2026-07-17"),
+        ("cfda", "cfda", None),
+    )
+    assert shape(revised) == [
+        ("original", ["rfs", "cfda"]),
+        ("amendment", ["revised-rfs"]),
+        ("amendment", ["a1"]),
+    ]
+    annexures = files(
+        ("contract", "contractual", "2026-06-24"),
+        ("technical", "technical", "2026-06-24"),
+        ("a2", "amendment", "2026-08-28"),
+        ("a3", "amendment", "2026-09-15"),
+        ("sld", "technical", "2026-09-15"),
+        ("layout", "technical", "2026-09-15"),
+    )
+    assert shape(annexures) == [
+        ("original", ["contract", "technical"]),
+        ("amendment", ["a2"]),
+        ("amendment", ["a3", "sld", "layout"]),
+    ]
+    undated_change = files(("rfs", "rfs", "2026-09-03"), ("note", "clarification", None))
+    assert shape(undated_change) == [("original", ["rfs"]), ("clarification", ["note"])]
+
+
+def test_ingest_extract_and_summary_on_a_tender_folder(
+    pipeline: Pipeline, db: Session, tmp_path: Path
+) -> None:
+    root = tmp_path / "tenders"
+    write_folder(root)
+    services = services_of(pipeline)
+
+    lines = ingest_tenders.ingest(services, root)
+    assert lines == ["solar/acme-solar-600: 2 version(s) [v1:2, v2:1]"]
+    assert ingest_tenders.ingest(services, root) == lines, "repeating the command changes nothing"
+    assert db.scalar(select(func.count()).select_from(Tender)) == 1
+    assert db.scalar(select(func.count()).select_from(TenderVersion)) == 2
+    assert db.scalar(select(func.count()).select_from(Document)) == 3
+    tender = db.scalars(select(Tender)).one()
+    assert (tender.slug, tender.tender_type) == ("acme-solar-600", "solar")
+    roles = [
+        (entry.version.version_no, entry.version.kind, [link.role for link, _ in entry.documents])
+        for entry in pipeline.tenders.versions(db, tender)
+    ]
+    assert roles == [(1, "original", ["rfs", "ppa"]), (2, "amendment", ["amendment"])]
+
+    not_ready = ingest_tenders.extract(services)
+    assert all("skipped" in line and "not parsed yet" in line for line in not_ready)
+    assert ingest_tenders.pending_jobs(services) == {"queued": 3}
+    pipeline.runner.run_until_idle()
+    assert ingest_tenders.wait(services, timeout=1, poll=0.01) is True
+
+    pipeline.sdk.answers = {**RFS_ANSWERS, **AMENDMENT_ANSWERS}
+    started = ingest_tenders.extract(services)
+    assert started == [
+        "acme-solar-600 v1: 2 run(s), 12 group call(s)",
+        "acme-solar-600 v2: 1 run(s), 1 group call(s)",
+    ]
+    assert ingest_tenders.extract(services) == [], "versions that have runs are left alone"
+    assert ingest_tenders.extract(services, only={"another"}, force=True) == []
+    pipeline.runner.run_until_idle()
+    assert set(db.scalars(select(ExtractionRun.status))) == {"validated"}
+
+    out = tmp_path / "EXTRACTION-SUMMARY.md"
+    text = ingest_tenders.summary(services, out)
+    assert out.read_text() == text
+    fields = len(pipeline.catalog.get("solar").fields)
+    row = next(line for line in text.splitlines() if line.startswith("| solar | acme-solar-600"))
+    cells = [cell.strip() for cell in row.strip("|").split("|")]
+    # type, tender, versions, documents, pages, fields, with a value, located, rates...
+    assert cells[2:6] == ["2", "3", "5", str(fields)]
+    answered = int(cells[6])
+    # The scripted model repeats the RfS answers for the amendment, so version 2 returns a
+    # pre-bid date whose quote is not in the amendment: a value without located evidence.
+    assert answered == 9 and cells[7] == "8"
+    assert cells[8] == "89%" and cells[9] == f"{100 * answered / fields:.0f}%"
+    assert "## Per tender type" in text and "## Per section, all tenders" in text
+    assert "| solar | `core.key_dates.pre_bid_meeting_date` | 1 | 0 | 0% | acme-solar-600 |" in text
+    db.refresh(tender)
+    assert tender.status == "extracted"

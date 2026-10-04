@@ -1,0 +1,18 @@
+type: generation
+pack: power
+includes: [summary, identity_and_scope, key_dates, eligibility, guarantees, commercial, penalties, connectivity_and_compliance, documents]
+sections:
+  gen_tech:
+    label: Generation technology
+    prompt: extract/gen_tech
+    roles: [rfs, contractual, nit, technical]
+    section_kinds: [technical_requirements, introduction_and_scope, commercial_terms]
+    keywords: [fuel, heat rate, design energy, capacity charge, fixed charge, availability, water, pumped, storage, two part]
+fields:
+  sector.power.generation.fuel_type: {section: gen_tech, label: Fuel or resource type, type: text, help: "Fuel or resource of the plant (coal, gas, hydro, pumped storage)."}
+  sector.power.generation.fuel_supply_arrangement: {section: gen_tech, label: Fuel supply arrangement, type: text, help: "Who arranges fuel or pumping energy, and how."}
+  sector.power.generation.heat_rate_or_design_energy: {section: gen_tech, label: Heat rate or design energy, type: text, help: "Station heat rate or design energy, as stated."}
+  sector.power.generation.tariff_two_part: {section: gen_tech, label: Two-part tariff, type: bool, help: "Whether the tariff has separate capacity and energy charges."}
+  sector.power.generation.capacity_charge_recovery_rule: {section: gen_tech, label: Capacity charge recovery, type: text, help: "How capacity charges are recovered against availability."}
+  sector.power.generation.availability_norm_percent: {section: gen_tech, label: Availability norm, type: percent, unit: percent, help: "Normative availability for full recovery of fixed charges."}
+  sector.power.generation.water_clearance_responsibility: {section: gen_tech, label: Water and clearance responsibility, type: text, help: "Who secures water and the clearances tied to it."}

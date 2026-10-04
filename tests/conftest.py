@@ -27,6 +27,8 @@ from core.services.extract import ExtractService
 from core.services.ingest import IngestService
 from core.services.review_state import ReviewStateService
 from core.storage import LocalStorage
+from tender.services.packs import Catalog, load_catalog
+from tender.services.tenders import TenderService
 from tests.fixtures.llm import ScriptedSDK
 from tests.fixtures.pdfs import make_pdf
 from tests.fixtures.schemas import SCHEMA_NAME, SCHEMA_VERSION, make_registry
@@ -100,6 +102,8 @@ class Pipeline:
     extract: ExtractService
     approvals: ApprovalService
     review_state: ReviewStateService
+    catalog: Catalog
+    tenders: TenderService
 
     def upload(
         self, db: Session, data: bytes | None = None, name: str = "contract.pdf"
@@ -136,9 +140,19 @@ class Pipeline:
         return run
 
 
+@pytest.fixture(scope="session")
+def catalog() -> Catalog:
+    """The domain packs, compiled once for the whole test session."""
+    return load_catalog()
+
+
 @pytest.fixture()
 def make_pipeline(
-    settings: Settings, session_factory: sessionmaker[Session], tmp_path: Path, db: Session
+    settings: Settings,
+    session_factory: sessionmaker[Session],
+    tmp_path: Path,
+    db: Session,
+    catalog: Catalog,
 ) -> Callable[..., Pipeline]:
     def build(sdk: ScriptedSDK | None = None, **setting_overrides: Any) -> Pipeline:
         local = settings.model_copy(
@@ -146,8 +160,10 @@ def make_pipeline(
         )
         storage = LocalStorage(local.data_dir)
         schemas = make_registry()
+        catalog.register(schemas)
         sdk = sdk or ScriptedSDK()
-        llm = LLMClient(local, session_factory, sdk=sdk.as_sdk())
+        llm = LLMClient(local, session_factory, sdk=sdk.as_sdk(), prompt_roots=catalog.prompt_roots)
+        extract = ExtractService(llm, storage, schemas, local)
         return Pipeline(
             settings=local,
             session_factory=session_factory,
@@ -157,9 +173,11 @@ def make_pipeline(
             llm=llm,
             runner=Runner(local, session_factory, storage, schemas, llm),
             ingest=IngestService(storage, local.tenant_id),
-            extract=ExtractService(llm, storage, schemas, local),
+            extract=extract,
             approvals=ApprovalService(schemas, local.tenant_id),
             review_state=ReviewStateService(schemas, local.tenant_id),
+            catalog=catalog,
+            tenders=TenderService(catalog, extract, local.tenant_id),
         )
 
     return build
