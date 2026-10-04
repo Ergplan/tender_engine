@@ -206,7 +206,14 @@ Second run, after those changes (`review-gpt-6.1-sol-run2.txt`): (b) none; (d) n
 | e2 | The evidence criterion was presented as met although unlocated values could become canonical | Fixed in code (a1) and the row reworded |
 | e1, e3 to e8, e12 | Run history, deployment, earlier reviews and cost are not provable from the diff | Not addressable in the diff; they remain statements of this report |
 
-Third run, after these changes: (pending; recorded after this commit.)
+Third run, after these changes: (`review-gpt-6.1-sol-run3.txt`): (b) none; (d) not applicable; (a) 3; (c) 2; (e) 11. No new code defect. What remains:
+
+- **(a1) Candidates without located evidence are still shown to the reviewer.** Blocking their approval does not satisfy "rejected before a reviewer sees it". This is the conflict between the invariant and the stage prompt; it needs your decision (Open questions, item 0).
+- **(a2, c1, c2) Test code** changes and truncates truth tables without audit rows. Not changed.
+- **(a3) No schema is registered in the deployed app** until Stage 2. Not changed.
+- **(e)** Eleven statements of this report that a diff cannot prove: test and watcher results, run history, checks against the PDFs, deployment, the second review, pushes and cost. One of them (e2, the regenerated client) is an effect of the reviewer's input: `web/src/api/openapi.json` and `schema.d.ts` are excluded from the diff it receives because of their size; they were regenerated and the watcher's `openapi_drift` check is green.
+
+**Rule 15 asks for reruns until the reviewer reports none. That point was not reached**, and cannot be by code changes alone: it depends on your decision on item 0 and on whether you accept the by-design items. I stopped after three runs on this model.
 
 Checklist item (d): not applicable until Stage 3 (`make trace` does not exist yet).
 
