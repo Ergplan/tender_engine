@@ -30,3 +30,7 @@ class TenantAuditMixin(AuditMixin):
     tenant_id: Mapped[str] = mapped_column(
         String(64), ForeignKey("tenant.tenant_id"), nullable=False, index=True
     )
+
+
+class IdMixin:
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=new_id)

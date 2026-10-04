@@ -1,13 +1,13 @@
 from typing import Any
 
-from sqlalchemy import Boolean, Integer, String, Text
+from sqlalchemy import Boolean, ForeignKey, Integer, String, Text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
-from core.models.base import Base, TenantAuditMixin, new_id
+from core.models.base import Base, IdMixin, TenantAuditMixin
 
 
-class LLMCallLog(TenantAuditMixin, Base):
+class LLMCallLog(IdMixin, TenantAuditMixin, Base):
     """One row per LLM call, written by core.llm.client.LLMClient.call for every outcome.
 
     Shape adapted from tariff-oder services/api/src/tariff_api/models.py:658-685
@@ -16,7 +16,9 @@ class LLMCallLog(TenantAuditMixin, Base):
 
     __tablename__ = "llm_call_log"
 
-    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=new_id)
+    extraction_run_id: Mapped[str | None] = mapped_column(
+        ForeignKey("extraction_run.id"), nullable=True, index=True
+    )
     prompt_name: Mapped[str] = mapped_column(String(100), nullable=False)
     prompt_version: Mapped[str] = mapped_column(String(20), nullable=False)
     output_schema: Mapped[str] = mapped_column(String(200), nullable=False)
