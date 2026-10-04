@@ -176,6 +176,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/reports/extraction-summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Extraction Summary
+         * @description What extraction returned for every tender, before review: evidence-location rate,
+         *     answer rate, validation failures, tokens and cost, as data and as the Markdown report.
+         */
+        get: operations["get_extraction_summary_api_v1_reports_extraction_summary_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/review-state": {
         parameters: {
             query?: never;
@@ -585,6 +606,27 @@ export interface components {
             /** Token Out */
             token_out: number;
         };
+        /**
+         * ExtractionSummary
+         * @description The extraction summary as data, and the same content as the Markdown report.
+         */
+        ExtractionSummary: {
+            /** Calls */
+            calls: number;
+            /**
+             * Generated At
+             * Format: date-time
+             */
+            generated_at: string;
+            /** Markdown */
+            markdown: string;
+            /** Model */
+            model: string;
+            /** Tenders */
+            tenders: components["schemas"]["TenderSummary"][];
+            /** Total Cost Usd */
+            total_cost_usd: number;
+        };
         /** FieldState */
         FieldState: {
             /** Alternative Candidates */
@@ -835,6 +877,41 @@ export interface components {
             sections: components["schemas"]["CompiledSection"][];
             /** Tender Type */
             tender_type: string;
+        };
+        /** TenderSummary */
+        TenderSummary: {
+            /** Cost Usd */
+            cost_usd: string;
+            /** Documents */
+            documents: number;
+            /** Failing Validation */
+            failing_validation: number;
+            /** Fields */
+            fields: number;
+            /** Located */
+            located: number;
+            /** Pages */
+            pages: number;
+            /** Runs */
+            runs: number;
+            /** Slug */
+            slug: string | null;
+            /** Tender Id */
+            tender_id: string;
+            /** Tender Type */
+            tender_type: string;
+            /** Title */
+            title: string;
+            /** Tokens In */
+            tokens_in: number;
+            /** Tokens Out */
+            tokens_out: number;
+            /** Unfinished Runs */
+            unfinished_runs: number;
+            /** Versions */
+            versions: number;
+            /** With Value */
+            with_value: number;
         };
         /** TenderView */
         TenderView: {
@@ -1195,6 +1272,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HealthResponse"];
+                };
+            };
+        };
+    };
+    get_extraction_summary_api_v1_reports_extraction_summary_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExtractionSummary"];
                 };
             };
         };

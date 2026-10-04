@@ -1,17 +1,23 @@
 """The management command on a synthetic tender folder, with the scripted model."""
 
+from collections.abc import Callable
 from datetime import date
 from pathlib import Path
+from typing import Any
 
+import anthropic
+import httpx2
 import yaml
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from core.models import Document, ExtractionRun
+from core.services.section_map import SectionMapOutput
 from scripts import ingest_tenders
 from scripts.ingest_tenders import Manifest, ManifestFile, Services, plan_versions
 from tender.models import Tender, TenderVersion
 from tests.conftest import Pipeline
+from tests.fixtures.llm import ScriptedSDK
 from tests.fixtures.pdfs import make_pdf
 from tests.fixtures.tenders import AMENDMENT_ANSWERS, AMENDMENT_PAGES, RFS_ANSWERS, RFS_PAGES
 
@@ -171,3 +177,47 @@ def test_ingest_extract_and_summary_on_a_tender_folder(
     assert "| solar | `core.key_dates.pre_bid_meeting_date` | 1 | 0 | 0% | acme-solar-600 |" in text
     db.refresh(tender)
     assert tender.status == "extracted"
+
+
+def test_resume_continues_a_failed_run_without_repeating_finished_groups(
+    make_pipeline: Callable[..., Pipeline], db: Session, tmp_path: Path
+) -> None:
+    """The model account runs dry part-way: the run fails at once. After `resume` the run
+    finishes, and the groups it had already extracted are not called again."""
+    root = tmp_path / "tenders"
+    write_folder(root)
+    budget = {"calls": 4}
+
+    def out_of_credit(number: int, request: dict[str, Any]) -> None:
+        if request["output_format"] is not SectionMapOutput:
+            budget["calls"] -= 1
+            if budget["calls"] < 0:
+                raise anthropic.BadRequestError(
+                    "Your credit balance is too low",
+                    response=httpx2.Response(400, request=httpx2.Request("POST", "http://x")),
+                    body=None,
+                )
+
+    pipeline = make_pipeline(ScriptedSDK(dict(RFS_ANSWERS), before_call=out_of_credit))
+    services = services_of(pipeline)
+    ingest_tenders.ingest(services, root, only={"acme-solar-600"})
+    pipeline.runner.run_until_idle()
+    ingest_tenders.extract(services)
+    pipeline.runner.run_until_idle()
+    statuses = sorted(db.scalars(select(ExtractionRun.status)))
+    assert statuses == ["failed", "failed", "failed"]
+    assert ingest_tenders.pending_jobs(services).get("failed") == 3
+    done_before = len(pipeline.sdk.extract_calls())
+    assert done_before == 7, "four calls answered, three refused"
+    assert ingest_tenders.resume(services, only={"another"}) == []
+
+    budget["calls"] = 1000
+    lines = ingest_tenders.resume(services)
+    assert len(lines) == 3 and all("queued again" in line for line in lines)
+    assert ingest_tenders.resume(services) == [], "nothing is left to resume"
+    pipeline.runner.run_until_idle()
+    db.expire_all()
+    assert set(db.scalars(select(ExtractionRun.status))) == {"validated"}
+    assert set(db.scalars(select(ExtractionRun.error))) == {None}
+    # 12 + 1 group calls in all; the four that succeeded before are not repeated.
+    assert len(pipeline.sdk.extract_calls()) - done_before == 13 - 4

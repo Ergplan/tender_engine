@@ -723,6 +723,49 @@
         "title": "ExtractionRunOut",
         "type": "object"
       },
+      "ExtractionSummary": {
+        "description": "The extraction summary as data, and the same content as the Markdown report.",
+        "properties": {
+          "calls": {
+            "title": "Calls",
+            "type": "integer"
+          },
+          "generated_at": {
+            "format": "date-time",
+            "title": "Generated At",
+            "type": "string"
+          },
+          "markdown": {
+            "title": "Markdown",
+            "type": "string"
+          },
+          "model": {
+            "title": "Model",
+            "type": "string"
+          },
+          "tenders": {
+            "items": {
+              "$ref": "#/components/schemas/TenderSummary"
+            },
+            "title": "Tenders",
+            "type": "array"
+          },
+          "total_cost_usd": {
+            "title": "Total Cost Usd",
+            "type": "number"
+          }
+        },
+        "required": [
+          "generated_at",
+          "model",
+          "calls",
+          "total_cost_usd",
+          "tenders",
+          "markdown"
+        ],
+        "title": "ExtractionSummary",
+        "type": "object"
+      },
       "FieldState": {
         "properties": {
           "alternative_candidates": {
@@ -1501,6 +1544,102 @@
         "title": "TenderSchemaOut",
         "type": "object"
       },
+      "TenderSummary": {
+        "properties": {
+          "cost_usd": {
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Cost Usd",
+            "type": "string"
+          },
+          "documents": {
+            "title": "Documents",
+            "type": "integer"
+          },
+          "failing_validation": {
+            "title": "Failing Validation",
+            "type": "integer"
+          },
+          "fields": {
+            "title": "Fields",
+            "type": "integer"
+          },
+          "located": {
+            "title": "Located",
+            "type": "integer"
+          },
+          "pages": {
+            "title": "Pages",
+            "type": "integer"
+          },
+          "runs": {
+            "title": "Runs",
+            "type": "integer"
+          },
+          "slug": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Slug"
+          },
+          "tender_id": {
+            "title": "Tender Id",
+            "type": "string"
+          },
+          "tender_type": {
+            "title": "Tender Type",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "tokens_in": {
+            "title": "Tokens In",
+            "type": "integer"
+          },
+          "tokens_out": {
+            "title": "Tokens Out",
+            "type": "integer"
+          },
+          "unfinished_runs": {
+            "title": "Unfinished Runs",
+            "type": "integer"
+          },
+          "versions": {
+            "title": "Versions",
+            "type": "integer"
+          },
+          "with_value": {
+            "title": "With Value",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "tender_id",
+          "slug",
+          "tender_type",
+          "title",
+          "versions",
+          "documents",
+          "pages",
+          "fields",
+          "with_value",
+          "located",
+          "failing_validation",
+          "runs",
+          "unfinished_runs",
+          "tokens_in",
+          "tokens_out",
+          "cost_usd"
+        ],
+        "title": "TenderSummary",
+        "type": "object"
+      },
       "TenderView": {
         "properties": {
           "current_version_no": {
@@ -2193,6 +2332,28 @@
         "summary": "Health",
         "tags": [
           "health"
+        ]
+      }
+    },
+    "/api/v1/reports/extraction-summary": {
+      "get": {
+        "description": "What extraction returned for every tender, before review: evidence-location rate,\nanswer rate, validation failures, tokens and cost, as data and as the Markdown report.",
+        "operationId": "get_extraction_summary_api_v1_reports_extraction_summary_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExtractionSummary"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Extraction Summary",
+        "tags": [
+          "tenders"
         ]
       }
     },

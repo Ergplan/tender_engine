@@ -105,7 +105,7 @@ The LLM boundary is unchanged from Stage 0B: `core.llm.client.LLMClient.call(LLM
 | `api/v1/core/documents.py` | `POST /api/v1/documents` (multipart), `GET /api/v1/documents/{id}`, `GET /api/v1/documents/{id}/pages/{n}/render`, `GET /api/v1/documents/{id}/sections` | 1 |
 | `api/v1/core/extraction.py` | `POST /api/v1/documents/{id}/extract`, `GET /api/v1/extraction-runs/{id}` | 1 |
 | `api/v1/core/review.py` | `GET /api/v1/review-state`, `POST /api/v1/approvals`, `GET /api/v1/canonical` | 1 |
-| `api/v1/tenders/tenders.py` | `POST /api/v1/tenders`, `GET /api/v1/tenders`, `GET /api/v1/tenders/{id}`, `POST /api/v1/tenders/{id}/versions` (multipart: file, kind, issued_on, role, summary_of_change; with version_no the document joins an existing version), `GET /api/v1/tenders/{id}/versions`, `GET /api/v1/tenders/{id}/view`, `POST /api/v1/tenders/{id}/extract`, `GET /api/v1/tenders/{id}/review-state` (core's review state for one version, plus the fields that version changes), `GET /api/v1/schemas/tender/{type}` | 2 |
+| `api/v1/tenders/tenders.py` | `POST /api/v1/tenders`, `GET /api/v1/tenders`, `GET /api/v1/tenders/{id}`, `POST /api/v1/tenders/{id}/versions` (multipart: file, kind, issued_on, role, summary_of_change; with version_no the document joins an existing version), `GET /api/v1/tenders/{id}/versions`, `GET /api/v1/tenders/{id}/view`, `POST /api/v1/tenders/{id}/extract`, `GET /api/v1/tenders/{id}/review-state` (core's review state for one version, plus the fields that version changes), `GET /api/v1/schemas/tender/{type}`, `GET /api/v1/reports/extraction-summary` | 2 |
 
 Tenant resolution is the request dependency `api.deps.get_tenant_id`, which returns the configured single tenant in phase 1. Errors go through `api/middleware/errors.py`: a request id on every response and a typed error payload. The reviewer of an approval comes from the `X-Reviewer` header in phase 1 (`api.deps.get_reviewer`); the Stage 3 token middleware will set it. The API never calls the model: it queues jobs and reads state.
 
@@ -192,4 +192,5 @@ One GCE VM (`instance-20261004-081207`, asia-south2-b), static IP `34.131.65.108
 - `tender/services/`: packs, tenders, versioning, current_view, field_defs, extraction_summary.
 - Tender router under `/api/v1/`; the API and the worker register the tender schemas at start-up; generated client refreshed.
 - Core extension points: group-limited runs, per-field and per-document supersession, review state across the runs of a version, run rules, prompt inheritance, `item_keys`.
-- `scripts/ingest_tenders.py`: ingest, extract, wait, summary.
+- `scripts/ingest_tenders.py`: ingest, extract, resume, wait, summary.
+- Evidence location: a fourth matcher for a quote read down one column of a two-column table.

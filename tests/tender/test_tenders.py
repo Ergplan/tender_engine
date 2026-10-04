@@ -120,6 +120,9 @@ def test_a_further_document_is_attached_to_an_existing_version_once(
     assert [link.role for link, _ in entry.documents] == ["rfs", "ppa"]
     with pytest.raises(TenderError, match="unknown document role"):
         pipeline.tenders.attach_document(db, tender, 1, ppa, "appendix", created_by="pytest")
+    for role in ("amendment", "clarification"):
+        with pytest.raises(TenderError, match="add it as a new version"):
+            pipeline.tenders.attach_document(db, tender, 1, ppa, role, created_by="pytest")
     with pytest.raises(LookupError):
         pipeline.tenders.attach_document(db, tender, 7, ppa, "ppa", created_by="pytest")
     assert len(list(db.scalars(select(TenderVersionDocument)))) == 2

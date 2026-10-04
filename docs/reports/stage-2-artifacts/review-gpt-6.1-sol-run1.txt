@@ -1,0 +1,63 @@
+ Container tender-engine-tests-run-f8d0e85cc1a4 Creating 
+ Container tender-engine-tests-run-f8d0e85cc1a4 Created 
+reviewer: gpt-6.1-sol  input chars: 369749  tokens in/out: 95308/2081
+
+### (a) Non-negotiable invariants
+
+| Invariant | Assessment from the supplied diff |
+|---|---|
+| **The LLM never writes truth** | No new canonical writer is shown. The current view reads only `CanonicalFact` (`tender/services/current_view.py:58–72`). The test verifies that extraction alone creates no visible truth and that approval produces it (`tests/api/test_tenders.py:227–276`). The unchanged approval implementation is not supplied, so its exclusive-writer guarantee cannot be fully verified. |
+| **Every value carries its evidence** | Later-version evidence is checked deterministically against that version’s documents (`tender/domain_packs/core/validation.py:51–92`). Carry-forward tests verify preservation of canonical evidence (`tests/tender/test_tenders.py:203–264`). Missing-evidence rejection, confidence capping and approval-time evidence enforcement are in unchanged code not supplied; their complete enforcement cannot be verified here. |
+| **The tender is a versioned object** | New versions are numbered and linked rather than overwriting version rows (`tender/services/tenders.py:134–200`); the current view reports each fact’s source version (`tender/services/current_view.py:75–91`). **Violation:** the existing-version attachment path also accepts amendment and clarification documents without creating a new version. |
+| **Candidates are immutable** | No reviewer edit of candidate values is shown. Supersession changes candidate lifecycle status and records an audit event (`core/services/extract.py:531–595`). The reviewer-edit implementation is unchanged and not supplied, so creation of a separate approval row for every edit cannot be fully verified. |
+| **Validation is deterministic** | Added validators are plain Python comparisons and tenant-filtered database reads, with no model calls (`tender/domain_packs/core/validation.py:24–92`; `tender/domain_packs/power/validation/rules.py:11–39`). Run-rule failures are recorded with their rule names (`core/services/validate.py:100–106`), and a test verifies that failure leaves the candidate visible as `needs_review` (`tests/core/services/test_validate.py:277–285`). |
+| **Everything is audited and tenant-scoped** | All four added tables inherit `TenantAuditMixin` (`tender/models/tender.py:34,54,73,91`), with corresponding migration columns (`migrations/versions/0005_tender_domain.py:28–31,50–53,67–70,84–87`). Added runtime database reads shown are tenant-filtered, including version/evidence queries (`tender/domain_packs/core/validation.py:59–77`) and current-view queries (`tender/services/current_view.py:50–66`). Visible protected-table writes have audit calls, as listed in (c). Reviewer attribution from an unguessable token cannot be verified: the shown tests use `X-Reviewer`, and token dependencies are not supplied. |
+| **Feedback is stored, never auto-applied** | No added runtime feedback read or automatic prompt/threshold/model adjustment is shown. Feedback storage remains in unchanged approval code, which is not supplied. |
+| **API first** | Tender extraction, current view and review state have router operations (`api/v1/tenders/tenders.py:179–242`). **Violation:** the added extraction-report operation is available only through the management command; no versioned report endpoint is shown. |
+
+FINDINGS: 2
+1. `api/v1/tenders/tenders.py:161–167`; `tender/services/tenders.py:202–225,336–365`: `version_no` selects attachment to an existing version, while `_check_document` accepts `amendment` and `clarification` roles. Thus a change document can become part of an existing version instead of creating a new `tender_version`.
+2. `scripts/ingest_tenders.py:256–266,282–289`; `api/v1/tenders/tenders.py:92–259`: extraction-summary generation is implemented as a CLI report operation, but the added router has no `/api/v1/` endpoint that drives it.
+
+### (b) Tests for added API endpoints
+
+All nine added endpoints have HTTP tests in `tests/api/test_tenders.py`.
+
+| Endpoint | Test |
+|---|---|
+| `POST /api/v1/tenders` | `test_create_get_and_list_tenders`, lines 72–85; invalid requests, lines 88–93 |
+| `GET /api/v1/tenders` | `test_create_get_and_list_tenders`, lines 72–85 |
+| `GET /api/v1/tenders/{id}` | `test_create_get_and_list_tenders`, lines 72–85 |
+| `POST /api/v1/tenders/{id}/versions` | `test_versions_are_added_listed_and_ordered`, lines 96–125; existing-version attachment, lines 128–143 |
+| `GET /api/v1/tenders/{id}/versions` | `test_versions_are_added_listed_and_ordered`, lines 96–125 |
+| `GET /api/v1/tenders/{id}/view` | `test_full_tender_flow_with_an_amendment_through_the_http_api`, lines 223–280 |
+| `POST /api/v1/tenders/{id}/extract` | `test_extract_queues_one_run_per_document_and_the_worker_completes_them`, lines 170–199 |
+| `GET /api/v1/tenders/{id}/review-state` | `test_review_state_delegates_to_core_for_one_version`, lines 202–220 |
+| `GET /api/v1/schemas/tender/{type}` | `test_schema_endpoint_returns_the_compiled_field_list`, lines 283–303 |
+
+FINDINGS: none
+
+### (c) Audit coverage for protected-table writes
+
+| Visible write | Audit call |
+|---|---|
+| Candidate lifecycle update to `status = "superseded"` | `core/services/extract.py:531–595`: the supersession loop calls `audit.record` immediately after the status assignment, recording the prior status and superseding run. |
+| Insert of `TenderVersion` | `tender/services/tenders.py:170–180`: construction, addition and flush; `audit.record` at lines 181–195, in the same transaction before commit at line 198. |
+| Addition of a document to a version | Although this inserts into `tender_version_document`, not directly into `tender_version`, the version change is audited: `tender/services/tenders.py:344–352`, followed by `audit.record` at lines 353–365 with `table_name="tender_version"` and action `add_document`. |
+
+No direct approval, canonical-fact or feedback write is added in the supplied diff. Calls to the unchanged approval service are shown, but its internal writes and audit calls are not supplied. Likewise, unchanged candidate insertion and validation-state writes cannot be independently checked from these hunks.
+
+FINDINGS: none
+
+### (d) `make trace`
+
+**not applicable** — the supplied stage documentation explicitly says `make trace` and `FIELD-TRACE.md` are deferred until Stage 3, when UI components exist (`docs/KNOWN-GAPS.md:15–19`). No trace implementation or regeneration result is supplied.
+
+FINDINGS: none
+
+### (e) Unsupported claims in the draft stage report
+
+The supplied diff contains no `docs/reports/STAGE-2-REPORT.md`. Consequently, there are no supplied draft-report claims to enumerate or compare with the code. This does not establish that the report’s claims are supported.
+
+FINDINGS: 1
+1. `docs/reports/STAGE-2-REPORT.md` — absent from the supplied diff; no line available. Checklist item (e) cannot be completed without the draft report.

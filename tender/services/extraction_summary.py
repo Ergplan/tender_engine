@@ -12,6 +12,7 @@ from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from decimal import Decimal
 
+from pydantic import BaseModel
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
@@ -139,7 +140,8 @@ def render(
     lines = [
         "# Extraction summary",
         "",
-        f"Generated {now:%Y-%m-%d %H:%M} UTC by `python -m scripts.ingest_tenders summary`. "
+        f"Generated {now:%Y-%m-%d %H:%M} UTC by `python -m scripts.ingest_tenders summary` "
+        "(the same content is served by `GET /api/v1/reports/extraction-summary`). "
         f"Model `{model}`. Candidates only: nothing here has been reviewed.",
         "",
         "- **Evidence-location rate** = values with located evidence / values returned "
@@ -169,21 +171,28 @@ def render(
             f"{_rate(r.located, r.answered)} | {_rate(r.answered, len(r.fields))} | "
             f"{r.failing} | {r.tokens_in:,} | {r.tokens_out:,} | {_money(r.cost_usd)} |"
         )
-    fields_total = sum(len(r.fields) for r in results)
-    answered = sum(r.answered for r in results)
-    located = sum(r.located for r in results)
+    # Rates over the whole set are only meaningful for tenders whose runs all finished.
+    complete = [r for r in results if r.runs and not r.unfinished_runs]
+    fields_total = sum(len(r.fields) for r in complete)
+    answered = sum(r.answered for r in complete)
+    located = sum(r.located for r in complete)
     run_cost = sum((r.cost_usd for r in results), Decimal(0))
     lines += [
-        f"| **all** | {len(results)} tenders | {sum(r.versions for r in results)} | "
-        f"{sum(r.documents for r in results)} | {sum(r.pages for r in results)} | "
+        f"| **fully extracted** | {len(complete)} of {len(results)} tenders | "
+        f"{sum(r.versions for r in complete)} | "
+        f"{sum(r.documents for r in complete)} | {sum(r.pages for r in complete)} | "
         f"{fields_total} | {answered} | {located} | {_rate(located, answered)} | "
-        f"{_rate(answered, fields_total)} | {sum(r.failing for r in results)} | "
+        f"{_rate(answered, fields_total)} | {sum(r.failing for r in complete)} | "
         f"{sum(r.tokens_in for r in results):,} | {sum(r.tokens_out for r in results):,} | "
         f"{_money(run_cost)} |",
         "",
+        f"**{len(complete)} of {len(results)} tenders are fully extracted.** The last row and "
+        "the tables below count only those; tokens and cost count every finished run. A run "
+        "that is not finished has no token total yet.",
+        "",
         f"Cost of all model calls in the database, including section maps and runs that were "
         f"repeated: **USD {_money(total_cost_usd)}** over {calls} calls. The table counts every "
-        "extraction run of a tender, including repeated ones.",
+        "finished extraction run of a tender, including repeated ones.",
         "",
         "## Per tender type",
         "",
@@ -192,7 +201,7 @@ def render(
         "| --- | --- | --- | --- | --- | --- | --- |",
     ]
     by_type: dict[str, list[TenderResult]] = defaultdict(list)
-    for r in results:
+    for r in complete:
         by_type[r.tender.tender_type].append(r)
     for tender_type, group in sorted(by_type.items()):
         total = sum(len(r.fields) for r in group)
@@ -209,7 +218,7 @@ def render(
         "| --- | --- | --- | --- | --- | --- |",
     ]
     sections: dict[str, list[FieldResult]] = defaultdict(list)
-    for r in results:
+    for r in complete:
         for item in r.fields:
             sections[item.section].append(item)
     for section, items in sections.items():
@@ -244,13 +253,43 @@ def render(
     return "\n".join(lines) + "\n"
 
 
+class TenderSummary(BaseModel):
+    tender_id: str
+    slug: str | None
+    tender_type: str
+    title: str
+    versions: int
+    documents: int
+    pages: int
+    fields: int
+    with_value: int
+    located: int
+    failing_validation: int
+    runs: int
+    unfinished_runs: int
+    tokens_in: int
+    tokens_out: int
+    cost_usd: Decimal
+
+
+class ExtractionSummary(BaseModel):
+    """The extraction summary as data, and the same content as the Markdown report."""
+
+    generated_at: datetime
+    model: str
+    calls: int
+    total_cost_usd: float
+    tenders: list[TenderSummary]
+    markdown: str
+
+
 def build(
     session: Session,
     catalog: Catalog,
     tenders: TenderService,
     review: ReviewStateService,
     settings: Settings,
-) -> str:
+) -> ExtractionSummary:
     results = collect(session, catalog, tenders, review)
     tokens_in, tokens_out, calls = session.execute(
         select(
@@ -259,14 +298,42 @@ def build(
             func.count(),
         ).where(LLMCallLog.tenant_id == settings.tenant_id, LLMCallLog.is_fixture.is_(False))
     ).one()
-    total = (
+    total = float(
         tokens_in / 1e6 * settings.llm_price_in_per_mtok
         + tokens_out / 1e6 * settings.llm_price_out_per_mtok
     )
-    return render(
-        results,
+    now = datetime.now(UTC)
+    return ExtractionSummary(
+        generated_at=now,
         model=settings.anthropic_model,
-        total_cost_usd=float(total),
         calls=int(calls),
-        now=datetime.now(UTC),
+        total_cost_usd=round(total, 2),
+        tenders=[
+            TenderSummary(
+                tender_id=r.tender.id,
+                slug=r.tender.slug,
+                tender_type=r.tender.tender_type,
+                title=r.tender.title,
+                versions=r.versions,
+                documents=r.documents,
+                pages=r.pages,
+                fields=len(r.fields),
+                with_value=r.answered,
+                located=r.located,
+                failing_validation=r.failing,
+                runs=r.runs,
+                unfinished_runs=r.unfinished_runs,
+                tokens_in=r.tokens_in,
+                tokens_out=r.tokens_out,
+                cost_usd=r.cost_usd,
+            )
+            for r in results
+        ],
+        markdown=render(
+            results,
+            model=settings.anthropic_model,
+            total_cost_usd=total,
+            calls=int(calls),
+            now=now,
+        ),
     )

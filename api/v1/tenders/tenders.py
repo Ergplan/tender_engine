@@ -10,6 +10,7 @@ from api.deps import (
     IngestDep,
     ReviewStateDep,
     SessionDep,
+    SettingsDep,
     TenantDep,
     TendersDep,
 )
@@ -30,7 +31,9 @@ from core.schemas import UnknownSchemaError
 from core.services.extract import ExtractionError
 from core.services.ingest import IngestError
 from tender.models import Tender, TenderVersion
+from tender.services import extraction_summary
 from tender.services.current_view import TenderView, current_view
+from tender.services.extraction_summary import ExtractionSummary
 from tender.services.tenders import OBJECT_TYPE, TenderError, TenderService, VersionDocuments
 
 router = APIRouter(tags=["tenders"])
@@ -239,6 +242,26 @@ def get_review_state(
             if field.candidate is not None and field.candidate.value is not None
         ],
         state=state,
+    )
+
+
+@router.get("/reports/extraction-summary", response_model=ExtractionSummary)
+def get_extraction_summary(
+    session: SessionDep,
+    tenders: TendersDep,
+    review_state: ReviewStateDep,
+    catalog: CatalogDep,
+    settings: SettingsDep,
+    tenant_id: TenantDep,
+) -> ExtractionSummary:
+    """What extraction returned for every tender, before review: evidence-location rate,
+    answer rate, validation failures, tokens and cost, as data and as the Markdown report."""
+    return extraction_summary.build(
+        session,
+        catalog,
+        tenders,
+        review_state,
+        settings.model_copy(update={"tenant_id": tenant_id}),
     )
 
 

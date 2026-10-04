@@ -45,6 +45,7 @@ def get_actor(x_reviewer: Annotated[str | None, Header()] = None) -> str:
 
 
 SessionDep = Annotated[Session, Depends(get_session)]
+SettingsDep = Annotated[Settings, Depends(get_settings)]
 TenantDep = Annotated[str, Depends(get_tenant_id)]
 ReviewerDep = Annotated[str, Depends(get_reviewer)]
 ActorDep = Annotated[str, Depends(get_actor)]

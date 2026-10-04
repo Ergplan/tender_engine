@@ -24,7 +24,7 @@ from tender.models import (
     TenderVersionDocument,
 )
 from tender.services.packs import Catalog
-from tender.services.versioning import plan_groups
+from tender.services.versioning import CHANGE_ROLES, plan_groups
 
 OBJECT_TYPE = "tender"
 DEFAULT_ROLE = {
@@ -208,8 +208,13 @@ class TenderService:
         *,
         created_by: str,
     ) -> TenderVersion:
-        """Add a further document (a PPA, a technical volume) to an existing version."""
+        """Add a further document (a PPA, a technical volume) to an existing version. An
+        amendment or clarification is never added to a version: it is a version."""
         self._check_document(document, role)
+        if role in CHANGE_ROLES:
+            raise TenderError(
+                f"a document of role {role!r} changes the tender: add it as a new version"
+            )
         version = self._version(session, tender, version_no)
         already = session.scalar(
             select(TenderVersionDocument.id).where(

@@ -2,13 +2,16 @@
 
   python -m scripts.ingest_tenders ingest  [--root /work/tenders] [--only slug,slug]
   python -m scripts.ingest_tenders extract [--only slug,slug] [--force]
+  python -m scripts.ingest_tenders resume  [--only slug,slug]
   python -m scripts.ingest_tenders wait    [--timeout seconds]
   python -m scripts.ingest_tenders summary [--out docs/reports/EXTRACTION-SUMMARY.md]
 
 `ingest` reads <root>/<type>/<slug>/manifest.yaml, creates each tender, groups its files
 into versions and uploads them; the worker parses and section-maps them. `extract` queues
 the extraction of every version that has none yet; the worker runs it. Both are safe to
-repeat. `wait` blocks until the job queue is empty.
+repeat. `resume` puts failed runs back in the queue: a run continues at the first field
+group it has no candidates for, so nothing already extracted is paid for twice. `wait`
+blocks until the job queue is empty.
 """
 
 import argparse
@@ -27,6 +30,7 @@ from core.config import Settings
 from core.db import make_engine, make_session_factory
 from core.llm.client import LLMClient
 from core.models import ExtractionRun, Job
+from core.services import jobs
 from core.services.extract import ExtractService
 from core.services.ingest import IngestService
 from core.services.review_state import ReviewStateService
@@ -188,7 +192,8 @@ def ingest(services: Services, root: Path, only: set[str] | None = None) -> list
                             created_by=ACTOR,
                             role=item.role,
                         )
-                    else:
+                    elif item.role not in CHANGE_ROLES:
+                        # The amendment or clarification itself came in with its version.
                         services.tenders.attach_document(
                             session, tender, number, document, item.role, created_by=ACTOR
                         )
@@ -232,6 +237,41 @@ def extract(services: Services, only: set[str] | None = None, force: bool = Fals
     return lines
 
 
+def resume(services: Services, only: set[str] | None = None) -> list[str]:
+    """Queue every failed tender run again. Extraction commits per field group and skips
+    the groups a run already has candidates for, so a resumed run only does what is left."""
+    lines = []
+    tenant_id = services.settings.tenant_id
+    with services.session_factory() as session:
+        slugs = {tender.id: tender.slug for tender in services.tenders.all(session)}
+        failed = session.scalars(
+            select(ExtractionRun)
+            .where(
+                ExtractionRun.tenant_id == tenant_id,
+                ExtractionRun.object_type == OBJECT_TYPE,
+                ExtractionRun.status == "failed",
+            )
+            .order_by(ExtractionRun.created_at, ExtractionRun.id)
+        )
+        for run in failed:
+            slug = slugs.get(run.object_id)
+            if only and slug not in only:
+                continue
+            run.status = "queued"
+            run.error = None
+            run.finished_at = None
+            jobs.enqueue(
+                session,
+                tenant_id=tenant_id,
+                kind="extract",
+                payload={"extraction_run_id": run.id},
+                created_by=ACTOR,
+            )
+            lines.append(f"{slug} v{run.object_version}: run {run.id} queued again")
+        session.commit()
+    return lines
+
+
 def pending_jobs(services: Services) -> dict[str, int]:
     with services.session_factory() as session:
         rows = session.execute(
@@ -261,7 +301,7 @@ def summary(services: Services, out: Path) -> str:
             services.tenders.refresh_status(session, tender)
         text = extraction_summary.build(
             session, services.catalog, services.tenders, services.review, services.settings
-        )
+        ).markdown
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(text, encoding="utf-8")
     return text
@@ -269,7 +309,7 @@ def summary(services: Services, out: Path) -> str:
 
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(prog="ingest_tenders", description=__doc__)
-    parser.add_argument("command", choices=("ingest", "extract", "wait", "summary"))
+    parser.add_argument("command", choices=("ingest", "extract", "resume", "wait", "summary"))
     parser.add_argument("--root", type=Path, default=DEFAULT_ROOT)
     parser.add_argument("--only", default="", help="comma-separated tender slugs")
     parser.add_argument("--force", action="store_true", help="extract versions that have runs")
@@ -282,6 +322,8 @@ def main(argv: list[str]) -> int:
         print("\n".join(ingest(services, args.root, only)))
     elif args.command == "extract":
         print("\n".join(extract(services, only, args.force)))
+    elif args.command == "resume":
+        print("\n".join(resume(services, only)))
     elif args.command == "wait":
         return 0 if wait(services, args.timeout) else 1
     else:

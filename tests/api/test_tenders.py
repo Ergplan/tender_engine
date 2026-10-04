@@ -137,6 +137,18 @@ def test_a_document_is_added_to_an_existing_version_with_its_role(client: TestCl
     assert attached.status_code == 201, attached.text
     assert [d["role"] for d in attached.json()["documents"]] == ["rfs", "ppa"]
     assert len(client.get(f"/api/v1/tenders/{tender['id']}/versions").json()) == 1
+    as_change = add_version(
+        client,
+        tender["id"],
+        AMENDMENT_PAGES,
+        "amendment.pdf",
+        kind="amendment",
+        version_no="1",
+        role="amendment",
+    )
+    assert as_change.status_code == 422, "an amendment is a new version, never an attachment"
+    assert "add it as a new version" in as_change.json()["detail"]
+    assert len(client.get(f"/api/v1/tenders/{tender['id']}/versions").json()) == 1
 
 
 def test_bad_version_requests_are_422_or_404(client: TestClient) -> None:
@@ -326,3 +338,26 @@ def test_another_tenants_tender_is_invisible(
     assert other.get("/api/v1/tenders").json() == []
     assert other.get(f"/api/v1/tenders/{tender['id']}/versions").status_code == 404
     assert other.get(f"/api/v1/tenders/{tender['id']}/view").status_code == 404
+
+
+def test_extraction_summary_is_served_as_data_and_as_the_markdown_report(
+    client: TestClient, pipeline: Pipeline
+) -> None:
+    empty = client.get("/api/v1/reports/extraction-summary").json()
+    assert empty["tenders"] == [] and empty["markdown"].startswith("# Extraction summary")
+    tender = extracted(client, pipeline)
+    body = client.get("/api/v1/reports/extraction-summary").json()
+    (row,) = body["tenders"]
+    fields = len(pipeline.catalog.get("solar").fields)
+    assert (row["tender_id"], row["tender_type"], row["versions"], row["documents"]) == (
+        tender["id"],
+        "solar",
+        1,
+        1,
+    )
+    assert (row["fields"], row["with_value"], row["located"]) == (fields, 9, 9)
+    assert (row["runs"], row["unfinished_runs"], row["pages"]) == (1, 0, 3)
+    assert row["failing_validation"] == 0
+    assert body["model"] == "claude-fable-5-1" and body["calls"] >= 10
+    assert body["total_cost_usd"] > 0 and float(row["cost_usd"]) > 0
+    assert f"| 1 | 1 | 3 | {fields} | 9 | 9 | 100% |" in body["markdown"]
