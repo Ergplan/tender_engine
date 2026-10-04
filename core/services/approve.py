@@ -13,6 +13,7 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
+from core.evidence import PageText, locate
 from core.models import (
     Approval,
     Candidate,
@@ -25,7 +26,6 @@ from core.models import (
 from core.models.truth import DECISIONS
 from core.schemas import FieldDef, SchemaRegistry
 from core.services import audit
-from core.services.evidence import PageText, locate
 
 DECIDABLE_STATUSES = ("validated", "needs_review", "not_found")
 FACT_DECISIONS = ("approved", "edited", "not_in_document")
