@@ -44,6 +44,8 @@ class LLMRequest[T: BaseModel](BaseModel):
     created_by: str
     max_tokens: int | None = None
     is_fixture: bool = False
+    extraction_run_id: str | None = None
+    output_schema_name: str | None = None
 
 
 class LLMResponse[T: BaseModel](BaseModel):
@@ -85,11 +87,21 @@ class LLMClient:
             timeout=settings.llm_timeout_seconds,
         )
 
+    @property
+    def model(self) -> str:
+        return self._settings.anthropic_model
+
+    def prompt(self, name: str, version: str) -> Prompt:
+        """Load a registered prompt, or raise UnregisteredPromptError."""
+        return load_prompt(name, version, self._prompt_roots)
+
     def call[T: BaseModel](self, request: LLMRequest[T]) -> LLMResponse[T]:
         """Run one model call. Raises UnregisteredPromptError before any network use."""
-        prompt = load_prompt(request.prompt_name, request.prompt_version, self._prompt_roots)
+        prompt = self.prompt(request.prompt_name, request.prompt_version)
         model = self._settings.anthropic_model
-        schema_name = f"{request.response_model.__module__}.{request.response_model.__qualname__}"
+        schema_name = request.output_schema_name or (
+            f"{request.response_model.__module__}.{request.response_model.__qualname__}"
+        )
         input_hash = _input_hash(model, prompt, request)
 
         def log(status: CallStatus, **fields: Any) -> str:
@@ -103,6 +115,7 @@ class LLMClient:
                 input_hash=input_hash,
                 status=status,
                 is_fixture=request.is_fixture,
+                extraction_run_id=request.extraction_run_id,
                 **fields,
             )
             with self._session_factory() as session:
