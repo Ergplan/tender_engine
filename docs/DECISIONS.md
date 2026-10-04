@@ -14,3 +14,4 @@ One dated line per decision. Newest at the bottom.
 - 2026-10-04 Tests and the watcher use a separate database `tender_ci` on the same Postgres container; pytest creates a throwaway schema per session inside it. The app database `tender` is never touched by tests.
 - 2026-10-04 Python dependencies are locked with `uv.lock`; images install with `uv sync --frozen`.
 - 2026-10-04 PDF libraries (`pdfplumber`, `pymupdf`) are not installed until Stage 1, when the parse service that needs them is written.
+- 2026-10-04 VM boot disk grown from 10 GB to 200 GB by the user; root partition and ext4 filesystem extended online with `growpart` and `resize2fs` (package `cloud-guest-utils` installed on the VM). No reboot.

@@ -50,14 +50,14 @@ Model returned: `claude-fable-5-1`. The key works and native PDF input works.
 
 - 443 open to 0.0.0.0/0 (your decision). The Stage 4 admin dashboard will need its own guard.
 - GCP changes cannot be made from the agent session; you run `infra/firewall.sh` with the `!` prefix.
-- The VM has 2 vCPU, 3.9 GB RAM and a 10 GB disk with 2.2 GB free. Stage 1 renders pages at 150 dpi and Stage 2 processes 3191 pages. **The disk should be grown before Stage 2**, ideally before Stage 1.
+- The VM has 2 vCPU, 3.9 GB RAM and a 10 GB disk with 2.2 GB free. Stage 1 renders pages at 150 dpi and Stage 2 processes 3191 pages. **Update, same day:** the disk was grown to 200 GB and the filesystem extended online; 182 GB free. CPU and memory are unchanged.
 
 ## Open questions
 
 1. Add the NHPC FDRE Tranche-II RfS (264 pages, in the FDRE reference repo) as a 13th tender?
 2. Ingest the standard PPA/PSA/CfDA documents as extraction inputs, or keep them as attachments? Needed by Stage 2.
 3. Guard for the admin dashboard now that 443 is public. Needed by Stage 4.
-4. Resize the VM disk (and optionally the machine type) now?
+4. Disk resized to 200 GB (done). The machine type is still 2 vCPU and 3.9 GB RAM; change it only if Stage 1 runs short of memory.
 
 ## What I need from you
 
