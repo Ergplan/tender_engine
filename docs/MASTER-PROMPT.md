@@ -358,6 +358,35 @@ Build tender/ on top of core/. Nothing in core/ changes except through a documen
 ## Done when
 
 - All 11 tenders are ingested and extracted, EXTRACTION-SUMMARY.md is written, tests green, STAGE-2-REPORT.md lists fields with evidence-location rate under 80% by tender type. STOP.
+
+## Field namespace and domain packs
+
+Field paths carry their origin. Universal fields are core.<section>.<field>; sector fields are sector.<domain>.<subdomain>.<field>.
+
+- core.identity.tender_number, core.key_dates.bid_submission_deadline, core.eligibility.technical_experience_requirement, core.guarantees.emd_per_mw_inr, core.commercial.payment_security_mechanism, core.penalties.delay_ld_per_mw_per_day_inr, core.documents.required_documents
+- sector.power.fdre.demand_profile, sector.power.bess.capacity_mwh, sector.power.transmission.elements, sector.power.epc.scope_matrix, sector.power.ipp.cuf_floor_percent
+- A core field keeps its meaning in any sector. Anything whose meaning depends on the industry is a sector field even when its name looks generic: experience thresholds such as min_commissioned_mw are sector.power.*, while the experience clause itself stays core.
+
+Schemas live under tender/domain_packs/:
+
+tender/domain_packs/
+├── core/            # common.yaml, shared validators, section-group prompts
+└── power/
+    ├── pack.yaml    # name, version, sector, subdomains, section groups it adds
+    ├── solar.yaml  wind.yaml  hybrid.yaml  fdre.yaml  bess.yaml
+    ├── transmission.yaml  generation.yaml  epc.yaml  ipp.yaml
+    ├── prompts/     # section-group extract prompts for this pack
+    ├── validation/  # rules whose meaning is sector-specific
+    └── tests/
+
+Rules:
+
+- One tender resolves to exactly one type, and one type names exactly one pack. Runtime composition of several packs over one tender is out of scope: overlapping fields would make per-field accuracy ambiguous, which is the number this programme exists to produce. Types that genuinely combine (solar paired with BESS under an EPC contract) get their own YAML inheriting from both at load time, resolved and frozen when the schema compiles, with any conflict raised as an error rather than silently resolved.
+- A pack is data plus prompts plus tests. Adding a sector must not require a change in core/. If it does, that is a defect in core/, fixed there, with a note in DECISIONS.md.
+- tender_field_def carries namespace (core or sector), domain and subdomain alongside the existing columns, so the API and FIELD-TRACE can group by them.
+- The financial model takes a model type: model_tender(tender_id, model_type), with power_project_finance the only implementation. Other model types (epc_contract_cashflow, supply_contract_margin, o&m_contract_economics) are named in ARCHITECTURE.md as future work and not built.
+
+Record in ARCHITECTURE.md as the intended path, not built now: a second sector pack, automatic sector classification at ingestion, multi-pack composition, and packs as separately licensed products. The second sector is added when power is at measured reliability and a customer is attached to it, as a test of whether core/ truly generalises.
 ```
 
 ## Stage 3 prompt: reviewer UI
@@ -455,7 +484,7 @@ Days 6 and 7, then it keeps running as reviews complete. The output of this stag
 
 ## Stage 5 (after the 11-tender review): independent agent, three-way comparison, production
 
-Not part of the week. Starts only when the stability bar in Stage 4 is met. Split into three sessions; each stops.
+Not part of the week. Starts only when the stability bar in Stage 4 is met. Split into four sessions (5A, 5B, 5C, 5D); each stops.
 
 ```markdown
 # STAGE 5A: independent agent pass (agent/)
@@ -478,6 +507,100 @@ Not part of the week. Starts only when the stability bar in Stage 4 is met. Spli
 - Deployment: split api, worker, agent and web into Cloud Run services; Cloud SQL; GCS via the existing storage interface; Secret Manager; Cloud Armor allowlist replacing the VM firewall. docker compose stays for local dev.
 - Client-facing output: a published tender view (GET /tenders/{id}/published) that exposes only canonical facts with their evidence pages, a PDF export with a page-reference appendix, and a changelog across versions. Everything published shows its review date and reviewer role, never the raw candidate.
 - Two products from one core: Product A, the enterprise front end, is web/ with auth and multi-tenant admin. Product B, the intelligence API, is the same api/ with API-key auth, rate limits, usage metering per tenant and OpenAPI docs. Neither has code the other lacks; they differ in deployment config and which routes are exposed.
+
+# STAGE 5D: public library tier and MCP widgets
+
+(Added 2026-10-04. This file held no Stage 5D text before that date; the two sub-sections below are the whole of Stage 5D as given so far. The MCP server itself and the base definitions of search_tenders, get_tender, get_field, get_document_page, list_changes, compare_tenders and reliability_report are referred to here but not yet specified in this file.)
+
+## Public library tier (free, read-only)
+
+Build it as an ordinary tenant with a special authorization policy, not as a special case in the code.
+
+### Tenant and principals
+
+- A reserved tenant `public` holds the reviewed central tenders: SECI, NTPC, NHPC, RECPDCL and others as the library grows. Same rows, same truth pipeline, same review requirement.
+- A principal carries own_tenant and read_tenants (its own plus public). A free account is a tenant with no tenders of its own and read access to public.
+- No end-user principal may write to public under any role. Only reviewer and ingestion service accounts write there, and a test asserts a user principal's write to public is denied at the database, not only in the service layer.
+- Sign-up creates a free user and tenant. MCP clients authenticate through OAuth and receive scoped access tokens granting read-only access to public. Server-to-server API credentials are issued separately in the enterprise product, never at free sign-up.
+- Usage is attributed to the calling tenant, never the resource tenant, otherwise free-tier limits are unenforceable. Each call records actor_tenant_id, resource_tenant_id, user_id, tool, tier, tokens or compute, and timestamp.
+
+### Tiers
+
+- Free: search_tenders, get_tender, get_field, get_document_page, find_matching_tender, list_changes, compare_tenders, reliability_report, over public only, at a lower rate limit with a daily call cap and no bulk export.
+- Paid: their own tenants' tenders, model_tender, save_model_assumptions, my_watchlist, and the enterprise front end.
+- Every public response carries the same provenance and reliability block as a paid one.
+
+### Publication state machine
+
+A public tender carries a publication state, independent of review state:
+
+- published — current version reviewed, field groups meet the stability bar, visible to search_tenders.
+- update_pending — a later version exists but is not yet reviewed. The tender stays visible, every response carries a banner naming the unreviewed version and its issue date, and fields the amendment may touch are marked possibly superseded.
+- publication_suspended — the unreviewed amendment touches critical fields (bid deadline, capacity, EMD or PBG, tariff ceiling, SCOD, eligibility thresholds). The tender leaves search_tenders and direct lookups return the suspension and the amending document, not the stale values.
+- On approval of the new version a new snapshot publishes and the state returns to published.
+- A corrigendum's arrival is detected at ingestion; which fields it may touch comes from the section map of the amending document matched against the base, the same mechanism Stage 2 uses for versioning.
+
+### Corrections and takedown
+
+- POST /v1/public/corrections accepts a field path, the claimed error and the claimant's reasoning, from any authenticated user or a public form. It creates a correction case, never changes a value.
+- A correction case queues the field for re-review. If the reviewer agrees, the new approval supersedes the old one through the normal pipeline and the change is visible in list_changes with its date and reason.
+- An agency or rights-holder takedown request suspends publication of that tender within one business day and is recorded in docs/KNOWN-GAPS.md and the audit log.
+- Every public response states that the tender document is the authoritative source and jouleWise's record is a reviewed reading of it.
+
+## Widgets (MCP Apps extension)
+
+MCP Apps is a ratified MCP extension (standardized 2026-01-26): a tool declares a ui:// HTML resource through _meta.ui.resourceUri, the host renders it in a sandboxed iframe, and the iframe talks back over postMessage. Build four widgets in mcp/widgets/, bundled to single self-contained HTML files.
+
+### Implementation requirements
+
+- Resources served with mimeType: text/html;profile=mcp-app.
+- The server declares the extension capability io.modelcontextprotocol/ui.
+- Hosts without MCP Apps support fall back to the structured text result, so every tool must remain complete and readable with no widget at all. A test asserts this.
+- Widgets are self-contained: no external domains declared, none called, matching the spec's restrictive CSP model. Anything further comes through a bridge tool call.
+
+### Rules
+
+- A widget renders only what its tool returned. No fetches to other hosts, no analytics, no hidden calls.
+- Empty states are designed before the happy path. A not_reviewed field renders as a visibly marked gap with the reason and a link to the likely page, never as a blank cell, a dash, or a zero.
+- Every value shows its page chip. Clicking it calls get_document_page and shows the page image with the quote highlighted.
+- The reliability block (accuracy, n, as_of) appears in the widget footer, not only in the raw result.
+- Light and dark themes, readable at the narrow width of a chat column, usable on mobile.
+
+### The four widgets
+
+1. tender_card — returned by get_tender. Approved fields grouped by section, collapsible, each with value, unit, page chip and a version tag where a corrigendum set it. Header: title, agency, type, capacity, bid deadline with days remaining, and the publication state banner when not published. Footer: review date, reviewer role, reliability block.
+2. financial_model — returned by model_tender. Two visually separate panels. Left: parameters the tender fixes (tariff ceiling, CUF floor and ceiling, SCOD, PPA tenure, degradation cap, PBG cost and duration, ISTS waiver status, payment security), locked, each with its page chip. Right: the user's assumptions (capex per MW, O&M per MW-year and escalation, debt share, interest, tenor, tax rate, auxiliary consumption), editable, defaults clearly marked "assumed, not from the tender". Output: project IRR, equity IRR, levelised cost, payback, cashflow chart, labelled indicative.
+3. changes_view — returned by list_changes. A version timeline; selecting a version lists the fields it changed, old to new, each with evidence from the amending document. Untouched fields are not listed.
+4. comparison_table — returned by compare_tenders. Tenders as columns, field paths as rows, provenance on each cell, not_reviewed cells visibly marked. Sortable, exportable as CSV from the widget's own copy of the data.
+
+### One financial engine
+
+The widget is never the authoritative calculator. A single deterministic engine in core/ or tender/ serves the MCP widget, the enterprise front end and the API alike.
+
+- The server is authoritative. The widget may compute a provisional figure for immediate feedback as a slider moves, shown as provisional, replaced by the server result when the debounced bridge call returns.
+- Anything exported, saved, quoted or shown as final comes only from the server result.
+- A test asserts widget and server agree within a rounding tolerance across a fixture set of assumption combinations. Divergence is a bug in the widget, never a reason to change the server.
+- Read and write are separate tools: model_tender computes and returns, save_model_assumptions persists. No analytical tool silently changes state.
+- Assumptions live in model_assumption, per user and tender. They are never canonical facts and never appear in get_tender, compare_tenders or the published view.
+
+### Additional tools
+
+| Tool | Arguments | Returns |
+| --- | --- | --- |
+| find_matching_tender | title_or_number (text), agency?, capacity_mw? | the reviewed tender matching a document the user is holding, or no_match with up to three candidates |
+| model_tender | tender_id, model_type, assumptions? | tender-fixed parameters with provenance, saved assumptions, computed figures from the server engine; renders financial_model. Read-only. |
+| save_model_assumptions | tender_id, assumptions | persists the user's assumptions; returns what was saved |
+| my_watchlist | add? / remove? (tender_ids), list? | followed tenders with bid deadlines and days remaining; drives an email digest from the enterprise product |
+
+find_matching_tender never ingests or extracts from the user's document; it matches against the library only. A false match is worse than no match, because the user is holding the document and will assume the match is right. It normalises agency aliases, RfS and RFP numbering, Roman versus Arabic numerals (IX and 9), MW and MWh, tranche names and capacity ranges, and scores candidates. Below the confidence threshold it returns no_match with up to three candidates and their distinguishing attributes, never the nearest tender silently.
+
+### Tests
+
+- Each widget renders from a fixture tool result, every fixture containing at least one not_reviewed field.
+- A widget bundle makes no outbound request to any host other than the bridge.
+- Fallback: the same tool result with widgets disabled is a complete answer.
+- Widget and server financial figures agree within tolerance on the fixture set.
+- find_matching_tender: informal phrasings ("the 4800 FDRE one", "SECI BESS tender", "FDRE IX") resolve correctly; near-misses return no_match with candidates rather than a wrong match.
 ```
 
 ## Field catalogue (seed for tender/schemas/)
