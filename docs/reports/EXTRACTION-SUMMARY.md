@@ -1,6 +1,6 @@
 # Extraction summary
 
-Generated 2026-10-05 12:19 UTC by `python -m scripts.ingest_tenders summary` (the same content is served by `GET /api/v1/reports/extraction-summary`). Model `claude-fable-5-1`. Candidates only: nothing here has been reviewed.
+Generated 2026-10-05 13:41 UTC by `python -m scripts.ingest_tenders summary` (the same content is served by `GET /api/v1/reports/extraction-summary`). Model `claude-fable-5-1`. Candidates only: nothing here has been reviewed.
 
 - **Evidence-location rate** = values with located evidence / values returned (target 95%).
 - **Answer rate** = fields with a value / fields in the schema (reported, not targeted; a field the documents do not state returning no value is a correct answer).
@@ -11,24 +11,24 @@ Generated 2026-10-05 12:19 UTC by `python -m scripts.ingest_tenders summary` (th
 
 | Type | Tender | Versions | Documents | Pages | Fields | With a value | Located | Evidence-location rate | Answer rate | Failing validation | Tokens in | Tokens out | Cost USD |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| bess | seci-ess-iv | 1 | 2 | 138 | 93 | 66 | 66 | 100% | 71% | 0 | 1,050,014 | 74,352 | 13.50 |
-| epc | seci-gaya-60mw | 1 | 3 | 646 | 91 | 59 | 59 | 100% | 65% | 0 | 1,613,844 | 106,494 | 20.85 |
-| epc | seci-ramagiri-70mw-bess | 3 | 10 | 707 | 91 | 61 | 61 | 100% | 67% | 1 | 2,144,753 | 163,463 | 28.79 |
-| fdre | nhpc-fdre-ii | 1 | 1 | 264 | 89 | 74 | 74 | 100% | 83% | 1 | 2,317,538 | 151,689 | 23.33 |
-| fdre | seci-cfd-i | 4 | 6 | 342 | 89 | 78 | 78 | 100% | 88% | 1 | 2,377,682 | 180,652 | 31.31 |
-| fdre | seci-fdre-ix | 2 | 5 | 257 | 89 | 76 | 76 | 100% | 85% | 1 | 2,202,432 | 170,263 | 29.94 |
-| fdre | seci-fdre-rtc-v | 5 | 8 | 306 | 89 | 75 | 73 | 97% | 84% | 2 | 2,153,985 | 184,042 | 29.98 |
-| generation | ntpc-phes-2000mw | 1 | 2 | 4 | 86 | 32 | 32 | 100% | 37% | 0 | 461,581 | 95,244 | 8.37 |
-| hybrid | ntpc-hybrid-03 | 1 | 1 | 138 | 85 | 66 | 66 | 100% | 78% | 0 | 977,404 | 79,422 | 12.92 |
-| solar | seci-cni-1-700mw | 2 | 5 | 242 | 87 | 68 | 68 | 100% | 78% | 0 | 1,971,736 | 134,834 | 19.83 |
-| transmission | recpdcl-beed-tbcb | 1 | 1 | 166 | 89 | 51 | 51 | 100% | 57% | 1 | 1,091,275 | 73,536 | 14.02 |
-| wind | ntpc-rel-600mw-anantapur-wtg | 1 | 2 | 14 | 84 | 33 | 33 | 100% | 39% | 0 | 603,610 | 58,172 | 4.87 |
-| wind | seci-wind-tranche-xx | 2 | 5 | 240 | 84 | 67 | 67 | 100% | 80% | 0 | 1,189,052 | 84,373 | 15.51 |
-| **fully extracted** | 13 of 13 tenders | 25 | 51 | 3464 | 1146 | 806 | 804 | 100% | 70% | 7 | 20,154,906 | 1,556,536 | 253.22 |
+| bess | seci-ess-iv | 1 | 2 | 138 | 93 | 66 | 66 | 100% | 71% | 0 | 1,058,415 | 77,640 | 13.75 |
+| epc | seci-gaya-60mw | 1 | 3 | 646 | 91 | 59 | 59 | 100% | 65% | 0 | 1,623,225 | 109,653 | 21.10 |
+| epc | seci-ramagiri-70mw-bess | 3 | 10 | 707 | 91 | 61 | 61 | 100% | 67% | 1 | 2,153,162 | 167,012 | 29.05 |
+| fdre | nhpc-fdre-ii | 1 | 1 | 264 | 89 | 74 | 74 | 100% | 83% | 1 | 2,327,694 | 155,344 | 23.61 |
+| fdre | seci-cfd-i | 4 | 6 | 342 | 89 | 78 | 78 | 100% | 88% | 1 | 2,388,201 | 183,520 | 31.56 |
+| fdre | seci-fdre-ix | 2 | 5 | 257 | 89 | 76 | 76 | 100% | 85% | 1 | 2,212,785 | 173,487 | 30.20 |
+| fdre | seci-fdre-rtc-v | 5 | 8 | 306 | 89 | 75 | 73 | 97% | 84% | 2 | 2,163,474 | 187,203 | 30.23 |
+| generation | ntpc-phes-2000mw | 1 | 2 | 4 | 86 | 32 | 32 | 100% | 37% | 0 | 464,946 | 97,698 | 8.53 |
+| hybrid | ntpc-hybrid-03 | 1 | 1 | 138 | 85 | 66 | 66 | 100% | 78% | 0 | 985,253 | 83,221 | 13.19 |
+| solar | seci-cni-1-700mw | 2 | 5 | 242 | 87 | 68 | 68 | 100% | 78% | 0 | 1,980,872 | 137,556 | 20.06 |
+| transmission | recpdcl-beed-tbcb | 1 | 1 | 166 | 89 | 51 | 51 | 100% | 57% | 1 | 1,099,182 | 76,791 | 14.26 |
+| wind | ntpc-rel-600mw-anantapur-wtg | 1 | 2 | 14 | 84 | 33 | 33 | 100% | 39% | 0 | 608,150 | 60,712 | 5.04 |
+| wind | seci-wind-tranche-xx | 2 | 5 | 240 | 84 | 67 | 67 | 100% | 80% | 0 | 1,197,886 | 87,981 | 15.78 |
+| **fully extracted** | 13 of 13 tenders | 25 | 51 | 3464 | 1146 | 806 | 804 | 100% | 70% | 7 | 20,263,245 | 1,597,818 | 256.37 |
 
 **13 of 13 tenders are fully extracted.** The last row and the tables below count only those; tokens and cost count every finished run. A run that is not finished has no token total yet.
 
-Cost of all model calls in the database, including section maps and runs that were repeated: **USD 269.27** over 539 calls. The table counts every finished extraction run of a tender, including repeated ones.
+Cost of all model calls in the database, including section maps and runs that were repeated: **USD 272.42** over 552 calls. The table counts every finished extraction run of a tender, including repeated ones.
 
 ## Per tender type
 

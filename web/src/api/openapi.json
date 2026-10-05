@@ -628,6 +628,17 @@
           "resolution": {
             "title": "Resolution",
             "type": "string"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
           }
         },
         "required": [
@@ -1997,6 +2008,18 @@
           "status": {
             "title": "Status",
             "type": "string"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summary"
           },
           "tender_id": {
             "title": "Tender Id",

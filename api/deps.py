@@ -16,7 +16,7 @@ from core.services.ingest import IngestService
 from core.services.review_state import ReviewStateService
 from core.storage import Storage
 from tender.services.packs import Catalog
-from tender.services.summary import SummaryWriter
+from tender.services.summary import SummaryGuard, SummaryWriter
 from tender.services.tenders import TenderService
 from tender.services.tokens import TokenService
 from tender.services.worker_jobs import summary_writer
@@ -99,9 +99,21 @@ def get_extract(
     )
 
 
-def get_approvals(request: Request, schemas: SchemasDep, tenant_id: TenantDep) -> ApprovalService:
+def get_approvals(
+    request: Request, schemas: SchemasDep, storage: StorageDep, tenant_id: TenantDep
+) -> ApprovalService:
+    """Decisions, with the tender layer's rule on when the summary may be decided."""
     settings: Settings = request.app.state.settings
-    return ApprovalService(schemas, tenant_id, settings.evidence_match_threshold)
+    catalog: Catalog = request.app.state.catalog
+    extract = ExtractService(
+        request.app.state.llm,
+        storage,
+        schemas,
+        settings.model_copy(update={"tenant_id": tenant_id}),
+    )
+    writer = summary_writer(request.app.state.llm, catalog, extract, schemas, tenant_id)
+    guard = SummaryGuard(writer, TenderService(catalog, extract, tenant_id))
+    return ApprovalService(schemas, tenant_id, settings.evidence_match_threshold, guards=[guard])
 
 
 def get_review_state(schemas: SchemasDep, tenant_id: TenantDep) -> ReviewStateService:

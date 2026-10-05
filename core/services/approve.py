@@ -5,9 +5,10 @@ never changed. The difference between candidate and final value is stored as fee
 """
 
 import re
+from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import UTC, datetime
-from typing import Any
+from typing import Any, Protocol
 
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
@@ -43,6 +44,21 @@ class StaleDecisionError(ApprovalError):
 UNCHECKED = "unchecked"
 
 
+class DecisionGuard(Protocol):
+    """A rule of the domain layer on decisions, handed to ApprovalService: it may refuse a
+    decision before it is written, and act once one has been."""
+
+    def before(
+        self, session: Session, candidate: Candidate, run: ExtractionRun, decision: str
+    ) -> None:
+        """Raise ApprovalError to refuse the decision. Nothing has been written."""
+
+    def after(
+        self, session: Session, service: "ApprovalService", approval: Approval, run: ExtractionRun
+    ) -> None:
+        """Called after the decision is committed."""
+
+
 @dataclass(frozen=True)
 class ApprovalOutcome:
     approval: Approval
@@ -53,11 +69,16 @@ class ApprovalOutcome:
 
 class ApprovalService:
     def __init__(
-        self, schemas: SchemaRegistry, tenant_id: str, evidence_match_threshold: float = 85.0
+        self,
+        schemas: SchemaRegistry,
+        tenant_id: str,
+        evidence_match_threshold: float = 85.0,
+        guards: Sequence[DecisionGuard] = (),
     ) -> None:
         self._schemas = schemas
         self._tenant_id = tenant_id
         self._threshold = evidence_match_threshold
+        self._guards = tuple(guards)
 
     def approve(
         self,
@@ -108,6 +129,12 @@ class ApprovalService:
         if candidate.status not in DECIDABLE_STATUSES:
             raise ApprovalError(f"a {candidate.status} candidate cannot be decided")
         field = self._schemas.get(run.schema_name, run.schema_version).field(candidate.field_path)
+        for guard in self._guards:
+            try:
+                guard.before(session, candidate, run, decision)
+            except ApprovalError:
+                session.rollback()
+                raise
 
         candidate_value: Any = None
         if candidate.value is not None:
@@ -281,6 +308,8 @@ class ApprovalService:
                 after={"field_path": feedback.field_path, "delta_kind": delta},
             )
         session.commit()
+        for guard in self._guards:
+            guard.after(session, self, approval, run)
         return ApprovalOutcome(approval, fact, feedback, created=True)
 
     def _supersede(self, session: Session, current: Approval, reviewer: str, now: datetime) -> None:
@@ -384,6 +413,7 @@ class ApprovalService:
                 "kind": "span",
                 "evidence_span_id": span.id,
                 "ordinal": span.ordinal,
+                "source": span.source,
                 "document_id": span.document_id,
                 "page_no": span.page_no,
                 "bbox": span.bbox,

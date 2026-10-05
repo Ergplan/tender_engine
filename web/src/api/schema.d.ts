@@ -768,6 +768,8 @@ export interface components {
             quote: string;
             /** Resolution */
             resolution: string;
+            /** Source */
+            source?: string | null;
         };
         /** ExtractRequest */
         ExtractRequest: {
@@ -1234,6 +1236,10 @@ export interface components {
             sections: components["schemas"]["ReviewSection"][];
             /** Status */
             status: string;
+            /** Summary */
+            summary?: {
+                [key: string]: unknown;
+            } | null;
             /** Tender Id */
             tender_id: string;
             /** Tender Type */

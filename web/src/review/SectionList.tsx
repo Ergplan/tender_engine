@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import type { Evidence, ReviewField, TenderReview } from "../api/client";
 import { type CardMode, type Decision, FieldCard, type SaveState } from "./FieldCard";
-import { fieldsOfSection, needsAttention } from "./model";
+import { fieldsOfSection, needsAttention, SUMMARY_FIELD, summaryState } from "./model";
 
 /** The sections in review order, each collapsible, with its decided/total count. */
 export function SectionList({
@@ -77,6 +77,7 @@ export function SectionList({
                     readOnly={readOnly}
                     documentName={documentName}
                     activeEvidence={activeEvidence}
+                    summary={field.field_path === SUMMARY_FIELD ? summaryState(review) : null}
                     onFocus={() => onFocus(field.field_path)}
                     onMode={(next) => onMode(field.field_path, next)}
                     onDecide={(decision) => onDecide(field, decision)}

@@ -11,6 +11,7 @@ from api.deps import (
     ReviewStateDep,
     SessionDep,
     SettingsDep,
+    SummaryWriterDep,
     TenantDep,
     TendersDep,
     TokensDep,
@@ -94,6 +95,7 @@ def get_tender_review(
     tenders: TendersDep,
     review_state: ReviewStateDep,
     catalog: CatalogDep,
+    writer: SummaryWriterDep,
 ) -> TenderReview:
     """The tender as the reviewer sees it: every field once, with what each version says
     about it and the entry to decide (the latest version that states the field)."""
@@ -101,7 +103,9 @@ def get_tender_review(
         tender = tenders.get(session, tender_id)
     except LookupError as exc:
         raise AppError("not_found", f"tender {tender_id} does not exist") from exc
-    return reviews.tender_review(session, catalog, tenders, review_state, tender)
+    review = reviews.tender_review(session, catalog, tenders, review_state, tender)
+    review.summary = writer.state(session, tender, review).model_dump()
+    return review
 
 
 @router.post("/tenders/{tender_id}/complete-review", response_model=SnapshotOut, status_code=201)

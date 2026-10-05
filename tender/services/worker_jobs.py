@@ -45,5 +45,6 @@ def summary_writer(
         extract,
         TenderService(catalog, extract, tenant_id),
         ReviewStateService(schemas, tenant_id),
+        schemas,
         tenant_id,
     )

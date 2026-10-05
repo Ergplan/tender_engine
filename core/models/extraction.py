@@ -106,6 +106,9 @@ class EvidenceSpan(IdMixin, TenantAuditMixin, Base):
     # The quote's place in the model's evidence list, from 1. A text that marks its
     # sentences [1], [2] refers to these. Null on spans stored before migration 0010.
     ordinal: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    # For evidence inherited from the record: what it was inherited from (the label of the
+    # field, or of several fields that share the passage). Null for evidence read from a page.
+    source: Mapped[str | None] = mapped_column(String(300), nullable=True)
 
 
 class ValidationResult(IdMixin, TenantAuditMixin, Base):

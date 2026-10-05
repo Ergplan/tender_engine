@@ -188,7 +188,7 @@ def test_after_extraction_the_summary_is_written_from_the_fields_without_a_docum
         "F7 | Guarantees | EMD per MW (INR per MW) | 928000 (that is INR 9.28 lakh) | "
         "original tender" in sent
     )
-    assert "| Key dates | Bid submission deadline | 30.03.2026 | original tender" in sent
+    assert "| Key dates | Bid submission deadline | 30 March 2026 | original tender" in sent
     assert "N1 | What is procured | Acme Renewables Agency invites solar developers" in sent
     assert "plain_english_summary" not in sent and "Plain-English summary" not in sent
     assert "Money at risk | The earnest money deposit" not in sent, "only narrative topics"
@@ -254,7 +254,8 @@ def test_after_an_amendment_the_summary_is_written_again_from_the_record_as_amen
     assert first.status == "superseded"
     sent = pipeline.sdk.summary_calls()[-1]["messages"][0]["content"][0]["text"]
     assert (
-        "Bid submission deadline | 15.04.2026 | current value, from version 2 (amendment)" in sent
+        "Bid submission deadline | 15 April 2026 | current value, from version 2 (amendment)"
+        in sent
     )
     # The deadline's evidence is the amendment's; the EMD's is still the RfS's.
     amendment = db.scalars(
@@ -425,3 +426,11 @@ def test_a_field_the_reviewer_corrected_brings_the_reviewers_evidence_to_the_sum
     original = db.scalars(select(EvidenceSpan).where(EvidenceSpan.candidate_id == emd.id)).one()
     assert inherited.char_start != original.char_start, "not the quote of the value it replaced"
     assert candidate.status == "validated"
+
+
+def test_dates_are_given_in_words_and_other_text_is_left_alone() -> None:
+    from tender.services.summary import written_date
+
+    assert written_date("2026-03-30") == "30 March 2026"
+    assert written_date("2024-04-05") == "5 April 2024"
+    assert written_date("as per NIT") == "as per NIT"

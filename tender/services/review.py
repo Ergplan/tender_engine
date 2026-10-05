@@ -85,6 +85,8 @@ class TenderReview(BaseModel):
     total: int
     required_undecided: int
     can_complete: bool
+    # Where the summary stands (tender.services.summary.SummaryState); set by the route.
+    summary: dict[str, Any] | None = None
 
 
 def tender_review(

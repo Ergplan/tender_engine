@@ -84,13 +84,19 @@ const SUMMARY = "core.summary.plain_english_summary";
 function withSummary() {
   const review = makeReview();
   const spans = [
-    evidence({ id: "s1", ordinal: 1, page_no: 1, bbox: [72, 100, 300, 112], quote: "Selection of solar power developers for 600 MW" }),
-    evidence({ id: "s2", ordinal: 2, page_no: 1, bbox: [72, 140, 300, 152], quote: "Issued by Acme Renewables Agency" }),
-    evidence({ id: "s3", ordinal: 3, page_no: 3, bbox: [72, 100, 300, 112], quote: "EMD of INR 928000 per MW" }),
+    evidence({ id: "s1", ordinal: 1, source: "Title", page_no: 1, bbox: [72, 100, 300, 112], quote: "Selection of solar power developers for 600 MW" }),
+    evidence({ id: "s2", ordinal: 2, source: "Issuing agency", page_no: 1, bbox: [72, 140, 300, 152], quote: "Issued by Acme Renewables Agency" }),
+    evidence({ id: "s3", ordinal: 3, source: "EMD per MW", page_no: 3, bbox: [72, 100, 300, 112], quote: "EMD of INR 928000 per MW" }),
   ];
   const found = candidate(
     "What is procured: Acme invites bids for 600 MW of solar. [1]\n\nBuyer and offtaker: Acme Renewables Agency issues the tender. [2]\n\nMoney at risk: The EMD is INR 9.28 lakh per MW. [3]",
-    { id: "c-summary", evidence: spans, rationale: "Each paragraph rests on the cover page and the bid information sheet. ".repeat(4).trim() },
+    {
+      id: "c-summary",
+      evidence: spans,
+      rationale:
+        "Left out the ISTS waiver and GNA terms; two long fields were cut short.\n\n" +
+        "Written from the extracted fields; each number is the evidence of the field it follows: [1] Title; [2] Issuing agency; [3] EMD per MW.",
+    },
   );
   const template = review.fields[0];
   review.sections.unshift({ name: "summary", label: "Summary", order: 0 });
@@ -105,6 +111,7 @@ function withSummary() {
     entries: [{ version_no: 1, version_kind: "original", state: { ...template.entries[0].state, field_path: SUMMARY, value_type: "long_text", candidate: found, approval: null } }],
   });
   review.total = review.fields.length;
+  review.summary = { waiting_for: 0, current: true, being_written: false };
   return review;
 }
 
@@ -378,46 +385,114 @@ describe("orientation and reading aids", () => {
   });
 
   it("shows the rationale in full for the focused field and on request elsewhere", async () => {
-    await open(withSummary());
-    const reason = within(card(SUMMARY)).getByTestId("rationale");
+    const review = makeReview();
+    review.fields[2].entries[0].state.candidate!.rationale = "The EMD clause states the amount per MW of quoted capacity. ".repeat(4).trim();
+    await open(review);
+    const reason = within(card(EMD)).getByTestId("rationale");
     expect(reason.className).toContain("line-clamp-2");
-    fireEvent.click(within(card(SUMMARY)).getByTestId("rationale-toggle"));
-    expect(within(card(SUMMARY)).getByTestId("rationale").className).not.toContain("line-clamp-2");
-    fireEvent.click(within(card(SUMMARY)).getByTestId("rationale-toggle"));
-    fireEvent.click(card(SUMMARY));
-    expect(within(card(SUMMARY)).getByTestId("rationale").className).not.toContain("line-clamp-2");
-    expect(within(card(SUMMARY)).queryByTestId("rationale-toggle")).toBeNull();
+    fireEvent.click(within(card(EMD)).getByTestId("rationale-toggle"));
+    expect(within(card(EMD)).getByTestId("rationale").className).not.toContain("line-clamp-2");
+    fireEvent.click(within(card(EMD)).getByTestId("rationale-toggle"));
+    fireEvent.click(card(EMD));
+    expect(within(card(EMD)).getByTestId("rationale").className).not.toContain("line-clamp-2");
+    expect(within(card(EMD)).queryByTestId("rationale-toggle")).toBeNull();
   });
 });
 
-describe("evidence on a text of several sentences", () => {
-  it("numbers the chips and ties each sentence to its chip", async () => {
+describe("the summary card", () => {
+  it("puts the note on what was left out above the text and keeps the source list off the card", async () => {
     await open(withSummary());
     const summary = card(SUMMARY);
-    const chips = within(summary).getAllByTestId("evidence-chip");
-    expect(chips.map((chip) => chip.textContent)).toEqual(["1p. 1", "2p. 1", "3p. 3"]);
+    const note = within(summary).getByTestId("record-note");
+    expect(note).toHaveTextContent("Left out the ISTS waiver and GNA terms; two long fields were cut short.");
+    const text = within(summary).getByTestId("field-value");
+    expect(note.compareDocumentPosition(text) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(summary).not.toHaveTextContent("each number is the evidence of the field it follows");
+    expect(within(summary).queryByTestId("rationale")).toBeNull();
+    expect(within(summary).queryAllByTestId("evidence-chip")).toHaveLength(0);
+    // A field read from a page keeps its chips and its rationale.
+    expect(within(card(EMD)).getAllByTestId("evidence-chip")).toHaveLength(1);
+    expect(within(card(EMD)).getByTestId("rationale")).toBeInTheDocument();
+  });
+
+  it("shows on a number the field it comes from and its words, on hover and on click", async () => {
+    await open(withSummary());
+    const summary = card(SUMMARY);
     expect(within(summary).getByText("What is procured:")).toBeInTheDocument();
     const markers = within(summary).getAllByTestId("evidence-marker");
     expect(markers.map((marker) => marker.textContent)).toEqual(["1", "2", "3"]);
     expect(within(summary).getByTestId("field-value").textContent).not.toContain("[1]");
-    // A single chip is not numbered.
-    expect(within(card(EMD)).getAllByTestId("evidence-chip")[0]).toHaveTextContent(/^p\. 3$/);
+    expect(markers[2].getAttribute("title")).toBe("EMD per MW · p. 3: “EMD of INR 928000 per MW”");
+    expect(within(summary).getByTestId("active-passage")).toHaveTextContent("3 passages. Click a number");
+    fireEvent.click(markers[2]);
+    await waitFor(() => expect(screen.getByTestId("page-indicator")).toHaveTextContent("Page 3 of 3"));
+    expect(within(card(SUMMARY)).getByTestId("active-passage")).toHaveTextContent("3EMD per MW · p. 3: “EMD of INR 928000 per MW”");
+    expect(card(SUMMARY).dataset.focused).toBe("yes");
   });
 
-  it("highlights only the passage of the chip being shown and dims the others", async () => {
+  it("highlights only the passage of the number being shown and dims the others", async () => {
     await open(withSummary());
-    const summary = card(SUMMARY);
-    fireEvent.click(within(summary).getAllByTestId("evidence-marker")[1]);
-    await waitFor(() => expect(card(SUMMARY).dataset.focused).toBe("yes"));
-    const chips = within(card(SUMMARY)).getAllByTestId("evidence-chip");
-    expect(chips.map((chip) => chip.dataset.active)).toEqual(["no", "yes", "no"]);
+    fireEvent.click(within(card(SUMMARY)).getAllByTestId("evidence-marker")[1]);
     // Page 1 holds two of the three passages: one is marked, the other is faint.
     await waitFor(() => expect(screen.getAllByTestId("evidence-highlight")).toHaveLength(1));
     expect(screen.getAllByTestId("evidence-highlight-dim")).toHaveLength(2);
+    expect(within(card(SUMMARY)).getByTestId("active-passage")).toHaveTextContent("Issuing agency");
+  });
+
+  it("cannot be decided while other fields are undecided, except to flag it", async () => {
+    const review = withSummary();
+    review.summary = { waiting_for: 4, current: true, being_written: false };
+    const { calls } = await open(review);
+    const summary = card(SUMMARY);
+    expect(within(summary).getByTestId("approve")).toBeDisabled();
+    expect(within(summary).getByTestId("edit")).toBeDisabled();
+    expect(within(summary).getByTestId("not-in-document")).toBeDisabled();
+    expect(within(summary).getByTestId("flag")).toBeEnabled();
+    expect(within(summary).getByTestId("blocker")).toHaveTextContent(
+      "Decide the other fields first (4 to go). The summary is written from them.",
+    );
+    fireEvent.click(summary);
+    for (const key of ["Enter", "n", "e"]) fireEvent.keyDown(window, { key });
+    expect(calls.decide).not.toHaveBeenCalled();
+    expect(within(card(SUMMARY)).queryByTestId("edit-input")).toBeNull();
+    expect(within(card(SUMMARY)).getByTestId("save-state")).toHaveTextContent("Decide the other fields first");
+  });
+
+  it("waits for the summary to be written again from the decisions, and looks for it", async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    try {
+      const review = withSummary();
+      review.summary = { waiting_for: 0, current: false, being_written: true };
+      const { calls, state } = await open(review);
+      expect(within(card(SUMMARY)).getByTestId("approve")).toBeDisabled();
+      expect(within(card(SUMMARY)).getByTestId("edit")).toBeEnabled();
+      expect(within(card(SUMMARY)).getByTestId("blocker")).toHaveTextContent("being written again from your decisions");
+      const ready = structuredClone(review);
+      ready.summary = { waiting_for: 0, current: true, being_written: false };
+      state.review = ready;
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(4100);
+      });
+      expect(calls.review).toHaveBeenCalled();
+      await waitFor(() => expect(within(card(SUMMARY)).getByTestId("approve")).toBeEnabled());
+      expect(within(card(SUMMARY)).queryByTestId("blocker")).toBeNull();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+});
+
+describe("evidence on a field of several quotes", () => {
+  it("numbers the chips; a single chip is not numbered", async () => {
+    const review = withSummary();
+    review.fields[0].entries[0].state.candidate!.value = "Acme invites bids for 600 MW of solar.";
+    await open(review);
+    const chips = within(card(SUMMARY)).getAllByTestId("evidence-chip");
+    expect(chips.map((chip) => chip.textContent)).toEqual(["1p. 1", "2p. 1", "3p. 3"]);
+    expect(within(card(EMD)).getAllByTestId("evidence-chip")[0]).toHaveTextContent(/^p\. 3$/);
     fireEvent.click(chips[2]);
     await waitFor(() => expect(screen.getByTestId("page-indicator")).toHaveTextContent("Page 3 of 3"));
     expect(within(card(SUMMARY)).getAllByTestId("evidence-chip")[2].dataset.active).toBe("yes");
-    expect(screen.getAllByTestId("evidence-highlight")).toHaveLength(1);
   });
 
   it("lists the words each numbered chip quotes when the text has no markers", async () => {
@@ -430,25 +505,5 @@ describe("evidence on a text of several sentences", () => {
     const quotes = within(card(SUMMARY)).getByTestId("evidence-quotes");
     expect(within(quotes).getAllByRole("listitem")).toHaveLength(3);
     expect(quotes).toHaveTextContent("2p. 1: “Issued by Acme Renewables Agency”");
-  });
-});
-
-describe("a summary with many passages", () => {
-  it("keeps the chips behind a toggle and shows the one being looked at", async () => {
-    const review = withSummary();
-    const found = review.fields[0].entries[0].state.candidate!;
-    found.evidence = Array.from({ length: 14 }, (_, index) =>
-      evidence({ id: `m${index + 1}`, ordinal: index + 1, page_no: (index % 3) + 1, bbox: [72, 100 + index * 20, 300, 112 + index * 20] }),
-    );
-    found.value = "What is procured: Acme invites bids. [1][2]\n\nMoney at risk: The EMD is set. [14]";
-    await open(review);
-    const summary = card(SUMMARY);
-    expect(within(summary).queryAllByTestId("evidence-chip")).toHaveLength(0);
-    expect(within(summary).getByTestId("chips-toggle")).toHaveTextContent("14 passages, numbered in the text");
-    fireEvent.click(within(summary).getAllByTestId("evidence-marker")[2]);
-    await waitFor(() => expect(within(card(SUMMARY)).getAllByTestId("evidence-chip")).toHaveLength(1));
-    expect(within(card(SUMMARY)).getByTestId("evidence-chip")).toHaveTextContent("14p. 2");
-    fireEvent.click(within(card(SUMMARY)).getByTestId("chips-toggle"));
-    expect(within(card(SUMMARY)).getAllByTestId("evidence-chip")).toHaveLength(14);
   });
 });

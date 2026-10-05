@@ -20,7 +20,7 @@ import logging
 import re
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 from decimal import Decimal
 from typing import Any
 
@@ -29,9 +29,19 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from core.llm.client import LLMClient, LLMRequest, TextPart
-from core.models import Candidate, CanonicalFact, EvidenceSpan, ExtractionRun, Job, LLMCallLog
+from core.models import (
+    Approval,
+    Candidate,
+    CanonicalFact,
+    EvidenceSpan,
+    ExtractionRun,
+    Job,
+    LLMCallLog,
+)
 from core.models.extraction import RECORD_MODE, REVIEWABLE_STATUSES
+from core.schemas import SchemaRegistry
 from core.services import jobs
+from core.services.approve import ApprovalError, ApprovalService
 from core.services.extract import LIVE_STATUSES, ExtractService
 from core.services.review_state import EvidenceView, ReviewStateService
 from tender.models import Tender
@@ -60,9 +70,26 @@ HEADINGS = (
 # The topics for which a sentence of the page-read summary may stand in: what no single
 # field holds. For every other topic the record is the only source.
 NARRATIVE_HEADINGS = HEADINGS[:3]
-MAX_VALUE_CHARS = 700
+MAX_VALUE_CHARS = 1500
+# Between the model's own note on the summary and the list of what each number is the
+# evidence of. The reviewer's screen shows the note; the list stays in the record.
+SOURCES_HEADING = (
+    "Written from the extracted fields; each number is the evidence of the field it follows: "
+)
 UNSOURCED_CONFIDENCE_CAP = 0.3
 _MARKERS = re.compile(r"((?:\s*\[\d+\])+)")
+
+
+class SummaryState(BaseModel):
+    """Where the summary stands for the reviewer. It is written from the other fields, so
+    it is decided after them."""
+
+    # Other fields that still need a decision before the summary can be decided.
+    waiting_for: int
+    # The summary in review was written from the record as it stands, decisions included.
+    current: bool
+    # A new summary is queued or being written.
+    being_written: bool
 
 
 class SummaryError(ValueError):
@@ -101,20 +128,29 @@ def field_sources(
     review: TenderReview,
     section_labels: dict[str, str],
     reviewer_evidence: dict[str, list[EvidenceView]] | None = None,
+    normalise: Callable[[str, Any], Any] | None = None,
 ) -> list[Source]:
     """One source per field of the record that has a value with located evidence: the
     entry a reviewer would decide (the latest version that states the field). Where a
     reviewer has approved or edited the field, the value is theirs; and where they gave
     their own evidence for an edit (`reviewer_evidence`, by approval id), the evidence is
-    theirs too, not the quote the model gave for the value they replaced."""
+    theirs too, not the quote the model gave for the value they replaced.
+
+    `normalise(field_path, value)` puts a candidate's value in the form an approval would
+    store (a date as 2026-03-30, a number as a number), so that approving a field as it
+    stands does not change the record the summary was written from."""
     sources: list[Source] = []
     for item in review.fields:
         found = _field_value(item, reviewer_evidence or {})
         if item.field_path == SUMMARY_FIELD or found is None:
             continue
         value, spans, version, version_no = found
+        if normalise is not None:
+            value = normalise(item.field_path, value)
         unit = f" ({item.unit})" if item.unit else ""
         shown = _text(value)
+        if item.value_type == "date" and isinstance(value, str):
+            shown = written_date(value)
         if item.value_type == "money_inr" and isinstance(value, int | float):
             shown += f" (that is {rupees(float(value))})"
         sources.append(
@@ -154,6 +190,15 @@ def _field_value(
         else f"current value, from version {entry.version_no} ({entry.version_kind})"
     )
     return value, spans, version, entry.version_no
+
+
+def written_date(value: str) -> str:
+    """2026-03-30 as "30 March 2026"; anything that is not such a date as it is."""
+    try:
+        day = date.fromisoformat(value)
+    except ValueError:
+        return value
+    return f"{day.day} {day:%B} {day.year}"
 
 
 def rupees(amount: float) -> str:
@@ -226,6 +271,7 @@ def compose(
         raise SummaryError(f"expected the headings {list(HEADINGS)}, got {list(headings)}")
     numbers: dict[tuple[str, int, int | None, int | None], int] = {}
     spans: list[dict[str, Any]] = []
+    names: dict[int, list[str]] = {}
     used: dict[str, list[int]] = {}
     unknown: list[str] = []
     blocks = []
@@ -246,6 +292,8 @@ def compose(
                     if key not in numbers:
                         numbers[key] = len(numbers) + 1
                         spans.append(_inherited(span, numbers[key]))
+                    if source.name not in names.setdefault(numbers[key], []):
+                        names[numbers[key]].append(source.name)
                     if numbers[key] not in marks:
                         marks.append(numbers[key])
                     if numbers[key] not in used.setdefault(source.id, []):
@@ -256,6 +304,9 @@ def compose(
         blocks.append(f"{heading}: " + " ".join(sentences))
     if not spans:
         raise SummaryError("no sentence of the summary names a source")
+    for item in spans:
+        # What the passage was inherited from: one field, or the several that share it.
+        item["source"] = "; ".join(names[item["ordinal"]])[:300]
     drawn = [(sources[source_id].name, marks) for source_id, marks in used.items()]
     return "\n\n".join(blocks), spans, drawn, unknown
 
@@ -284,6 +335,7 @@ class SummaryWriter:
         extract: ExtractService,
         tenders: TenderService,
         review_state: ReviewStateService,
+        schemas: SchemaRegistry,
         tenant_id: str,
     ) -> None:
         self._llm = llm
@@ -291,6 +343,7 @@ class SummaryWriter:
         self._extract = extract
         self._tenders = tenders
         self._review_state = review_state
+        self._schemas = schemas
         self._tenant_id = tenant_id
 
     def after_validation(self, session: Session, extraction_run_id: str) -> None:
@@ -306,7 +359,13 @@ class SummaryWriter:
         self.queue_if_settled(session, run.object_id, created_by=ACTOR, is_fixture=run.is_fixture)
 
     def queue_if_settled(
-        self, session: Session, tender_id: str, *, created_by: str, is_fixture: bool = False
+        self,
+        session: Session,
+        tender_id: str,
+        *,
+        created_by: str,
+        is_fixture: bool = False,
+        force: bool = False,
     ) -> bool:
         """Queue the summary of the tender unless an extraction or an amendment map of it
         is still queued or running, or its summary is queued already."""
@@ -337,25 +396,36 @@ class SummaryWriter:
             session,
             tenant_id=self._tenant_id,
             kind=JOB_KIND,
-            payload={"tender_id": tender_id, "is_fixture": is_fixture},
+            payload={"tender_id": tender_id, "is_fixture": is_fixture, "force": force},
             created_by=created_by,
         )
         session.commit()
         return True
 
-    def write(
-        self, session: Session, tender_id: str, *, is_fixture: bool = False
-    ) -> ExtractionRun | None:
-        """Write the summary of the tender from its record, as the candidate of a new
-        record run on the tender's latest version, and queue its validation. Returns None
-        when the record has nothing to summarise, or is the one the live summary was
-        written from. Raises LLMCallError or SummaryError, storing nothing, when the model
-        gives no usable summary."""
-        tender = self._tenders.get(session, tender_id)
+    def _prepare(
+        self,
+        session: Session,
+        tender: Tender,
+        review: TenderReview | None = None,
+        *,
+        is_fixture: bool = False,
+    ) -> tuple[LLMRequest[RecordSummary], list[Source], TenderReview] | None:
+        """The record as the model would be given it now, or None when it holds no field
+        to summarise. No call is made."""
         compiled = self._catalog.get(tender.tender_type)
-        review = tender_review(session, self._catalog, self._tenders, self._review_state, tender)
+        review = review or tender_review(
+            session, self._catalog, self._tenders, self._review_state, tender
+        )
         labels = {section.name: section.label for section in compiled.sections}
-        sources = field_sources(review, labels, self._reviewer_evidence(session, tender))
+        fields = {item.path: item for item in compiled.schema.fields}
+
+        def normalise(path: str, value: Any) -> Any:
+            try:
+                return self._schemas.value_types.coerce(value, fields[path])
+            except ValueError:
+                return value
+
+        sources = field_sources(review, labels, self._reviewer_evidence(session, tender), normalise)
         page_summary = self._page_summary(session, tender)
         if page_summary is not None:
             sources += narrative_sources(*page_summary)
@@ -369,7 +439,71 @@ class SummaryWriter:
             created_by=ACTOR,
             is_fixture=is_fixture,
         )
-        if self._already_written(session, tender, self._llm.input_hash(request)):
+        return request, sources, review
+
+    def review(self, session: Session, tender: Tender) -> TenderReview:
+        return tender_review(session, self._catalog, self._tenders, self._review_state, tender)
+
+    def state(
+        self, session: Session, tender: Tender, review: TenderReview | None = None
+    ) -> "SummaryState":
+        """Where the summary stands for a reviewer: how many other fields are still to be
+        decided, whether the summary in review was written from the record as it stands
+        now (their decisions included), and whether a new one is being written."""
+        review = review or tender_review(
+            session, self._catalog, self._tenders, self._review_state, tender
+        )
+        waiting_for = sum(
+            1
+            for item in review.fields
+            if item.field_path != SUMMARY_FIELD and item.current is not None and not item.decided
+        )
+        prepared = self._prepare(session, tender, review)
+        current = prepared is None or self._already_written(
+            session, tender, self._llm.input_hash(prepared[0])
+        )
+        being_written = (
+            session.scalar(
+                select(Job.id)
+                .where(
+                    Job.tenant_id == self._tenant_id,
+                    Job.kind == JOB_KIND,
+                    Job.status.in_(("queued", "running")),
+                    Job.payload["tender_id"].astext == tender.id,
+                )
+                .limit(1)
+            )
+            is not None
+            or session.scalar(
+                select(ExtractionRun.id)
+                .where(
+                    ExtractionRun.tenant_id == self._tenant_id,
+                    ExtractionRun.object_type == OBJECT_TYPE,
+                    ExtractionRun.object_id == tender.id,
+                    ExtractionRun.mode == RECORD_MODE,
+                    ExtractionRun.status.in_(("running", "extracted")),
+                )
+                .limit(1)
+            )
+            is not None
+        )
+        return SummaryState(waiting_for=waiting_for, current=current, being_written=being_written)
+
+    def write(
+        self, session: Session, tender_id: str, *, is_fixture: bool = False, force: bool = False
+    ) -> ExtractionRun | None:
+        """Write the summary of the tender from its record, as the candidate of a new
+        record run on the tender's latest version, and queue its validation. Returns None
+        when the record has nothing to summarise, or is the one the live summary was
+        written from (unless `force`). Raises LLMCallError or SummaryError, storing nothing,
+        when the model gives no usable summary."""
+        tender = self._tenders.get(session, tender_id)
+        prepared = self._prepare(session, tender, is_fixture=is_fixture)
+        if prepared is None:
+            return None
+        request, sources, review = prepared
+        compiled = self._catalog.get(tender.tender_type)
+        if not force and self._already_written(session, tender, self._llm.input_hash(request)):
             return None
 
         # Nothing is stored unless the summary can be used: a call that fails, or an answer
@@ -404,9 +538,11 @@ class SummaryWriter:
         session.add(run)
         session.flush()
         rationale = (
-            response.parsed.rationale.strip()
-            + " Written from the extracted fields; each number is the evidence of the field it "
-            "follows: " + "; ".join(f"{_range(marks)} {name}" for name, marks in drawn) + "."
+            " ".join(response.parsed.rationale.split())
+            + "\n\n"
+            + SOURCES_HEADING
+            + "; ".join(f"{_range(marks)} {name}" for name, marks in drawn)
+            + "."
         )
         confidence = response.parsed.confidence
         if unknown:
@@ -574,8 +710,78 @@ def _range(marks: list[int]) -> str:
     return "".join(f"[{number}]" for number in marks)
 
 
+class SummaryGuard:
+    """The rule on decisions that keeps a reviewer from approving a contradiction: the
+    summary is a reading of the other fields, so
+
+    - it cannot be approved, edited or set aside while another field is undecided;
+    - it cannot be approved while it is not the reading of the record as it stands (a new
+      one is written as soon as the last other field is decided, if a decision changed
+      the record);
+    - a decision on another field that changes the record withdraws a decision already
+      made on the summary (it is flagged, with the reason)."""
+
+    def __init__(self, writer: SummaryWriter, tenders: TenderService) -> None:
+        self._writer = writer
+        self._tenders = tenders
+
+    def before(
+        self, session: Session, candidate: Candidate, run: ExtractionRun, decision: str
+    ) -> None:
+        if (
+            run.object_type != OBJECT_TYPE
+            or candidate.field_path != SUMMARY_FIELD
+            or decision not in ("approved", "edited", "not_in_document")
+        ):
+            return
+        state = self._writer.state(session, self._tenders.get(session, run.object_id))
+        if state.waiting_for:
+            raise ApprovalError(
+                f"decide the other fields first ({state.waiting_for} to go): the summary is "
+                "written from them"
+            )
+        if decision == "approved" and not state.current:
+            raise ApprovalError(
+                "the summary is being written again from your decisions; it will be ready "
+                "in about a minute"
+            )
+
+    def after(
+        self, session: Session, service: ApprovalService, approval: Approval, run: ExtractionRun
+    ) -> None:
+        if run.object_type != OBJECT_TYPE or approval.field_path == SUMMARY_FIELD:
+            return
+        tender = self._tenders.get(session, run.object_id)
+        review = self._writer.review(session, tender)
+        state = self._writer.state(session, tender, review)
+        if state.current:
+            return
+        summary = next((f for f in review.fields if f.field_path == SUMMARY_FIELD), None)
+        entry = (
+            summary.entries[summary.current] if summary and summary.current is not None else None
+        )
+        decided = entry.state.approval if entry else None
+        if entry and entry.state.candidate and decided and decided.decision != "flagged":
+            # The summary was decided on a record that has since changed.
+            service.approve(
+                session,
+                candidate_id=entry.state.candidate.id,
+                decision="flagged",
+                reviewer=approval.reviewer,
+                note=f"{approval.field_path} was decided again after the summary; the summary "
+                "is written again and needs a new decision",
+            )
+        if state.waiting_for == 0:
+            self._writer.queue_if_settled(session, tender.id, created_by=approval.reviewer)
+
+
 def job_handlers(writer: SummaryWriter) -> dict[str, Callable[[Session, dict[str, Any]], None]]:
     def tender_summary(session: Session, payload: dict[str, Any]) -> None:
-        writer.write(session, payload["tender_id"], is_fixture=payload.get("is_fixture", False))
+        writer.write(
+            session,
+            payload["tender_id"],
+            is_fixture=payload.get("is_fixture", False),
+            force=payload.get("force", False),
+        )
 
     return {JOB_KIND: tender_summary}

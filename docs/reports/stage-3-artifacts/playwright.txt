@@ -5,16 +5,16 @@ docker compose --profile e2e run --rm -T playwright; code=$?; \
 Running 10 tests using 1 worker
 
   -   1 [chromium] › e2e/real-load.spec.ts:9:1 › a real tender: first paint under 2 s, first PDF page under 3 s
-  ✓   2 [chromium] › e2e/review.spec.ts:18:1 › a link that was replaced, or is not a link, says so in plain words (5.7s)
-first meaningful paint 5279 ms, first PDF page 6012 ms
-  ✓   3 [chromium] › e2e/review.spec.ts:28:1 › the link opens straight into the tender, laid out for a 1366x768 laptop (11.2s)
-  ✓   4 [chromium] › e2e/review.spec.ts:66:1 › an evidence chip scrolls the PDF to its page and highlights the quoted text (12.5s)
-  ✓   5 [chromium] › e2e/review.spec.ts:128:3 › what is typed can be read in a light system theme (11.2s)
-  ✓   6 [chromium] › e2e/review.spec.ts:128:3 › what is typed can be read in a dark system theme (10.8s)
-  ✓   7 [chromium] › e2e/review.spec.ts:153:1 › the guide is open on the first visit and stays as the reviewer leaves it (5.5s)
-  ✓   8 [chromium] › e2e/review.spec.ts:170:1 › numbered evidence: each sentence of the summary shows its own passage (10.1s)
-  ✓   9 [chromium] › e2e/review.spec.ts:201:1 › approve with Enter, edit a date, mark not in document, flag (16.5s)
-  ✓  10 [chromium] › e2e/review.spec.ts:250:1 › complete the review by keyboard; the snapshot holds the final values (1.1m)
+  ✓   2 [chromium] › e2e/review.spec.ts:18:1 › a link that was replaced, or is not a link, says so in plain words (1.6s)
+first meaningful paint 2195 ms, first PDF page 2777 ms
+  ✓   3 [chromium] › e2e/review.spec.ts:28:1 › the link opens straight into the tender, laid out for a 1366x768 laptop (4.8s)
+  ✓   4 [chromium] › e2e/review.spec.ts:66:1 › an evidence chip scrolls the PDF to its page and highlights the quoted text (8.4s)
+  ✓   5 [chromium] › e2e/review.spec.ts:129:3 › what is typed can be read in a light system theme (10.3s)
+  ✓   6 [chromium] › e2e/review.spec.ts:129:3 › what is typed can be read in a dark system theme (10.8s)
+  ✓   7 [chromium] › e2e/review.spec.ts:154:1 › the guide is open on the first visit and stays as the reviewer leaves it (6.0s)
+  ✓   8 [chromium] › e2e/review.spec.ts:171:1 › the summary: note on top, numbers that name their field, and no decision before the fields (10.7s)
+  ✓   9 [chromium] › e2e/review.spec.ts:226:1 › approve with Enter, edit a date, mark not in document, flag (16.7s)
+  ✓  10 [chromium] › e2e/review.spec.ts:275:1 › complete the review by keyboard; the snapshot holds the final values (1.3m)
 
   1 skipped
-  9 passed (2.6m)
+  9 passed (2.5m)

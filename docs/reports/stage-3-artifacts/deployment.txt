@@ -7,7 +7,7 @@ GET /files/documents/549d8a6e20f6ab0e31edfa52dea21e50fd564fe1c15ec000919eee5ebfd
 GET /review/not-a-link -> 200
 POST /api/v1/review-tokens -> 401
 health body: {"status":"ok","tenant_id":"ergplan","database":"ok"}
-alembic_version: 0010
+alembic_version: 0011
 decisions in the database (approval rows): 0
 located evidence spans without a box: 0 of 4045
 review links (token not shown):

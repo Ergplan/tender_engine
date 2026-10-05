@@ -8,7 +8,7 @@
   python -m scripts.ingest_tenders wait    [--timeout seconds]
   python -m scripts.ingest_tenders summary [--out docs/reports/EXTRACTION-SUMMARY.md]
   python -m scripts.ingest_tenders cost-plan [--only slug,slug]
-  python -m scripts.ingest_tenders summarize [--only slug,slug]
+  python -m scripts.ingest_tenders summarize [--only slug,slug] [--force]
 
 `ingest` reads <root>/<type>/<slug>/manifest.yaml, creates each tender, groups its files
 into versions and uploads them; the worker parses and section-maps them. `extract` queues
@@ -455,7 +455,7 @@ def _plan_row(name: str, row: list[float]) -> str:
     return f"| {name} | " + " | ".join(cells) + " |"
 
 
-def summarize(services: Services, only: set[str] | None = None) -> list[str]:
+def summarize(services: Services, only: set[str] | None = None, force: bool = False) -> list[str]:
     """Queue the summary of every tender, written from its extracted record. The worker
     queues it by itself when a tender's extraction ends; this is for asking again."""
     lines = []
@@ -463,7 +463,9 @@ def summarize(services: Services, only: set[str] | None = None) -> list[str]:
         for tender in services.tenders.all(session):
             if only and tender.slug not in only:
                 continue
-            queued = services.summaries.queue_if_settled(session, tender.id, created_by=ACTOR)
+            queued = services.summaries.queue_if_settled(
+                session, tender.id, created_by=ACTOR, force=force
+            )
             lines.append(f"{tender.slug}: {'queued' if queued else 'not queued (work under way)'}")
     return lines
 
@@ -543,7 +545,7 @@ def main(argv: list[str]) -> int:
     elif args.command == "routing-report":
         print("\n".join(routing_report(services)))
     elif args.command == "summarize":
-        print("\n".join(summarize(services, only)))
+        print("\n".join(summarize(services, only, args.force)))
     elif args.command == "cost-plan":
         print("\n".join(cost_plan(services, only)))
     elif args.command == "resume":

@@ -223,6 +223,22 @@ Checks after this change: 422 Python tests, 54 web unit tests and 9 browser test
 
 **Run 6** (after that fix): (a) 1, (b) none, (c) 1, (d) none, (e) 14. No code defect: (a) and (c) are again the unchanged write paths, (e) statements a diff cannot prove. I stopped here. Output: `stage-3-artifacts/review-gpt-6.1-sol-run6.txt`.
 
+## Three changes to the summary card (2026-10-05, third change)
+
+1. **The note is on top.** What the summary leaves out is shown above the text ("Note on this summary: Change in law, GNA details, the ISTS waiver cut-off of 30 June 2028 and capacity addition flexibility were left out for brevity...", for NHPC FDRE-II).
+2. **No citation list on the card.** The list of which number is which field is gone from the card and kept in the stored record. Pointing at a number shows the field it comes from and the words it quotes; clicking it opens the passage and spells the same out under the text ("71 · Consortium allowed · p. 23: ..."). The chips of the summary are gone too: the numbers are the way in. For this each inherited passage now stores the label of its field, so the 13 summaries were written once more (USD 3.15); all 13 are validated, with every passage located and labelled.
+3. **The summary cannot be approved before its fields.** I built both of the ways you offered, as one rule:
+   - The summary's Approve, Edit and Not in document stay off until every other field has a decision; the card says how many are left. It can be flagged at any time. The API refuses the same decisions, so the rule does not depend on the screen.
+   - If your decisions changed the record (an edit, a field marked not in document), the summary is written again from them as soon as the last other field is decided. That takes about a minute; the card says so, looks for the new text by itself and then offers it. The old text cannot be approved in the meantime.
+   - If you change a field after approving the summary, that approval is withdrawn (the summary is flagged in your name with the reason) and it is written again.
+   - Approving fields as they stand changes nothing in the record, so a review without corrections has no rewrite and no wait.
+
+**One consequence you should know before the timed review:** the summary is a required field, so Complete review now needs every field that has a candidate to be decided, not only the required ones. A field left flagged keeps the summary locked. For NHPC FDRE-II that is 88 fields and then the summary.
+
+Also changed: values reach the summary model as an approval would store them, with dates in words ("12 April 2024") and amounts also in lakh and crore.
+
+Checks: 427 Python tests, 57 web unit tests and 9 browser tests pass (`checks.txt`, `playwright.txt`). The browser suite now runs a whole review in which a corrected deadline makes the summary be written again before it is approved. Stage 3 is at about USD 37 and the running total at about USD 297. The test watcher is stopped, as you asked, so that your timing is not disturbed.
+
 ## Your step: one real review
 
 A link for NHPC FDRE-II is live. It is not written in this file: a review link is the only key to its review, and this file is in the repository. It is in my message to you, and `docker compose exec -T api python -m scripts.review_token list` prints it on the VM.

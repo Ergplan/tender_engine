@@ -8,6 +8,7 @@ every run of the browser tests starts from the same state. No real model is call
 """
 
 from datetime import date
+from typing import Any
 
 from alembic import command
 from alembic.config import Config
@@ -58,11 +59,11 @@ def reset_database(settings: Settings) -> None:
     command.upgrade(config, "head")
 
 
-def seed(settings: Settings) -> None:
+def build_runner(settings: Settings, sdk: ScriptedSDK) -> tuple[Runner, ExtractService, Any]:
+    """The worker of the browser-test stack: the real job chain with a scripted model."""
     session_factory = make_session_factory(make_engine(settings))
     storage = make_storage(settings)
     schemas, catalog = build_registry()
-    sdk = ScriptedSDK(dict(RFS_ANSWERS))
     llm = LLMClient(settings, session_factory, sdk=sdk.as_sdk(), prompt_roots=catalog.prompt_roots)
     extract = ExtractService(llm, storage, schemas, settings)
     runner = Runner(
@@ -73,6 +74,12 @@ def seed(settings: Settings) -> None:
         llm,
         *tender_jobs(llm, catalog, extract, schemas, settings.tenant_id),
     )
+    return runner, extract, (session_factory, storage, catalog)
+
+
+def seed(settings: Settings) -> None:
+    sdk = ScriptedSDK(dict(RFS_ANSWERS))
+    runner, extract, (session_factory, storage, catalog) = build_runner(settings, sdk)
     ingest = IngestService(storage, settings.tenant_id)
     tenders = TenderService(catalog, extract, settings.tenant_id)
     tokens = TokenService(settings.tenant_id)

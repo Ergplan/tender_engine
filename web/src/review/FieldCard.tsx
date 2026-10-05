@@ -5,7 +5,16 @@ import { confidenceBand, formatList, formatValue, paragraphs } from "../lib/form
 import { EditForm, type EditResult } from "./EditForm";
 import { EvidenceChip } from "./EvidenceChip";
 import { CONFIDENCE_HINT } from "./guide";
-import { approveBlocker, currentEntry, evidenceNumber, failedRules, versionTag } from "./model";
+import {
+  approveBlocker,
+  currentEntry,
+  evidenceNumber,
+  failedRules,
+  recordNote,
+  summaryLock,
+  type SummaryState,
+  versionTag,
+} from "./model";
 
 export type SaveState = { kind: "saving" } | { kind: "saved" } | { kind: "failed"; message: string };
 export type CardMode = "view" | "edit" | "flag";
@@ -23,14 +32,15 @@ const PILL = {
 const BUTTON = "rounded border px-2 py-0.5 text-xs font-medium disabled:opacity-40";
 
 const MARKER = /\[\d+\]/;
-const MANY_CHIPS = 12;
 
 /** A long text in paragraphs. An evidence marker ("[3]") becomes a small numbered button
  * that shows the quote it stands for, so each sentence is tied to its evidence. */
-function LongText({ text, onMarker, active }: {
+function LongText({ text, onMarker, active, hint }: {
   text: string;
   onMarker: (number: number) => void;
   active: number | null;
+  /** What a number stands for: the field it comes from and the words it quotes. */
+  hint: (number: number) => string;
 }) {
   return (
     <>
@@ -43,7 +53,7 @@ function LongText({ text, onMarker, active }: {
                 key={at}
                 type="button"
                 data-testid="evidence-marker"
-                title={`Show evidence ${piece.marker}`}
+                title={hint(piece.marker)}
                 className={
                   "mx-0.5 rounded px-1 align-super text-[10px] font-semibold leading-none " +
                   (active === piece.marker ? "bg-sky-700 text-white" : "bg-sky-100 text-sky-800 hover:bg-sky-200")
@@ -65,16 +75,17 @@ function LongText({ text, onMarker, active }: {
   );
 }
 
-function Value({ value, field, onMarker, active }: {
+function Value({ value, field, onMarker, active, hint }: {
   value: unknown;
   field: ReviewField;
   onMarker: (number: number) => void;
   active: number | null;
+  hint: (number: number) => string;
 }) {
   if (value === null || value === undefined)
     return <span className="italic text-slate-500">No value found</span>;
   if (field.value_type === "long_text" && typeof value === "string")
-    return <LongText text={value} onMarker={onMarker} active={active} />;
+    return <LongText text={value} onMarker={onMarker} active={active} hint={hint} />;
   if (Array.isArray(value))
     return (
       <ul className="list-disc pl-4">
@@ -112,6 +123,7 @@ export function FieldCard({
   readOnly,
   documentName,
   activeEvidence,
+  summary = null,
   onFocus,
   onMode,
   onDecide,
@@ -125,6 +137,8 @@ export function FieldCard({
   documentName: (documentId: string) => string;
   /** The evidence span shown in the PDF just now, if it is one of this field's. */
   activeEvidence: string | null;
+  /** For the summary card: where the summary stands. It is decided after the fields. */
+  summary?: SummaryState | null;
   onFocus: () => void;
   onMode: (mode: CardMode) => void;
   onDecide: (decision: Decision) => void;
@@ -136,12 +150,13 @@ export function FieldCard({
   const [note, setNote] = useState("");
   const [whole, setWhole] = useState(false);
   const [wholeReason, setWholeReason] = useState(false);
-  const [allChips, setAllChips] = useState(false);
   useEffect(() => {
     if (focused) element.current?.scrollIntoView({ block: "nearest" });
   }, [focused]);
 
-  const blocker = approveBlocker(entry);
+  const lock = summaryLock(summary, false);
+  const blocker = summaryLock(summary, true) ?? approveBlocker(entry);
+  const caveat = candidate ? recordNote(candidate) : null;
   const decided = entry ? decisionLine(entry, field) : null;
   const tag = entry ? versionTag(entry) : null;
   const earlier = entry ? field.entries.filter((other) => other !== entry) : [];
@@ -198,6 +213,13 @@ export function FieldCard({
         </div>
       </div>
 
+      {caveat && (
+        // What the summary leaves out or was unsure of: read before the text.
+        <p data-testid="record-note" className="mt-1 rounded border border-amber-200 bg-amber-50 px-2 py-1 text-xs text-slate-800">
+          <span className="font-semibold">Note on this summary: </span>
+          {caveat}
+        </p>
+      )}
       <div
         data-testid="field-value"
         className={"mt-0.5 text-sm text-slate-900 " + (long && !showAll ? "line-clamp-4" : "")}
@@ -206,6 +228,11 @@ export function FieldCard({
           value={candidate?.value ?? null}
           field={field}
           active={activeNumber ? number(activeNumber) : null}
+          hint={(wanted) => {
+            const found = evidence.find((item) => number(item) === wanted);
+            if (!found) return `Evidence ${wanted}`;
+            return `${found.source ?? "Evidence"} · p. ${found.page_no}: “${found.quote.slice(0, 300)}”`;
+          }}
           onMarker={(wanted) => {
             const found = evidence.find((item) => number(item) === wanted);
             if (found) onShowEvidence(found);
@@ -235,27 +262,10 @@ export function FieldCard({
         </p>
       ))}
 
-      {candidate && evidence.length > 0 && (
+      {candidate && evidence.length > 0 && !marked && (
         <div className="mt-1 flex flex-wrap items-center gap-1">
           <span className="text-xs text-slate-500">Evidence</span>
-          {/* A text whose sentences carry their numbers does not need a wall of chips:
-              the passage being shown, and the rest on request. */}
-          {marked && evidence.length > MANY_CHIPS && (
-            <button
-              type="button"
-              data-testid="chips-toggle"
-              className="text-xs text-sky-700 underline"
-              onClick={(event) => {
-                event.stopPropagation();
-                setAllChips(!allChips);
-              }}
-            >
-              {allChips ? "Hide the list" : `${evidence.length} passages, numbered in the text. Show the list`}
-            </button>
-          )}
-          {evidence
-            .filter((item) => !marked || evidence.length <= MANY_CHIPS || allChips || item.id === activeEvidence)
-            .map((item) => (
+          {evidence.map((item) => (
             <EvidenceChip
               key={item.id}
               evidence={item}
@@ -265,6 +275,30 @@ export function FieldCard({
             />
           ))}
         </div>
+      )}
+      {candidate && marked && (
+        // A text whose sentences carry their numbers has no list of chips: a number shows
+        // what it stands for on hover, and the one being looked at is spelled out here.
+        <p data-testid="active-passage" className="mt-1 text-xs text-slate-600">
+          {activeNumber ? (
+            <button
+              type="button"
+              className="text-left hover:underline"
+              onClick={(event) => {
+                event.stopPropagation();
+                onShowEvidence(activeNumber);
+              }}
+            >
+              <span className="mr-1 rounded bg-sky-700 px-1 font-semibold text-white">{number(activeNumber)}</span>
+              <span className="font-semibold">{activeNumber.source ?? "Evidence"}</span> · p. {activeNumber.page_no}: “
+              {activeNumber.quote.length > 220 ? `${activeNumber.quote.slice(0, 220)}…` : activeNumber.quote}”
+            </button>
+          ) : (
+            <span className="text-slate-500">
+              {evidence.length} passages. Click a number in the text to see the field it comes from and its words.
+            </span>
+          )}
+        </p>
       )}
       {candidate && several && focused && !marked && (
         // Which claim each numbered chip supports: the words it quotes.
@@ -286,7 +320,7 @@ export function FieldCard({
           ))}
         </ol>
       )}
-      {candidate && (
+      {candidate && !caveat && (
         <p data-testid="rationale" className={"mt-0.5 text-xs text-slate-500 " + (showReason ? "" : "line-clamp-2")}>
           {candidate.rationale}
           {!focused && candidate.rationale.length > 140 && (
@@ -339,7 +373,8 @@ export function FieldCard({
           <button
             type="button"
             data-testid="edit"
-            title="Edit (E)"
+            disabled={lock !== null}
+            title={lock ?? "Edit (E)"}
             className={BUTTON + " border-slate-400 bg-white hover:bg-slate-100"}
             onClick={() => onMode("edit")}
           >
@@ -348,7 +383,8 @@ export function FieldCard({
           <button
             type="button"
             data-testid="not-in-document"
-            title="Not in document (N)"
+            disabled={lock !== null}
+            title={lock ?? "Not in document (N)"}
             className={BUTTON + " border-slate-400 bg-white hover:bg-slate-100"}
             onClick={() => onDecide({ decision: "not_in_document" })}
           >
@@ -374,8 +410,10 @@ export function FieldCard({
           </span>
         </div>
       )}
-      {entry && !readOnly && mode === "view" && blocker && focused && !field.decided && (
-        <p className="mt-0.5 text-xs text-slate-500">{blocker}</p>
+      {entry && !readOnly && mode === "view" && blocker && (focused || summary) && !field.decided && (
+        <p data-testid="blocker" className={"mt-0.5 text-xs " + (summary ? "font-medium text-amber-800" : "text-slate-500")}>
+          {blocker}
+        </p>
       )}
       {!entry && <p className="mt-1 text-xs text-slate-500">Nothing was extracted for this field.</p>}
 

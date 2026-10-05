@@ -220,6 +220,25 @@ def test_a_stale_decision_is_refused_and_a_flag_decides_nothing(
     assert next(f for f in view["fields"] if f["field_path"] == EMD)["value"] is None
 
 
+SUMMARY = "core.summary.plain_english_summary"
+
+
+def decide_others(
+    client: TestClient, token: str, body: dict[str, Any], skip: tuple[str, ...] = ()
+) -> None:
+    """Decide every field but the summary: approve what can be approved, else mark it not
+    in document."""
+    for item in body["fields"]:
+        if item["field_path"] in (SUMMARY, *skip) or item["current"] is None or item["decided"]:
+            continue
+        entry = item["entries"][item["current"]]
+        candidate = entry["state"]["candidate"]
+        located = any(e["char_start"] is not None for e in candidate["evidence"])
+        decision = "approved" if candidate["value"] is not None and located else "not_in_document"
+        made = decide(client, token, entry, decision)
+        assert made.status_code == 201, (item["field_path"], made.text)
+
+
 def with_amendment(client: TestClient, pipeline: Pipeline) -> dict[str, Any]:
     tender = extracted(client, pipeline)
     pipeline.sdk.answers = dict(AMENDMENT_ANSWERS)
@@ -287,15 +306,12 @@ def test_complete_review_needs_every_required_field_then_snapshots_and_locks(
     assert early.status_code == 422 and "required field" in early.json()["detail"]
     assert client.get(f"/api/v1/tenders/{tid}/snapshot", headers=headers).status_code == 404
 
-    for item in body["fields"]:
-        if not item["required"] or item["current"] is None:
-            continue
-        entry = item["entries"][item["current"]]
-        candidate = entry["state"]["candidate"]
-        located = any(e["char_start"] is not None for e in candidate["evidence"])
-        decision = "approved" if candidate["value"] is not None and located else "not_in_document"
-        made = decide(client, token, entry, decision)
-        assert made.status_code == 201, (item["field_path"], made.text)
+    # The summary is written from the other fields and is decided after them, so a review
+    # is completed with every field that has a candidate decided.
+    decide_others(client, token, body)
+    body = review(client, tid, token)
+    assert body["summary"] == {"waiting_for": 0, "current": True, "being_written": False}
+    assert decide(client, token, current(body, SUMMARY), "approved").status_code == 201
     body = review(client, tid, token)
     assert body["required_undecided"] == 0 and body["can_complete"] is True
 
@@ -475,3 +491,133 @@ def test_the_summary_can_be_asked_for_again_but_not_with_a_review_link(
     pipeline.runner.run_until_idle()
     assert len(pipeline.sdk.summary_calls()) == calls, "the record has not changed: no new call"
     assert client.post(f"/api/v1/tenders/{'0' * 32}/summarize", headers=ASHA).status_code == 404
+
+
+def test_the_summary_is_decided_after_the_fields_it_is_written_from(
+    client: TestClient, pipeline: Pipeline
+) -> None:
+    tender = extracted(client, pipeline)
+    token = link(client, tender["id"])["token"]
+    body = review(client, tender["id"], token)
+    others = sum(
+        1 for f in body["fields"] if f["field_path"] != SUMMARY and f["current"] is not None
+    )
+    assert body["summary"] == {"waiting_for": others, "current": True, "being_written": False}
+    for decision, extra in (
+        ("approved", {}),
+        ("edited", {"final_value": "A summary of my own."}),
+        ("not_in_document", {}),
+    ):
+        refused = decide(client, token, current(body, SUMMARY), decision, **extra)
+        assert refused.status_code == 422, decision
+        assert f"decide the other fields first ({others} to go)" in refused.json()["detail"]
+    # Unsure about the summary: that can be noted at any time.
+    assert decide(client, token, current(body, SUMMARY), "flagged", note="odd").status_code == 201
+
+    decide_others(client, token, body)
+    body = review(client, tender["id"], token)
+    assert body["summary"]["waiting_for"] == 0 and body["summary"]["current"] is True
+    approved = decide(client, token, current(body, SUMMARY), "approved")
+    assert approved.status_code == 201, approved.text
+    assert review(client, tender["id"], token)["can_complete"] is True
+
+
+def test_a_correction_to_a_field_has_the_summary_written_again_before_it_can_be_approved(
+    client: TestClient, pipeline: Pipeline
+) -> None:
+    tender = extracted(client, pipeline)
+    token = link(client, tender["id"])["token"]
+    body = review(client, tender["id"], token)
+    first_summary = current(body, SUMMARY)["state"]["candidate"]["id"]
+    corrected = decide(
+        client,
+        token,
+        current(body, EMD),
+        "edited",
+        final_value=2320000,
+        evidence=[
+            {"page_no": 3, "quote": "Performance Bank Guarantee (PBG) of INR 2320000 per MW"}
+        ],
+    )
+    assert corrected.status_code == 201, corrected.text
+    body = review(client, tender["id"], token)
+    assert body["summary"]["current"] is False and body["summary"]["being_written"] is False, (
+        "the record has changed, but the summary waits for the other fields"
+    )
+    calls = len(pipeline.sdk.summary_calls())
+    decide_others(client, token, body)
+
+    # The last decision queued the new summary; until it is there the old one cannot be approved.
+    body = review(client, tender["id"], token)
+    assert body["summary"] == {"waiting_for": 0, "current": False, "being_written": True}
+    early = decide(client, token, current(body, SUMMARY), "approved")
+    assert (
+        early.status_code == 422 and "written again from your decisions" in early.json()["detail"]
+    )
+
+    pipeline.runner.run_until_idle()
+    assert len(pipeline.sdk.summary_calls()) == calls + 1
+    sent = pipeline.sdk.summary_calls()[-1]["messages"][0]["content"][0]["text"]
+    assert "EMD per MW (INR per MW) | 2320000 (that is INR 23.2 lakh)" in sent
+    body = review(client, tender["id"], token)
+    assert body["summary"] == {"waiting_for": 0, "current": True, "being_written": False}
+    rewritten = current(body, SUMMARY)["state"]["candidate"]
+    assert rewritten["id"] != first_summary
+    emd_passage = next(e for e in rewritten["evidence"] if e["source"] == "EMD per MW")
+    assert emd_passage["quote"].startswith("Performance Bank Guarantee")
+    assert decide(client, token, current(body, SUMMARY), "approved").status_code == 201
+
+
+def test_changing_a_field_after_the_summary_was_approved_withdraws_that_approval(
+    client: TestClient, pipeline: Pipeline, db: Session
+) -> None:
+    tender = extracted(client, pipeline)
+    token = link(client, tender["id"])["token"]
+    body = review(client, tender["id"], token)
+    decide_others(client, token, body)
+    body = review(client, tender["id"], token)
+    assert decide(client, token, current(body, SUMMARY), "approved").status_code == 201
+    view = client.get(f"/api/v1/tenders/{tender['id']}/view", headers=as_reviewer(token)).json()
+    assert next(f for f in view["fields"] if f["field_path"] == SUMMARY)["decided"] is True
+
+    # The reviewer goes back and corrects the EMD.
+    body = review(client, tender["id"], token)
+    again = decide(client, token, current(body, EMD), "edited", final_value=1000000)
+    assert again.status_code == 201, again.text
+    body = review(client, tender["id"], token)
+    summary = field(body, SUMMARY)
+    assert summary["decided"] is False and summary["flagged"] is True
+    note = current(body, SUMMARY)["state"]["approval"]["note"]
+    assert "core.guarantees.emd_per_mw_inr was decided again after the summary" in note
+    assert body["can_complete"] is False and body["summary"]["being_written"] is True
+    view = client.get(f"/api/v1/tenders/{tender['id']}/view", headers=as_reviewer(token)).json()
+    assert next(f for f in view["fields"] if f["field_path"] == SUMMARY)["decided"] is False
+    done = client.post(
+        f"/api/v1/tenders/{tender['id']}/complete-review", headers=as_reviewer(token)
+    )
+    assert done.status_code == 422
+
+    pipeline.runner.run_until_idle()
+    body = review(client, tender["id"], token)
+    assert body["summary"]["current"] is True
+    assert decide(client, token, current(body, SUMMARY), "approved").status_code == 201
+    assert review(client, tender["id"], token)["can_complete"] is True
+
+
+def test_inherited_evidence_names_its_field_and_the_note_comes_before_the_source_list(
+    client: TestClient, pipeline: Pipeline
+) -> None:
+    tender = extracted(client, pipeline)
+    token = link(client, tender["id"])["token"]
+    summary = current(review(client, tender["id"], token), SUMMARY)["state"]["candidate"]
+    assert [e["source"] for e in summary["evidence"]] == [
+        "page summary, what is procured; Title",
+        "Bid submission deadline",
+        "EMD per MW",
+    ]
+    note, sources = summary["rationale"].split("\n\n")
+    assert note == "Scripted."
+    assert sources.startswith("Written from the extracted fields; each number is the evidence")
+    assert "[3] EMD per MW" in sources
+    emd = current(review(client, tender["id"], token), EMD)["state"]["candidate"]
+    assert emd["evidence"][0]["source"] is None, "evidence read from a page has no source"

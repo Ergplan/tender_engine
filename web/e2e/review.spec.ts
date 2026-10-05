@@ -95,6 +95,7 @@ test("an evidence chip scrolls the PDF to its page and highlights the quoted tex
 });
 
 const SUMMARY = "core.summary.plain_english_summary";
+const LONG_TEXT = "core.eligibility.technical_experience_requirement";
 
 /** WCAG contrast ratio of an element's text against the first opaque background behind it. */
 async function contrast(page: Page, selector: string): Promise<number> {
@@ -129,8 +130,8 @@ for (const scheme of ["light", "dark"] as const) {
     await page.emulateMedia({ colorScheme: scheme });
     await page.goto(`/review/${TOKEN}`);
     // The edit panel of a long text: a textarea, the evidence boxes and the note.
-    await card(page, SUMMARY).getByTestId("edit").click();
-    const form = `[data-field="${SUMMARY}"] form`;
+    await card(page, LONG_TEXT).getByTestId("edit").click();
+    const form = `[data-field="${LONG_TEXT}"] form`;
     await expect(page.locator(`${form} textarea`)).toBeVisible();
     for (const selector of [`${form} textarea`, `${form} [data-testid="evidence-page"]`, `${form} [data-testid="evidence-quote"]`, `${form} input[aria-label="Note"]`]) {
       expect(await contrast(page, selector), `${selector} in ${scheme}`).toBeGreaterThanOrEqual(7);
@@ -167,36 +168,60 @@ test("the guide is open on the first visit and stays as the reviewer leaves it",
   await expect(page.getByTestId("guide")).toHaveAttribute("data-open", "no");
 });
 
-test("numbered evidence: each sentence of the summary shows its own passage", async ({ page }) => {
+test("the summary: note on top, numbers that name their field, and no decision before the fields", async ({ page }) => {
   await page.goto(`/review/${TOKEN}`);
   const summary = card(page, SUMMARY);
   await expect(summary.getByTestId("confidence-caption")).toHaveText("model confidence");
-  // Written from the record as amended: the deadline's passage is in the amendment (its
-  // page 1), the other two in the RfS.
-  await expect(summary.getByTestId("evidence-chip")).toHaveText(["1p. 1", "2p. 1", "3p. 3"]);
-  await expect(summary.getByTestId("evidence-marker")).toHaveText(["1", "2", "3"]);
+  // The note on what the summary leaves out stands above the text; the list of which
+  // number is which field is not on the card.
+  await expect(summary.getByTestId("record-note")).toContainText("Scripted.");
+  const note = await summary.getByTestId("record-note").boundingBox();
+  const text = await summary.getByTestId("field-value").boundingBox();
+  expect(note!.y).toBeLessThan(text!.y);
+  await expect(summary).not.toContainText("each number is the evidence of the field it follows");
+  await expect(summary.getByTestId("evidence-chip")).toHaveCount(0);
+  await expect(summary.getByTestId("field-value")).toContainText("Eligibility: The record does not state this.");
   await expect(summary.getByTestId("field-value")).not.toContainText("[1]");
-  // The marker after the third sentence shows the third quote, on page 3, and only it.
-  await summary.getByTestId("evidence-marker").nth(2).click();
+
+  // A number says on hover which field it comes from and what it quotes; a click shows
+  // the passage and spells the same out under the text.
+  const markers = summary.getByTestId("evidence-marker");
+  await expect(markers).toHaveText(["1", "2", "3"]);
+  await expect(markers.nth(2)).toHaveAttribute("title", /^EMD per MW · p\. 3: “Earnest Money Deposit \(EMD\) of INR 928000 per MW/);
+  await markers.nth(2).click();
   await expect(page.getByTestId("page-indicator")).toHaveAttribute("data-page", "3");
-  await expect(summary.getByTestId("evidence-chip").nth(2)).toHaveAttribute("data-active", "yes");
+  await expect(summary.getByTestId("active-passage")).toContainText("EMD per MW · p. 3: “Earnest Money Deposit");
   await expect(page.getByTestId("evidence-highlight")).toHaveCount(1);
   await expect(page.getByTestId("evidence-highlight-dim")).toHaveCount(1);
   // The sentence on the timeline opens the amendment, where the deadline field's quote is.
-  await summary.getByTestId("evidence-marker").nth(1).click();
+  await markers.nth(1).click();
   await expect(page.getByTestId("page-indicator")).toContainText("Page 1 of 1");
-  await expect(summary.getByTestId("evidence-chip").nth(1)).toHaveAttribute("data-active", "yes");
+  await expect(summary.getByTestId("active-passage")).toContainText("Bid submission deadline");
   await expect(page.locator('[data-page-no="1"] [data-testid="text-layer"]')).toContainText("extended to 15.04.2026");
-  await summary.getByTestId("evidence-chip").nth(0).click();
-  await expect(page.getByTestId("page-indicator")).toHaveAttribute("data-page", "1");
-  await expect(summary.getByTestId("evidence-chip").nth(0)).toHaveAttribute("data-active", "yes");
-  // The header counts what is left; the section says where to look first.
+
+  // Written from the other fields, it is decided after them.
+  await expect(summary.getByTestId("blocker")).toContainText(/Decide the other fields first \(\d+ to go\)/);
+  await expect(summary.getByTestId("approve")).toBeDisabled();
+  await expect(summary.getByTestId("edit")).toBeDisabled();
+  await expect(summary.getByTestId("not-in-document")).toBeDisabled();
+  await summary.click();
+  await page.keyboard.press("Enter");
+  await expect(summary).toHaveAttribute("data-decided", "no");
+  const refused = await page.request.post("/api/v1/approvals", {
+    headers: { "X-Review-Token": TOKEN },
+    data: { candidate_id: await summaryCandidate(page), decision: "approved" },
+  });
+  expect(refused.status()).toBe(422);
+  expect((await refused.json()).detail).toContain("decide the other fields first");
   await expect(page.getByTestId("remaining")).toContainText("to go");
-  // The summary is written from the fields: its third passage is the EMD field's own.
-  await expect(summary.getByTestId("rationale")).toContainText("Written from the extracted fields");
-  await expect(summary.getByTestId("rationale")).toContainText("[3] EMD per MW");
-  await expect(summary.getByTestId("field-value")).toContainText("Eligibility: The record does not state this.");
 });
+
+async function summaryCandidate(page: Page): Promise<string> {
+  const session = await (await api(page, "/review-session")).json();
+  const review = await (await api(page, `/tenders/${session.tender_id}/review`)).json();
+  const field = review.fields.find((item: { field_path: string }) => item.field_path === SUMMARY);
+  return field.entries[field.current].state.candidate.id as string;
+}
 
 test("approve with Enter, edit a date, mark not in document, flag", async ({ page }) => {
   await page.goto(`/review/${TOKEN}`);
@@ -254,16 +279,34 @@ test("complete the review by keyboard; the snapshot holds the final values", asy
   const complete = page.getByTestId("complete-review");
   await expect(complete).toBeDisabled();
   await page.keyboard.press("j");
-  // Decide every field that is still open: approve what can be approved, otherwise mark
-  // it not in document. Enter and N both move on to the next undecided field.
+  // Decide every field but the summary: approve what can be approved, otherwise mark it
+  // not in document. Enter and N both move on to the next undecided field.
   for (let step = 0; step < 200; step += 1) {
     const focused = page.locator('[data-focused="yes"]');
-    if ((await focused.count()) === 0 || (await focused.getAttribute("data-decided")) === "yes") break;
     const path = await focused.getAttribute("data-field");
+    if (path === SUMMARY) {
+      // Locked while others are open; when it comes round again they are all decided.
+      if ((await page.getByTestId("remaining").textContent())!.startsWith("1 to go")) break;
+      await page.keyboard.press("j");
+      continue;
+    }
+    if ((await focused.getAttribute("data-decided")) === "yes") {
+      await page.keyboard.press("j");
+      continue;
+    }
     const canApprove = await focused.getByTestId("approve").isEnabled();
     await page.keyboard.press(canApprove ? "Enter" : "n");
     await expect(page.locator(`[data-field="${path}"]`)).toHaveAttribute("data-decided", "yes");
   }
+  // An earlier test corrected the bid deadline, so the summary is written again from the
+  // decisions before it can be approved: the card says so, and then offers the new text.
+  const summary = card(page, SUMMARY);
+  await expect(summary.getByTestId("approve")).toBeEnabled({ timeout: 60_000 });
+  await expect(summary.getByTestId("blocker")).toHaveCount(0);
+  await expect(summary.getByTestId("active-passage")).toContainText("3 passages");
+  await summary.click();
+  await page.keyboard.press("Enter");
+  await expect(summary).toHaveAttribute("data-decided", "yes");
   await expect(complete).toBeEnabled();
   await complete.click();
   await expect(page.getByRole("dialog")).toContainText("no longer changed");

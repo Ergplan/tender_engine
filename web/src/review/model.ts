@@ -47,6 +47,34 @@ export function evidenceNumber(candidate: Candidate, evidence: Evidence): number
   return evidence.ordinal ?? candidate.evidence.indexOf(evidence) + 1;
 }
 
+/** Where the summary stands; it is written from the other fields and decided after them. */
+export type SummaryState = { waiting_for: number; current: boolean; being_written: boolean };
+export const SUMMARY_FIELD = "core.summary.plain_english_summary";
+
+export function summaryState(review: TenderReview): SummaryState | null {
+  return (review.summary as SummaryState | null | undefined) ?? null;
+}
+
+/** Why the summary cannot be decided yet, or null. `approving` asks about a plain approval:
+ * an edit is the reviewer's own text and waits only for the other fields. */
+export function summaryLock(state: SummaryState | null, approving: boolean): string | null {
+  if (!state) return null;
+  if (state.waiting_for > 0)
+    return `Decide the other fields first (${state.waiting_for} to go). The summary is written from them.`;
+  if (approving && !state.current)
+    return state.being_written
+      ? "The summary is being written again from your decisions. It will be ready in about a minute."
+      : "Your decisions changed the record. The summary will be written again before it can be approved.";
+  return null;
+}
+
+/** The model's note on a text written from the record: the first paragraph of its
+ * rationale. What follows (which field each number comes from) stays in the record. */
+export function recordNote(candidate: Candidate): string | null {
+  if (!candidate.rationale.includes("\n\n")) return null;
+  return candidate.rationale.split("\n\n")[0].trim() || null;
+}
+
 export const LOW_CONFIDENCE = 0.5;
 
 /** A field that deserves an early look: not decided yet, and either flagged by a rule or

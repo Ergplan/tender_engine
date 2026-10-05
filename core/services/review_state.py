@@ -37,6 +37,7 @@ class EvidenceView(BaseModel):
     match_score: float | None
     match_method: str | None
     ordinal: int | None = None
+    source: str | None = None
 
 
 class ValidationView(BaseModel):

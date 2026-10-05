@@ -12,7 +12,17 @@ import { keyAction, neighbour, nextWhere } from "../lib/keyboard";
 import { minutesLeft } from "../lib/pace";
 import type { CardMode, Decision, SaveState } from "./FieldCard";
 import { GuidePanel } from "./GuidePanel";
-import { approveBlocker, currentEntry, documentName, firstEvidence, type PdfTarget, reviewOrder } from "./model";
+import {
+  approveBlocker,
+  currentEntry,
+  documentName,
+  firstEvidence,
+  type PdfTarget,
+  reviewOrder,
+  SUMMARY_FIELD,
+  summaryLock,
+  summaryState,
+} from "./model";
 import { type Highlight, PdfPane } from "./PdfPane";
 import { SectionList } from "./SectionList";
 
@@ -140,8 +150,12 @@ export function ReviewScreen({
       if (action === "cancel") return setMode("view");
       if (!field || readOnly || mode !== "view") return;
       event.preventDefault();
+      const summary = field.field_path === SUMMARY_FIELD ? summaryState(review) : null;
+      const lock = summaryLock(summary, false);
+      if (lock && action !== "flag")
+        return setSaves((before) => ({ ...before, [field.field_path]: { kind: "failed", message: lock } }));
       if (action === "approve") {
-        const blocker = approveBlocker(currentEntry(field));
+        const blocker = summaryLock(summary, true) ?? approveBlocker(currentEntry(field));
         if (blocker)
           return setSaves((before) => ({ ...before, [field.field_path]: { kind: "failed", message: blocker } }));
         void decide(field, { decision: "approved" }, true);
@@ -151,7 +165,16 @@ export function ReviewScreen({
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [byPath, confirming, decide, focus, focused, mode, order, readOnly]);
+  }, [byPath, confirming, decide, focus, focused, mode, order, readOnly, review]);
+
+  // While the summary is being written again from the reviewer's decisions, look for it.
+  const summaryNow = summaryState(review);
+  const awaited = !!summaryNow && summaryNow.waiting_for === 0 && !summaryNow.current && !readOnly;
+  useEffect(() => {
+    if (!awaited) return;
+    const timer = window.setInterval(() => void reload().catch(() => undefined), 4000);
+    return () => window.clearInterval(timer);
+  }, [awaited, reload]);
 
   const highlights = useMemo<Highlight[]>(() => {
     const field = focused ? byPath.get(focused) : undefined;
