@@ -91,7 +91,7 @@ Two defects the browser tests found that the unit tests had not: the browser cac
 
 ## The two numbers
 
-From the regenerated `EXTRACTION-SUMMARY.md` (13 tenders, 25 versions, 51 documents): **evidence-location rate 99.8%** (804 of 806 values; the two misses are the same two as in Stage 2, in SECI FDRE-RTC-V Amendment-01); **answer rate 70%** (806 of 1,146 fields), from 37% to 88% per tender. Eight fields are flagged for review by validation. These are candidates; no accuracy number exists until reviews are completed.
+From `EXTRACTION-SUMMARY.md` as regenerated after the summaries were written from the records (13 tenders, 25 versions, 51 documents): **evidence-location rate 99.8%** (804 of 806 values; the two misses are the same two as in Stage 2, in SECI FDRE-RTC-V Amendment-01); **answer rate 70%** (806 of 1146 fields). 7 fields are flagged for review by validation. These are candidates; no accuracy number exists until reviews are completed.
 
 ## Cost
 
@@ -189,7 +189,7 @@ You looked at the screens before reviewing and asked for eight changes, plus a n
 
 After the eight changes you asked for the summary to be written from the extracted fields instead of from a 40-page window. That is built, tested, deployed and has run on all 13 tenders.
 
-**Result** (`stage-3-artifacts/summaries.txt`): 13 summaries, one per tender, each with eight paragraphs, all validated. Each carries between 34 and 128 passages inherited from its fields (1,179 in all), every one located, since they are copies of passages that were located when the fields were extracted. No summary named a source that does not exist. For the amended tenders the summary belongs to the latest version and draws on up to seven documents. Cost: USD 3.56 for 14 calls (NHPC was written twice), 9,000 input tokens per call at most and no pages; a call takes about 40 seconds. The first two attempts were refused because the model account had run out of credit; they stored nothing, and the summaries were written after you refilled it.
+**Result** (`stage-3-artifacts/summaries.txt`): 13 summaries, one per tender, each with eight paragraphs, all validated. Each carries between 34 and 128 passages inherited from its fields (1,179 in all), every one located, since they are copies of passages that were located when the fields were extracted. No summary named a source that does not exist. For the amended tenders the summary belongs to the latest version its fields come from and draws on up to seven documents. Cost: USD 3.56 for 14 calls (NHPC was written twice), under 10,000 input tokens per call and no pages; a call takes about 40 seconds. The first two attempts were refused because the model account had run out of credit; they stored nothing, and the summaries were written after you refilled it.
 
 **NHPC FDRE-II**, the tender your link opens: the summary now gives the bid dates, the net worth, turnover and liquidity thresholds, and the EMD and PBG amounts, each with the number of the field it comes from. This morning's page-read summary said those were "not on these pages".
 
@@ -217,9 +217,9 @@ Three things to know:
 2. **A field without located evidence is left out of the summary** (it has no evidence to pass on). It is still flagged as a field.
 3. **Whether a sentence says what its field says is not checked by code**, only that its number is a real field's evidence. That check is the review of the summary card.
 
-Checks after this change: 421 Python tests, 54 web unit tests and 9 browser tests pass; the nine checks are green (`checks.txt`, `playwright.txt`). Stage 3 is now at about USD 34 and the running total at about USD 294.
+Checks after this change: 422 Python tests, 54 web unit tests and 9 browser tests pass; the nine checks are green (`checks.txt`, `playwright.txt`). Stage 3 is now at about USD 34 and the running total at about USD 294.
 
-Independent review of this change: run 5, recorded after it has run.
+**Independent review, run 5** (on this change): (a) 2, (b) none, (c) 1, (d) none, (e) 15. One code defect, fixed: where a reviewer had edited a field and given their own evidence, the summary took the corrected value but the model's original quote; it now inherits the reviewer's evidence, and a field the model could not evidence joins the summary once a reviewer has (`test_a_field_the_reviewer_corrected_brings_the_reviewers_evidence_to_the_summary`). Three report statements corrected against the artifacts (fields failing validation, input tokens per call, which version a summary belongs to). The rest are the unchanged write paths a diff cannot certify and statements of this report. Output: `stage-3-artifacts/review-gpt-6.1-sol-run5.txt`.
 
 ## Your step: one real review
 

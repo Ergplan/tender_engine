@@ -29,7 +29,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from core.llm.client import LLMClient, LLMRequest, TextPart
-from core.models import Candidate, EvidenceSpan, ExtractionRun, Job, LLMCallLog
+from core.models import Candidate, CanonicalFact, EvidenceSpan, ExtractionRun, Job, LLMCallLog
 from core.models.extraction import RECORD_MODE, REVIEWABLE_STATUSES
 from core.services import jobs
 from core.services.extract import LIVE_STATUSES, ExtractService
@@ -97,13 +97,19 @@ class Source:
     version_no: int = 1
 
 
-def field_sources(review: TenderReview, section_labels: dict[str, str]) -> list[Source]:
+def field_sources(
+    review: TenderReview,
+    section_labels: dict[str, str],
+    reviewer_evidence: dict[str, list[EvidenceView]] | None = None,
+) -> list[Source]:
     """One source per field of the record that has a value with located evidence: the
-    entry a reviewer would decide (the latest version that states the field), with the
-    reviewer's own value where they have approved or edited it."""
+    entry a reviewer would decide (the latest version that states the field). Where a
+    reviewer has approved or edited the field, the value is theirs; and where they gave
+    their own evidence for an edit (`reviewer_evidence`, by approval id), the evidence is
+    theirs too, not the quote the model gave for the value they replaced."""
     sources: list[Source] = []
     for item in review.fields:
-        found = _field_value(item)
+        found = _field_value(item, reviewer_evidence or {})
         if item.field_path == SUMMARY_FIELD or found is None:
             continue
         value, spans, version, version_no = found
@@ -126,7 +132,9 @@ def field_sources(review: TenderReview, section_labels: dict[str, str]) -> list[
     return sources
 
 
-def _field_value(item: ReviewField) -> tuple[Any, list[EvidenceView], str, int] | None:
+def _field_value(
+    item: ReviewField, reviewer_evidence: dict[str, list[EvidenceView]]
+) -> tuple[Any, list[EvidenceView], str, int] | None:
     if item.current is None:
         return None
     entry = item.entries[item.current]
@@ -136,6 +144,8 @@ def _field_value(item: ReviewField) -> tuple[Any, list[EvidenceView], str, int] 
     decided = approval is not None and approval.decision in ("approved", "edited")
     value = approval.final_value if decided and approval is not None else candidate.value
     spans = [span for span in candidate.evidence if span.char_start is not None]
+    if approval is not None and approval.decision == "edited":
+        spans = reviewer_evidence.get(approval.id) or spans
     if value is None or not spans:
         return None
     version = (
@@ -345,7 +355,7 @@ class SummaryWriter:
         compiled = self._catalog.get(tender.tender_type)
         review = tender_review(session, self._catalog, self._tenders, self._review_state, tender)
         labels = {section.name: section.label for section in compiled.sections}
-        sources = field_sources(review, labels)
+        sources = field_sources(review, labels, self._reviewer_evidence(session, tender))
         page_summary = self._page_summary(session, tender)
         if page_summary is not None:
             sources += narrative_sources(*page_summary)
@@ -444,6 +454,38 @@ class SummaryWriter:
         )
         session.commit()
         return run
+
+    def _reviewer_evidence(self, session: Session, tender: Tender) -> dict[str, list[EvidenceView]]:
+        """By approval id, the evidence reviewers gave with their edits: the page and the
+        words that state the corrected value, located when the edit was stored."""
+        found: dict[str, list[EvidenceView]] = {}
+        for fact in session.scalars(
+            select(CanonicalFact).where(
+                CanonicalFact.tenant_id == self._tenant_id,
+                CanonicalFact.object_type == OBJECT_TYPE,
+                CanonicalFact.object_id == tender.id,
+                CanonicalFact.is_current.is_(True),
+            )
+        ):
+            spans = [
+                EvidenceView(
+                    id=f"{fact.approval_id}-{place}",
+                    document_id=item["document_id"],
+                    page_no=item["page_no"],
+                    bbox=item.get("bbox"),
+                    char_start=item.get("char_start"),
+                    char_end=item.get("char_end"),
+                    quote=item.get("quote", ""),
+                    resolution="reviewer",
+                    match_score=None,
+                    match_method=None,
+                )
+                for place, item in enumerate(fact.evidence)
+                if item.get("kind") == "reviewer_span" and item.get("char_start") is not None
+            ]
+            if spans:
+                found[fact.approval_id] = spans
+        return found
 
     def _page_summary(
         self, session: Session, tender: Tender

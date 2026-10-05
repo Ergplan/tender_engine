@@ -373,3 +373,55 @@ def test_amounts_are_also_given_the_way_tenders_write_them() -> None:
     assert rupees(100000000) == "INR 10 crore"
     assert rupees(59000) == "INR 59,000"
     assert rupees(0.02) == "INR 0.02"
+
+
+def test_a_field_the_reviewer_corrected_brings_the_reviewers_evidence_to_the_summary(
+    pipeline: Pipeline, db: Session
+) -> None:
+    """The corrected value must not be summarised against the quote of the value it
+    replaced; and a field the model could not evidence joins the summary once a reviewer
+    has given the page and the words."""
+    tender = extracted_tender(pipeline, db)
+    writer = summary_writer(
+        pipeline.llm,
+        pipeline.catalog,
+        pipeline.extract,
+        pipeline.schemas,
+        pipeline.settings.tenant_id,
+    )
+    emd = db.scalars(select(Candidate).where(Candidate.field_path == EMD)).one()
+    quote = "Performance Bank Guarantee (PBG) of INR 2320000 per MW"
+    pipeline.approvals.approve(
+        db,
+        candidate_id=emd.id,
+        decision="edited",
+        final_value=2320000,
+        reviewer="Asha",
+        evidence=[{"page_no": 3, "quote": quote}],
+    )
+    # A field the model left empty, filled by the reviewer with evidence.
+    empty = db.scalars(
+        select(Candidate).where(Candidate.field_path == "core.identity.portal")
+    ).one()
+    assert empty.value is None
+    pipeline.approvals.approve(
+        db,
+        candidate_id=empty.id,
+        decision="edited",
+        final_value="Acme e-tender portal",
+        reviewer="Asha",
+        evidence=[{"page_no": 1, "quote": "Issued by Acme Renewables Agency"}],
+    )
+
+    run = writer.write(db, tender.id, is_fixture=True)
+    assert run is not None
+    sent = pipeline.sdk.summary_calls()[-1]["messages"][0]["content"][0]["text"]
+    assert "EMD per MW (INR per MW) | 2320000 (that is INR 23.2 lakh) | original tender" in sent
+    assert "| Acme e-tender portal | original tender" in sent
+    pipeline.runner.run_until_idle()
+    candidate, _, spans = live_summary(db, tender.id)
+    inherited = next(span for span in spans if span.page_no == 3)
+    assert inherited.quote == quote and inherited.char_start is not None
+    original = db.scalars(select(EvidenceSpan).where(EvidenceSpan.candidate_id == emd.id)).one()
+    assert inherited.char_start != original.char_start, "not the quote of the value it replaced"
+    assert candidate.status == "validated"
