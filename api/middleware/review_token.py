@@ -138,6 +138,7 @@ def _document_of_tender(session: object, tenant_id: str, document_id: str, tende
             .join(TenderVersion, TenderVersion.id == TenderVersionDocument.tender_version_id)
             .where(
                 TenderVersionDocument.tenant_id == tenant_id,
+                TenderVersion.tenant_id == tenant_id,
                 TenderVersionDocument.document_id == document_id,
                 TenderVersion.tender_id == tender_id,
             )

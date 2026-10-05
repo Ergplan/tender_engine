@@ -12,7 +12,7 @@ Two ways to pay less for the same call:
 - Batch API. submit_batch hands calls nobody waits for to the provider; collect_batch
   writes the same llm_call_log row per call that `call` would have written.
 
-LLMClient.logged returns the answer of an identical call the run has already paid for.
+LLMClient.logged returns the answer of an identical call the run has already been given.
 """
 
 import hashlib
@@ -25,7 +25,7 @@ from typing import Any, Literal, cast
 
 import anthropic
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.orm import Session, sessionmaker
 
 from core.config import Settings
@@ -308,8 +308,8 @@ class LLMClient:
                 continue
         with self._session_factory() as session:
             session.execute(
-                LLMBatch.__table__.update()  # type: ignore[attr-defined]
-                .where(LLMBatch.id == batch_id)
+                update(LLMBatch)
+                .where(LLMBatch.id == batch_id, LLMBatch.tenant_id == self._settings.tenant_id)
                 .values(status="collected")
             )
             session.commit()

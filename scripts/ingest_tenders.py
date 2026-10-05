@@ -407,7 +407,11 @@ def cost_plan(services: Services, only: set[str] | None = None) -> list[str]:
                 names = run.groups or [group.name for group in compiled.schema.groups]
                 read_for.setdefault(run.document_id, set()).update(names)
             for document_id, names in sorted(read_for.items()):
-                document = session.get(Document, document_id)
+                document = session.scalar(
+                    select(Document).where(
+                        Document.id == document_id, Document.tenant_id == settings.tenant_id
+                    )
+                )
                 if document is None:
                     continue
                 for batch in (False, True):

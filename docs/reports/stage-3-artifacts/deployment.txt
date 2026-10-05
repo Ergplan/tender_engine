@@ -1,0 +1,16 @@
+Checked from the VM through the public address on 2026-10-05, after make deploy:
+GET /health -> 200
+GET /api/v1/health -> 200
+GET /api/v1/tenders -> 401
+GET /api/v1/reports/extraction-summary -> 401
+GET /files/documents/549d8a6e20f6ab0e31edfa52dea21e50fd564fe1c15ec000919eee5ebfde2b5e.pdf -> 401
+GET /review/not-a-link -> 200
+POST /api/v1/review-tokens -> 401
+health body: {"status":"ok","tenant_id":"ergplan","database":"ok"}
+alembic_version: 0008
+containers:
+api running
+caddy running
+db running
+web running
+worker running

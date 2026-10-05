@@ -1,0 +1,3 @@
+docker compose run --rm --no-deps -T tests python -m scripts.gen_field_trace
+wrote docs/FIELD-TRACE.md
+git status of docs/FIELD-TRACE.md after make trace: 0 changed file(s)

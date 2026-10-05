@@ -1,0 +1,11 @@
+
+Running 1 test using 1 worker
+
+first visit after the server started: 1257 ms to first paint
+BoS Tender (Package-1) for 70 MW ISTS-Connected Solar PV Project with 25 MW / 50 MWh BESS at Ramagiri, Sri Sathya Sai District, Andhra Pradesh (NDMC)
+fields 91, pages of the first document 266
+first meaningful paint 985 ms, first PDF page 1337 ms
+text layer of page 1 after 3722 ms
+  ✓  1 [chromium] › e2e/real-load.spec.ts:9:1 › a real tender: first paint under 2 s, first PDF page under 3 s (5.8s)
+
+  1 passed (6.9s)

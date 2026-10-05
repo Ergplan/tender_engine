@@ -33,6 +33,12 @@ router = APIRouter(tags=["review"])
 _SHA = re.compile(r"/files/(?:documents|renders)/([0-9a-f]{64})[./]")
 
 
+def _token(session: SessionDep, tenant_id: str, token_id: str) -> ReviewToken:
+    return session.scalars(
+        select(ReviewToken).where(ReviewToken.id == token_id, ReviewToken.tenant_id == tenant_id)
+    ).one()
+
+
 def review_url(base_url: str, token: str) -> str:
     return f"{base_url.rstrip('/')}/review/{token}"
 
@@ -66,11 +72,13 @@ def create_review_token(
 
 
 @router.get("/review-session", response_model=ReviewSessionOut)
-def get_review_session(session: SessionDep, review: ReviewDep) -> ReviewSessionOut:
+def get_review_session(
+    session: SessionDep, review: ReviewDep, tenant_id: TenantDep
+) -> ReviewSessionOut:
     """Who the review token is and which tender it opens."""
     if review is None:
         raise AppError("review_link_required")
-    token = session.scalars(select(ReviewToken).where(ReviewToken.id == review.token_id)).one()
+    token = _token(session, tenant_id, review.token_id)
     return ReviewSessionOut(
         tender_id=token.tender_id,
         reviewer_name=token.reviewer_name,
@@ -104,6 +112,7 @@ def complete_review(
     review_state: ReviewStateDep,
     catalog: CatalogDep,
     review: ReviewDep,
+    tenant_id: TenantDep,
 ) -> SnapshotOut:
     """Complete the review of the token's tender: refused while a required field has no
     decision. Marks the token completed and the tender reviewed, and stores the current
@@ -114,7 +123,7 @@ def complete_review(
         tender = tenders.get(session, tender_id)
     except LookupError as exc:
         raise AppError("not_found", f"tender {tender_id} does not exist") from exc
-    token = session.scalars(select(ReviewToken).where(ReviewToken.id == review.token_id)).one()
+    token = _token(session, tenant_id, review.token_id)
     try:
         row = reviews.complete_review(session, catalog, tenders, review_state, tender, token)
     except TenderError as exc:
@@ -167,6 +176,8 @@ def authorise_file(
         .join(Document, Document.id == TenderVersionDocument.document_id)
         .where(
             Document.tenant_id == tenant_id,
+            TenderVersionDocument.tenant_id == tenant_id,
+            TenderVersion.tenant_id == tenant_id,
             Document.sha256 == found.group(1),
             TenderVersion.tender_id == review.tender_id,
         )

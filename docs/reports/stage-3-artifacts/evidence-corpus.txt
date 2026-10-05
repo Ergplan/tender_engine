@@ -1,0 +1,17 @@
+docker compose run --rm --no-deps -T tests python -m scripts.evidence_corpus run --failures
+evidence corpus: 218 of 220 cases pass (99.1%)
+  hyphenation: 4 of 4
+  ligatures: 2 of 2
+  not_on_page: 3 of 3
+  page_boundary: 2 of 2
+  quotes_and_dashes: 2 of 2
+  real_near_miss: 63 of 63
+  real_not_exact: 110 of 110
+  real_unlocated_at_extraction: 15 of 17
+  reformatted_numbers: 5 of 5
+  repeated_quote: 2 of 2
+  spaces: 2 of 2
+  table_cell_reading_order: 4 of 4
+  two_column: 4 of 4
+FAIL real-0080 [real_unlocated_at_extraction] miss, best score 67.7
+FAIL real-0142 [real_unlocated_at_extraction] miss, best score 80.8

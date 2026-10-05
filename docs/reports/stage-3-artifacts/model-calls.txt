@@ -1,0 +1,92 @@
+    at    |            tender            |          document          |           section           | mode  | wave | status | uncached | written | cached | output | cost_usd | secs |                                                     error                                                      
+----------+------------------------------+----------------------------+-----------------------------+-------+------+--------+----------+---------+--------+--------+----------+------+----------------------------------------------------------------------------------------------------------------
+ 05:03:35 | ntpc-phes-2000mw             | job_45538.pdf              | summary                     | sync  |      | ok     |      798 |    8151 |      0 |   1641 | 0.191917 |   21 | 
+ 05:04:14 | ntpc-phes-2000mw             | job_45538.pdf              | identity_and_scope          | sync  |      | ok     |     1695 |    9635 |      0 |   3690 | 0.321887 |   40 | 
+ 05:04:43 | ntpc-phes-2000mw             | job_45538.pdf              | key_dates                   | sync  |      | ok     |     1869 |    9134 |      0 |   2496 | 0.257665 |   29 | 
+ 05:05:01 | ntpc-phes-2000mw             | job_45538.pdf              | eligibility                 | sync  |      | ok     |     1735 |    9558 |      0 |   1401 | 0.206875 |   18 | 
+ 05:05:11 | ntpc-phes-2000mw             | job_45538.pdf              | guarantees                  | sync  |      | ok     |     1587 |    9134 |      0 |    780 | 0.169045 |   11 | 
+ 05:05:28 | ntpc-phes-2000mw             | job_45538.pdf              | commercial                  | sync  |      | ok     |     1303 |    8779 |      0 |   1286 | 0.187067 |   17 | 
+ 05:05:41 | ntpc-phes-2000mw             | job_45538.pdf              | penalties                   | sync  |      | ok     |     1098 |    8933 |      0 |    492 | 0.147242 |   12 | 
+ 05:06:03 | ntpc-phes-2000mw             | job_45538.pdf              | connectivity_and_compliance | sync  |      | ok     |     1213 |    8835 |      0 |   1810 | 0.213067 |   22 | 
+ 05:06:12 | ntpc-phes-2000mw             | job_45538.pdf              | documents                   | sync  |      | ok     |      887 |    8270 |      0 |    634 | 0.143945 |    9 | 
+ 05:06:43 | ntpc-phes-2000mw             | job_45538.pdf              | gen_tech                    | sync  |      | ok     |      985 |    9026 |      0 |   2601 | 0.252725 |   31 | 
+ 05:07:02 | ntpc-phes-2000mw             | Tender_notice_page_ntpc-ph | summary                     | sync  |      | ok     |      791 |    3447 |      0 |   1467 | 0.124347 |   19 | 
+ 05:07:42 | ntpc-phes-2000mw             | Tender_notice_page_ntpc-ph | identity_and_scope          | sync  |      | ok     |     1688 |    4931 |      0 |   3684 | 0.262717 |   40 | 
+ 05:08:04 | ntpc-phes-2000mw             | Tender_notice_page_ntpc-ph | key_dates                   | sync  |      | ok     |     1862 |    4430 |      0 |   1983 | 0.173145 |   22 | 
+ 05:08:17 | ntpc-phes-2000mw             | Tender_notice_page_ntpc-ph | eligibility                 | sync  |      | ok     |     1728 |    4854 |      0 |    912 | 0.123555 |   13 | 
+ 05:08:28 | ntpc-phes-2000mw             | Tender_notice_page_ntpc-ph | guarantees                  | sync  |      | ok     |     1580 |    4430 |      0 |    775 | 0.109925 |   11 | 
+ 05:08:46 | ntpc-phes-2000mw             | Tender_notice_page_ntpc-ph | commercial                  | sync  |      | ok     |     1296 |    4075 |      0 |   1244 | 0.126098 |   18 | 
+ 05:08:52 | ntpc-phes-2000mw             | Tender_notice_page_ntpc-ph | penalties                   | sync  |      | ok     |     1091 |    4229 |      0 |    491 | 0.088322 |    7 | 
+ 05:09:02 | ntpc-phes-2000mw             | Tender_notice_page_ntpc-ph | connectivity_and_compliance | sync  |      | ok     |     1206 |    4131 |      0 |    647 | 0.096047 |   10 | 
+ 05:09:08 | ntpc-phes-2000mw             | Tender_notice_page_ntpc-ph | documents                   | sync  |      | ok     |      880 |    3566 |      0 |    321 | 0.069425 |    6 | 
+ 05:09:17 | ntpc-phes-2000mw             | Tender_notice_page_ntpc-ph | gen_tech                    | sync  |      | ok     |      978 |    4322 |      0 |    646 | 0.096105 |    8 | 
+ 05:11:16 | (probe run removed)          |                            | summary                     | sync  |      | error  |        0 |       0 |      0 |      0 | 0.000000 |    1 | http_400: Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'The compi
+ 05:11:16 | (probe run removed)          |                            | summary                     | sync  |      | error  |        0 |       0 |      0 |      0 | 0.000000 |    0 | http_400: Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': 'The compi
+ 05:17:20 | ntpc-phes-2000mw             | job_45538.pdf              | summary                     | sync  |      | ok     |      889 |    8355 |      0 |   2000 | 0.213328 |   30 | 
+ 05:17:57 | ntpc-phes-2000mw             | job_45538.pdf              | identity_and_scope          | sync  |      | ok     |     1786 |       0 |   8355 |   3352 | 0.187549 |   37 | 
+ 05:18:31 | ntpc-phes-2000mw             | job_45538.pdf              | key_dates                   | sync  |      | ok     |     1960 |       0 |   8355 |   3068 | 0.175089 |   34 | 
+ 05:18:49 | ntpc-phes-2000mw             | job_45538.pdf              | eligibility                 | sync  |      | ok     |     1826 |       0 |   8355 |   1386 | 0.089649 |   18 | 
+ 05:18:58 | ntpc-phes-2000mw             | job_45538.pdf              | guarantees                  | sync  |      | ok     |     1678 |       0 |   8355 |    754 | 0.056569 |    9 | 
+ 05:19:21 | ntpc-phes-2000mw             | job_45538.pdf              | commercial                  | sync  |      | ok     |     1394 |       0 |   8355 |   1724 | 0.102229 |   23 | 
+ 05:19:31 | ntpc-phes-2000mw             | job_45538.pdf              | penalties                   | sync  |      | ok     |     1189 |       0 |   8355 |    544 | 0.041179 |   10 | 
+ 05:19:54 | ntpc-phes-2000mw             | job_45538.pdf              | connectivity_and_compliance | sync  |      | ok     |     1304 |       0 |   8355 |   1664 | 0.098329 |   23 | 
+ 05:20:09 | ntpc-phes-2000mw             | job_45538.pdf              | documents                   | sync  |      | ok     |      978 |       0 |   8355 |    724 | 0.048069 |   15 | 
+ 05:20:38 | ntpc-phes-2000mw             | job_45538.pdf              | gen_tech                    | sync  |      | ok     |     1076 |       0 |   8355 |   2388 | 0.132249 |   29 | 
+ 05:21:01 | ntpc-phes-2000mw             | Tender_notice_page_ntpc-ph | summary                     | sync  |      | ok     |      882 |    3651 |      0 |   1543 | 0.131607 |   22 | 
+ 05:21:40 | ntpc-phes-2000mw             | Tender_notice_page_ntpc-ph | identity_and_scope          | sync  |      | ok     |     1779 |       0 |   3651 |   3717 | 0.204553 |   40 | 
+ 05:22:02 | ntpc-phes-2000mw             | Tender_notice_page_ntpc-ph | key_dates                   | sync  |      | ok     |     1953 |       0 |   3651 |   1950 | 0.117943 |   22 | 
+ 05:22:13 | ntpc-phes-2000mw             | Tender_notice_page_ntpc-ph | eligibility                 | sync  |      | ok     |     1819 |       0 |   3651 |    969 | 0.067553 |   11 | 
+ 05:22:26 | ntpc-phes-2000mw             | Tender_notice_page_ntpc-ph | eligibility                 | sync  |      | ok     |     6583 |       0 |      0 |    861 | 0.108880 |   13 | 
+ 05:22:37 | ntpc-phes-2000mw             | Tender_notice_page_ntpc-ph | guarantees                  | sync  |      | ok     |     1671 |       0 |   3651 |    689 | 0.052073 |   11 | 
+ 05:22:53 | ntpc-phes-2000mw             | Tender_notice_page_ntpc-ph | commercial                  | sync  |      | ok     |     1387 |       0 |   3651 |   1340 | 0.081783 |   16 | 
+ 05:23:01 | ntpc-phes-2000mw             | Tender_notice_page_ntpc-ph | penalties                   | sync  |      | ok     |     1182 |       0 |   3651 |    476 | 0.036533 |    8 | 
+ 05:23:09 | ntpc-phes-2000mw             | Tender_notice_page_ntpc-ph | connectivity_and_compliance | sync  |      | ok     |     1297 |       0 |   3651 |    705 | 0.049133 |    8 | 
+ 05:23:14 | ntpc-phes-2000mw             | Tender_notice_page_ntpc-ph | documents                   | sync  |      | ok     |      971 |       0 |   3651 |    331 | 0.027173 |    5 | 
+ 05:23:23 | ntpc-phes-2000mw             | Tender_notice_page_ntpc-ph | gen_tech                    | sync  |      | ok     |     1069 |       0 |   3651 |    637 | 0.043453 |    9 | 
+ 05:30:45 | (probe run removed)          |                            |                             | sync  |      | ok     |     4365 |       0 |      0 |    625 | 0.074900 |   10 | 
+ 05:32:52 | ntpc-rel-600mw-anantapur-wtg | job_45811.pdf              | summary                     | batch | 1    | ok     |     1009 |   35030 |      0 |   1731 | 0.398620 |    0 | 
+ 05:32:55 | ntpc-rel-600mw-anantapur-wtg | tech_job_45811.pdf         | wind_tech                   | batch | 1    | ok     |     5361 |       0 |      0 |   2136 | 0.080205 |    0 | 
+ 05:32:56 | seci-cni-1-700mw             | Pre-Bid_meeting_notificati | commercial                  | batch | 1    | ok     |     5383 |       0 |      0 |    677 | 0.043840 |    0 | 
+ 05:32:56 | seci-cni-1-700mw             | Pre-Bid_meeting_notificati | key_dates                   | batch | 1    | ok     |     6304 |       0 |      0 |   1796 | 0.076420 |    0 | 
+ 05:33:51 | seci-cni-1-700mw             | SECI_PPA_Solar_CnI_T1.pdf  | commercial                  | batch | 1    | ok     |    93852 |       0 |      0 |   7073 | 0.646085 |    0 | 
+ 05:33:51 | seci-cni-1-700mw             | SECI_PPA_Solar_CnI_T1.pdf  | penalties                   | batch | 1    | ok     |    56470 |       0 |      0 |   4563 | 0.396425 |    0 | 
+ 05:35:04 | seci-cni-1-700mw             | Tender_notice_page_seci-cn | identity_and_scope          | batch | 1    | ok     |     1778 |       0 |   3624 |   2884 | 0.081443 |    0 | 
+ 05:36:04 | nhpc-fdre-ii                 | RfS_FDRE_1200MW_NHPC_Tranc | identity_and_scope          | batch | 1    | ok     |    55644 |       0 |      0 |   5484 | 0.415320 |    0 | 
+ 05:36:04 | nhpc-fdre-ii                 | RfS_FDRE_1200MW_NHPC_Tranc | guarantees                  | batch | 1    | ok     |   103303 |       0 |      0 |   4988 | 0.641215 |    0 | 
+ 05:36:04 | nhpc-fdre-ii                 | RfS_FDRE_1200MW_NHPC_Tranc | key_dates                   | batch | 1    | ok     |    75809 |       0 |      0 |   3806 | 0.474195 |    0 | 
+ 05:36:04 | nhpc-fdre-ii                 | RfS_FDRE_1200MW_NHPC_Tranc | documents                   | batch | 1    | ok     |   100739 |       0 |      0 |   4507 | 0.616370 |    0 | 
+ 05:36:04 | nhpc-fdre-ii                 | RfS_FDRE_1200MW_NHPC_Tranc | eligibility                 | batch | 1    | ok     |    84931 |       0 |      0 |   4144 | 0.528255 |    0 | 
+ 05:36:04 | nhpc-fdre-ii                 | RfS_FDRE_1200MW_NHPC_Tranc | summary                     | batch | 1    | ok     |    25871 |       0 |      0 |   2084 | 0.181455 |    0 | 
+ 05:36:04 | nhpc-fdre-ii                 | RfS_FDRE_1200MW_NHPC_Tranc | connectivity_and_compliance | batch | 1    | ok     |   110432 |       0 |      0 |   5013 | 0.677485 |    0 | 
+ 05:36:04 | nhpc-fdre-ii                 | RfS_FDRE_1200MW_NHPC_Tranc | penalties                   | batch | 1    | ok     |    90122 |       0 |      0 |   3972 | 0.549910 |    0 | 
+ 05:36:04 | nhpc-fdre-ii                 | RfS_FDRE_1200MW_NHPC_Tranc | documents                   | batch | 1    | ok     |   107961 |       0 |      0 |   4443 | 0.650880 |    0 | 
+ 05:36:04 | nhpc-fdre-ii                 | RfS_FDRE_1200MW_NHPC_Tranc | fdre_profile                | batch | 1    | ok     |    30283 |       0 |      0 |   4720 | 0.269415 |    0 | 
+ 05:36:04 | nhpc-fdre-ii                 | RfS_FDRE_1200MW_NHPC_Tranc | connectivity_and_compliance | batch | 1    | ok     |    30498 |       0 |      0 |   2792 | 0.222290 |    0 | 
+ 05:36:04 | nhpc-fdre-ii                 | RfS_FDRE_1200MW_NHPC_Tranc | fdre_profile                | batch | 1    | ok     |   109979 |       0 |      0 |   4774 | 0.669245 |    0 | 
+ 05:36:04 | nhpc-fdre-ii                 | RfS_FDRE_1200MW_NHPC_Tranc | commercial                  | batch | 1    | ok     |    90996 |       0 |      0 |   8061 | 0.656505 |    0 | 
+ 05:36:11 | seci-cni-1-700mw             | RfS_for_700_MW_SPV_Project | guarantees                  | batch | 1    | ok     |    75236 |       0 |      0 |   2359 | 0.435155 |    0 | 
+ 05:36:11 | seci-cni-1-700mw             | RfS_for_700_MW_SPV_Project | solar_tech                  | batch | 1    | ok     |    47324 |       0 |      0 |   3058 | 0.313070 |    0 | 
+ 05:36:11 | seci-cni-1-700mw             | RfS_for_700_MW_SPV_Project | identity_and_scope          | batch | 1    | ok     |    54357 |       0 |      0 |   4655 | 0.388160 |    0 | 
+ 05:36:11 | seci-cni-1-700mw             | RfS_for_700_MW_SPV_Project | penalties                   | batch | 1    | ok     |    51018 |       0 |      0 |   2351 | 0.313865 |    0 | 
+ 05:36:11 | seci-cni-1-700mw             | RfS_for_700_MW_SPV_Project | summary                     | batch | 1    | ok     |    44339 |       0 |      0 |   2043 | 0.272770 |    0 | 
+ 05:36:11 | seci-cni-1-700mw             | RfS_for_700_MW_SPV_Project | connectivity_and_compliance | batch | 1    | ok     |    47885 |       0 |      0 |   3039 | 0.315400 |    0 | 
+ 05:36:11 | seci-cni-1-700mw             | RfS_for_700_MW_SPV_Project | key_dates                   | batch | 1    | ok     |    59254 |       0 |      0 |   3150 | 0.375020 |    0 | 
+ 05:36:11 | seci-cni-1-700mw             | RfS_for_700_MW_SPV_Project | documents                   | batch | 1    | ok     |   107201 |       0 |      0 |   5685 | 0.678130 |    0 | 
+ 05:36:11 | seci-cni-1-700mw             | RfS_for_700_MW_SPV_Project | commercial                  | batch | 1    | ok     |    67056 |       0 |      0 |   2338 | 0.393730 |    0 | 
+ 05:36:11 | seci-cni-1-700mw             | RfS_for_700_MW_SPV_Project | documents                   | batch | 1    | ok     |    97216 |       0 |      0 |   4180 | 0.590580 |    0 | 
+ 05:36:11 | seci-cni-1-700mw             | RfS_for_700_MW_SPV_Project | eligibility                 | batch | 1    | ok     |    58890 |       0 |      0 |   3964 | 0.393550 |    0 | 
+ 05:36:15 | ntpc-rel-600mw-anantapur-wtg | job_45811.pdf              | key_dates                   | batch | 2    | ok     |     2080 |       0 |  35030 |   2436 | 0.075679 |    0 | 
+ 05:36:15 | ntpc-rel-600mw-anantapur-wtg | job_45811.pdf              | identity_and_scope          | batch | 2    | ok     |     1906 |       0 |  35030 |   4118 | 0.116859 |    0 | 
+ 05:36:15 | ntpc-rel-600mw-anantapur-wtg | job_45811.pdf              | connectivity_and_compliance | batch | 2    | ok     |     1424 |       0 |  35030 |   2465 | 0.073124 |    0 | 
+ 05:36:15 | ntpc-rel-600mw-anantapur-wtg | job_45811.pdf              | commercial                  | batch | 2    | ok     |     1514 |       0 |  35030 |   1433 | 0.047774 |    0 | 
+ 05:36:15 | ntpc-rel-600mw-anantapur-wtg | job_45811.pdf              | penalties                   | batch | 2    | ok     |     1309 |       0 |  35030 |    563 | 0.024999 |    0 | 
+ 05:36:15 | ntpc-rel-600mw-anantapur-wtg | job_45811.pdf              | documents                   | batch | 2    | ok     |     1098 |       0 |  35030 |   2732 | 0.078169 |    0 | 
+ 05:36:15 | ntpc-rel-600mw-anantapur-wtg | job_45811.pdf              | eligibility                 | batch | 2    | ok     |     1946 |       0 |  35030 |   3687 | 0.106284 |    0 | 
+ 05:36:15 | ntpc-rel-600mw-anantapur-wtg | job_45811.pdf              | guarantees                  | batch | 2    | ok     |     1798 |       0 |  35030 |   2273 | 0.070194 |    0 | 
+ 05:36:15 | ntpc-rel-600mw-anantapur-wtg | job_45811.pdf              | wind_tech                   | batch | 2    | ok     |     1075 |       0 |  35030 |   2337 | 0.068179 |    0 | 
+ 05:37:15 | seci-cni-1-700mw             | Tender_notice_page_seci-cn | connectivity_and_compliance | batch | 2    | ok     |     1296 |       0 |   3624 |    695 | 0.024308 |    0 | 
+ 05:37:15 | seci-cni-1-700mw             | Tender_notice_page_seci-cn | key_dates                   | batch | 2    | ok     |     1952 |       0 |   3624 |   1415 | 0.045588 |    0 | 
+ 05:37:15 | seci-cni-1-700mw             | Tender_notice_page_seci-cn | guarantees                  | batch | 2    | ok     |     1670 |       0 |   3624 |   1180 | 0.038303 |    0 | 
+ 05:37:15 | seci-cni-1-700mw             | Tender_notice_page_seci-cn | commercial                  | batch | 2    | ok     |     1386 |       0 |   3624 |   1150 | 0.036133 |    0 | 
+(88 rows)
+
