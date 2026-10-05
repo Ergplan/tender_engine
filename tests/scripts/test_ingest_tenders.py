@@ -12,7 +12,6 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from core.models import Document, ExtractionRun
-from core.services.section_map import SectionMapOutput
 from scripts import ingest_tenders
 from scripts.ingest_tenders import Manifest, ManifestFile, Services, plan_versions
 from tender.models import Tender, TenderVersion
@@ -32,6 +31,7 @@ def services_of(pipeline: Pipeline) -> Services:
         ingest=pipeline.ingest,
         tenders=pipeline.tenders,
         review=pipeline.review_state,
+        extract=pipeline.extract,
     )
 
 
@@ -189,9 +189,7 @@ def test_resume_continues_a_failed_run_without_repeating_finished_groups(
     budget = {"calls": 4}
 
     def out_of_credit(number: int, request: dict[str, Any]) -> None:
-        if request["output_format"] is not SectionMapOutput and "Extract_" in str(
-            request["output_format"]
-        ):
+        if request["output_format"].__name__.startswith(("Extract_", "SharedAnswer")):
             budget["calls"] -= 1
             if budget["calls"] < 0:
                 raise anthropic.BadRequestError(
@@ -327,3 +325,31 @@ def test_resume_puts_a_failed_amendment_map_back_in_the_queue(
     db.expire_all()
     (run,) = db.scalars(select(ExtractionRun).where(ExtractionRun.object_version == 2))
     assert run.status == "validated" and run.groups == ["key_dates"]
+
+
+def test_cost_plan_prices_the_pages_without_calling_the_model(
+    pipeline: Pipeline, db: Session, tmp_path: Path
+) -> None:
+    root = tmp_path / "tenders"
+    write_folder(root)
+    services = services_of(pipeline)
+    pipeline.sdk.answers = dict(RFS_ANSWERS)
+    ingest_tenders.ingest(services, root, only={"acme-solar-600"})
+    pipeline.runner.run_until_idle()
+    ingest_tenders.extract(services)
+    pipeline.runner.run_until_idle()
+    calls = len(pipeline.sdk.calls)
+
+    header, _, row, total = ingest_tenders.cost_plan(services)
+
+    assert len(pipeline.sdk.calls) == calls
+    assert header.startswith("| Tender | Calls before | Pages before |")
+    cells = [cell.strip() for cell in row.strip("|").split("|")]
+    assert cells[0] == "acme-solar-600"
+    numbers = [float(cell.replace(",", "")) for cell in cells[1:]]
+    calls_before, pages_before, calls_now, written, read, plain, direct, batch = numbers
+    assert calls_before >= calls_now > 0
+    # Every page a section asked for is still sent to it, shared or not.
+    assert written + read + plain >= pages_before
+    assert direct <= pages_before and batch <= direct
+    assert total.startswith("| **all** |")

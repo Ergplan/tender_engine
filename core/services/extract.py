@@ -4,9 +4,13 @@ Model output stops here, in the candidate table. Candidates are inserted once an
 updated (a database trigger allows only their status to change).
 
 Groups whose windows overlap enough are read from one shared window, sent as a cached
-prefix (core.services.extract_plan). A run in batch mode sends its calls through the batch
-API in two waves: first the calls that write each shared window to the cache, then the
-calls that read it.
+prefix (core.services.extract_plan). The output schema is part of what the provider caches
+ahead of the pages, so the calls on a shared window all carry one schema that fits any
+group (SharedAnswer: a list of entries, one per field); the answer is then checked against
+the group's own typed model, and a call whose answer does not pass is made again on its
+own with that model. A run in batch mode
+sends its calls through the batch API in two waves: first the calls that write each shared
+window to the cache, then the calls that read it.
 """
 
 import base64
@@ -14,10 +18,10 @@ from collections.abc import Iterator
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from decimal import Decimal
-from typing import Any, cast
+from typing import Any, Literal, cast
 
 import pymupdf
-from pydantic import BaseModel, create_model
+from pydantic import BaseModel, ValidationError, create_model
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
@@ -74,6 +78,9 @@ class _Call:
     request: LLMRequest[BaseModel]
     # The first call on a shared chunk writes it to the cache; the others read it.
     writes_cache: bool
+    # The same call on its own: the group's own typed schema, nothing cached. Made when the
+    # answer of a call on a shared window does not pass that schema.
+    alone: LLMRequest[BaseModel]
 
 
 @dataclass
@@ -106,6 +113,41 @@ def build_group_model(
             )
         properties[field.key] = (field_models[kind], ...)
     return cast(type[BaseModel], make(f"Extract_{group.name}", **properties))
+
+
+class SharedEntry(BaseModel):
+    key: str
+    value: str | float | bool | list[str] | None
+    confidence: float
+    rationale: str
+    evidence: list[EvidenceQuote]
+
+
+class SharedAnswer(BaseModel):
+    """The structured-output model of every call on a shared window, whatever its group:
+    one entry per field asked for. A schema with each group's typed fields would differ
+    from call to call and with it the cached prefix (and one schema holding all groups is
+    too large for the provider to compile)."""
+
+    fields: list[SharedEntry]
+
+
+def typed_answer(answer: BaseModel, model: type[BaseModel]) -> BaseModel | None:
+    """A SharedAnswer as the group's own model, or None when it is not a complete, well
+    typed answer for the group: a field missing, given twice or unknown, or a value of the
+    wrong kind."""
+    entries = getattr(answer, "fields", None)
+    if not isinstance(entries, list):
+        return None
+    by_key = {entry.key: entry for entry in entries}
+    if len(by_key) != len(entries) or set(by_key) != set(model.model_fields):
+        return None
+    try:
+        return model.model_validate(
+            {key: entry.model_dump(exclude={"key"}) for key, entry in by_key.items()}
+        )
+    except ValidationError:
+        return None
 
 
 def select_pages(
@@ -297,23 +339,21 @@ class ExtractService:
         position = 0
         while position < len(calls):
             window = calls[position].window
-            answers: list[tuple[_Call, LLMResponse[BaseModel]]] = []
+            answers: list[tuple[_Call, BaseModel, str]] = []
             while position < len(calls) and calls[position].window is window:
                 call = calls[position]
-                answers.append(
-                    (call, self._llm.logged(call.request) or self._llm.call(call.request))
-                )
+                answers.append((call, *self._answer(call)))
                 position += 1
             for name in window.groups:
                 group = next(g for g in schema.groups if g.name == name)
                 fields = schema.fields_in(name)
                 drafts: dict[str, list[_Draft]] = {field.path: [] for field in fields}
                 not_found: dict[str, list[str]] = {field.path: [] for field in fields}
-                for call, response in answers:
+                for call, parsed, call_log_id in answers:
                     if call.group.name != name:
                         continue
                     for field in fields:
-                        item = getattr(response.parsed, field.key)
+                        item = getattr(parsed, field.key)
                         if item.value is None:
                             not_found[field.path].append(item.rationale)
                         else:
@@ -325,7 +365,7 @@ class ExtractService:
                                     rationale=item.rationale,
                                     quotes=quotes,
                                     chunk=call.chunk,
-                                    call_log_id=response.call_log_id,
+                                    call_log_id=call_log_id,
                                 )
                             )
                 done = self._done_fields(session, run, fields)
@@ -377,6 +417,22 @@ class ExtractService:
         session.commit()
         return run
 
+    def _answer(self, call: _Call) -> tuple[BaseModel, str]:
+        """The group's answer for one call and the id of the call log row it came from:
+        read from the log when the run already has it, asked for otherwise. A call on a
+        shared window whose answer is not a complete, well typed answer for the group is
+        made again on its own, with the group's typed model."""
+        response: LLMResponse[BaseModel] = self._llm.logged(call.request) or self._llm.call(
+            call.request
+        )
+        if not call.window.shared:
+            return response.parsed, response.call_log_id
+        typed = typed_answer(response.parsed, call.alone.response_model)
+        if typed is None:
+            response = self._llm.logged(call.alone) or self._llm.call(call.alone)
+            return response.parsed, response.call_log_id
+        return typed, response.call_log_id
+
     def _done_fields(
         self, session: Session, run: ExtractionRun, fields: list[FieldDef]
     ) -> set[str]:
@@ -398,7 +454,93 @@ class ExtractService:
         share a chunk follow each other while it is in the cache. The windows depend only
         on the document, the schema and the settings, so they are the same on every
         attempt; windows whose groups already have candidates are left out."""
-        tenant_id = run.tenant_id
+        done: set[str] = set()
+        groups: dict[str, FieldGroup] = {}
+        for group in _run_groups(schema, run.groups):
+            fields = schema.fields_in(group.name)
+            if self._done_fields(session, run, fields) == {field.path for field in fields}:
+                done.add(group.name)
+            groups[group.name] = group
+        batch = run.mode == "batch"
+        _, plan = self.plan_windows(session, document, schema, list(groups), batch=batch)
+        pdf = self._storage.get(document.storage_path)
+        calls: list[_Call] = []
+        for window in plan:
+            # A window's groups are committed together, so they are all done or none is.
+            if done.issuperset(window.groups):
+                continue
+            for chunk, pdf_b64 in self._windows(pdf, list(window.pages)):
+                part = PdfPart(data_b64=pdf_b64, title=document.filename)
+                for index, name in enumerate(window.groups):
+                    alone = self._request(run, document, schema, groups[name], chunk, part)
+                    calls.append(
+                        _Call(
+                            window=window,
+                            group=groups[name],
+                            chunk=chunk,
+                            writes_cache=index == 0,
+                            alone=alone,
+                            request=self._request(
+                                run,
+                                document,
+                                schema,
+                                groups[name],
+                                chunk,
+                                part,
+                                shared=True,
+                                cache_ttl="1h" if batch else "5m",
+                            )
+                            if window.shared
+                            else alone,
+                        )
+                    )
+        return calls
+
+    def _request(
+        self,
+        run: ExtractionRun,
+        document: Document,
+        schema: ExtractionSchema,
+        group: FieldGroup,
+        chunk: list[int],
+        part: PdfPart,
+        *,
+        shared: bool = False,
+        cache_ttl: Literal["5m", "1h"] = "5m",
+    ) -> LLMRequest[BaseModel]:
+        """The call for one group on one chunk. With `shared`, the call on a shared window:
+        the schema every group uses and the pages as a cached prefix."""
+        fields = schema.fields_in(group.name)
+        return LLMRequest[BaseModel](
+            prompt_name=group.prompt_name,
+            prompt_version=run.prompt_version,
+            content=[
+                part,
+                TextPart(text=_instructions(document, schema, group, fields, chunk, shared)),
+            ],
+            response_model=SharedAnswer
+            if shared
+            else build_group_model(schema, group, self._schemas),
+            created_by=ACTOR,
+            is_fixture=run.is_fixture,
+            extraction_run_id=run.id,
+            output_schema_name=f"{schema.name}:{schema.version}:{group.name}",
+            cache_documents=shared,
+            cache_ttl=cache_ttl,
+        )
+
+    def plan_windows(
+        self,
+        session: Session,
+        document: Document,
+        schema: ExtractionSchema,
+        group_names: list[str],
+        *,
+        batch: bool = False,
+    ) -> tuple[dict[str, list[int]], list[SharedWindow]]:
+        """The window each of the groups would get on its own, and the windows they are
+        actually read from once groups share. No model call, nothing written."""
+        tenant_id = document.tenant_id
         page_texts = {
             page_no: text
             for page_no, text in session.execute(
@@ -416,15 +558,8 @@ class ExtractService:
             )
         ]
         settings = self._settings
-        groups: dict[str, FieldGroup] = {}
-        windows: dict[str, list[int]] = {}
-        done: set[str] = set()
-        for group in _run_groups(schema, run.groups):
-            fields = schema.fields_in(group.name)
-            if self._done_fields(session, run, fields) == {field.path for field in fields}:
-                done.add(group.name)
-            groups[group.name] = group
-            windows[group.name] = select_pages(
+        windows = {
+            group.name: select_pages(
                 group.routing,
                 sections,
                 page_texts,
@@ -432,62 +567,26 @@ class ExtractService:
                 fallback_pages=settings.extract_max_pages_per_call,
                 keyword_pages=settings.extract_keyword_pages,
             )
-        batch = run.mode == "batch"
-        if settings.extract_share_windows:
-            plan = share_windows(
-                windows,
-                max_pages=settings.extract_max_pages_per_group,
-                pages_per_call=settings.extract_max_pages_per_call,
-                # A batch run keeps a window in the cache for an hour, between its waves.
-                cache_write_factor=settings.llm_cache_write_1h_factor
-                if batch
-                else settings.llm_cache_write_factor,
-                cache_read_factor=settings.llm_cache_read_factor,
-                call_overhead_pages=settings.extract_call_overhead_pages,
-            )
-        else:
-            plan = [
+            for group in schema.groups
+            if group.name in group_names
+        }
+        if not settings.extract_share_windows:
+            return windows, [
                 SharedWindow(groups=(name,), pages=tuple(pages))
                 for name, pages in windows.items()
                 if pages
             ]
-        pdf = self._storage.get(document.storage_path)
-        calls: list[_Call] = []
-        for window in plan:
-            # A window's groups are committed together, so they are all done or none is.
-            if done.issuperset(window.groups):
-                continue
-            for chunk, pdf_b64 in self._windows(pdf, list(window.pages)):
-                part = PdfPart(data_b64=pdf_b64, title=document.filename)
-                for index, name in enumerate(window.groups):
-                    group = groups[name]
-                    fields = schema.fields_in(name)
-                    calls.append(
-                        _Call(
-                            window=window,
-                            group=group,
-                            chunk=chunk,
-                            writes_cache=index == 0,
-                            request=LLMRequest[BaseModel](
-                                prompt_name=group.prompt_name,
-                                prompt_version=run.prompt_version,
-                                content=[
-                                    part,
-                                    TextPart(
-                                        text=_instructions(document, schema, group, fields, chunk)
-                                    ),
-                                ],
-                                response_model=build_group_model(schema, group, self._schemas),
-                                created_by=ACTOR,
-                                is_fixture=run.is_fixture,
-                                extraction_run_id=run.id,
-                                output_schema_name=f"{schema.name}:{schema.version}:{name}",
-                                cache_documents=window.shared,
-                                cache_ttl="1h" if batch else "5m",
-                            ),
-                        )
-                    )
-        return calls
+        return windows, share_windows(
+            windows,
+            max_pages=settings.extract_max_pages_per_group,
+            pages_per_call=settings.extract_max_pages_per_call,
+            # A batch run keeps a window in the cache for an hour, between its waves.
+            cache_write_factor=settings.llm_cache_write_1h_factor
+            if batch
+            else settings.llm_cache_write_factor,
+            cache_read_factor=settings.llm_cache_read_factor,
+            call_overhead_pages=settings.extract_call_overhead_pages,
+        )
 
     def _batches_done(self, session: Session, run: ExtractionRun, calls: list[_Call]) -> bool:
         """Move a batch run one step on. False while a batch is being worked on. True once
@@ -841,6 +940,7 @@ def _instructions(
     group: FieldGroup,
     fields: list[FieldDef],
     chunk: list[int],
+    shared: bool = False,
 ) -> str:
     mapping = "\n".join(
         f"attached page {position} = document page {page_no}"
@@ -865,4 +965,12 @@ def _instructions(
         + f"\n{guidance}\n"
         "In evidence, page_no is the attached page position (1 to "
         f"{len(chunk)}), not the document page number."
+        + (
+            "\n\nReturn one entry in `fields` for every field listed above, with its `key` "
+            "exactly as written there. Give each value in the kind its type calls for: text, "
+            "dates and choices as a string, numbers as a number, yes or no as true or false, "
+            "lists as a list of strings, and null when these pages do not state it."
+            if shared
+            else ""
+        )
     )

@@ -1,6 +1,7 @@
 """A scripted stand-in for the Anthropic SDK. Tests never call the real model."""
 
 import json
+import re
 from collections.abc import Callable
 from types import SimpleNamespace
 from typing import Any, cast
@@ -90,6 +91,11 @@ NOT_FOUND = {
 }
 
 
+def _asked_group(params: dict[str, Any]) -> str:
+    text: str = params["messages"][0]["content"][-1]["text"]
+    return text.split("group `")[1].split("`")[0]
+
+
 class ScriptedSDK:
     """messages.parse() answers from `answers` (by field key) and `sections`.
 
@@ -118,6 +124,8 @@ class ScriptedSDK:
         self.batch_polls = 0
         self.batch_failures: set[str] = set()
         self._polled: dict[str, int] = {}
+        # Groups for which a call on a shared window answers with no entries.
+        self.empty_entries: set[str] = set()
         # Pages already written to the cache, by the hash of the cached document.
         self._cached: set[str] = set()
 
@@ -130,6 +138,8 @@ class ScriptedSDK:
             parsed = SectionMapOutput.model_validate({"sections": self.sections})
         elif model.__name__ == "AmendmentMapOutput":
             parsed = model.model_validate({"changes": self.amendment_changes})
+        elif model.__name__ == "SharedAnswer":
+            parsed = model.model_validate(self._shared_answer(kwargs))
         else:
             parsed = model.model_validate(
                 {key: self.answers.get(key, NOT_FOUND) for key in model.model_fields}
@@ -178,13 +188,26 @@ class ScriptedSDK:
             if request["custom_id"] in self.batch_failures:
                 result = SimpleNamespace(type="errored", error="overloaded_error")
             else:
-                keys = request["params"]["output_config"]["format"]["schema"]["properties"]
-                text = json.dumps({key: self.answers.get(key, NOT_FOUND) for key in keys})
+                schema = request["params"]["output_config"]["format"]["schema"]
+                if schema.get("title") == "SharedAnswer":
+                    text = json.dumps(self._shared_answer(request["params"]))
+                else:
+                    text = json.dumps(
+                        {key: self.answers.get(key, NOT_FOUND) for key in schema["properties"]}
+                    )
                 result = SimpleNamespace(
                     type="succeeded", message=self._message(request["params"], text, None)
                 )
             out.append(SimpleNamespace(custom_id=request["custom_id"], result=result))
         return out
+
+    def _shared_answer(self, params: dict[str, Any]) -> dict[str, Any]:
+        """A shared window's answer: one entry per field the instructions list."""
+        text: str = params["messages"][0]["content"][-1]["text"]
+        if _asked_group(params) in self.empty_entries:
+            return {"fields": []}
+        keys = re.findall(r"^- `(\w+)`:", text, flags=re.MULTILINE)
+        return {"fields": [{"key": key, **self.answers.get(key, NOT_FOUND)} for key in keys]}
 
     def extract_calls(self) -> list[dict[str, Any]]:
         return [

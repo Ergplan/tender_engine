@@ -523,6 +523,12 @@ def test_groups_with_the_same_pages_share_one_cached_window(
     assert all(block["cache_control"] == {"type": "ephemeral"} for block in documents)
     assert len({block["source"]["data"] for block in documents}) == 1
     assert len({call["system"] for call in calls}) == 1
+    # One output schema for the whole window, or the cached prefix would differ per call.
+    assert {call["output_format"].__name__ for call in calls} == {"SharedAnswer"}
+    assert all(
+        "Return one entry in `fields`" in call["messages"][0]["content"][-1]["text"]
+        for call in calls
+    )
     logs = list(
         db.scalars(
             select(LLMCallLog)
@@ -667,3 +673,51 @@ def test_the_same_pages_always_give_the_same_pdf_bytes() -> None:
         time.sleep(1.1)  # a file id made from the clock would differ by now
         assert _sub_pdf(source, [1, 3]) == first
         assert _sub_pdf(source, [1, 2]) != first
+
+
+def test_a_shared_window_answer_that_is_not_complete_is_asked_again_with_the_typed_model(
+    make_pipeline: MakePipeline, db: Session
+) -> None:
+    sdk = ScriptedSDK(sections=ONE_SECTION)
+    sdk.empty_entries = {"dates"}
+    pipeline = make_pipeline(sdk)
+    run = pipeline.extracted_run(db)
+
+    calls = sdk.extract_calls()
+    assert [(group_of(c), c["output_format"].__name__) for c in calls] == [
+        ("identity", "SharedAnswer"),
+        ("dates", "SharedAnswer"),
+        ("dates", "Extract_dates"),
+        ("security", "SharedAnswer"),
+    ]
+    alone = calls[2]
+    assert "cache_control" not in alone["messages"][0]["content"][0]
+    assert "Return one entry in `fields`" not in alone["messages"][0]["content"][-1]["text"]
+    rows = candidates(db, run)
+    assert len(rows) == 7 and rows["dates.bid_deadline"].value == "2026-03-30"
+    assert run.status == "validated"
+
+
+def test_a_shared_answer_passes_only_as_a_complete_typed_answer_of_the_group() -> None:
+    from core.services.extract import SharedAnswer, build_group_model, typed_answer
+    from tests.fixtures.schemas import contract_schema, make_registry
+
+    schema = contract_schema()
+    model = build_group_model(schema, schema.groups[2], make_registry())  # security
+
+    def entry(key: str, value: Any) -> dict[str, Any]:
+        return {"key": key, "value": value, "confidence": 0.9, "rationale": "r", "evidence": []}
+
+    good = [entry("emd_per_mw", 928000), entry("capacity_mw", 600.0), entry("tenure_years", None)]
+    typed = typed_answer(SharedAnswer.model_validate({"fields": good}), model)
+    assert typed is not None
+    assert typed.emd_per_mw.value == 928000 and typed.tenure_years.value is None  # type: ignore[attr-defined]
+
+    for bad in (
+        good[:2],  # a field missing
+        [*good, entry("emd_per_mw", 1)],  # a field twice
+        [*good[:2], entry("tenure", 25)],  # an unknown key
+        [*good[:2], entry("tenure_years", "twenty-five")],  # the wrong kind of value
+        [*good[:2], entry("tenure_years", ["25"])],
+    ):
+        assert typed_answer(SharedAnswer.model_validate({"fields": bad}), model) is None

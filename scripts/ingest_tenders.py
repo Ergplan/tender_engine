@@ -7,13 +7,16 @@
   python -m scripts.ingest_tenders resume  [--only slug,slug]
   python -m scripts.ingest_tenders wait    [--timeout seconds]
   python -m scripts.ingest_tenders summary [--out docs/reports/EXTRACTION-SUMMARY.md]
+  python -m scripts.ingest_tenders cost-plan [--only slug,slug]
 
 `ingest` reads <root>/<type>/<slug>/manifest.yaml, creates each tender, groups its files
 into versions and uploads them; the worker parses and section-maps them. `extract` queues
 the extraction of every version that has none yet; the worker runs it. Both are safe to
 repeat. `resume` puts failed runs back in the queue: a run continues at the first field
 group it has no candidates for, so nothing already extracted is paid for twice. `wait`
-blocks until the job queue is empty.
+blocks until the job queue is empty. `extract` goes through the batch API unless `--sync`
+is given. `cost-plan` prints, without calling the model, the pages each tender's sections
+ask for and the pages that are sent once sections share a window.
 """
 
 import argparse
@@ -31,7 +34,7 @@ from sqlalchemy.orm import Session, sessionmaker
 from core.config import Settings
 from core.db import make_engine, make_session_factory
 from core.llm.client import LLMClient
-from core.models import ExtractionRun, Job
+from core.models import Document, ExtractionRun, Job
 from core.services import jobs
 from core.services.extract import ExtractService
 from core.services.ingest import IngestService
@@ -83,6 +86,7 @@ class Services:
     ingest: IngestService
     tenders: TenderService
     review: ReviewStateService
+    extract: ExtractService
 
 
 def build_services(settings: Settings | None = None) -> Services:
@@ -99,6 +103,7 @@ def build_services(settings: Settings | None = None) -> Services:
         ingest=IngestService(storage, settings.tenant_id),
         tenders=TenderService(catalog, extract, settings.tenant_id),
         review=ReviewStateService(schemas, settings.tenant_id),
+        extract=extract,
     )
 
 
@@ -370,6 +375,77 @@ def routing_report(services: Services) -> list[str]:
     return lines
 
 
+def cost_plan(services: Services, only: set[str] | None = None) -> list[str]:
+    """Per tender, for the sections its documents were last read for: the pages each
+    section asks for on its own (what Stage 2 sent), and what is sent when sections share
+    a window: pages written to the cache once, pages read from it, pages sent uncached.
+    The last column prices the input in uncached pages at the configured factors, for
+    direct calls and for a batch run."""
+    settings = services.settings
+    lines = [
+        "| Tender | Calls before | Pages before | Calls | Written | Read from cache | Uncached "
+        "| Input, direct | Input, batch |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+    ]
+    totals = [0.0] * 8
+    per_call = settings.extract_max_pages_per_call
+    with services.session_factory() as session:
+        for tender in services.tenders.all(session):
+            if only and tender.slug not in only:
+                continue
+            compiled = services.catalog.get(tender.tender_type)
+            row = [0.0] * 8
+            runs = session.scalars(
+                select(ExtractionRun).where(
+                    ExtractionRun.tenant_id == settings.tenant_id,
+                    ExtractionRun.object_type == OBJECT_TYPE,
+                    ExtractionRun.object_id == tender.id,
+                )
+            )
+            read_for: dict[str, set[str]] = {}
+            for run in runs:
+                names = run.groups or [group.name for group in compiled.schema.groups]
+                read_for.setdefault(run.document_id, set()).update(names)
+            for document_id, names in sorted(read_for.items()):
+                document = session.get(Document, document_id)
+                if document is None:
+                    continue
+                for batch in (False, True):
+                    windows, plan = services.extract.plan_windows(
+                        session, document, compiled.schema, sorted(names), batch=batch
+                    )
+                    written = sum(len(w.pages) for w in plan if w.shared)
+                    read = sum(len(w.pages) * (len(w.groups) - 1) for w in plan if w.shared)
+                    plain = sum(len(w.pages) for w in plan if not w.shared)
+                    write_factor = (
+                        settings.llm_cache_write_1h_factor
+                        if batch
+                        else settings.llm_cache_write_factor
+                    )
+                    priced = (
+                        plain + written * write_factor + read * settings.llm_cache_read_factor
+                    ) * (settings.llm_batch_factor if batch else 1.0)
+                    if batch:
+                        row[7] += priced
+                        continue
+                    row[0] += sum(-(-len(pages) // per_call) for pages in windows.values())
+                    row[1] += sum(len(pages) for pages in windows.values())
+                    row[2] += sum(-(-len(w.pages) // per_call) * len(w.groups) for w in plan)
+                    row[3] += written
+                    row[4] += read
+                    row[5] += plain
+                    row[6] += priced
+            totals = [a + b for a, b in zip(totals, row, strict=True)]
+            lines.append(_plan_row(tender.slug or tender.title[:40], row))
+    lines.append(_plan_row("**all**", totals))
+    return lines
+
+
+def _plan_row(name: str, row: list[float]) -> str:
+    cells = [f"{value:,.0f}" for value in row]
+    return f"| {name} | " + " | ".join(cells) + " |"
+
+
 def pending_jobs(services: Services) -> dict[str, int]:
     with services.session_factory() as session:
         rows = session.execute(
@@ -417,6 +493,7 @@ def main(argv: list[str]) -> int:
             "summary",
             "amendment-routing",
             "routing-report",
+            "cost-plan",
         ),
     )
     parser.add_argument("--root", type=Path, default=DEFAULT_ROOT)
@@ -442,6 +519,8 @@ def main(argv: list[str]) -> int:
         print("\n".join(amendment_routing(services, only, args.mode)))
     elif args.command == "routing-report":
         print("\n".join(routing_report(services)))
+    elif args.command == "cost-plan":
+        print("\n".join(cost_plan(services, only)))
     elif args.command == "resume":
         print("\n".join(resume(services, only)))
     elif args.command == "wait":
