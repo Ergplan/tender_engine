@@ -22,6 +22,7 @@ from core.schemas import (
     FieldDef,
     FieldGroup,
     FieldValidation,
+    KeyDef,
     RoutingHints,
     SchemaRegistry,
 )
@@ -56,6 +57,30 @@ class SectionDef(_Strict):
     keywords: list[str] = Field(default_factory=list)
 
 
+class RawKey(_Strict):
+    """One typed key of a record field; `keys` makes it a list of sub-records."""
+
+    label: str = ""
+    type: str = "text"
+    unit: str | None = None
+    enum: list[str] | None = None
+    min: float | None = None
+    max: float | None = None
+    keys: dict[str, "RawKey"] | None = None
+
+    def compiled(self, name: str) -> KeyDef:
+        return KeyDef(
+            name=name,
+            label=self.label or name.replace("_", " ").capitalize(),
+            value_type="list" if self.keys else self.type,
+            unit=self.unit,
+            enum_values=self.enum,
+            min=self.min,
+            max=self.max,
+            keys=[key.compiled(sub) for sub, key in self.keys.items()] if self.keys else None,
+        )
+
+
 class RawField(_Strict):
     section: str
     label: str
@@ -65,14 +90,20 @@ class RawField(_Strict):
     help: str = ""
     enum: list[str] | None = None
     item_keys: list[str] | None = None
+    keys: dict[str, RawKey] | None = None
     min: float | None = None
     max: float | None = None
     regex: str | None = None
+
+    def key_defs(self) -> list[KeyDef] | None:
+        return [key.compiled(name) for name, key in self.keys.items()] if self.keys else None
 
 
 class RawFile(_Strict):
     pack: str
     version: str | None = None
+    # Earlier versions whose runs are read under this one: it only adds to them.
+    reads_versions: list[str] = Field(default_factory=list)
     sector: str | None = None
     subdomains: list[str] = Field(default_factory=list)
     type: str | None = None
@@ -102,6 +133,7 @@ class TenderField(BaseModel):
     help_text: str
     enum_values: list[str] | None
     item_keys: list[str] | None
+    keys: list[KeyDef] | None = None
     review_order: int
 
 
@@ -121,6 +153,8 @@ class CompiledType:
     schema: ExtractionSchema
     sections: list[CompiledSection]
     fields: list[TenderField]
+    # Earlier schema versions whose runs are read under this schema.
+    reads_versions: tuple[str, ...] = ()
 
     def section(self, name: str) -> CompiledSection:
         return next(section for section in self.sections if section.name == name)
@@ -154,6 +188,8 @@ class Catalog:
             registry.register_run_rule(name, run_rule)
         for compiled in self.types.values():
             registry.register(compiled.schema)
+            for earlier in compiled.reads_versions:
+                registry.register(compiled.schema.model_copy(update={"version": earlier}))
 
 
 def schema_name(tender_type: str) -> str:
@@ -296,6 +332,7 @@ def compile_type(pack_dir: Path, tender_type: str, core_dir: Path | None = None)
                         help_text=field.help,
                         enum_values=field.enum,
                         item_keys=field.item_keys,
+                        keys=field.key_defs(),
                         review_order=order,
                     )
                 )
@@ -310,6 +347,7 @@ def compile_type(pack_dir: Path, tender_type: str, core_dir: Path | None = None)
                         help_text=field.help,
                         enum_values=field.enum,
                         item_keys=field.item_keys,
+                        keys=field.key_defs(),
                         validation=FieldValidation(min=field.min, max=field.max, regex=field.regex),
                         review_order=order,
                     )
@@ -370,6 +408,7 @@ def compile_type(pack_dir: Path, tender_type: str, core_dir: Path | None = None)
             for order, name in enumerate(included, start=1)
         ],
         fields=fields,
+        reads_versions=tuple(v for v in pack.reads_versions if v != (pack.version or "v1")),
     )
 
 

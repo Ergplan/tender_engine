@@ -916,6 +916,35 @@ export interface components {
             /** Tenant Id */
             tenant_id: string;
         };
+        /**
+         * KeyDef
+         * @description One typed key of a record field. `keys` makes the key a list of sub-records with
+         *     those keys (one level only).
+         */
+        KeyDef: {
+            /** Enum Values */
+            enum_values?: string[] | null;
+            /** Keys */
+            keys?: components["schemas"]["KeyDef"][] | null;
+            /**
+             * Label
+             * @default
+             */
+            label: string;
+            /** Max */
+            max?: number | null;
+            /** Min */
+            min?: number | null;
+            /** Name */
+            name: string;
+            /** Unit */
+            unit?: string | null;
+            /**
+             * Value Type
+             * @default text
+             */
+            value_type: string;
+        };
         /** PageOut */
         PageOut: {
             /** Has Text Layer */
@@ -967,6 +996,8 @@ export interface components {
             flagged: boolean;
             /** Help Text */
             help_text: string;
+            /** Keys */
+            keys?: components["schemas"]["KeyDef"][] | null;
             /** Label */
             label: string;
             /** Required */
@@ -1175,6 +1206,8 @@ export interface components {
             help_text: string;
             /** Item Keys */
             item_keys: string[] | null;
+            /** Keys */
+            keys?: components["schemas"]["KeyDef"][] | null;
             /** Label */
             label: string;
             /** Namespace */

@@ -174,10 +174,11 @@ class ReviewStateService:
                 required_undecided=0,
             )
         schema = self._schemas.get(run.schema_name, run.schema_version)
+        # Runs of an earlier schema version that this one only adds to are read with it:
+        # a section that was not read again under the new version keeps its fields.
+        versions = self._schemas.versions_read_as(run.schema_name, run.schema_version)
         runs = [
-            r
-            for r in all_runs
-            if (r.schema_name, r.schema_version) == (run.schema_name, run.schema_version)
+            r for r in all_runs if r.schema_name == run.schema_name and r.schema_version in versions
         ]
         document_of = {r.id: r.document_id for r in runs}
         candidates = list(

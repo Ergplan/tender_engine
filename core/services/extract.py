@@ -39,7 +39,14 @@ from core.models import (
     Section,
 )
 from core.models.extraction import RECORD_MODE, RUN_MODES
-from core.schemas import ExtractionSchema, FieldDef, FieldGroup, RoutingHints, SchemaRegistry
+from core.schemas import (
+    ExtractionSchema,
+    FieldDef,
+    FieldGroup,
+    KeyDef,
+    RoutingHints,
+    SchemaRegistry,
+)
 from core.schemas.types import JsonKind
 from core.services import audit, jobs
 from core.services.extract_plan import SharedWindow, share_windows
@@ -1009,6 +1016,46 @@ def _sub_pdf(source: Any, pages: list[int]) -> bytes:
         out.close()
 
 
+def _key_text(key: KeyDef) -> str:
+    notes = [key.value_type]
+    if key.unit:
+        notes.append(key.unit)
+    if key.enum_values:
+        notes.append("one of: " + ", ".join(key.enum_values))
+    return f"`{key.name}` ({'; '.join(notes)})"
+
+
+def _keys_text(field: FieldDef) -> str:
+    """How a record is written and which keys it has. The value is a list of strings, so
+    the answer's schema is the same for every field."""
+    keys = field.keys or []
+    if field.value_type.endswith("_list"):
+        how = (
+            "Write the value as a list with one string per item, each "
+            "`key: value | key: value`, leaving out keys the pages do not state"
+        )
+    else:
+        how = (
+            "Write the value as a list of strings, one `key: value` per key the pages "
+            "state; leave out a key they do not state, never write 0 for it"
+        )
+    parts = []
+    for key in keys:
+        if key.keys:
+            subs = ", ".join(_key_text(sub) for sub in key.keys)
+            parts.append(
+                f"`{key.name}` (a list: one string per item, written "
+                f"`{key.name}: sub=value; sub=value`, with sub-keys {subs})"
+            )
+        else:
+            parts.append(_key_text(key))
+    return (
+        f"{how}. Numbers as plain digits in the key's unit, without separators or unit "
+        "words; yes or no for a yes/no key. Quote the passages that state these numbers. "
+        "Keys: " + "; ".join(parts)
+    )
+
+
 def _instructions(
     document: Document,
     schema: ExtractionSchema,
@@ -1030,6 +1077,8 @@ def _instructions(
             parts.append(f"one of: {', '.join(field.enum_values)}")
         if field.help_text:
             parts.append(field.help_text)
+        if field.keys:
+            parts.append(_keys_text(field))
         lines.append("; ".join(parts))
     guidance = f"\nGuidance for this group:\n{group.guidance.strip()}\n" if group.guidance else ""
     return (

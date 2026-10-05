@@ -1,7 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 
 import type { ReviewEntry, ReviewField } from "../api/client";
-import { fromEditText, NUMBER_TYPES, toEditText, unitSuffix } from "../lib/format";
+import {
+  fromEditText,
+  NUMBER_TYPES,
+  recordFromEdit,
+  recordOf,
+  recordToEdit,
+  toEditText,
+  unitSuffix,
+  type KeyDef,
+} from "../lib/format";
 import { hasLocatedEvidence } from "./model";
 
 export type EditResult = {
@@ -46,6 +55,9 @@ export function EditForm({
   const candidate = entry.state.candidate;
   const start = entry.state.approval?.final_value ?? candidate?.value ?? null;
   const [text, setText] = useState(toEditText(start, field.value_type));
+  // A record is edited key by key; a list of records line by line.
+  const keys = field.value_type === "record" ? ((field.keys ?? []) as KeyDef[]) : [];
+  const [texts, setTexts] = useState(() => recordToEdit(recordOf(start, keys), keys));
   const [page, setPage] = useState("");
   const [quote, setQuote] = useState("");
   const [note, setNote] = useState(entry.state.approval?.note ?? "");
@@ -60,7 +72,7 @@ export function EditForm({
   const suffix = unitSuffix(type, field.unit);
 
   function save() {
-    const value = fromEditText(text, type);
+    const value = keys.length ? recordFromEdit(texts, keys) : fromEditText(text, type);
     if (value === null) return setProblem("Enter a value, or cancel and mark it not in document.");
     const hasEvidence = page.trim() !== "" || quote.trim() !== "";
     if (needsEvidence && !(page.trim() && quote.trim()))
@@ -86,7 +98,7 @@ export function EditForm({
 
   const common = {
     "data-testid": "edit-input",
-    autoFocus: true,
+    autoFocus: keys.length === 0,
     value: text,
     onChange: (event: { target: { value: string } }) => setText(event.target.value),
   };
@@ -100,7 +112,56 @@ export function EditForm({
         save();
       }}
     >
-      <div className="flex items-center gap-2">
+      {keys.length > 0 && (
+        <div className="grid grid-cols-[minmax(0,11rem)_minmax(0,1fr)] items-center gap-x-2 gap-y-1">
+          {keys.map((key, index) => {
+            const own = {
+              "data-testid": `edit-key-${key.name}`,
+              "aria-label": key.label,
+              autoFocus: index === 0,
+              className: INPUT,
+              value: texts[key.name] ?? "",
+              onChange: (event: { target: { value: string } }) =>
+                setTexts({ ...texts, [key.name]: event.target.value }),
+            };
+            return (
+              <label key={key.name} className="contents text-xs text-slate-700">
+                <span>
+                  {key.label}
+                  {key.unit ? <span className="text-slate-500"> ({key.unit})</span> : null}
+                </span>
+                {key.keys ? (
+                  <textarea
+                    rows={3}
+                    placeholder={`One per line: ${key.keys.map((sub) => `${sub.name}=…`).join("; ")}`}
+                    {...own}
+                  />
+                ) : key.value_type === "bool" ? (
+                  <select {...own}>
+                    <option value="">Not stated</option>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                  </select>
+                ) : key.value_type === "enum" ? (
+                  <select {...own}>
+                    <option value="">Not stated</option>
+                    {(key.enum_values ?? []).map((option) => (
+                      <option key={option} value={option}>
+                        {option.replace(/_/g, " ")}
+                      </option>
+                    ))}
+                  </select>
+                ) : NUMBER_TYPES.has(key.value_type) ? (
+                  <input type="number" step="any" placeholder="Not stated" {...own} />
+                ) : (
+                  <input type="text" placeholder="Not stated" {...own} />
+                )}
+              </label>
+            );
+          })}
+        </div>
+      )}
+      <div className={keys.length ? "hidden" : "flex items-center gap-2"}>
         {type === "date" ? (
           <input type="date" className={INPUT} {...common} />
         ) : type === "bool" ? (

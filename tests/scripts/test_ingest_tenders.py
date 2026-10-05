@@ -179,8 +179,8 @@ def test_ingest_extract_and_summary_on_a_tender_folder(
     answered = int(cells[6])
     # The scripted model repeats the RfS answers for the amendment, so version 2 returns a
     # pre-bid date whose quote is not in the amendment: a value without located evidence.
-    assert answered == 9 and cells[7] == "8"
-    assert cells[8] == "89%" and cells[9] == f"{100 * answered / fields:.0f}%"
+    assert answered == 10 and cells[7] == "9"
+    assert cells[8] == "90%" and cells[9] == f"{100 * answered / fields:.0f}%"
     assert "## Per tender type" in text and "## Per section, all tenders" in text
     assert "| solar | `core.key_dates.pre_bid_meeting_date` | 1 | 0 | 0% | acme-solar-600 |" in text
     db.refresh(tender)

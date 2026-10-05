@@ -5,6 +5,7 @@ sections:
   hybrid_mix:
     label: Hybrid mix
     prompt: extract/hybrid_mix
+    prompt_version: v2
     roles: [rfs, contractual, nit, technical]
     section_kinds: [technical_requirements, introduction_and_scope]
     keywords: [hybrid, rated power capacity of one resource, 33%, cuf, capacity utilisation, storage, excess generation, oversizing]
@@ -15,3 +16,5 @@ fields:
   sector.power.hybrid.storage_permitted: {section: hybrid_mix, label: Storage permitted, type: bool, help: "Whether storage may be added to the project."}
   sector.power.hybrid.storage_metering_rule: {section: hybrid_mix, label: Storage metering rule, type: text, help: "How storage is metered or charged."}
   sector.power.hybrid.excess_generation_treatment: {section: hybrid_mix, label: Excess generation, type: text, help: "What happens to energy above the contracted quantity."}
+  sector.power.hybrid.cuf_terms: {section: hybrid_mix, label: "CUF terms, structured", type: record, help: "The declared CUF and the band the developer must keep it in, as numbers. Band limits as a percentage of the declared CUF (a floor of 90% of declared CUF is 90; +10% is 110).", keys: {declared_min_pct: {label: Lowest CUF that may be declared, type: percent, unit: percent}, band_lower_pct_of_declared: {label: Lower limit, type: decimal, unit: percent of declared CUF, min: 0, max: 100}, band_upper_pct_of_declared: {label: Upper limit, type: decimal, unit: percent of declared CUF, min: 100, max: 300}, revision_allowed_within_years: {label: CUF may be revised within, type: decimal, unit: years, min: 0, max: 30}}}
+  sector.power.hybrid.excess_energy_structured: {section: hybrid_mix, label: "Excess energy, structured", type: record, help: "What happens to energy above the contracted quantity, as numbers.", keys: {above: {label: Counted above, type: enum, enum: [max_cuf, contracted_energy, contracted_capacity]}, price_basis: {label: Price, type: enum, enum: [ppa_tariff, pct_of_tariff, fixed, not_purchased]}, pct_of_tariff: {label: Share of tariff, type: percent, unit: percent of tariff}, fixed_inr_per_kwh: {label: Fixed price, type: decimal, unit: INR per kWh, min: 0, max: 15}, procurer_first_right: {label: Procurer has first right, type: bool}}}

@@ -2,7 +2,8 @@
 # Field paths are sector.power.<subdomain>.<field>; this file holds subdomain `common`,
 # the power fields every tender type shares. Each tender type has its own YAML.
 pack: power
-version: v1
+version: v2
+reads_versions: [v1]
 sector: power
 subdomains: [common, solar, wind, hybrid, fdre, bess, transmission, generation, epc, ipp]
 
@@ -163,6 +164,17 @@ fields:
     label: Deemed generation
     type: long_text
     help: Compensation for grid unavailability or backdown.
+  sector.power.common.deemed_generation_structured:
+    section: commercial
+    label: Deemed generation, structured
+    type: record
+    help: "Compensation for grid unavailability and backdown, as numbers."
+    keys:
+      grid_threshold_hours_per_year: {label: Grid unavailability beyond, type: decimal, unit: hours per year, min: 0, max: 8760}
+      backdown_threshold_hours_per_year: {label: Backdown beyond, type: decimal, unit: hours per year, min: 0, max: 8760}
+      compensation_pct_of_tariff: {label: Compensation, type: percent, unit: percent of tariff}
+      exchange_sale_share_adjusted_pct: {label: Share of exchange sale adjusted, type: percent, unit: percent}
+      payer: {label: Paid by, type: text}
 
   sector.power.common.connectivity_responsibility:
     section: connectivity_and_compliance
@@ -211,4 +223,4 @@ fields:
     type: text
     help: Who obtains statutory clearances and approvals.
 
-cross_field_rules: [bid_capacity_order]
+cross_field_rules: [bid_capacity_order, power_structured_agrees_with_scalar]

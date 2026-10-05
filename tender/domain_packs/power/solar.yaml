@@ -5,6 +5,7 @@ sections:
   solar_tech:
     label: Solar technology
     prompt: extract/solar_tech
+    prompt_version: v2
     roles: [rfs, contractual, nit, technical]
     section_kinds: [technical_requirements]
     keywords: [almm, domestic content, cuf, capacity utilisation, degradation, repowering, augmentation, land]
@@ -17,3 +18,5 @@ fields:
   sector.power.solar.land_type_restrictions: {section: solar_tech, label: Land type restrictions, type: text, help: "Restrictions on the kind of land the project may use."}
   sector.power.solar.repowering_allowed: {section: solar_tech, label: Repowering allowed, type: bool, help: "Whether repowering is permitted during the PPA term."}
   sector.power.solar.augmentation_rules: {section: solar_tech, label: Augmentation rules, type: text, help: "Rules for adding DC capacity or modules later."}
+  sector.power.solar.cuf_terms: {section: solar_tech, label: "CUF terms, structured", type: record, help: "The declared CUF and the band the developer must keep it in, as numbers. Band limits as a percentage of the declared CUF (a floor of 90% of declared CUF is 90; +10% is 110).", keys: {declared_min_pct: {label: Lowest CUF that may be declared, type: percent, unit: percent}, band_lower_pct_of_declared: {label: Lower limit, type: decimal, unit: percent of declared CUF, min: 0, max: 100}, band_upper_pct_of_declared: {label: Upper limit, type: decimal, unit: percent of declared CUF, min: 100, max: 300}, revision_allowed_within_years: {label: CUF may be revised within, type: decimal, unit: years, min: 0, max: 30}}}
+  sector.power.solar.excess_energy_structured: {section: solar_tech, label: "Excess energy, structured", type: record, help: "What happens to energy above the contracted quantity, as numbers.", keys: {above: {label: Counted above, type: enum, enum: [max_cuf, contracted_energy, contracted_capacity]}, price_basis: {label: Price, type: enum, enum: [ppa_tariff, pct_of_tariff, fixed, not_purchased]}, pct_of_tariff: {label: Share of tariff, type: percent, unit: percent of tariff}, fixed_inr_per_kwh: {label: Fixed price, type: decimal, unit: INR per kWh, min: 0, max: 15}, procurer_first_right: {label: Procurer has first right, type: bool}}}

@@ -95,5 +95,18 @@ class SchemaRegistry:
         except KeyError:
             raise UnknownSchemaError(f"schema {name} {version} is not registered") from None
 
+    def versions_read_as(self, name: str, version: str) -> set[str]:
+        """The versions of a schema whose runs are read together with this one: those
+        registered with the same groups, fields and rules. A version that only adds to an
+        earlier one is registered a second time under the earlier version, so the runs of
+        sections that were not read again stay part of the object's record. A version that
+        changes or removes a field has other content and is read on its own."""
+        content = self.get(name, version).model_dump(exclude={"version"})
+        return {
+            other_version
+            for (other_name, other_version), schema in self._schemas.items()
+            if other_name == name and schema.model_dump(exclude={"version"}) == content
+        }
+
     def names(self) -> list[tuple[str, str]]:
         return sorted(self._schemas)

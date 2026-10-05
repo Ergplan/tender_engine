@@ -16,6 +16,20 @@ class FieldValidation(BaseModel):
     regex: str | None = None
 
 
+class KeyDef(BaseModel):
+    """One typed key of a record field. `keys` makes the key a list of sub-records with
+    those keys (one level only)."""
+
+    name: str = Field(pattern=r"^[a-z0-9_]+$")
+    label: str = ""
+    value_type: str = "text"
+    unit: str | None = None
+    enum_values: list[str] | None = None
+    min: float | None = None
+    max: float | None = None
+    keys: list["KeyDef"] | None = None
+
+
 class FieldDef(BaseModel):
     path: str = Field(pattern=r"^[a-z0-9_]+(\.[a-z0-9_]+)+$")
     label: str
@@ -27,6 +41,8 @@ class FieldDef(BaseModel):
     enum_values: list[str] | None = None
     # For a list type whose items are records: the keys every item may carry.
     item_keys: list[str] | None = None
+    # For a record, or a list of records with typed values: its keys, each with a type.
+    keys: list[KeyDef] | None = None
     validation: FieldValidation = Field(default_factory=FieldValidation)
     review_order: int = 0
 

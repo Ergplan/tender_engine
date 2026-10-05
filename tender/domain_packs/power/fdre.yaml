@@ -5,6 +5,7 @@ sections:
   fdre_profile:
     label: FDRE profile
     prompt: extract/fdre_profile
+    prompt_version: v2
     roles: [rfs, contractual, nit]
     section_kinds: [technical_requirements, introduction_and_scope, penalties_and_remedies]
     keywords: [peak hours, demand profile, demand fulfilment, availability, firm and dispatchable, energy storage, excess energy, shortfall, capacity addition, component]
@@ -19,3 +20,26 @@ fields:
   sector.power.fdre.component_disclosure_required: {section: fdre_profile, label: Component disclosure required, type: bool, help: "Whether the bidder must declare the solar, wind and storage components."}
   sector.power.fdre.shortfall_compensation_multiple: {section: fdre_profile, label: Shortfall compensation multiple, type: decimal, min: 0, max: 10, help: "Multiple of the tariff payable per unit of shortfall."}
   sector.power.fdre.capacity_addition_flexibility: {section: fdre_profile, label: Capacity addition flexibility, type: text, help: "Whether components may be added or changed after award."}
+  sector.power.fdre.excess_energy_structured: {section: fdre_profile, label: "Excess energy, structured", type: record, help: "What happens to energy above the contracted quantity, as numbers.", keys: {above: {label: Counted above, type: enum, enum: [max_cuf, contracted_energy, contracted_capacity]}, price_basis: {label: Price, type: enum, enum: [ppa_tariff, pct_of_tariff, fixed, not_purchased]}, pct_of_tariff: {label: Share of tariff, type: percent, unit: percent of tariff}, fixed_inr_per_kwh: {label: Fixed price, type: decimal, unit: INR per kWh, min: 0, max: 15}, procurer_first_right: {label: Procurer has first right, type: bool}}}
+  sector.power.fdre.demand_profile_structured:
+    section: fdre_profile
+    label: Demand profile, structured
+    type: record
+    help: "The supply obligation as numbers. CUF band limits as a percentage of the declared CUF (+10% / -15% is 110 and 85). A peak block is a window within which peak hours fall; leave its times out when the document gives no clock times."
+    keys:
+      basis: {label: Obligation stated as, type: enum, enum: [availability_pct, energy_per_mw_per_day, rtc, load_following]}
+      peak_availability_pct: {label: Availability in peak hours, type: percent, unit: percent of contracted capacity}
+      peak_hours_per_day: {label: Peak hours, type: decimal, unit: hours per day, min: 0, max: 24}
+      peak_energy_kwh_per_mw_per_day: {label: Peak energy, type: decimal, unit: kWh per MW per day, min: 0, max: 24000}
+      peak_hours_chosen_by: {label: Peak hours chosen by, type: text}
+      peak_blocks:
+        label: Peak blocks
+        keys:
+          window_start: {type: time}
+          window_end: {type: time}
+          hours: {type: decimal, unit: hours, min: 0, max: 24}
+      cuf_declared_min_pct: {label: Lowest CUF that may be declared, type: percent, unit: percent}
+      cuf_band_upper_pct: {label: CUF upper limit, type: decimal, unit: percent of declared CUF, min: 100, max: 300}
+      cuf_band_lower_pct: {label: CUF lower limit, type: decimal, unit: percent of declared CUF, min: 0, max: 100}
+      re_share_min_pct: {label: Lowest share of RE power, type: percent, unit: percent of annual energy}
+      external_sourcing_max_pct: {label: Most that may be sourced outside, type: percent, unit: percent of annual energy}

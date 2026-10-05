@@ -93,6 +93,11 @@ RFS_ANSWERS: dict[str, dict[str, Any]] = {
     "pbg_per_mw_inr": _answer(
         2320000, "Performance Bank Guarantee (PBG) of INR 2320000 per MW shall be furnished."
     ),
+    # A structured field, as the model writes a record: one `key: value` line per key.
+    "emd_structured": _answer(
+        ["basis: per_mw", "rate_inr_per_mw: 928000"],
+        "Earnest Money Deposit (EMD) of INR 928000 per MW shall be furnished.",
+    ),
 }
 AMENDMENT_ANSWERS: dict[str, dict[str, Any]] = {
     "bid_submission_deadline": _answer(
@@ -102,6 +107,7 @@ AMENDMENT_ANSWERS: dict[str, dict[str, Any]] = {
 DEADLINE = "core.key_dates.bid_submission_deadline"
 EMD = "core.guarantees.emd_per_mw_inr"
 PBG = "core.guarantees.pbg_per_mw_inr"
+EMD_STRUCTURED = "core.guarantees.emd_structured"
 
 
 def parsed(pipeline: Pipeline, db: Session, pages: list[list[str]], name: str) -> Document:

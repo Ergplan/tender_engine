@@ -5,6 +5,7 @@ sections:
   bess_performance:
     label: BESS performance
     prompt: extract/bess_performance
+    prompt_version: v2
     roles: [rfs, contractual, nit, technical]
     section_kinds: [technical_requirements, commercial_terms, penalties_and_remedies]
     keywords: [round trip efficiency, rte, availability, cycles, capacity charges, viability gap, vgf, degradation, augmentation, state of charge, dispatch, warranty]
@@ -23,3 +24,33 @@ fields:
   sector.power.bess.soc_constraints: {section: bess_performance, label: State-of-charge constraints, type: text, help: "Limits on state of charge or depth of discharge."}
   sector.power.bess.warranty_years: {section: bess_performance, label: Warranty, type: int, unit: years, min: 0, max: 40, help: "Warranty period required."}
   sector.power.bess.end_of_life_terms: {section: bess_performance, label: End-of-life terms, type: text, help: "What happens to the system at the end of the term."}
+  sector.power.bess.degradation_and_augmentation_structured:
+    section: bess_performance
+    label: Degradation and augmentation, structured
+    type: record
+    help: "The capacity the developer must keep over the term, as numbers, and who pays to keep it. Give schedule items only for years the pages print."
+    keys:
+      basis: {label: Stated as, type: enum, enum: [pct_of_cod_capacity, pct_of_rated_capacity, other]}
+      year_1_end_pct: {label: At the end of year 1, type: percent, unit: percent}
+      annual_decline_pct_points: {label: Decline per year, type: decimal, unit: percentage points, min: 0, max: 20}
+      end_of_term_pct: {label: At the end of the term, type: percent, unit: percent}
+      term_years: {label: Term, type: decimal, unit: years, min: 0, max: 50}
+      schedule:
+        label: Schedule
+        keys:
+          contract_year: {type: int, min: 1, max: 50}
+          min_capacity_pct: {type: percent, unit: percent}
+      augmentation_required: {label: Augmentation required, type: bool}
+      augmentation_at_cost_of: {label: Augmentation paid by, type: enum, enum: [developer, procurer, shared]}
+      replacement_outage_counts: {label: Replacement outage counts as unavailability, type: bool}
+  sector.power.bess.soc_constraints_structured:
+    section: bess_performance
+    label: State-of-charge limits, structured
+    type: record
+    help: "Limits on state of charge, depth of discharge and cycling, as numbers."
+    keys:
+      min_soc_pct: {label: Lowest state of charge, type: percent, unit: percent}
+      max_soc_pct: {label: Highest state of charge, type: percent, unit: percent}
+      max_dod_pct: {label: Deepest discharge, type: percent, unit: percent}
+      max_cycles_per_year: {label: Most cycles, type: decimal, unit: cycles per year, min: 0, max: 5000}
+      min_charging_hours: {label: Charging time, type: decimal, unit: hours, min: 0, max: 24}

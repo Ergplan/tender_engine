@@ -1,7 +1,8 @@
 # Core pack: fields that keep their meaning in any sector. Seeded from the field catalogue
 # in docs/MASTER-PROMPT.md. Field paths are core.<catalogue section>.<field>.
 pack: core
-version: v1
+version: v2
+reads_versions: [v1]
 
 # A section is what a reviewer sees as one block and what the extractor reads in one call.
 # roles: the document roles of a tender version this section is extracted from.
@@ -38,18 +39,21 @@ sections:
   guarantees:
     label: Guarantees
     prompt: extract/guarantees
+    prompt_version: v2
     roles: [rfs, contractual, nit]
     section_kinds: [financial_security]
     keywords: [earnest money deposit, emd, performance bank guarantee, pbg, success charges, processing fee, bid security, contract performance security, bid information sheet]
   commercial:
     label: Commercial
     prompt: extract/commercial
+    prompt_version: v2
     roles: [rfs, contractual, nit, ppa, cfda]
     section_kinds: [commercial_terms]
     keywords: [ceiling tariff, tariff, payment security, letter of credit, change in law, late payment surcharge, termination compensation, deemed generation, generation compensation, buying entity, terms of payment, bid information sheet]
   penalties:
     label: Penalties
     prompt: extract/penalties
+    prompt_version: v2
     roles: [rfs, contractual, nit, ppa, cfda]
     section_kinds: [penalties_and_remedies]
     keywords: [liquidated damages, delay in commissioning, delay in commencement, encash, shortfall, extension of scsd, extension of scd, termination, penalty]
@@ -223,6 +227,25 @@ fields:
     label: EMD formula or amount as stated
     type: long_text
     help: The EMD as the tender states it when it is not one per-MW figure (component rates, a percentage, a lump sum).
+  core.guarantees.emd_structured:
+    section: guarantees
+    label: EMD, structured
+    type: record
+    help: "The EMD as numbers a model can compute with. Fill only what the pages state; where the amount is one figure per MW give rate_inr_per_mw, where it is a rate per component give one components item per component."
+    keys:
+      basis: {label: Stated as, type: enum, enum: [per_mw, per_component, lump_sum, percent]}
+      rate_inr_per_mw: {label: Rate per MW, type: money_inr, unit: INR per MW}
+      components:
+        label: Rates per component
+        keys:
+          component: {type: enum, enum: [solar, wind, ess, other]}
+          rate_inr: {type: money_inr, unit: INR}
+          per: {type: enum, enum: [mw, mwh]}
+      lump_sum_inr: {label: Lump sum, type: money_inr, unit: INR}
+      percent: {label: Percentage, type: percent, unit: percent}
+      percent_of: {label: Percentage of, type: text}
+      cap_inr: {label: Cap, type: money_inr, unit: INR}
+      cap_per: {label: Cap applies per, type: enum, enum: [project, bidder]}
   core.guarantees.emd_form:
     section: guarantees
     label: Form of EMD
@@ -247,6 +270,27 @@ fields:
     label: PBG schedule
     type: long_text
     help: When the PBG is submitted and in what parts.
+  core.guarantees.pbg_structured:
+    section: guarantees
+    label: PBG, structured
+    type: record
+    help: "The PBG as numbers a model can compute with. Fill only what the pages state; where the amount is one figure per MW give rate_inr_per_mw, where it is a rate per component give one components item per component."
+    keys:
+      basis: {label: Stated as, type: enum, enum: [per_mw, per_component, lump_sum, percent]}
+      rate_inr_per_mw: {label: Rate per MW, type: money_inr, unit: INR per MW}
+      components:
+        label: Rates per component
+        keys:
+          component: {type: enum, enum: [solar, wind, ess, other]}
+          rate_inr: {type: money_inr, unit: INR}
+          per: {type: enum, enum: [mw, mwh]}
+      lump_sum_inr: {label: Lump sum, type: money_inr, unit: INR}
+      percent: {label: Percentage, type: percent, unit: percent}
+      percent_of: {label: Percentage of, type: text}
+      cap_inr: {label: Cap, type: money_inr, unit: INR}
+      cap_per: {label: Cap applies per, type: enum, enum: [project, bidder]}
+      valid_months_after_scod: {label: Valid until, type: decimal, unit: months after scheduled commissioning, min: 0, max: 120}
+      submitted_before: {label: Submitted before, type: enum, enum: [ppa_signing, loa, other]}
   core.guarantees.success_charge_inr:
     section: guarantees
     label: Success charges
@@ -278,6 +322,20 @@ fields:
     label: Payment security mechanism
     type: long_text
     help: Letter of credit, payment security fund, state guarantee and their size.
+  core.commercial.payment_security_structured:
+    section: commercial
+    label: Payment security, structured
+    type: record
+    help: "The payment security as numbers: the letter of credit, the payment security fund and the payment terms."
+    keys:
+      lc_required: {label: Letter of credit, type: bool}
+      lc_months_of_billing: {label: LC size, type: decimal, unit: months of average billing, min: 0, max: 24}
+      lc_revolving: {label: LC revolving, type: bool}
+      lc_drawable_after_days: {label: LC drawable after, type: int, unit: days after the due date, min: 0, max: 365}
+      psf_available: {label: Payment security fund, type: bool}
+      psf_charge_inr_per_kwh: {label: Fund charge, type: decimal, unit: INR per kWh, min: 0, max: 1}
+      state_guarantee: {label: State government guarantee, type: bool}
+      payment_due_days: {label: Payment due, type: int, unit: days from the bill, min: 0, max: 365}
   core.commercial.change_in_law_clause:
     section: commercial
     label: Change in law
@@ -305,6 +363,17 @@ fields:
     type: money_inr
     unit: INR per MW per day
     help: Liquidated damages for delay as one amount per MW per day; empty when stated as PBG encashment or a percentage.
+  core.penalties.delay_ld_structured:
+    section: penalties
+    label: Delay damages, structured
+    type: record
+    help: "How delay in commissioning or completion is charged, as numbers."
+    keys:
+      basis: {label: Charged as, type: enum, enum: [inr_per_mw_per_day, pbg_encashment_per_day, pct_of_contract_price_per_week, other]}
+      rate_inr_per_mw_per_day: {label: Rate, type: money_inr, unit: INR per MW per day}
+      pct_per_week: {label: Rate, type: percent, unit: percent of contract price per week}
+      cap_pct_of_contract_price: {label: Cap, type: percent, unit: percent of contract price}
+      pbg_encashed_over_months: {label: PBG encashed over, type: decimal, unit: months of delay, min: 0, max: 60}
   core.penalties.max_scod_extension_months:
     section: penalties
     label: Maximum extension with penalty
@@ -318,6 +387,20 @@ fields:
     label: Shortfall penalty basis
     type: long_text
     help: How a shortfall in supply, generation or performance is penalised.
+  core.penalties.shortfall_rules:
+    section: penalties
+    label: Shortfall rules, structured
+    type: record_list
+    help: "One item for each rule that charges a shortfall in supply, generation or availability, as numbers."
+    keys:
+      metric: {label: Measured on, type: enum, enum: [annual_cuf, peak_availability, monthly_availability, guaranteed_generation]}
+      threshold_pct: {label: Threshold, type: percent, unit: percent}
+      threshold_of: {label: Threshold is a share of, type: enum, enum: [declared_cuf, contracted_capacity, guaranteed_value]}
+      tolerance_pct: {label: Tolerance, type: percent, unit: percent}
+      measured: {label: Measured, type: enum, enum: [monthly, annual]}
+      penalty_multiple_of_tariff: {label: Penalty, type: decimal, unit: times the tariff per unit short, min: 0, max: 10}
+      default_after_years: {label: Default after, type: decimal, unit: years of shortfall, min: 0, max: 30}
+      default_damages_months_of_tariff: {label: Damages on default, type: decimal, unit: months of tariff, min: 0, max: 120}
   core.penalties.pbg_encashment_triggers:
     section: penalties
     label: PBG encashment triggers
@@ -348,5 +431,5 @@ fields:
     type: list_text
     help: Draft agreements the tender refers to (PPA, PSA, contract agreement).
 
-cross_field_rules: [date_order, emd_pbg_within_10x]
-run_rules: [later_version_evidence]
+cross_field_rules: [date_order, emd_pbg_within_10x, structured_agrees_with_scalar]
+run_rules: [later_version_evidence, structured_numbers_quoted]

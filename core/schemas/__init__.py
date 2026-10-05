@@ -5,6 +5,7 @@ from core.schemas.model import (
     FieldDef,
     FieldGroup,
     FieldValidation,
+    KeyDef,
     RoutingHints,
 )
 from core.schemas.registry import (
@@ -24,6 +25,7 @@ __all__ = [
     "FieldDef",
     "FieldGroup",
     "FieldValidation",
+    "KeyDef",
     "RoutingHints",
     "RuleOutcome",
     "RunRule",

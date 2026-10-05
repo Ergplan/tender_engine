@@ -7,6 +7,7 @@ const REPLACED = "e2e-review-token-0000000000000002";
 const DEADLINE = "core.key_dates.bid_submission_deadline";
 const PREBID = "core.key_dates.pre_bid_meeting_date";
 const EMD = "core.guarantees.emd_per_mw_inr";
+const EMD_STRUCTURED = "core.guarantees.emd_structured";
 const NUMBER = "core.identity.tender_number";
 
 const card = (page: Page, path: string) => page.locator(`[data-field="${path}"]`);
@@ -265,6 +266,35 @@ test("approve with Enter, edit a date, mark not in document, flag", async ({ pag
   const deadline = view.fields.find((field: { field_path: string }) => field.field_path === DEADLINE);
   expect(deadline.value).toBe("2026-04-16");
   expect(deadline.version_no).toBe(2);
+});
+
+test("a structured field shows every key, says what is not stated, and is edited key by key", async ({ page }) => {
+  await page.goto(`/review/${TOKEN}`);
+  const structured = card(page, EMD_STRUCTURED);
+  const row = (name: string) => structured.locator(`[data-testid="record-key"][data-key="${name}"]`);
+  await expect(row("basis")).toContainText("Per mw");
+  await expect(row("rate_inr_per_mw")).toContainText("9.28 lakh");
+  await expect(row("rate_inr_per_mw")).toContainText("INR per MW");
+  await expect(row("cap_inr")).toContainText("not stated");
+  await expect(row("components")).toContainText("not stated");
+
+  await structured.getByTestId("edit").click();
+  await expect(structured.getByTestId("edit-key-rate_inr_per_mw")).toHaveValue("928000");
+  await expect(structured.getByTestId("edit-key-cap_inr")).toHaveValue("");
+  await structured.getByTestId("edit-key-cap_inr").fill("100000000");
+  await structured.getByTestId("edit-key-cap_per").selectOption("project");
+  await structured.getByTestId("edit-save").click();
+  await expect(structured.getByTestId("decision")).toContainText("Edited · Asha Rao");
+  await expect(row("cap_inr")).toContainText("10 crore");
+
+  await page.reload();
+  await expect(row("cap_inr")).toContainText("10 crore");
+  await expect(row("cap_per")).toContainText("Project");
+  const view = await (await api(page, `/tenders/${await tenderId(page)}/view`)).json();
+  const stored = view.fields.find((field: { field_path: string }) => field.field_path === EMD_STRUCTURED);
+  expect(stored.value.cap_inr).toBe(100000000);
+  expect(stored.value.rate_inr_per_mw).toBe(928000);
+  expect(stored.value.percent).toBeNull();
 });
 
 async function tenderId(page: Page): Promise<string> {

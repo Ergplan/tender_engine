@@ -308,7 +308,7 @@ def test_full_tender_flow_with_an_amendment_through_the_http_api(
 def test_schema_endpoint_returns_the_compiled_field_list(client: TestClient) -> None:
     body = client.get("/api/v1/schemas/tender/fdre").json()
     assert (body["tender_type"], body["pack"]) == ("fdre", "power")
-    assert (body["schema_name"], body["schema_version"]) == ("tender.fdre", "v1")
+    assert (body["schema_name"], body["schema_version"]) == ("tender.fdre", "v2")
     assert [section["name"] for section in body["sections"]][-1] == "fdre_profile"
     assert body["sections"][0] == {
         "name": "summary",
@@ -374,10 +374,10 @@ def test_extraction_summary_is_served_as_data_and_as_the_markdown_report(
         1,
         1,
     )
-    assert (row["fields"], row["with_value"], row["located"]) == (fields, 9, 9)
+    assert (row["fields"], row["with_value"], row["located"]) == (fields, 10, 10)
     # The extraction of the RfS, and the summary written from its record afterwards.
     assert (row["runs"], row["unfinished_runs"], row["pages"]) == (2, 0, 3)
     assert row["failing_validation"] == 0
     assert body["model"] == "claude-fable-5-1" and body["calls"] >= 10
     assert body["total_cost_usd"] > 0 and float(row["cost_usd"]) > 0
-    assert f"| 1 | 1 | 3 | {fields} | 9 | 9 | 100% |" in body["markdown"]
+    assert f"| 1 | 1 | 3 | {fields} | 10 | 10 | 100% |" in body["markdown"]

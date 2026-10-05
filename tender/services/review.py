@@ -17,6 +17,7 @@ from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from core.schemas import KeyDef
 from core.services import audit
 from core.services.review_state import FieldState, ReviewStateService
 from tender.models import ReviewToken, Tender, TenderReviewSnapshot
@@ -64,6 +65,8 @@ class ReviewField(BaseModel):
     required: bool
     help_text: str
     enum_values: list[str] | None
+    # The typed keys of a structured field (a record or a list of records).
+    keys: list[KeyDef] | None = None
     review_order: int
     entries: list[ReviewEntry]
     # Index in `entries` of the entry to decide; None when no version has a candidate.
@@ -152,6 +155,7 @@ def tender_review(
                 required=field.required,
                 help_text=field.help_text,
                 enum_values=field.enum_values,
+                keys=field.keys,
                 review_order=field.review_order,
                 entries=own,
                 current=current,

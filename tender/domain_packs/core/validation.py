@@ -9,6 +9,11 @@ from sqlalchemy.orm import Session
 from core.models import Candidate, EvidenceSpan, ExtractionRun
 from core.models.extraction import RECORD_MODE
 from core.schemas import CandidateOutcome, CrossFieldRule, RuleOutcome, RunRule
+from tender.domain_packs.core.structured import (
+    QUOTED_RULE,
+    structured_agrees_with_scalar,
+    structured_numbers_quoted,
+)
 from tender.models import TenderVersion, TenderVersionDocument
 
 NIT = "core.key_dates.nit_date"
@@ -122,5 +127,9 @@ def later_version_evidence(
 CROSS_FIELD_RULES: dict[str, CrossFieldRule] = {
     "date_order": date_order,
     "emd_pbg_within_10x": emd_pbg_within_10x,
+    "structured_agrees_with_scalar": structured_agrees_with_scalar,
 }
-RUN_RULES: dict[str, RunRule] = {"later_version_evidence": later_version_evidence}
+RUN_RULES: dict[str, RunRule] = {
+    "later_version_evidence": later_version_evidence,
+    QUOTED_RULE: structured_numbers_quoted,
+}

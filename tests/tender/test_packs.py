@@ -43,7 +43,15 @@ def test_every_field_has_a_section_a_value_type_a_label_and_help(catalog: Catalo
             if field.value_type == "enum":
                 assert field.enum_values, field.path
             if field.value_type == "record_list":
-                assert field.item_keys, field.path
+                assert field.item_keys or field.keys, field.path
+            if field.value_type == "record":
+                assert field.keys, field.path
+            for key in field.keys or []:
+                assert key.label, (field.path, key.name)
+                if key.value_type == "enum":
+                    assert key.enum_values, (field.path, key.name)
+                if key.keys is None:
+                    assert key.value_type in KEY_TYPES, (field.path, key.name)
         for section in compiled.sections:
             assert set(section.roles) <= set(DOCUMENT_ROLES) and section.roles
             assert compiled.schema.fields_in(section.name), section.name
@@ -70,14 +78,22 @@ def test_field_paths_carry_their_origin(catalog: Catalog) -> None:
     assert "sector.power.bess.capacity_mwh" not in fdre
 
 
-def test_schemas_register_with_core_as_tender_type_v1_once(catalog: Catalog) -> None:
+def test_schemas_register_with_core_as_tender_type_v2_once(catalog: Catalog) -> None:
     registry, built = build_registry()
-    assert registry.names() == sorted((f"tender.{name}", "v1") for name in TENDER_TYPES)
+    assert registry.names() == sorted(
+        (f"tender.{name}", version) for name in TENDER_TYPES for version in ("v1", "v2")
+    )
     built.register(registry)  # a second registration is a no-op, not an error
-    schema = registry.get("tender.fdre", "v1")
-    assert schema.cross_field_rules == ["date_order", "emd_pbg_within_10x", "bid_capacity_order"]
-    assert registry.get("tender.transmission", "v1").cross_field_rules[-1] == "elements_have_kv"
-    assert schema.run_rules == ["later_version_evidence"]
+    schema = registry.get("tender.fdre", "v2")
+    assert schema.cross_field_rules == [
+        "date_order",
+        "emd_pbg_within_10x",
+        "structured_agrees_with_scalar",
+        "bid_capacity_order",
+        "power_structured_agrees_with_scalar",
+    ]
+    assert registry.get("tender.transmission", "v2").cross_field_rules[-1] == "elements_have_kv"
+    assert schema.run_rules == ["later_version_evidence", "structured_numbers_quoted"]
     assert schema.field("core.guarantees.emd_per_mw_inr").validation.min == 1000
 
 
@@ -267,3 +283,45 @@ def test_a_type_can_only_exclude_a_common_field_it_would_otherwise_have(tmp_path
     (pack / "a.yaml").write_text(type_yaml("a", "sector.demo.a.x") + "excludes: [core.x.y]\n")
     with pytest.raises(PackError, match="excludes field"):
         compile_type(pack, "a", tmp_path / "core")
+
+
+KEY_TYPES = {"text", "int", "decimal", "bool", "enum", "money_inr", "percent", "time", "kv", "km"}
+STRUCTURED = {
+    "fdre": {"demand_profile_structured", "excess_energy_structured"},
+    "bess": {"degradation_and_augmentation_structured", "soc_constraints_structured"},
+    "epc": {"milestone_payment_structured", "ld_performance_structured"},
+    "transmission": {"element_wise_cod_structured", "spv_acquisition_structured", "elements"},
+    "solar": {"cuf_terms", "excess_energy_structured"},
+    "wind": {"cuf_terms", "excess_energy_structured"},
+    "hybrid": {"cuf_terms", "excess_energy_structured"},
+    "generation": set(),
+    "ipp": set(),
+}
+EVERY_TYPE = {
+    "emd_structured",
+    "pbg_structured",
+    "payment_security_structured",
+    "delay_ld_structured",
+    "shortfall_rules",
+    "deemed_generation_structured",
+}
+
+
+def test_every_type_has_its_structured_fields_beside_the_prose(catalog: Catalog) -> None:
+    for tender_type, own in STRUCTURED.items():
+        compiled = catalog.get(tender_type)
+        structured = {field.path.rsplit(".", 1)[1] for field in compiled.fields if field.keys}
+        assert structured == EVERY_TYPE | own, tender_type
+        groups = {group.name: group for group in compiled.schema.groups}
+        for field in compiled.fields:
+            if field.keys:
+                assert groups[field.section].prompt_version == "v2", field.path
+
+
+def test_schema_v2_also_reads_the_runs_of_v1(catalog: Catalog) -> None:
+    registry = SchemaRegistry()
+    catalog.register(registry)
+    for compiled in catalog.types.values():
+        assert compiled.schema.version == "v2" and compiled.reads_versions == ("v1",)
+        earlier = registry.get(compiled.schema.name, "v1")
+        assert earlier.fields == compiled.schema.fields

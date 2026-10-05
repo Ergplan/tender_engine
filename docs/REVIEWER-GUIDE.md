@@ -26,6 +26,16 @@ A field that comes from an amendment carries a tag such as "v2 amendment" and sh
 
 Complete review becomes available once every required field (marked with a red star) has a decision. After completing, the review can be read but no longer changed.
 
+## Structured fields
+
+Some fields come twice: once in words (EMD formula, Demand profile, Payment security mechanism) and once as numbers, labelled "structured". The structured field feeds a financial model, so it is checked number by number.
+
+- Every line is one number or choice with its unit. Check each against the document, as you would a single value.
+- "not stated" means the document does not give that number. That is correct when the document is silent, and it is what you should want to see then: a model must not get a 0 or a guess. If the document does state it, edit the field and fill the line in.
+- Edit opens one input per line. Empty a line to say the document does not state it.
+- A structured field is marked for review when a number in it is not printed in its own quotes, or when it disagrees with the single-value field for the same fact (EMD per MW beside the structured EMD). Read the note on the card: the number may be right and merely written differently in the document ("one and a half times" for 1.5), or it may be wrong.
+- The two must say the same thing. If you correct the words, correct the numbers too, and the other way round.
+
 ## What the confidence figure means
 
 It is the model's own confidence in its reading, not a measure of whether the value is correct. A low figure often means the document states the field ambiguously or only in part, not that the value is likely wrong.

@@ -1,4 +1,4 @@
-Checked from the VM through the public address on 2026-10-05, after the last change:
+Checked from the VM through the public address on 2026-10-05, after the structured-fields change (schema v2):
 GET /health -> 200
 GET /api/v1/health -> 200
 GET /api/v1/tenders -> 401
@@ -9,7 +9,8 @@ POST /api/v1/review-tokens -> 401
 health body: {"status":"ok","tenant_id":"ergplan","database":"ok"}
 alembic_version: 0011
 decisions in the database (approval rows): 0
-located evidence spans without a box: 0 of 4045
+located evidence spans without a box: 0 of 10887
+extraction runs by schema version: v1=131, v2=83
 review links (token not shown):
   nhpc-fdre-ii  venture@aayuda.energy  live until 2026-11-04  https://34.131.65.108/review/<token>
   seci-gaya-60mw  Build check  revoked  https://34.131.65.108/review/<token>
@@ -17,10 +18,10 @@ review links (token not shown):
   seci-ramagiri-70mw-bess  Load check  revoked  https://34.131.65.108/review/<token>
   seci-ramagiri-70mw-bess  Load check  revoked  https://34.131.65.108/review/<token>
   seci-ramagiri-70mw-bess  Load check  revoked  https://34.131.65.108/review/<token>
-containers:
+containers (the test watcher is stopped on the owner's instruction):
 api running
 caddy running
 db running
-tests running
 web running
 worker running
+worker restarted after the review-state correction: worker Up 12 minutes

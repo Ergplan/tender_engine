@@ -63,6 +63,9 @@ def ui_components() -> dict[str, str]:
     for value_type in ("long_text", "list_text", "record_list"):
         if f'"{value_type}"' in form_source:
             known[value_type] = "textarea"
+    record = WEB / "review" / "RecordView.tsx"
+    if record.is_file() and 'field.value_type === "record"' in form_source:
+        known["record"] = "one input per key (shown by review/RecordView)"
     return known
 
 

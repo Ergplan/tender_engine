@@ -1,6 +1,7 @@
 from typing import Any
 
 from core.schemas import RuleOutcome
+from tender.domain_packs.core.structured import Pair, agreement
 
 MIN_BID = "sector.power.common.min_bid_mw"
 MAX_BID = "sector.power.common.max_bid_mw"
@@ -34,6 +35,43 @@ def elements_have_kv(values: dict[str, Any]) -> list[RuleOutcome]:
     elements = values.get(ELEMENTS)
     if elements is None:
         return []
-    if any(str(element.get("kv", "")).strip() for element in elements):
+    if any(str(element.get("kv") or "").strip() for element in elements):
         return [RuleOutcome((ELEMENTS,), True, "at least one element states its voltage")]
     return [RuleOutcome((ELEMENTS,), False, "no element states a voltage (kv)")]
+
+
+FDRE = "sector.power.fdre"
+PAIRS: tuple[Pair, ...] = (
+    (
+        f"{FDRE}.assured_availability_percent",
+        f"{FDRE}.demand_profile_structured",
+        "peak_availability_pct",
+    ),
+    (
+        f"{FDRE}.excess_energy_price_inr_per_kwh",
+        f"{FDRE}.excess_energy_structured",
+        "fixed_inr_per_kwh",
+    ),
+    (
+        f"{FDRE}.shortfall_compensation_multiple",
+        "core.penalties.shortfall_rules",
+        "penalty_multiple_of_tariff",
+    ),
+    ("sector.power.solar.min_cuf_percent", "sector.power.solar.cuf_terms", "declared_min_pct"),
+    ("sector.power.wind.min_cuf_percent", "sector.power.wind.cuf_terms", "declared_min_pct"),
+    (
+        "sector.power.hybrid.combined_cuf_floor_percent",
+        "sector.power.hybrid.cuf_terms",
+        "declared_min_pct",
+    ),
+    (
+        "sector.power.bess.availability_floor_percent",
+        "core.penalties.shortfall_rules",
+        "threshold_pct",
+    ),
+)
+
+
+def power_structured_agrees_with_scalar(values: dict[str, Any]) -> list[RuleOutcome]:
+    """A structured key of the power pack agrees with the scalar that holds the same fact."""
+    return agreement(values, PAIRS)

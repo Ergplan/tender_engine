@@ -17,7 +17,12 @@ from tests.fixtures.tenders import (
     AMENDMENT_PAGES,
     DEADLINE,
     EMD,
+    EMD_STRUCTURED,
+    RFS_ANSWERS,
     RFS_PAGES,
+    extracted_tender,
+    make_tender,
+    parsed,
 )
 
 PUBLIC = {"X-Public-Request": "1"}
@@ -621,3 +626,74 @@ def test_inherited_evidence_names_its_field_and_the_note_comes_before_the_source
     assert "[3] EMD per MW" in sources
     emd = current(review(client, tender["id"], token), EMD)["state"]["candidate"]
     assert emd["evidence"][0]["source"] is None, "evidence read from a page has no source"
+
+
+def test_a_structured_field_is_checked_shown_with_its_keys_and_edited_key_by_key(
+    client: TestClient, pipeline: Pipeline, db: Session
+) -> None:
+    tender = extracted_tender(pipeline, db)
+    token = link(client, tender.id)["token"]
+    body = review(client, tender.id, token)
+    shown = field(body, EMD_STRUCTURED)
+    assert shown["value_type"] == "record"
+    assert [key["name"] for key in shown["keys"]][:3] == ["basis", "rate_inr_per_mw", "components"]
+    assert shown["keys"][2]["keys"][0]["enum_values"] == ["solar", "wind", "ess", "other"]
+    entry = current(body, EMD_STRUCTURED)
+    candidate = entry["state"]["candidate"]
+    assert candidate["status"] == "validated", candidate
+    assert candidate["value"] == ["basis: per_mw", "rate_inr_per_mw: 928000"]
+
+    # An edit sends the record; what is stored has every key, typed, None where not stated.
+    edited = decide(
+        client,
+        token,
+        entry,
+        "edited",
+        final_value={"basis": "per_mw", "rate_inr_per_mw": "928000", "cap_inr": 100000000},
+        evidence=[{"page_no": 3, "quote": "Earnest Money Deposit (EMD) of INR 928000 per MW"}],
+    )
+    assert edited.status_code == 201, edited.text
+    final = current(review(client, tender.id, token), EMD_STRUCTURED)["state"]["approval"]
+    assert final["final_value"]["rate_inr_per_mw"] == 928000
+    assert final["final_value"]["cap_inr"] == 100000000
+    assert final["final_value"]["components"] is None and final["final_value"]["percent"] is None
+    refused = decide(
+        client,
+        token,
+        current(review(client, tender.id, token), EMD_STRUCTURED),
+        "edited",
+        final_value={"basis": "per_mw", "colour": "red"},
+    )
+    assert refused.status_code == 422 and "unknown key" in refused.text
+
+
+def test_a_structured_number_must_be_quoted_and_agree_with_its_scalar(
+    pipeline: Pipeline, db: Session
+) -> None:
+    from core.models import Candidate, ValidationResult
+
+    answers = dict(RFS_ANSWERS)
+    answers["emd_structured"] = {
+        **answers["emd_structured"],
+        "value": ["basis: per_mw", "rate_inr_per_mw: 982000", "cap_inr: 100000000"],
+    }
+    tender = make_tender(pipeline, db)
+    pipeline.sdk.answers = answers
+    document = parsed(pipeline, db, RFS_PAGES, "rfs.pdf")
+    pipeline.tenders.add_version(db, tender, document, "original", None, created_by="pytest")
+    pipeline.tenders.start_extraction(db, tender, created_by="pytest", is_fixture=True)
+    pipeline.runner.run_until_idle()
+    candidate = db.scalars(select(Candidate).where(Candidate.field_path == EMD_STRUCTURED)).one()
+    assert candidate.status == "needs_review"
+    failed = {
+        result.rule_name: result.message
+        for result in db.scalars(
+            select(ValidationResult).where(
+                ValidationResult.candidate_id == candidate.id, ValidationResult.passed.is_(False)
+            )
+        )
+    }
+    assert failed["structured_numbers_quoted"] == (
+        "not printed in this field's quotes: rate_inr_per_mw 982000, cap_inr 1e+08"
+    )
+    assert "982000 but emd_per_mw_inr is 928000" in failed["structured_agrees_with_scalar"]

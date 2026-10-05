@@ -2,6 +2,7 @@
 
   python -m scripts.ingest_tenders ingest  [--root /work/tenders] [--only slug,slug]
   python -m scripts.ingest_tenders extract [--only slug,slug] [--force] [--groups a,b]
+  python -m scripts.ingest_tenders revalidate [--only slug,slug]
   python -m scripts.ingest_tenders amendment-routing [--only slug,slug] [--mode none|missing|union]
   python -m scripts.ingest_tenders routing-report
   python -m scripts.ingest_tenders resume  [--only slug,slug]
@@ -36,10 +37,12 @@ from core.config import Settings
 from core.db import make_engine, make_session_factory
 from core.llm.client import LLMClient
 from core.models import Document, ExtractionRun, Job
+from core.models.extraction import RECORD_MODE
 from core.services import jobs
 from core.services.extract import ExtractService
 from core.services.ingest import IngestService
 from core.services.review_state import ReviewStateService
+from core.services.validate import ValidationService
 from core.storage import make_storage
 from tender.services import extraction_summary
 from tender.services.amendment_map import routing_records
@@ -470,6 +473,35 @@ def summarize(services: Services, only: set[str] | None = None, force: bool = Fa
     return lines
 
 
+def revalidate(services: Services, only: set[str] | None = None) -> list[str]:
+    """Run the checks again on every validated run of the current schema version that read
+    a document, for when a rule was added or changed. No model call; candidates keep their
+    values."""
+    schemas, _ = build_registry()
+    validation = ValidationService(schemas, services.settings.tenant_id)
+    lines = []
+    with services.session_factory() as session:
+        for tender in services.tenders.all(session):
+            if only and tender.slug not in only:
+                continue
+            runs = session.scalars(
+                select(ExtractionRun.id).where(
+                    ExtractionRun.tenant_id == services.settings.tenant_id,
+                    ExtractionRun.object_id == tender.id,
+                    ExtractionRun.status == "validated",
+                    ExtractionRun.mode != RECORD_MODE,
+                    # Runs of an earlier schema version may hold fields that no longer
+                    # exist; their candidates were checked when they were made.
+                    ExtractionRun.schema_version
+                    == services.catalog.get(tender.tender_type).schema.version,
+                )
+            ).all()
+            for run_id in runs:
+                validation.validate(session, run_id)
+            lines.append(f"{tender.slug}: {len(runs)} run(s) checked again")
+    return lines
+
+
 def pending_jobs(services: Services) -> dict[str, int]:
     with services.session_factory() as session:
         rows = session.execute(
@@ -518,6 +550,7 @@ def main(argv: list[str]) -> int:
             "amendment-routing",
             "routing-report",
             "cost-plan",
+            "revalidate",
             "summarize",
         ),
     )
@@ -548,6 +581,8 @@ def main(argv: list[str]) -> int:
         print("\n".join(summarize(services, only, args.force)))
     elif args.command == "cost-plan":
         print("\n".join(cost_plan(services, only)))
+    elif args.command == "revalidate":
+        print("\n".join(revalidate(services, only)))
     elif args.command == "resume":
         print("\n".join(resume(services, only)))
     elif args.command == "wait":

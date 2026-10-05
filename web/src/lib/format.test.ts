@@ -5,6 +5,12 @@ import {
   paragraphs,
   stripMarkers,
   formatDate,
+  formatKey,
+  recordFromEdit,
+  recordOf,
+  recordsOf,
+  recordToEdit,
+  type KeyDef,
   formatRupees,
   formatValue,
   fromEditText,
@@ -103,5 +109,77 @@ describe("long text with evidence markers", () => {
     expect(stripMarkers("It is solar. [2][3] Next.")).toBe("It is solar. Next.");
     expect(formatValue("Bids are due. [1]", "long_text", null)).toBe("Bids are due.");
     expect(formatValue("Clause [1] of the RfS", "text", null)).toBe("Clause [1] of the RfS");
+  });
+});
+
+describe("structured values", () => {
+  const keys: KeyDef[] = [
+    { name: "basis", label: "Stated as", value_type: "enum", enum_values: ["per_mw", "per_component"] },
+    { name: "rate_inr_per_mw", label: "Rate per MW", value_type: "money_inr", unit: "INR per MW" },
+    { name: "revolving", label: "Revolving", value_type: "bool" },
+    {
+      name: "components",
+      label: "Rates per component",
+      value_type: "list",
+      keys: [
+        { name: "component", label: "Component", value_type: "text" },
+        { name: "rate_inr", label: "Rate", value_type: "money_inr" },
+      ],
+    },
+  ];
+
+  it("reads a record from the model's lines and from a stored record", () => {
+    const lines = [
+      "Basis: per_component",
+      "revolving: yes",
+      "rate_inr_per_mw: null",
+      "components: component=solar; rate_inr=928000",
+      "components: component=wind; rate_inr=1264000",
+    ];
+    const record = recordOf(lines, keys);
+    expect(record).toEqual({
+      basis: "per_component",
+      revolving: "yes",
+      components: [
+        { component: "solar", rate_inr: "928000" },
+        { component: "wind", rate_inr: "1264000" },
+      ],
+    });
+    expect(recordOf({ basis: "per_mw", rate_inr_per_mw: 928000 }, keys)).toEqual({
+      basis: "per_mw",
+      rate_inr_per_mw: 928000,
+    });
+    expect(recordOf(null, keys)).toBeNull();
+    expect(recordsOf(["name: Line 1 | kv: 400", { name: "Bay", kv: null }])).toEqual([
+      { name: "Line 1", kv: "400" },
+      { name: "Bay", kv: null },
+    ]);
+  });
+
+  it("shows a key in its type, and nothing for a key that is not stated", () => {
+    expect(formatKey("per_component", keys[0])).toBe("Per component");
+    expect(formatKey("928000", keys[1])).toBe(formatRupees(928000));
+    expect(formatKey("yes", keys[2])).toBe("Yes");
+    expect(formatKey(false, keys[2])).toBe("No");
+    expect(formatKey(null, keys[1])).toBeNull();
+  });
+
+  it("turns the edit inputs into a record and back", () => {
+    const texts = recordToEdit(
+      { basis: "per_mw", rate_inr_per_mw: 928000, revolving: true, components: [{ component: "ess", rate_inr: 5 }] },
+      keys,
+    );
+    expect(texts).toEqual({
+      basis: "per_mw",
+      rate_inr_per_mw: "928000",
+      revolving: "yes",
+      components: "component=ess; rate_inr=5",
+    });
+    expect(recordFromEdit({ ...texts, basis: "", components: "component=ess; rate_inr=5\n\n" }, keys)).toEqual({
+      rate_inr_per_mw: 928000,
+      revolving: true,
+      components: [{ component: "ess", rate_inr: "5" }],
+    });
+    expect(recordFromEdit({ basis: " ", rate_inr_per_mw: "" }, keys)).toBeNull();
   });
 });

@@ -1,3 +1,41 @@
+Summaries in review after the rewrite of 2026-10-05 17:06 UTC (written again from the complete record after the review state was corrected to read schema v1 runs under v2; prompt summary_record/v1), from the app database:
+             slug             | version |  mode  |  status   | confidence | passages | located | documents 
+------------------------------+---------+--------+-----------+------------+----------+---------+-----------
+ nhpc-fdre-ii                 |       1 | record | validated |       0.90 |      127 |     127 |         1
+ ntpc-hybrid-03               |       1 | record | validated |       0.88 |       95 |      95 |         1
+ ntpc-phes-2000mw             |       1 | record | validated |       0.86 |       30 |      30 |         2
+ ntpc-rel-600mw-anantapur-wtg |       1 | record | validated |       0.86 |       39 |      39 |         2
+ recpdcl-beed-tbcb            |       1 | record | validated |       0.86 |       93 |      93 |         1
+ seci-cfd-i                   |       4 | record | validated |       0.86 |      112 |     112 |         6
+ seci-cni-1-700mw             |       2 | record | validated |       0.90 |       90 |      90 |         4
+ seci-ess-iv                  |       1 | record | validated |       0.90 |      107 |     107 |         2
+ seci-fdre-ix                 |       2 | record | validated |       0.90 |      102 |     102 |         4
+ seci-fdre-rtc-v              |       5 | record | validated |       0.90 |      110 |     110 |         7
+ seci-gaya-60mw               |       1 | record | validated |       0.88 |      116 |     116 |         3
+ seci-ramagiri-70mw-bess      |       3 | record | validated |       0.86 |       97 |      97 |         6
+ seci-wind-tranche-xx         |       2 | record | validated |       0.88 |      111 |     111 |         4
+(13 rows)
+
+
+ calls | usd  
+-------+------
+    13 | 3.47
+(1 row)
+
+
+The two summaries of NHPC FDRE-II written between the v2 pass and this rewrite, and the one before it (which topics the text names):
+       written       |   status   | passages | net_worth | turnover | pre_bid 
+---------------------+------------+----------+-----------+----------+---------
+ 2026-10-05 12:06:16 | superseded |      105 | t         | t        | t
+ 2026-10-05 12:11:49 | superseded |      128 | t         | t        | t
+ 2026-10-05 13:31:28 | superseded |      133 | t         | t        | t
+ 2026-10-05 15:36:20 | superseded |       82 | f         | f        | f
+ 2026-10-05 16:18:12 | superseded |       93 | f         | f        | f
+ 2026-10-05 16:59:44 | validated  |      127 | t         | t        | t
+(6 rows)
+
+
+===== earlier content of this file =====
 Summaries in review after the rewrite of 2026-10-05 13:30 UTC (written from the record, prompt summary_record/v1; each passage carries the label of its field), from the app database:
              slug             | version |  mode  |  status   | confidence | paragraphs | passages | located | with_field_label | documents | input | output | cost_usd 
 ------------------------------+---------+--------+-----------+------------+------------+----------+---------+------------------+-----------+-------+--------+----------

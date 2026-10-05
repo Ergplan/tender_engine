@@ -5,12 +5,13 @@ sections:
   tbcb_elements:
     label: Transmission elements
     prompt: extract/tbcb_elements
+    prompt_version: v2
     roles: [rfs, contractual, nit]
     section_kinds: [introduction_and_scope, technical_requirements, evaluation]
     keywords: [transmission scheme, scope of the project, kv, substation, bid process coordinator, scheduled cod, transmission charges, right of way, forest clearance, transmission service agreement, spv, ctu]
 cross_field_rules: [elements_have_kv]
 fields:
-  sector.power.transmission.elements: {section: tbcb_elements, label: Transmission elements, type: record_list, item_keys: [name, kind, kv, route_km], required: true, help: "Each line, substation or bay with its kind, voltage and route length."}
+  sector.power.transmission.elements: {section: tbcb_elements, label: Transmission elements, type: record_list, item_keys: [name, kind, kv, route_km], keys: {name: {label: Element, type: text}, kind: {label: Kind, type: text}, kv: {label: Voltage, type: kv, unit: kV}, route_km: {label: Route length, type: km, unit: km}}, required: true, help: "Each line, substation or bay with its kind, voltage (for a substation the highest voltage level) and route length."}
   sector.power.transmission.element_wise_cod: {section: tbcb_elements, label: Element-wise COD, type: list_text, help: "Scheduled commissioning of each element."}
   sector.power.transmission.process_stages: {section: tbcb_elements, label: Process stages, type: enum, enum: [rfq_rfp, single], help: "Whether the bid process has separate RfQ and RfP stages."}
   sector.power.transmission.evaluation_basis: {section: tbcb_elements, label: Evaluation basis, type: enum, enum: [levelised_charge, npv_annual_charges], help: "How financial bids are compared."}
@@ -20,3 +21,23 @@ fields:
   sector.power.transmission.spv_acquisition_terms: {section: tbcb_elements, label: SPV acquisition terms, type: text, help: "How and at what price the selected bidder acquires the project SPV."}
   sector.power.transmission.bpc: {section: tbcb_elements, label: Bid process coordinator, type: text, help: "The bid process coordinator."}
   sector.power.transmission.ctu_role: {section: tbcb_elements, label: CTU role, type: text, help: "The role of the Central Transmission Utility or nodal agency."}
+  sector.power.transmission.element_wise_cod_structured:
+    section: tbcb_elements
+    label: Element-wise COD, structured
+    type: record_list
+    help: "One item per element with its scheduled commissioning, as numbers."
+    keys:
+      element: {label: Element, type: text}
+      cod_months: {label: Scheduled COD, type: decimal, unit: months, min: 0, max: 120}
+      counted_from: {label: Counted from, type: enum, enum: [effective_date, spv_transfer, loa, other]}
+      pct_of_transmission_charges: {label: Share of transmission charges, type: percent, unit: percent}
+      simultaneous_with_all: {label: Commissioned together with all others, type: bool}
+  sector.power.transmission.spv_acquisition_structured:
+    section: tbcb_elements
+    label: SPV acquisition, structured
+    type: record
+    help: "What the selected bidder pays to acquire the project SPV, as numbers. Leave the price out when it is to be intimated later."
+    keys:
+      acquisition_price_inr: {label: Acquisition price, type: money_inr, unit: INR}
+      equity_pct: {label: Equity acquired, type: percent, unit: percent}
+      price_intimated_days_before_bid_deadline: {label: Price intimated, type: int, unit: days before the bid deadline, min: 0, max: 365}

@@ -5,6 +5,7 @@ sections:
   wind_tech:
     label: Wind technology
     prompt: extract/wind_tech
+    prompt_version: v2
     roles: [rfs, contractual, nit, technical]
     section_kinds: [technical_requirements]
     keywords: [rlmm, wind turbine, cuf, capacity utilisation, hub height, wind resource, type certificate]
@@ -14,3 +15,5 @@ fields:
   sector.power.wind.resource_data_obligation: {section: wind_tech, label: Resource data obligation, type: text, help: "What wind resource data the developer must collect or submit."}
   sector.power.wind.hub_height_or_tech_restrictions: {section: wind_tech, label: Hub height or technology restrictions, type: text, help: "Restrictions on turbine technology, rating or hub height."}
   sector.power.wind.site_transmission_constraints: {section: wind_tech, label: Site and transmission constraints, type: text, help: "Constraints on site or evacuation named in the tender."}
+  sector.power.wind.cuf_terms: {section: wind_tech, label: "CUF terms, structured", type: record, help: "The declared CUF and the band the developer must keep it in, as numbers. Band limits as a percentage of the declared CUF (a floor of 90% of declared CUF is 90; +10% is 110).", keys: {declared_min_pct: {label: Lowest CUF that may be declared, type: percent, unit: percent}, band_lower_pct_of_declared: {label: Lower limit, type: decimal, unit: percent of declared CUF, min: 0, max: 100}, band_upper_pct_of_declared: {label: Upper limit, type: decimal, unit: percent of declared CUF, min: 100, max: 300}, revision_allowed_within_years: {label: CUF may be revised within, type: decimal, unit: years, min: 0, max: 30}}}
+  sector.power.wind.excess_energy_structured: {section: wind_tech, label: "Excess energy, structured", type: record, help: "What happens to energy above the contracted quantity, as numbers.", keys: {above: {label: Counted above, type: enum, enum: [max_cuf, contracted_energy, contracted_capacity]}, price_basis: {label: Price, type: enum, enum: [ppa_tariff, pct_of_tariff, fixed, not_purchased]}, pct_of_tariff: {label: Share of tariff, type: percent, unit: percent of tariff}, fixed_inr_per_kwh: {label: Fixed price, type: decimal, unit: INR per kWh, min: 0, max: 15}, procurer_first_right: {label: Procurer has first right, type: bool}}}

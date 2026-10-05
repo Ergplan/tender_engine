@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 import type { Evidence, ReviewEntry, ReviewField } from "../api/client";
 import { confidenceBand, formatList, formatValue, paragraphs } from "../lib/format";
+import { RecordView } from "./RecordView";
 import { EditForm, type EditResult } from "./EditForm";
 import { EvidenceChip } from "./EvidenceChip";
 import { CONFIDENCE_HINT } from "./guide";
@@ -86,6 +87,7 @@ function Value({ value, field, onMarker, active, hint }: {
     return <span className="italic text-slate-500">No value found</span>;
   if (field.value_type === "long_text" && typeof value === "string")
     return <LongText text={value} onMarker={onMarker} active={active} hint={hint} />;
+  if (field.keys?.length) return <RecordView field={field} value={value} />;
   if (Array.isArray(value))
     return (
       <ul className="list-disc pl-4">
@@ -97,6 +99,16 @@ function Value({ value, field, onMarker, active, hint }: {
   return <span>{formatValue(value, field.value_type, field.unit)}</span>;
 }
 
+/** The value the card draws. A scalar edit is told in the decision line ("Edited to X"),
+ * and the card keeps the extracted value above it. A record cannot be told in a line, so
+ * once a reviewer has edited one the card draws their record instead of the extracted one. */
+export function shownValue(field: ReviewField, entry: ReviewEntry | null): unknown {
+  const approval = entry?.state.approval;
+  if (field.keys?.length && approval?.decision === "edited" && approval.final_value != null)
+    return approval.final_value;
+  return entry?.state.candidate?.value ?? null;
+}
+
 function decisionLine(entry: ReviewEntry, field: ReviewField): { text: string; tone: string } | null {
   const approval = entry.state.approval;
   if (!approval) return null;
@@ -104,7 +116,9 @@ function decisionLine(entry: ReviewEntry, field: ReviewField): { text: string; t
   if (approval.decision === "approved") return { text: `Approved${by}`, tone: "text-green-700" };
   if (approval.decision === "edited")
     return {
-      text: `Edited to ${formatValue(approval.final_value, field.value_type, field.unit)}${by}`,
+      text: field.keys?.length
+        ? `Edited${by}`
+        : `Edited to ${formatValue(approval.final_value, field.value_type, field.unit)}${by}`,
       tone: "text-green-700",
     };
   if (approval.decision === "not_in_document")
@@ -225,7 +239,7 @@ export function FieldCard({
         className={"mt-0.5 text-sm text-slate-900 " + (long && !showAll ? "line-clamp-4" : "")}
       >
         <Value
-          value={candidate?.value ?? null}
+          value={shownValue(field, entry ?? null)}
           field={field}
           active={activeNumber ? number(activeNumber) : null}
           hint={(wanted) => {

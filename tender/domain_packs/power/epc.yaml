@@ -7,6 +7,7 @@ sections:
   epc_scope:
     label: EPC scope
     prompt: extract/epc_scope
+    prompt_version: v2
     roles: [technical, contractual, rfs, nit]
     section_kinds: [introduction_and_scope, commercial_terms, penalties_and_remedies, technical_requirements]
     keywords: [scope of work, price schedule, bill of quantities, terms of payment, retention, defect liability, performance ratio, liquidated damages, warranty, approval of drawings, taxes and duties, operation and maintenance]
@@ -25,3 +26,26 @@ fields:
   sector.power.epc.drawing_approval_cycle: {section: epc_scope, label: Drawing approval cycle, type: text, help: "Time allowed for approval of drawings and documents."}
   sector.power.epc.taxes_duties_treatment: {section: epc_scope, label: Taxes and duties, type: text, help: "How taxes and duties are treated in the price."}
   sector.power.epc.om_period_months: {section: epc_scope, label: O&M period, type: duration_months, unit: months, min: 0, max: 600, help: "Operation and maintenance period in the contractor's scope."}
+  sector.power.epc.milestone_payment_structured:
+    section: epc_scope
+    label: Milestone payments, structured
+    type: record_list
+    help: "One item per payment milestone, with the share of the contract price it releases."
+    keys:
+      milestone: {label: Milestone, type: text}
+      contract: {label: Contract, type: enum, enum: [supply, civil, erection, om, whole]}
+      pct_of_contract_price: {label: Share, type: percent, unit: percent of that contract's price}
+      against: {label: Released against, type: text}
+      bg_required: {label: Bank guarantee needed, type: bool}
+  sector.power.epc.ld_performance_structured:
+    section: epc_scope
+    label: Performance damages, structured
+    type: record
+    help: "How a shortfall in guaranteed performance is charged, as numbers."
+    keys:
+      metric: {label: Guarantee measured on, type: enum, enum: [performance_ratio, generation, cuf, otgt, other]}
+      ld_tariff_inr_per_kwh: {label: Rate per unit short, type: decimal, unit: INR per kWh, min: 0, max: 50}
+      discount_rate_pct: {label: Discount rate, type: percent, unit: percent}
+      horizon_years: {label: Horizon, type: decimal, unit: years, min: 0, max: 50}
+      annual_cap_pct: {label: Yearly cap, type: percent, unit: percent}
+      cap_basis: {label: Cap is a share of, type: text}

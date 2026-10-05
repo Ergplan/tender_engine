@@ -8,12 +8,12 @@ Date: 2026-10-05. Diff: `git diff stage-3-start..HEAD`. Architecture changes: `d
 
 | Check | Result |
 | --- | --- |
-| Playwright suite green | Yes. `make test-ui`: 9 of 9 pass (5 when this report was first written) (`web/e2e/review.spec.ts`), in Chromium at 1366x768 against a seeded stack behind the same proxy routes as the deployed app. Output: `stage-3-artifacts/playwright.txt` |
+| Playwright suite green | Yes. `make test-ui`: 10 of 10 pass (5 when this report was first written) (`web/e2e/review.spec.ts`), in Chromium at 1366x768 against a seeded stack behind the same proxy routes as the deployed app. Output: `stage-3-artifacts/playwright.txt` |
 | User completes one real review from a token URL unaided | **Open: this is your step** |
 | First PDF page under 3 s on the VM | Yes, on a quiet VM. `web/e2e/real-load.spec.ts` on the deployed app, Chromium on the VM, nothing cached in the browser: SECI Ramagiri (91 fields, 10 documents, first document 266 pages) first meaningful paint 1.0 s, first PDF page 1.3 s (`stage-3-artifacts/real-tender-load.txt`). Earlier runs of the same test, whose output I did not keep, gave 1.4 s and 1.7 s for SECI Gaya (first document 305 pages), and, while the test watcher was running the full suite on the two cores, up to 4.8 s and 6.2 s. The selectable text layer of the first page arrives later, 3.7 s after the start on the quiet VM. The largest document of the set has 373 pages; none has 400. Not measured from a reviewer's own connection |
 | No bulk-approve exists | Yes. The screen has Approve, Edit, Not in document and Flag per field and nothing else; the API has no route that decides more than one field (`POST /approvals` takes one candidate). Both the unit test and the browser test assert that no "approve all" exists |
-| `make trace` is clean and every schema field has a complete FIELD-TRACE row | Yes (`stage-3-artifacts/trace.txt`). `docs/FIELD-TRACE.md` has 163 rows, one per field path of the nine tender types; the watcher's `field_trace` check regenerates it and fails on a difference or on a field without a UI component, route or column |
-| `make test` green | 410 Python tests and 53 web unit tests pass; the nine checks are green (`stage-3-artifacts/checks.txt`). The Tests section below gives the counts of the first report, 404 and 37 |
+| `make trace` is clean and every schema field has a complete FIELD-TRACE row | Yes (`stage-3-artifacts/trace.txt`). `docs/FIELD-TRACE.md` has 183 rows (163 before the structured fields, which add 20 paths because a field of a type counts once per type), one per field path of the nine tender types; the watcher's `field_trace` check regenerates it and fails on a difference or on a field without a UI component, route or column |
+| `make test` green | 458 Python tests and 65 web unit tests pass; the nine checks are green (`stage-3-artifacts/checks.txt`). The Tests section below gives the counts of the first report, 404 and 37 |
 | `make deploy` serves the app | Yes, see "Deployment" |
 
 ## Before the UI: cost of extraction
@@ -91,7 +91,7 @@ Two defects the browser tests found that the unit tests had not: the browser cac
 
 ## The two numbers
 
-From `EXTRACTION-SUMMARY.md` as regenerated after the summaries were written from the records (13 tenders, 25 versions, 51 documents): **evidence-location rate 99.8%** (804 of 806 values; the two misses are the same two as in Stage 2, in SECI FDRE-RTC-V Amendment-01); **answer rate 70%** (806 of 1146 fields). 7 fields are flagged for review by validation. These are candidates; no accuracy number exists until reviews are completed.
+From `EXTRACTION-SUMMARY.md` as regenerated after the structured fields were added (schema `v2`; 13 tenders, 25 versions, 51 documents): **evidence-location rate 99.8%** (874 of 876 values; the two misses are the same two as in Stage 2, in SECI FDRE-RTC-V Amendment-01); **answer rate 70%** (876 of 1248 fields). 18 fields are flagged for review by validation, 12 of them by the two new checks on structured values. Before the structured fields the same file gave 804 of 806 located, 806 of 1146 fields with a value and 7 flagged. These are candidates; no accuracy number exists until reviews are completed.
 
 ## Cost
 
@@ -241,11 +241,102 @@ Also changed: values reach the summary model as an approval would store them, wi
 
 Checks: 427 Python tests, 57 web unit tests and 9 browser tests pass (`checks.txt`, `playwright.txt`). The browser suite now runs a whole review in which a corrected deadline makes the summary be written again before it is approved. Stage 3 is at about USD 37 and the running total at about USD 297. The test watcher is stopped, as you asked, so that your timing is not disturbed.
 
+## Structured fields for the financial model (2026-10-05, fourth change)
+
+The record is to feed a financial model, and a model computes with numbers. Prose fields that hold numbers therefore got typed siblings, before any review, so that the gold set covers them. The database held no decision when this was done and holds none now (`stage-3-artifacts/deployment.txt`). The design of the projection that will turn approved facts into model inputs is in ARCHITECTURE.md ("Model input profile"); it is designed, not built.
+
+**Built** (ARCHITECTURE.md, "Structured siblings"; DECISIONS.md):
+
+- 15 structured fields and one retyped list, in schema `v2`. Six are in every tender type (EMD, PBG, payment security, delay LD, shortfall rules, deemed generation); the rest belong to a type (FDRE demand profile and excess energy; CUF terms and excess energy for solar, wind and hybrid; two each for BESS, EPC and transmission, whose `elements` now carry kV and route km as numbers).
+- A structured field is extracted in the same call as its prose parent, with its own quotes. Nothing is derived from the prose by a model.
+- The model writes a record as `key: value` lines and code types them, so the answer schema is the same for every field and the cached prefix of a shared window survives.
+- `v2` only adds fields, so it is registered as also reading `v1`: sections that did not gain a field were not read again.
+- On the screen a record is a card of labelled values with units, every key shown, "not stated" where the document is silent. An edit has one input per key.
+- Two checks that call no model, and `ingest_tenders revalidate` to run them again on finished runs.
+
+### Cost of the v2 pass
+
+Only the ten sections that gained a field were read again, on all 13 tenders: 44 extraction runs (NHPC FDRE-II directly, the other 43 through the batch API), 133 model calls, 6.02 million input tokens (0.44 million of them read from the cache) and 0.54 million output tokens.
+
+| Section read again (prompt `v2`) | Calls | USD |
+| --- | --- | --- |
+| commercial | 39 | 13.84 |
+| guarantees | 31 | 9.88 |
+| penalties | 29 | 8.08 |
+| epc_scope | 13 | 7.21 |
+| fdre_profile | 12 | 5.55 |
+| tbcb_elements | 2 | 1.01 |
+| bess_performance | 2 | 0.71 |
+| wind_tech | 3 | 0.61 |
+| hybrid_mix | 1 | 0.43 |
+| solar_tech | 1 | 0.33 |
+| **Reading the sections again** | **133** | **47.65** |
+| Summaries written again after the pass (26 calls; written from an incomplete record, see "A defect found while finishing") | 26 | 5.78 |
+| Summaries written once more from the complete record | 13 | 3.47 |
+| **The v2 pass in all** | **172** | **56.90** |
+
+From `llm_call_log.cost_usd` at the configured prices, not the provider's invoice. USD 5.78 of it bought nothing: those summaries were replaced. Stage 3 is now at about USD 94 and the running total at about USD 354.
+
+### What came back
+
+The 13 tenders have 102 structured fields between them: 73 have a value and 29 are not stated in the documents read. A section can be read in more than one window, and an amended tender in more than one document, so those fields have 246 candidates (counting the two for the transmission `elements` list that was retyped): 117 with a value, every one with located evidence, and 129 that say not stated. The two checks below run per candidate. NHPC FDRE-II, the tender your link opens, has 8 structured fields, all with a value.
+
+### Violation counts of the two checks
+
+Both run on every structured value, cost nothing, and never drop a value: a failure marks the candidate `needs_review` with the key named, and the reviewer decides.
+
+| Check | What it requires | Candidates checked | Failed |
+| --- | --- | --- | --- |
+| `structured_numbers_quoted` | Every number of a structured value is printed in that candidate's own quotes | 117 | **9** |
+| `structured_agrees_with_scalar` (all types) and `power_structured_agrees_with_scalar` | A key and the scalar field holding the same fact are equal; one stated without the other fails too | 50 (15 and 35) | **3** (1 and 2) |
+
+The 12 failures are 12 different candidates in 8 tenders.
+
+Numbers not printed in the quotes (9):
+
+- **5 times `compensation_pct_of_tariff: 100`** in deemed generation (NHPC FDRE-II, SECI CnI-1, SECI FDRE-IX, SECI FDRE-RTC-V, SECI Wind Tranche-XX). The documents say compensation is at the tariff; none prints "100". The value is an inference, and the check is right to hold it for a person.
+- **3 times `threshold_pct: 90`** in the first shortfall rule (SECI CfD-I once, SECI FDRE-IX twice, once for each of the two candidates of that field). The 90 is not in the passages quoted for the rule.
+- **Once `penalty_multiple_of_tariff: 1.5`** (NTPC Hybrid-03).
+
+A key and its scalar disagree (3), all of the kind "the scalar is stated, the key is not":
+
+- SECI CfD-I and SECI FDRE-IX: `assured_availability_percent` is 90, but `peak_availability_pct` of the demand profile is not stated.
+- SECI Ramagiri: `delay_ld_per_mw_per_day_inr` is 20250, but `rate_inr_per_mw_per_day` of the delay LD record is not stated.
+
+What the first check cannot see is in KNOWN-GAPS.md: it compares numbers, not meaning, so "10 Crores" satisfies a 10 anywhere in the quotes.
+
+One thing you will notice on NHPC FDRE-II: the FDRE section is read in two windows, and the two answers for excess energy differ (above the maximum CUF at the PPA tariff, against above contracted capacity and not purchased). The card shows one and says there is an alternative. That is a question for the review, not something a check decides.
+
+### A defect found while finishing
+
+The session that built this stopped before its checks were green. Finishing it, I found three things. The first is the one that matters.
+
+1. **After the v2 pass the review showed only the fields that had been read again.** `v2` is registered as also reading `v1`, but the review state still kept only runs whose schema version equalled the newest run's. With a `v2` run as the newest, every field of a section that was not read again (identity, key dates, eligibility, connectivity, documents) lost its candidate: NHPC FDRE-II showed 37 values instead of 82, and the regenerated summary file 365 values instead of 876. Nothing was lost in the database; the candidates were there and validated. It was live on your review link for about an hour and a half, from the v2 pass until the fix. No decision was made in that time.
+   - Fixed in `core/services/review_state.py`: runs of every version registered with the same content are read together (`SchemaRegistry.versions_read_as`). A version that changes or removes a field has other content and is still read on its own.
+   - Two tests, the first of which failed before the fix: `test_runs_of_an_earlier_schema_version_are_read_under_a_later_one_that_only_adds` and `test_runs_of_a_schema_version_with_other_fields_are_not_mixed_in`.
+   - The summary is written from the record through the same code, so the 13 summaries written after the pass had lost those fields too (NHPC's no longer mentioned net worth, turnover or the pre-bid date). All 13 are written again from the complete record, validated, every passage located (`stage-3-artifacts/summaries.txt`).
+2. **A record a reviewer had edited was not shown.** A scalar edit is told in the decision line ("Edited to ..."); a record cannot be, and the card went on drawing the extracted record. The new browser test caught it. The card now draws the reviewer's record once a record field is edited (`shownValue` in `web/src/review/FieldCard.tsx`, two unit tests).
+3. **One stale assertion**: the extraction-summary test expected 9 values in the markdown row where the fixture now gives 10 (its data assertion had already been updated). The over-length line in `scripts/ingest_tenders.py` was already fixed in the working tree.
+
+### Checks
+
+458 Python tests, 65 web unit tests and 10 browser tests pass; the nine checks are green (`checks.txt`, `playwright.txt`). The browser suite has one new test: a structured field shows every key, says what is not stated, is edited key by key, and holds the edit after a reload. The load time that the layout test prints was 5.7 s and 6.0 s in the two runs made for this change, against 2.2 s in the run kept before it; it is printed, not asserted, on a seeded stack that had just been started on the two cores, and the real-tender load test was not run again.
+
+Deployment: no migration (`alembic_version` is still `0011`); the API reloads from the mounted source and the worker was restarted after the fix (`stage-3-artifacts/deployment.txt`). The test watcher is still stopped.
+
+### What this changes for your review
+
+- The link for NHPC FDRE-II is the same and still valid. The tender now has 97 fields (89 before): 82 with a value, 2 flagged by validation.
+- 8 of them are structured cards. Read them as you would any field: each has its own quotes. A key shown as "not stated" is a claim that the document is silent, and worth a glance at the prose field beside it.
+- The summary is the one written at 17:00 UTC from the complete record.
+
+**Independent review, run 8** (on this change): not yet run when this draft was committed; its result replaces this line.
+
 ## Your step: one real review
 
 A link for NHPC FDRE-II is live. It is not written in this file: a review link is the only key to its review, and this file is in the repository. It is in my message to you, and `docker compose exec -T api python -m scripts.review_token list` prints it on the VM.
 
-It opens NHPC FDRE-II (89 fields, 74 with a value, one 264-page RfS), extracted afresh today, with the summary written from its fields. You said this run will be the timed one. The browser will warn once about the certificate (the app is served on a bare IP; KNOWN-GAPS.md). The link is valid for 30 days and is recorded under the reviewer name `venture@aayuda.energy`, taken from your account; every decision you make carries that name. If you want another name or another tender, make a new link before deciding anything (the old one stops working):
+It opens NHPC FDRE-II (97 fields since the structured fields were added, 82 with a value, one 264-page RfS), extracted afresh today, with the summary written from its fields. You said this run will be the timed one. The browser will warn once about the certificate (the app is served on a bare IP; KNOWN-GAPS.md). The link is valid for 30 days and is recorded under the reviewer name `venture@aayuda.energy`, taken from your account; every decision you make carries that name. If you want another name or another tender, make a new link before deciding anything (the old one stops working):
 
 ```
 cd /work/tender_engine && docker compose exec -T api python -m scripts.review_token create --tender <slug> --reviewer "Your Name"

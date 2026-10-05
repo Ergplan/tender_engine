@@ -218,6 +218,66 @@ The corrigendum rule (`later_version_evidence`) does not apply to a record run: 
 
 A section may pin its own prompt version and page cap (`prompt_version`, `max_pages` in the pack YAML, `FieldGroup`), which is how the page-read summary runs at `v2` in one call while a run asks for `v1`. The page-read summary is made from the base documents only (`tender.services.versioning.plan_groups`).
 
+## Model input profile: a typed projection for the financial model (designed 2026-10-05; the structured fields are built, the profile is not)
+
+The canonical record feeds a financial model builder. A model computes with numbers, so the record must hold them as typed values, and the model must know for every input where it came from. Two things follow: structured fields in the schemas (below, "Structured siblings"), and a projection that turns canonical facts into model parameters.
+
+**What it is.** `model_input_profile` is a read model over `canonical_fact`, one definition per tender type and model type. It stores nothing and writes nothing: the same facts, assumptions and profile version always give the same output. It reads approved facts only, never a candidate. It never invents a value.
+
+**Where it lives.** The definition is data in the pack (`tender/domain_packs/power/model_profiles/<tender_type>.yaml`); the reader is `tender/services/model_profile.py`; the route is `GET /api/v1/tenders/{id}/model-inputs?model_type=...`. `core/` knows nothing of it. `model_tender(tender_id, model_type)` takes its inputs from the profile and from nowhere else.
+
+| Tender types | Model type | Engine |
+|---|---|---|
+| solar, wind, hybrid, fdre, bess, generation, ipp | `power_project_finance` | planned |
+| epc | `epc_contract_cashflow` | future work; the profile can be defined before the engine exists |
+| transmission | `transmission_annual_charges` | future work, likewise |
+
+**A profile definition** lists parameters. Each has a name, a value type and unit, and one source:
+
+- `fact`: a canonical field path, and for a structured field the key inside it (`sector.power.fdre.demand_profile_structured#peak_availability_pct`).
+- `derived`: a named pure function over other parameters of the profile (EMD in rupees for a stated configuration from the per-component rates; storage hours from MWh and MW). A derived value is `from_tender` only if all its operands are; it lists them, and its evidence is theirs.
+- `assumption`: a key of `model_assumption` (per user and tender; capex, O&M, debt terms, and the bidder's own choices such as declared CUF or the solar, wind and storage split).
+- optionally a `default`: a value with a written rationale and its source. Only parameters that are modelling conventions may have one. A parameter the tender is expected to state (a guarantee, a penalty, a tenure) has none.
+
+**What it returns.** One entry per parameter, always, in the same order:
+
+```
+{ parameter, value_type, unit,
+  status: present | absent,
+  absent_reason: tender_silent | not_reviewed | not_applicable | left_to_bidder | null,
+  value,                      # null when absent; never 0 as a stand-in
+  provenance: from_tender | user_assumed | defaulted | null,
+  from_tender:  { canonical_fact_id, field_path, key, tender_version, evidence: [{document, page, quote}], derived_by, operands },
+  user_assumed: { model_assumption_id, entered_by, entered_at },
+  defaulted:    { flag: true, rationale, source } }
+```
+
+Rules:
+
+1. **Absent is not zero.** A field approved as "not in document" gives `absent` with `tender_silent`. A field with no decision gives `absent` with `not_reviewed`. A parameter the tender leaves to the bidder (peak hours chosen later by the buying entity) gives `left_to_bidder`. The engine must refuse to run, or ask, when a parameter it needs is absent; it may not substitute a number of its own.
+2. **A value the tender states is a fact and cannot be overridden.** This is a fixed rule of the design (decided by the owner on 2026-10-05) and is not to be relaxed: the profile has no override, no precedence setting and no parameter by which an assumption or a default takes the place of a `from_tender` value. An assumption fills only what the tender leaves open. A different number for something the tender fixes is a scenario in the engine: it carries its own label, is shown beside the tender's value, and is never written back to the profile, to `model_assumption` as a replacement, or to the record. A test of the profile reader must show that an assumption given for a parameter the tender states is refused.
+3. **A default is always visible.** `defaulted` carries its flag and rationale into every output of the model that depends on it.
+4. **Units are fixed per parameter** (INR, MW, MWh, percent as 0 to 100, hours, months, INR per kWh). Conversions are named functions in the profile reader, each tested.
+5. **Versions.** The profile is computed over the tender's current view (facts of the latest version that states them) and names the tender version of every fact, the schema version and the profile version.
+6. **A test like FIELD-TRACE**: every `fact` source must name a field path and key that exists in the compiled schema of that tender type, and every structured key of a schema must be read by a profile or be listed as not used by any model.
+
+### Structured siblings
+
+A prose field that holds numbers has a structured sibling: a second field with path `<prose path>_structured` (or a named list: `shortfall_rules`, `cuf_terms`), of value type `record` or a typed `record_list`, whose keys each have their own type, unit and bounds (`KeyDef` in `core/schemas/model.py`; `keys:` in the pack YAML; one level of list inside a record). The prose field stays: it is what a person reads and what the summary is written from (the summary does not read structured fields).
+
+Built on 2026-10-05, schema `v2`: 15 structured fields and one retyped list. Every type has `core.guarantees.emd_structured`, `core.guarantees.pbg_structured`, `core.commercial.payment_security_structured`, `core.penalties.delay_ld_structured`, `core.penalties.shortfall_rules` and `sector.power.common.deemed_generation_structured`. By type: fdre `demand_profile_structured`, `excess_energy_structured`; solar, wind and hybrid `cuf_terms`, `excess_energy_structured` (a field belongs to one section, so these are paths of the type, not of `common`); bess `degradation_and_augmentation_structured`, `soc_constraints_structured`; epc `milestone_payment_structured`, `ld_performance_structured`; transmission `element_wise_cod_structured`, `spv_acquisition_structured`, and `elements` with `kv` and `route_km` as numbers.
+
+**How a record is written by the model.** As a list of strings, one `key: value` per stated key; a list inside a record once per item (`peak_blocks: window_start=05:00; window_end=10:00; hours=2`); a list of records one string per item (`key: value | key: value`). The answer's JSON schema therefore does not grow with the fields, the shared-window answer (`SharedAnswer`) is unchanged, and no grammar can be refused for size. `tender/domain_packs/core/value_types.py` turns the lines into the record: every key present, each in its type or null. A record with no stated key is refused: the value must be null.
+
+**Schema version.** The packs are `version: v2` with `reads_versions: [v1]`: `v2` only adds to `v1`, so the registry also answers for `v1` with the `v2` schema and the runs of the sections that were not read again stay valid. The review state reads them together: `ReviewStateService.for_object` takes the runs of every version that `SchemaRegistry.versions_read_as` gives for the newest run's schema, which are the versions registered with the same groups, fields and rules. A version that changes or removes a field has other content, is not in that set, and is read on its own. The ten sections that gained fields have prompt `v2`.
+
+- **Extracted directly, in the same call as its prose parent** (same section group, same pages), with its own quotes. The reviewer decides it as its own field, so the gold set measures it by key.
+- **Never derived by a model from the prose.** What is derived is derived by code in the profile, from structured keys, and points at their evidence.
+- **A key the document does not state is null**, and the record says so key by key; a null key is `tender_silent` in the profile.
+- **Two checks that cost nothing** (`tender/domain_packs/core/structured.py`). `structured_numbers_quoted` (a run rule): every number of a structured value must be printed in one of that candidate's own quotes; digits are compared after removing separators, lakh, crore and paise are also read in rupees, and numbers in words up to ninety-nine and "and a half" are read. A limit whose unit is "percent of declared CUF" may be printed as its distance from 100 ("+10%" for 110), and a plain decimal (a multiple, a count of months) as a percentage ("50%" for 0.5). `structured_agrees_with_scalar` and `power_structured_agrees_with_scalar` (cross-field rules): a key and the scalar field that holds the same fact must be equal; one stated without the other fails too. A value that fails either is `needs_review` with the key named. `python -m scripts.ingest_tenders revalidate` runs the checks again on finished runs.
+
+On the reviewer screen a record is a card of labelled values with units, every key shown and "not stated" where the document is silent (`web/src/review/RecordView.tsx`); an edit has one input per key and sends the record. Not built yet: accuracy by key in the gold-set metrics (the stored candidate and the reviewer's final record hold what it needs).
+
 ## Reviewer screen (Stage 3)
 
 `/review/<token>` opens straight into the tender; there is no list page. `web/src/review/ReviewApp.tsx` stores the token as a cookie (for the files the browser fetches itself), asks `GET /review-session` and `GET /tenders/{id}/review`, and shows the API's own sentence when the link cannot be used. Every call goes through `web/src/api/client.ts` with the token in `X-Review-Token`.
@@ -304,3 +364,4 @@ One GCE VM (`instance-20261004-081207`, asia-south2-b), static IP `34.131.65.108
 - After the first look at the screens (2026-10-05): orientation panel and `docs/REVIEWER-GUIDE.md`; summary prompt `v2` with a section-level prompt version and page cap; numbered evidence with sentence markers and a single active highlight; confidence caption and hover text; expandable rationale; attention counts per section; fields left and time left in the header; inputs readable in a dark system theme.
 - The summary is written from the record in a second pass (`tender/services/summary.py`, prompt `summary_record/v1`, job `tender_summary`, run mode `record`, `tender/services/worker_jobs.py`); its sentences inherit the evidence of the fields they draw on.
 - Migration 0011: `evidence_span.source`. Decision guards on `ApprovalService`; the summary is decided after the fields, written again from the reviewer's decisions, and its approval withdrawn by a later change (`SummaryGuard`). The browser-test stack has a worker with a scripted model (`tests/e2e/scripted_worker.py`).
+- Schema `v2` (2026-10-05): typed records (`KeyDef`, value type `record`, typed `record_list`), 15 structured fields, two checks on them, the record card and key-by-key edit, `revalidate`. The model input profile is designed and not built.

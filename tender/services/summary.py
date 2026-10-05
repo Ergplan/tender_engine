@@ -142,7 +142,8 @@ def field_sources(
     sources: list[Source] = []
     for item in review.fields:
         found = _field_value(item, reviewer_evidence or {})
-        if item.field_path == SUMMARY_FIELD or found is None:
+        if item.field_path == SUMMARY_FIELD or found is None or item.keys:
+            # A structured field repeats the numbers of the prose field beside it.
             continue
         value, spans, version, version_no = found
         if normalise is not None:

@@ -86,6 +86,7 @@ export function formatValue(value: unknown, valueType: string, unit: string | nu
   if (valueType === "bool") return value === true || value === "true" ? "Yes" : value === false || value === "false" ? "No" : String(value);
   if (valueType === "enum") return label(String(value));
   if (Array.isArray(value)) return formatList(value).join("; ");
+  if (typeof value === "object") return formatList([value])[0];
   if (NUMBER_TYPES.has(valueType)) {
     const number = toNumber(value);
     if (number === null) return String(value);
@@ -133,7 +134,8 @@ export function formatList(value: unknown[]): string[] {
   return value.map((item) =>
     item && typeof item === "object"
       ? Object.entries(item as Record<string, unknown>)
-          .map(([key, part]) => `${key}: ${String(part)}`)
+          .filter(([, part]) => part !== null && part !== undefined)
+          .map(([key, part]) => `${key}: ${Array.isArray(part) ? formatList(part).join(" / ") : String(part)}`)
           .join(" | ")
       : String(item),
   );
@@ -170,4 +172,115 @@ export function fromEditText(text: string, valueType: string): unknown {
       .map((line) => line.trim())
       .filter(Boolean);
   return trimmed;
+}
+
+/** One typed key of a structured field; `keys` makes it a list of sub-records. */
+export type KeyDef = {
+  name: string;
+  label: string;
+  value_type: string;
+  unit?: string | null;
+  enum_values?: string[] | null;
+  keys?: KeyDef[] | null;
+};
+export type RecordValue = Record<string, unknown>;
+
+const UNSTATED = new Set(["", "null", "none", "not stated", "n/a"]);
+
+function pairsOf(text: string, outer: string, inner: string): RecordValue {
+  const record: RecordValue = {};
+  for (const part of text.split(outer)) {
+    const at = part.indexOf(inner);
+    if (at < 0) continue;
+    const value = part.slice(at + inner.length).trim();
+    if (!UNSTATED.has(value.toLowerCase())) record[part.slice(0, at).trim().toLowerCase()] = value;
+  }
+  return record;
+}
+
+/** A record from what is stored: the record itself (after a decision) or the model's
+ * lines, `key: value`, with a list key written once per item as `key: sub=value; sub=value`. */
+export function recordOf(value: unknown, keys: KeyDef[]): RecordValue | null {
+  if (value === null || value === undefined) return null;
+  if (!Array.isArray(value)) return typeof value === "object" ? (value as RecordValue) : null;
+  const lists = new Set(keys.filter((key) => key.keys).map((key) => key.name));
+  const record: RecordValue = {};
+  for (const line of value) {
+    const text = String(line);
+    const at = text.indexOf(":");
+    if (at < 0) continue;
+    const name = text.slice(0, at).trim().toLowerCase();
+    const rest = text.slice(at + 1).trim();
+    if (lists.has(name)) {
+      const row = pairsOf(rest, ";", "=");
+      if (Object.keys(row).length) record[name] = [...((record[name] as RecordValue[]) ?? []), row];
+    } else if (!UNSTATED.has(rest.toLowerCase())) record[name] = rest;
+  }
+  return record;
+}
+
+/** The records of a list: each a record itself or a line `key: value | key: value`. */
+export function recordsOf(value: unknown): RecordValue[] {
+  if (!Array.isArray(value)) return [];
+  return value.map((item) =>
+    item && typeof item === "object" ? (item as RecordValue) : pairsOf(String(item), "|", ":"),
+  );
+}
+
+/** One key's value as the reviewer reads it, or null when the document does not state it. */
+export function formatKey(value: unknown, key: KeyDef): string | null {
+  if (value === null || value === undefined || value === "") return null;
+  if (key.value_type === "bool")
+    return value === true || value === "yes" || value === "true" ? "Yes" : "No";
+  if (key.value_type === "money_inr") {
+    const number = toNumber(value);
+    return number === null ? String(value) : formatRupees(number);
+  }
+  if (NUMBER_TYPES.has(key.value_type)) {
+    const number = toNumber(value);
+    return number === null ? String(value) : trim(number, 4);
+  }
+  return formatValue(value, key.value_type, null);
+}
+
+/** A record as an edit sends it: numbers as numbers, yes/no as booleans, nothing for a key
+ * left empty. A list key is edited as lines `sub=value; sub=value`. */
+export function recordFromEdit(texts: Record<string, string>, keys: KeyDef[]): RecordValue | null {
+  const record: RecordValue = {};
+  for (const key of keys) {
+    const text = (texts[key.name] ?? "").trim();
+    if (text === "") continue;
+    if (key.keys) {
+      const rows = text
+        .split("\n")
+        .map((line) => pairsOf(line, ";", "="))
+        .filter((row) => Object.keys(row).length);
+      if (rows.length) record[key.name] = rows;
+    } else if (key.value_type === "bool") record[key.name] = text === "yes";
+    else if (NUMBER_TYPES.has(key.value_type)) record[key.name] = toNumber(text) ?? text;
+    else record[key.name] = text;
+  }
+  return Object.keys(record).length ? record : null;
+}
+
+/** The text each key's input starts from. */
+export function recordToEdit(record: RecordValue | null, keys: KeyDef[]): Record<string, string> {
+  const texts: Record<string, string> = {};
+  for (const key of keys) {
+    const value = record?.[key.name];
+    if (value === null || value === undefined) texts[key.name] = "";
+    else if (key.keys)
+      texts[key.name] = (value as RecordValue[])
+        .map((row) =>
+          Object.entries(row)
+            .filter(([, part]) => part !== null && part !== undefined)
+            .map(([name, part]) => `${name}=${String(part)}`)
+            .join("; "),
+        )
+        .join("\n");
+    else if (key.value_type === "bool")
+      texts[key.name] = value === true || value === "yes" || value === "true" ? "yes" : "no";
+    else texts[key.name] = String(value);
+  }
+  return texts;
 }
