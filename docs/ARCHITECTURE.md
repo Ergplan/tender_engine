@@ -276,5 +276,6 @@ One GCE VM (`instance-20261004-081207`, asia-south2-b), static IP `34.131.65.108
 - Migration 0007: `llm_call_log.mode`, `cache_write_tokens`, `batch_id`, `cost_usd`; `extraction_run.mode`, `token_cached`; `llm_batch`.
 - Cost of extraction: shared page windows as a cached prefix (`core/services/extract_plan.py`), batch runs in two waves, replay of logged calls, per-call cost (`core/llm/pricing.py`).
 - Migration 0008: `review_token`, `tender_review_snapshot`; the `canonical_fact` guard names the decisions that may carry a fact.
+- Migration 0009: the guard's lookup of the approval of a retired fact is within the tenant.
 - Review tokens (`tender/services/tokens.py`, `scripts/review_token.py`), token and audit middleware, the reviewer's view of a tender and completion (`tender/services/review.py`), flag decision and stale-write refusal in `ApprovalService`, document pages and search.
 - Reviewer screen in `web/src/review/` with `web/src/lib/`; generated client refreshed; `docs/FIELD-TRACE.md` and its check; Playwright suite and the `e2e` compose profile; proxy routes for stored files.

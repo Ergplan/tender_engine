@@ -58,7 +58,10 @@ def listing(settings: Settings) -> list[str]:
         rows = session.execute(
             select(ReviewToken, Tender)
             .join(Tender, Tender.id == ReviewToken.tender_id)
-            .where(ReviewToken.tenant_id == settings.tenant_id)
+            .where(
+                ReviewToken.tenant_id == settings.tenant_id,
+                Tender.tenant_id == settings.tenant_id,
+            )
             .order_by(Tender.slug, ReviewToken.created_at)
         )
         for token, tender in rows:

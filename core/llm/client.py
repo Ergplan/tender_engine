@@ -257,7 +257,8 @@ class LLMClient:
         """Read the results of a batch once the provider has finished it, and write one
         llm_call_log row per call. `requests` are the calls as they were submitted (they
         carry the response models). Returns False while the batch is still being worked
-        on. A call that failed in the batch is logged as an error and is not retried here."""
+        on. A call that failed in the batch is logged as an error and is not retried here.
+        A call of the batch that is already logged is not logged again."""
         with self._session_factory() as session:
             row = session.scalars(
                 select(LLMBatch).where(
@@ -275,11 +276,23 @@ class LLMClient:
             prompt = self.prompt(request.prompt_name, request.prompt_version)
             input_hash = _input_hash(model, prompt, request)
             by_id[input_hash[:40]] = (request, prompt, input_hash)
+        # A collection that was interrupted has logged some of the batch's calls already.
+        with self._session_factory() as session:
+            logged = set(
+                session.scalars(
+                    select(LLMCallLog.input_hash).where(
+                        LLMCallLog.tenant_id == self._settings.tenant_id,
+                        LLMCallLog.batch_id == provider_id,
+                    )
+                )
+            )
         for item in self._sdk.messages.batches.results(provider_id):
             known = by_id.get(item.custom_id)
             if known is None or item.custom_id not in entries:
                 continue
             request, prompt, input_hash = known
+            if input_hash in logged:
+                continue
             result = item.result
             if result.type != "succeeded":
                 error = getattr(result, "error", None)

@@ -90,4 +90,4 @@ One dated line per decision. Newest at the bottom.
 - 2026-10-05 Stage 3: every answer of the API carries `Cache-Control: no-store` unless the route sets its own. Found by the browser test: a 410 for a replaced link is cacheable by default and the browser showed it again for the next link.
 - 2026-10-05 Stage 3: browser tests run against their own stack (compose profile `e2e`: database `tender_e2e`, a synthetic tender, a scripted model), never against the review database, because completing a review cannot be undone.
 - 2026-10-05 Stage 3: `docs/FIELD-TRACE.md` has one row per field path (163), not one per tender type and field (759): a field shared by several types is one row that names them. The route, middleware, service and database path are the same for every field and are stated once above the table; the row gives what differs (UI input, section, prompt, rules).
-
+- 2026-10-05 Stage 3, after the independent reviews: every query added this stage filters by tenant, the joined tables included; the `canonical_fact` guard does so too (migration 0009); `collect_batch` does not log a call of a batch twice.

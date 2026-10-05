@@ -6,7 +6,7 @@ from typing import Any, cast
 import anthropic
 import httpx2
 import pytest
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.orm import Session, sessionmaker
 
 from core.config import Settings
@@ -425,4 +425,8 @@ def test_a_batch_is_submitted_with_the_schema_and_collected_into_the_call_log(
     db.expire_all()
     assert db.scalars(select(LLMBatch)).one().status == "collected"
     # Collecting again reads nothing twice.
+    assert client.collect_batch(batch_id, [good, bad]) is True and len(rows(db)) == 2
+    # Nor does a collection that was interrupted before it marked the batch collected.
+    db.execute(update(LLMBatch).values(status="submitted"))
+    db.commit()
     assert client.collect_batch(batch_id, [good, bad]) is True and len(rows(db)) == 2

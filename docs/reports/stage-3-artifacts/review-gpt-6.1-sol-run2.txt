@@ -1,0 +1,64 @@
+reviewer: gpt-6.1-sol  input chars: 566442  tokens in/out: 151674/2618
+
+## (a) Non-negotiable invariants
+
+| Invariant | Assessment |
+|---|---|
+| **The LLM never writes truth** | No new model-to-canonical write path is shown. Extraction delegates insertion to `_insert_field` (`core/services/extract.py:350–368`); decisions enter the approval handler (`api/v1/core/review.py:42–57`). Completion only snapshots the current view (`tender/services/review.py:229–257`). The revised database guard permits facts only under approved, edited or not-in-document decisions (`migrations/versions/0008_review_tokens.py:67–83`). Exclusive ownership of canonical writes cannot be fully verified because approval persistence is outside the supplied hunks. |
+| **Every value carries its evidence** | Shared answers require evidence and undergo Python type checking (`core/services/extract.py:118–155`). The UI blocks plain approval without located evidence and requests reviewer evidence when needed (`web/src/review/model.ts:25–33`; `web/src/review/EditForm.tsx:64–76`). Existing validation, rejection and canonical evidence-inheritance implementations are not fully shown. |
+| **The tender is a versioned object** | The new review projection retains separate version entries (`tender/services/review.py:104–140`). Completion creates a snapshot, not an in-place version edit (`tender/services/review.py:229–246`). No new version mutation is shown. |
+| **Candidates are immutable** | Review actions send candidate IDs and final values to the approval handler, rather than updating candidate values (`web/src/review/ReviewScreen.tsx:79–96`). No added candidate-value mutation is shown. Existing database enforcement is outside the supplied hunks. |
+| **Validation is deterministic** | Shared-answer validation uses Python/Pydantic (`core/services/extract.py:133–155`); extraction queues the validation job (`core/services/extract.py:411–418`). No LLM validation path is added. |
+| **Everything is audited and tenant-scoped** | New models inherit tenant/audit columns (`core/models/llm_call_log.py:57`; `tender/models/review.py:11,26`), and their migrations include those columns. Most new production queries explicitly filter by tenant, but exceptions remain below. Individual truth-write audit coverage is addressed in (c). |
+| **Feedback is stored, never auto-applied** | No runtime feedback reader is added. Flags produce no feedback signal (`core/services/approve.py:450–451`), tested at `tests/core/services/test_approve.py:443–459`. Existing correction persistence is outside the supplied hunks. |
+| **API first** | New review operations are versioned routes (`api/v1/tenders/review.py:47–161`), registered through `api/main.py:21–29`. The reviewer client sends intelligence requests under `/api/v1/` (`web/src/api/client.ts:39–81`). |
+
+FINDINGS: 2
+1. **Tenant filtering is incomplete.** The link-listing query filters `ReviewToken.tenant_id` but not the joined `Tender.tenant_id` (`scripts/review_token.py:58–61`). The canonical guard’s approval lookup during retirement also lacks a tenant predicate (`migrations/versions/0008_review_tokens.py:56–57`).
+2. **Full invariant enforcement cannot be certified from the supplied hunks.** Candidate insertion/evidence handling delegates to omitted `_insert_field` persistence (`core/services/extract.py:350–368`); approval, canonical and feedback persistence delegates to omitted portions of `ApprovalService.approve` (`api/v1/core/review.py:42–57`).
+
+## (b) Tests for every added API endpoint
+
+| Added endpoint | Test |
+|---|---|
+| `GET /api/v1/documents/{document_id}/pages` | `test_pages_search_and_file_authorisation_for_the_viewer`, `tests/api/test_review_tokens.py:328–387` |
+| `GET /api/v1/documents/{document_id}/search` | Same test, including successful search and short-query rejection, `tests/api/test_review_tokens.py:328–387` |
+| `POST /api/v1/review-tokens` | Token creation/identity and replacement tests, `tests/api/test_review_tokens.py:75–115` |
+| `GET /api/v1/review-session` | Identity, replacement and expiry tests, `tests/api/test_review_tokens.py:75–136` |
+| `GET /api/v1/tenders/{tender_id}/review` | `test_the_review_shows_each_field_once_with_the_latest_version_that_states_it`, `tests/api/test_review_tokens.py:237–270` |
+| `POST /api/v1/tenders/{tender_id}/complete-review` | `test_complete_review_needs_every_required_field_then_snapshots_and_locks`, `tests/api/test_review_tokens.py:273–317` |
+| `GET /api/v1/tenders/{tender_id}/snapshot` | Same completion test checks absence before completion and final values afterward, `tests/api/test_review_tokens.py:273–317` |
+| `GET /api/v1/files-auth` | `test_pages_search_and_file_authorisation_for_the_viewer`, `tests/api/test_review_tokens.py:328–387` |
+
+FINDINGS: none
+
+## (c) Audit coverage of specified writes
+
+- **Candidate insertion:** revised extraction invokes `_insert_field`; its persistence and audit call are outside the supplied hunks (`core/services/extract.py:350–368`).
+- **Candidate supersession:** extraction invokes `_supersede_earlier_runs`; its writes and audit calls are outside the supplied hunks (`core/services/extract.py:370`).
+- **Approval insertion/supersession, canonical-fact insertion/retirement, feedback insertion:** the route invokes `ApprovalService.approve`, but the persistence and audit portions of that method are not supplied (`api/v1/core/review.py:42–57`).
+- **Tender-version creation:** the new browser seeder invokes `TenderService.add_version`; its persistence and audit implementation are not supplied (`tests/e2e/seed_review.py:94,104–106`).
+- **Request audit:** `api/middleware/audit.py:37–50` records HTTP requests separately. This does not establish an audit entry for each underlying row write.
+- The direct canonical insertion at `tests/core/test_invariants.py:232–236` deliberately tests rejection by the database guard; it is not a production write path.
+
+FINDINGS: 1
+1. **Per-write audit coverage remains unverifiable, rather than demonstrably missing.** The actual write implementations and associated audit calls are omitted for candidates (`core/services/extract.py:350–370`), approvals/canonical facts/feedback (`api/v1/core/review.py:42–57`), and tender versions (`tests/e2e/seed_review.py:94,104–106`). The aggregate audit-table assertion at `tests/api/test_review.py:99–102` does not prove one audit record per write.
+
+## (d) Clean regeneration by `make trace`
+
+Yes, according to the supplied execution artifact: regeneration ran and reported zero changed files (`docs/reports/stage-3-artifacts/trace.txt:1–3`). The target exists (`Makefile:58–59`), the generator implements committed-output comparison (`scripts/gen_field_trace.py:203–209`), and CI invokes it (`infra/ci/run_checks.py:50`).
+
+FINDINGS: none
+
+## (e) Draft report claims unsupported by the supplied code and evidence
+
+The supplied check, browser, deployment, trace, corpus and real-model artifacts support their recorded execution results. They do not establish every historical or measurement claim in the report.
+
+FINDINGS: 7
+1. **Interrupted collection is incorrectly described as resubmitting the batch.** The report says a batch whose collection was interrupted is submitted again for unlogged calls (`docs/reports/STAGE-3-REPORT.md:27`). The code instead recollects the existing provider batch, potentially duplicating log rows; it does not resubmit that batch (`core/llm/client.py:collect_batch`, lines 254–350).
+2. **Several load measurements lack corresponding supplied evidence.** SECI Gaya’s timings and the watcher-loaded timing ranges are asserted at `docs/reports/STAGE-3-REPORT.md:13`; the supplied real-load artifact records only Ramagiri (`docs/reports/stage-3-artifacts/real-tender-load.txt:4–8`).
+3. **Historical provider/debugging conclusions exceed the recorded evidence.** The exact refusal message is truncated in the artifact, and the reason for the one repeated shared call is not recorded there. The universal claim that different output schemas “never share a cache entry” is stronger than the observed probe (`docs/reports/STAGE-3-REPORT.md:32`; `docs/reports/stage-3-artifacts/model-calls.txt:23–24,39–40`).
+4. **Stage 2 wall-clock comparisons are not supplied.** The claimed 12 min 23 s sequential duration and “about 23 s per call” comparison lack Stage 2 timing evidence (`docs/reports/STAGE-3-REPORT.md:49`). The supplied extraction-run artifact establishes the Stage 3 durations only.
+5. **Record-list reconstruction is not established.** The report says the existing value type turns edited text back into records (`docs/reports/STAGE-3-REPORT.md:74`). The supplied frontend returns a list of strings (`web/src/lib/format.ts:132–140`); the claimed server-side reconstruction implementation is not shown.
+6. **Watcher/commit history and historical defect discovery are unverified.** A green check artifact does not prove every commit followed a full check, that the watcher resumed, or that browser tests discovered both described defects (`docs/reports/STAGE-3-REPORT.md:78,89`).
+7. **The promised review link is absent.** The report says the link is in its last section (`docs/reports/STAGE-3-REPORT.md:5`), but that section contains only “To be filled in with the link” (`docs/reports/STAGE-3-REPORT.md:141`).

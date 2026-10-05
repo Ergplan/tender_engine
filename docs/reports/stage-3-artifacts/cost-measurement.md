@@ -11,6 +11,17 @@ In the fresh extraction the published notice of a tender (one page) was read for
 | ntpc-rel-600mw-anantapur-wtg | batch | 11 → 11 | 176,377 → 370,820 | 315,270 | 35,030 | 20,355 → 25,911 | 2.78 → 1.14 | 28 → 33 of 84 | 28 → 33 |
 | ntpc-phes-2000mw | direct | 12 → 21 | 111,150 → 154,733 | 108,054 | 12,006 | 20,131 → 30,822 | 2.12 → 2.06 | 33 → 32 of 86 | 33 → 32 |
 
+## Time spent in model calls
+
+Sum of the logged duration of the calls (`llm_call_log.latency_ms`). Calls answered through a batch have no duration; the time a batch run took from queue to validated is in `extraction-runs.txt`.
+
+| Tender | Calls before | Seconds before | Seconds per call before | Seconds after (direct calls only) |
+| --- | --- | --- | --- | --- |
+| nhpc-fdre-ii | 13 | 743 | 57 | 0 |
+| seci-cni-1-700mw | 16 | 646 | 40 | 0 |
+| ntpc-rel-600mw-anantapur-wtg | 11 | 256 | 23 | 0 |
+| ntpc-phes-2000mw | 12 | 259 | 22 | 392 |
+
 ## Values, field by field
 
 Compared after removing case, spaces and punctuation; numbers by value. Long text (summaries, clauses, lists) is rarely worded the same twice, so it is counted apart from short values.
