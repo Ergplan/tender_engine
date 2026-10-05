@@ -19,10 +19,21 @@ class Settings(BaseSettings):
     llm_max_tokens: int = 16000
     llm_price_in_per_mtok: float = 10.0
     llm_price_out_per_mtok: float = 50.0
+    # Factors on the input price: a read from the prompt cache, a write to it (5-minute
+    # and 1-hour lifetime), and the batch API's discount on everything.
+    llm_cache_read_factor: float = 0.025
+    llm_cache_write_factor: float = 1.25
+    llm_cache_write_1h_factor: float = 2.0
+    llm_batch_factor: float = 0.5
+    llm_batch_poll_seconds: float = 60.0
 
     extract_max_pages_per_call: int = 40
     extract_max_pages_per_group: int = 80
     extract_keyword_pages: int = 12
+    # Field groups of one run share a page window when that is cheaper (see
+    # core.services.extract_plan). A call's output is weighed as this many input pages.
+    extract_share_windows: bool = True
+    extract_call_overhead_pages: float = 6.0
     evidence_match_threshold: float = 85.0
     render_dpi: int = 150
     worker_poll_seconds: float = 2.0

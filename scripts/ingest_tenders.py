@@ -218,10 +218,12 @@ def extract(
     only: set[str] | None = None,
     force: bool = False,
     groups: list[str] | None = None,
+    run_mode: str = "batch",
 ) -> list[str]:
     """Queue extraction for every version that has no run yet (every version with --force).
     With `groups`, only those sections are read again, from the documents that are read
-    for them."""
+    for them. Nobody waits for these runs, so they go through the batch API unless
+    `run_mode` is "sync"."""
     lines = []
     with services.session_factory() as session:
         for tender in services.tenders.all(session):
@@ -254,7 +256,12 @@ def extract(
                     continue
                 try:
                     runs = services.tenders.start_extraction(
-                        session, tender, version_no=number, created_by=ACTOR, groups=groups
+                        session,
+                        tender,
+                        version_no=number,
+                        created_by=ACTOR,
+                        groups=groups,
+                        mode=run_mode,
                     )
                 except TenderError as exc:
                     lines.append(f"{tender.slug} v{number}: skipped, {exc}")
@@ -417,6 +424,9 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--force", action="store_true", help="extract versions that have runs")
     parser.add_argument("--groups", default="", help="comma-separated sections to read again")
     parser.add_argument("--mode", default="none", choices=("none", "missing", "union"))
+    parser.add_argument(
+        "--sync", action="store_true", help="extract with direct calls, not the batch API"
+    )
     parser.add_argument("--timeout", type=float, default=6 * 3600)
     parser.add_argument("--out", type=Path, default=DEFAULT_SUMMARY)
     args = parser.parse_args(argv[1:])
@@ -426,7 +436,8 @@ def main(argv: list[str]) -> int:
         print("\n".join(ingest(services, args.root, only)))
     elif args.command == "extract":
         groups = [name.strip() for name in args.groups.split(",") if name.strip()] or None
-        print("\n".join(extract(services, only, args.force, groups)))
+        run_mode = "sync" if args.sync else "batch"
+        print("\n".join(extract(services, only, args.force, groups, run_mode)))
     elif args.command == "amendment-routing":
         print("\n".join(amendment_routing(services, only, args.mode)))
     elif args.command == "routing-report":

@@ -291,23 +291,18 @@ def build(
     settings: Settings,
 ) -> ExtractionSummary:
     results = collect(session, catalog, tenders, review)
-    tokens_in, tokens_out, calls = session.execute(
-        select(
-            func.coalesce(func.sum(LLMCallLog.tokens_in), 0),
-            func.coalesce(func.sum(LLMCallLog.tokens_out), 0),
-            func.count(),
-        ).where(LLMCallLog.tenant_id == settings.tenant_id, LLMCallLog.is_fixture.is_(False))
+    # Each call's cost is logged with the cache and batch factors that applied to it.
+    cost, calls = session.execute(
+        select(func.coalesce(func.sum(LLMCallLog.cost_usd), 0), func.count()).where(
+            LLMCallLog.tenant_id == settings.tenant_id, LLMCallLog.is_fixture.is_(False)
+        )
     ).one()
-    total = float(
-        tokens_in / 1e6 * settings.llm_price_in_per_mtok
-        + tokens_out / 1e6 * settings.llm_price_out_per_mtok
-    )
     now = datetime.now(UTC)
     return ExtractionSummary(
         generated_at=now,
         model=settings.anthropic_model,
         calls=int(calls),
-        total_cost_usd=round(total, 2),
+        total_cost_usd=round(float(cost), 2),
         tenders=[
             TenderSummary(
                 tender_id=r.tender.id,
@@ -332,7 +327,7 @@ def build(
         markdown=render(
             results,
             model=settings.anthropic_model,
-            total_cost_usd=total,
+            total_cost_usd=round(float(cost), 2),
             calls=int(calls),
             now=now,
         ),

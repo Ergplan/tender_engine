@@ -1,6 +1,7 @@
 """Pydantic I/O models for the tender routers."""
 
 from datetime import date, datetime
+from typing import Literal
 
 from pydantic import BaseModel, Field
 
@@ -50,6 +51,8 @@ class VersionOut(BaseModel):
 class TenderExtractRequest(BaseModel):
     version_no: int | None = None
     prompt_version: str = "v1"
+    # batch: through the batch API, at half the price, when nobody waits for the result.
+    mode: Literal["sync", "batch"] = "sync"
 
 
 class TenderReviewState(BaseModel):

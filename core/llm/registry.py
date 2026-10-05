@@ -4,7 +4,9 @@ A prompt that is not on disk under a registered root cannot be run. The version 
 is stored on every llm_call_log row (and, from Stage 1, on every candidate).
 
 A prompt may inherit another with the header line `extends: <name>/<version>`: its text is
-the parent's text followed by its own, and its hash covers both.
+the parent's text followed by its own, and its hash covers both. The two parts are also
+kept apart (`shared_text`, `own_text`), so that calls whose prompts have the same parent
+can share a cached prefix: see core.llm.client.
 """
 
 import hashlib
@@ -27,6 +29,10 @@ class Prompt(BaseModel):
     version: str
     header: dict[str, str]
     text: str
+    # For a prompt that extends another: the parent's text and its own. Otherwise the whole
+    # text and "".
+    shared_text: str
+    own_text: str = ""
     sha256: str
 
 
@@ -47,12 +53,22 @@ def load_prompt(
             raw = path.read_text(encoding="utf-8")
             header, text = _split(raw, path)
             digest = hashlib.sha256(raw.encode("utf-8")).hexdigest()
+            shared, own = text, ""
             if "extends" in header:
                 parent_name, _, parent_version = header["extends"].rpartition("/")
                 parent = load_prompt(parent_name, parent_version, roots, (*_seen, (name, version)))
+                shared, own = parent.text, text
                 text = f"{parent.text}\n\n{text}"
                 digest = hashlib.sha256(f"{parent.sha256}{digest}".encode()).hexdigest()
-            return Prompt(name=name, version=version, header=header, text=text, sha256=digest)
+            return Prompt(
+                name=name,
+                version=version,
+                header=header,
+                text=text,
+                shared_text=shared,
+                own_text=own,
+                sha256=digest,
+            )
     raise UnregisteredPromptError(f"prompt {name}/{version} is not registered")
 
 

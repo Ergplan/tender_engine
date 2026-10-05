@@ -219,7 +219,8 @@ def start_extraction(
     """Queue the extraction of one version (the latest by default): one run per document.
     A version after the original is read only for the sections its documents touch. A long
     amendment, or one whose text matches no section keyword, is first mapped in full by a
-    background job, which then queues its run; such a run is not in this response."""
+    background job, which then queues its run; such a run is not in this response.
+    `mode` "batch" sends the calls through the batch API for a run nobody waits for."""
     tender = _tender(tenders, session, tender_id)
     try:
         return tenders.start_extraction(
@@ -228,6 +229,7 @@ def start_extraction(
             version_no=body.version_no,
             prompt_version=body.prompt_version,
             created_by=actor,
+            mode=body.mode,
         )
     except (TenderError, UnknownSchemaError, UnregisteredPromptError, ExtractionError) as exc:
         raise AppError("validation_failed", str(exc)) from exc

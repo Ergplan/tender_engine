@@ -204,7 +204,7 @@ def test_resume_continues_a_failed_run_without_repeating_finished_groups(
     services = services_of(pipeline)
     ingest_tenders.ingest(services, root, only={"acme-solar-600"})
     pipeline.runner.run_until_idle()
-    ingest_tenders.extract(services)
+    ingest_tenders.extract(services, run_mode="sync")
     pipeline.runner.run_until_idle()
     statuses = sorted(db.scalars(select(ExtractionRun.status)))
     assert statuses == ["failed", "failed", "failed"]
@@ -234,11 +234,13 @@ def test_groups_narrow_a_re_extraction_to_those_sections_of_each_document(
     pipeline.sdk.answers = dict(RFS_ANSWERS)
     ingest_tenders.ingest(services, root)
     pipeline.runner.run_until_idle()
-    ingest_tenders.extract(services)
+    ingest_tenders.extract(services, run_mode="sync")
     pipeline.runner.run_until_idle()
     calls = len(pipeline.sdk.extract_calls())
 
-    again = ingest_tenders.extract(services, force=True, groups=["key_dates", "eligibility"])
+    again = ingest_tenders.extract(
+        services, force=True, groups=["key_dates", "eligibility"], run_mode="sync"
+    )
     assert again == [
         "acme-solar-600 v1: 1 run(s), 2 group call(s)",
         "acme-solar-600 v2: 1 run(s), 1 group call(s)",

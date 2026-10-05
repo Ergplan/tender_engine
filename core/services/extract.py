@@ -2,6 +2,11 @@
 
 Model output stops here, in the candidate table. Candidates are inserted once and never
 updated (a database trigger allows only their status to change).
+
+Groups whose windows overlap enough are read from one shared window, sent as a cached
+prefix (core.services.extract_plan). A run in batch mode sends its calls through the batch
+API in two waves: first the calls that write each shared window to the cache, then the
+calls that read it.
 """
 
 import base64
@@ -18,19 +23,22 @@ from sqlalchemy.orm import Session
 
 from core.config import Settings
 from core.evidence import Located, Match, PageText, locate, resolve_pair
-from core.llm.client import LLMClient, LLMRequest, PdfPart, TextPart
+from core.llm.client import LLMClient, LLMRequest, LLMResponse, PdfPart, TextPart
 from core.models import (
     Candidate,
     Document,
     EvidenceSpan,
     ExtractionRun,
+    LLMBatch,
     LLMCallLog,
     Page,
     Section,
 )
+from core.models.extraction import RUN_MODES
 from core.schemas import ExtractionSchema, FieldDef, FieldGroup, RoutingHints, SchemaRegistry
 from core.schemas.types import JsonKind
 from core.services import audit, jobs
+from core.services.extract_plan import SharedWindow, share_windows
 from core.services.section_map import normalise_kind
 from core.storage import Storage
 
@@ -54,6 +62,18 @@ class EvidenceQuote(BaseModel):
 
 class ExtractionError(ValueError):
     """The run cannot be started: unparsed document, unknown schema or prompt."""
+
+
+@dataclass
+class _Call:
+    """One model call of a run: one group read from one chunk of its window."""
+
+    window: SharedWindow
+    group: FieldGroup
+    chunk: list[int]
+    request: LLMRequest[BaseModel]
+    # The first call on a shared chunk writes it to the cache; the others read it.
+    writes_cache: bool
 
 
 @dataclass
@@ -177,9 +197,14 @@ class ExtractService:
         object_version: int = 1,
         groups: list[str] | None = None,
         is_fixture: bool = False,
+        mode: str = "sync",
     ) -> ExtractionRun:
         """Create the run and enqueue it. Refuses unknown schemas and unregistered prompts.
-        `groups` limits the run to those field groups of the schema."""
+        `groups` limits the run to those field groups of the schema. `mode` is "sync" (the
+        worker makes each call and waits) or "batch" (the calls go through the batch API,
+        at half the price, for a run nobody waits for)."""
+        if mode not in RUN_MODES:
+            raise ExtractionError(f"unknown mode {mode!r}; one of {list(RUN_MODES)}")
         tenant_id = self._settings.tenant_id
         document = session.scalar(
             select(Document).where(Document.id == document_id, Document.tenant_id == tenant_id)
@@ -216,6 +241,7 @@ class ExtractService:
             model=self._llm.model,
             status="queued",
             is_fixture=is_fixture,
+            mode=mode,
         )
         session.add(run)
         session.flush()
@@ -230,7 +256,10 @@ class ExtractService:
         return run
 
     def extract(self, session: Session, extraction_run_id: str) -> ExtractionRun:
-        """Run every field group. Commits per group, so a retry resumes where it stopped."""
+        """Run every field group. Commits per shared window, and a call the run has
+        already paid for is read from the log, so a retry resumes where it stopped. A
+        batch run returns while its batch is being worked on, with a job queued to look
+        again; it is then still `running`."""
         tenant_id = self._settings.tenant_id
         run = session.scalar(
             select(ExtractionRun).where(
@@ -250,6 +279,126 @@ class ExtractService:
             select(Document).where(Document.id == run.document_id, Document.tenant_id == tenant_id)
         ).one()
         schema = self._schemas.get(run.schema_name, run.schema_version)
+        pages = _PageCache(session, document.id, tenant_id)
+        calls = self._plan_calls(session, run, document, schema)
+
+        if run.mode == "batch" and not self._batches_done(session, run, calls):
+            jobs.enqueue(
+                session,
+                tenant_id=tenant_id,
+                kind="extract",
+                payload={"extraction_run_id": run.id},
+                created_by=ACTOR,
+                delay_seconds=self._settings.llm_batch_poll_seconds,
+            )
+            session.commit()
+            return run
+
+        position = 0
+        while position < len(calls):
+            window = calls[position].window
+            answers: list[tuple[_Call, LLMResponse[BaseModel]]] = []
+            while position < len(calls) and calls[position].window is window:
+                call = calls[position]
+                answers.append(
+                    (call, self._llm.logged(call.request) or self._llm.call(call.request))
+                )
+                position += 1
+            for name in window.groups:
+                group = next(g for g in schema.groups if g.name == name)
+                fields = schema.fields_in(name)
+                drafts: dict[str, list[_Draft]] = {field.path: [] for field in fields}
+                not_found: dict[str, list[str]] = {field.path: [] for field in fields}
+                for call, response in answers:
+                    if call.group.name != name:
+                        continue
+                    for field in fields:
+                        item = getattr(response.parsed, field.key)
+                        if item.value is None:
+                            not_found[field.path].append(item.rationale)
+                        else:
+                            quotes = [quote for quote in item.evidence if quote.quote.strip()]
+                            drafts[field.path].append(
+                                _Draft(
+                                    value=item.value,
+                                    confidence=min(max(float(item.confidence), 0.0), 1.0),
+                                    rationale=item.rationale,
+                                    quotes=quotes,
+                                    chunk=call.chunk,
+                                    call_log_id=response.call_log_id,
+                                )
+                            )
+                done = self._done_fields(session, run, fields)
+                for field in fields:
+                    if field.path in done:
+                        continue
+                    self._insert_field(
+                        session,
+                        run,
+                        group,
+                        field,
+                        drafts[field.path],
+                        not_found[field.path],
+                        list(window.pages),
+                        pages,
+                    )
+            session.commit()
+
+        self._supersede_earlier_runs(session, run)
+        tokens_in, tokens_cached, tokens_out, cost = session.execute(
+            select(
+                func.coalesce(
+                    func.sum(
+                        LLMCallLog.tokens_in
+                        + LLMCallLog.cache_write_tokens
+                        + LLMCallLog.cache_read_tokens
+                    ),
+                    0,
+                ),
+                func.coalesce(func.sum(LLMCallLog.cache_read_tokens), 0),
+                func.coalesce(func.sum(LLMCallLog.tokens_out), 0),
+                func.coalesce(func.sum(LLMCallLog.cost_usd), 0),
+            ).where(LLMCallLog.extraction_run_id == run.id, LLMCallLog.tenant_id == tenant_id)
+        ).one()
+        run.token_in, run.token_cached, run.token_out = (
+            int(tokens_in),
+            int(tokens_cached),
+            int(tokens_out),
+        )
+        run.cost_usd = Decimal(cost).quantize(Decimal("0.0001"))
+        run.status = "extracted"
+        jobs.enqueue(
+            session,
+            tenant_id=run.tenant_id,
+            kind="validate",
+            payload={"extraction_run_id": run.id},
+            created_by=ACTOR,
+        )
+        session.commit()
+        return run
+
+    def _done_fields(
+        self, session: Session, run: ExtractionRun, fields: list[FieldDef]
+    ) -> set[str]:
+        return set(
+            session.scalars(
+                select(Candidate.field_path).where(
+                    Candidate.extraction_run_id == run.id,
+                    Candidate.tenant_id == run.tenant_id,
+                    Candidate.field_path.in_([field.path for field in fields]),
+                )
+            )
+        )
+
+    def _plan_calls(
+        self, session: Session, run: ExtractionRun, document: Document, schema: ExtractionSchema
+    ) -> list[_Call]:
+        """Every call the run still has to make, in the order they are made: window by
+        window, chunk by chunk, and within a chunk group by group, so that the calls which
+        share a chunk follow each other while it is in the cache. The windows depend only
+        on the document, the schema and the settings, so they are the same on every
+        attempt; windows whose groups already have candidates are left out."""
+        tenant_id = run.tenant_id
         page_texts = {
             page_no: text
             for page_no, text in session.execute(
@@ -266,107 +415,116 @@ class ExtractService:
                 .order_by(Section.start_page)
             )
         ]
-        pdf = self._storage.get(document.storage_path)
-        pages = _PageCache(session, document.id, tenant_id)
-
+        settings = self._settings
+        groups: dict[str, FieldGroup] = {}
+        windows: dict[str, list[int]] = {}
+        done: set[str] = set()
         for group in _run_groups(schema, run.groups):
             fields = schema.fields_in(group.name)
-            done = set(
-                session.scalars(
-                    select(Candidate.field_path).where(
-                        Candidate.extraction_run_id == run.id,
-                        Candidate.tenant_id == tenant_id,
-                        Candidate.field_path.in_([field.path for field in fields]),
-                    )
-                )
-            )
-            if done == {field.path for field in fields}:
-                continue
-            window = select_pages(
+            if self._done_fields(session, run, fields) == {field.path for field in fields}:
+                done.add(group.name)
+            groups[group.name] = group
+            windows[group.name] = select_pages(
                 group.routing,
                 sections,
                 page_texts,
-                max_pages=self._settings.extract_max_pages_per_group,
-                fallback_pages=self._settings.extract_max_pages_per_call,
-                keyword_pages=self._settings.extract_keyword_pages,
+                max_pages=settings.extract_max_pages_per_group,
+                fallback_pages=settings.extract_max_pages_per_call,
+                keyword_pages=settings.extract_keyword_pages,
             )
-            drafts: dict[str, list[_Draft]] = {field.path: [] for field in fields}
-            not_found: dict[str, list[str]] = {field.path: [] for field in fields}
-            model = build_group_model(schema, group, self._schemas)
-            for chunk, pdf_b64 in self._windows(pdf, window):
-                response = self._llm.call(
-                    LLMRequest[BaseModel](
-                        prompt_name=group.prompt_name,
-                        prompt_version=run.prompt_version,
-                        content=[
-                            PdfPart(data_b64=pdf_b64, title=document.filename),
-                            TextPart(text=_instructions(document, schema, group, fields, chunk)),
-                        ],
-                        response_model=model,
-                        created_by=ACTOR,
-                        is_fixture=run.is_fixture,
-                        extraction_run_id=run.id,
-                        output_schema_name=f"{schema.name}:{schema.version}:{group.name}",
-                    )
-                )
-                for field in fields:
-                    item = getattr(response.parsed, field.key)
-                    if item.value is None:
-                        not_found[field.path].append(item.rationale)
-                    else:
-                        quotes = [quote for quote in item.evidence if quote.quote.strip()]
-                        drafts[field.path].append(
-                            _Draft(
-                                value=item.value,
-                                confidence=min(max(float(item.confidence), 0.0), 1.0),
-                                rationale=item.rationale,
-                                quotes=quotes,
-                                chunk=chunk,
-                                call_log_id=response.call_log_id,
-                            )
+        batch = run.mode == "batch"
+        if settings.extract_share_windows:
+            plan = share_windows(
+                windows,
+                max_pages=settings.extract_max_pages_per_group,
+                pages_per_call=settings.extract_max_pages_per_call,
+                # A batch run keeps a window in the cache for an hour, between its waves.
+                cache_write_factor=settings.llm_cache_write_1h_factor
+                if batch
+                else settings.llm_cache_write_factor,
+                cache_read_factor=settings.llm_cache_read_factor,
+                call_overhead_pages=settings.extract_call_overhead_pages,
+            )
+        else:
+            plan = [
+                SharedWindow(groups=(name,), pages=tuple(pages))
+                for name, pages in windows.items()
+                if pages
+            ]
+        pdf = self._storage.get(document.storage_path)
+        calls: list[_Call] = []
+        for window in plan:
+            # A window's groups are committed together, so they are all done or none is.
+            if done.issuperset(window.groups):
+                continue
+            for chunk, pdf_b64 in self._windows(pdf, list(window.pages)):
+                part = PdfPart(data_b64=pdf_b64, title=document.filename)
+                for index, name in enumerate(window.groups):
+                    group = groups[name]
+                    fields = schema.fields_in(name)
+                    calls.append(
+                        _Call(
+                            window=window,
+                            group=group,
+                            chunk=chunk,
+                            writes_cache=index == 0,
+                            request=LLMRequest[BaseModel](
+                                prompt_name=group.prompt_name,
+                                prompt_version=run.prompt_version,
+                                content=[
+                                    part,
+                                    TextPart(
+                                        text=_instructions(document, schema, group, fields, chunk)
+                                    ),
+                                ],
+                                response_model=build_group_model(schema, group, self._schemas),
+                                created_by=ACTOR,
+                                is_fixture=run.is_fixture,
+                                extraction_run_id=run.id,
+                                output_schema_name=f"{schema.name}:{schema.version}:{name}",
+                                cache_documents=window.shared,
+                                cache_ttl="1h" if batch else "5m",
+                            ),
                         )
-            for field in fields:
-                if field.path in done:
-                    continue
-                self._insert_field(
-                    session,
-                    run,
-                    group,
-                    field,
-                    drafts[field.path],
-                    not_found[field.path],
-                    window,
-                    pages,
-                )
-            session.commit()
+                    )
+        return calls
 
-        self._supersede_earlier_runs(session, run)
-        tokens_in, tokens_out = session.execute(
-            select(
-                func.coalesce(func.sum(LLMCallLog.tokens_in), 0),
-                func.coalesce(func.sum(LLMCallLog.tokens_out), 0),
-            ).where(LLMCallLog.extraction_run_id == run.id, LLMCallLog.tenant_id == tenant_id)
-        ).one()
-        run.token_in, run.token_out = int(tokens_in), int(tokens_out)
-        run.cost_usd = Decimal(
-            str(
-                round(
-                    tokens_in / 1e6 * self._settings.llm_price_in_per_mtok
-                    + tokens_out / 1e6 * self._settings.llm_price_out_per_mtok,
-                    4,
-                )
+    def _batches_done(self, session: Session, run: ExtractionRun, calls: list[_Call]) -> bool:
+        """Move a batch run one step on. False while a batch is being worked on. True once
+        both waves are collected (or nothing is left to send): what the batches did not
+        answer is then called directly."""
+        requests = [call.request for call in calls]
+        batches = list(
+            session.scalars(
+                select(LLMBatch)
+                .where(LLMBatch.extraction_run_id == run.id, LLMBatch.tenant_id == run.tenant_id)
+                .order_by(LLMBatch.created_at)
             )
         )
-        run.status = "extracted"
-        jobs.enqueue(
-            session,
-            tenant_id=run.tenant_id,
-            kind="validate",
-            payload={"extraction_run_id": run.id},
-            created_by=ACTOR,
-        )
-        session.commit()
-        return run
+        for batch in batches:
+            if batch.status != "collected" and not self._llm.collect_batch(batch.id, requests):
+                return False
+        waves = max((batch.wave for batch in batches), default=0)
+        if waves >= 2:
+            return True
+        pending = [call for call in calls if self._llm.logged(call.request) is None]
+        if waves == 0:
+            first = [c for c in pending if c.writes_cache or not c.window.shared]
+            if first:
+                self._llm.submit_batch(
+                    [c.request for c in first],
+                    created_by=ACTOR,
+                    extraction_run_id=run.id,
+                    wave=1,
+                )
+                return False
+        second = [c for c in pending if c.window.shared and not c.writes_cache]
+        if second:
+            self._llm.submit_batch(
+                [c.request for c in second], created_by=ACTOR, extraction_run_id=run.id, wave=2
+            )
+            return False
+        return True
 
     def _windows(self, pdf: bytes, window: list[int]) -> Iterator[tuple[list[int], str]]:
         """Page chunks of at most the per-call cap, each as a base64 PDF of those pages.
@@ -659,7 +817,9 @@ class _PageCache:
 
 
 def _sub_pdf(source: Any, pages: list[int]) -> bytes:
-    """A PDF holding exactly the given 1-based pages, in order."""
+    """A PDF holding exactly the given 1-based pages, in order. The same pages always give
+    the same bytes (no fresh file id): the prompt cache and the call log both recognise a
+    window by its bytes."""
     out: Any = pymupdf.open()  # type: ignore[no-untyped-call]
     try:
         start = previous = pages[0]
@@ -670,7 +830,7 @@ def _sub_pdf(source: Any, pages: list[int]) -> bytes:
             out.insert_pdf(source, from_page=start - 1, to_page=previous - 1)
             if page_no is not None:
                 start = previous = page_no
-        return cast(bytes, out.tobytes(garbage=3, deflate=True))
+        return cast(bytes, out.tobytes(garbage=3, deflate=True, no_new_id=True))
     finally:
         out.close()
 

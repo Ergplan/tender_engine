@@ -53,7 +53,9 @@ class ExtractionRunOut(BaseModel):
     status: str
     started_at: datetime | None
     finished_at: datetime | None
+    mode: str
     token_in: int
+    token_cached: int
     token_out: int
     cost_usd: Decimal
     error: str | None

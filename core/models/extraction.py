@@ -9,6 +9,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from core.models.base import Base, IdMixin, TenantAuditMixin
 
 RUN_STATUSES = ("queued", "running", "extracted", "validated", "failed")
+RUN_MODES = ("sync", "batch")
 # raw: inserted, not yet validated. validated: every rule passed. needs_review: a rule failed.
 # superseded: a later run produced a candidate for the same field.
 # not_found: the model returned no value. rejected: a value came without evidence.
@@ -36,7 +37,17 @@ class ExtractionRun(IdMixin, TenantAuditMixin, Base):
     status: Mapped[str] = mapped_column(String(20), nullable=False, default="queued")
     started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    # sync: the worker makes each call and waits. batch: the calls go through the batch
+    # API, for runs no human waits for.
+    mode: Mapped[str] = mapped_column(
+        String(10), nullable=False, default="sync", server_default="sync"
+    )
+    # token_in is the whole input of the run's calls, cached or not; token_cached is the
+    # part of it read from the prompt cache.
     token_in: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    token_cached: Mapped[int] = mapped_column(
+        Integer, nullable=False, default=0, server_default="0"
+    )
     token_out: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     cost_usd: Mapped[Decimal] = mapped_column(Numeric(12, 4), nullable=False, default=Decimal(0))
     error: Mapped[str | None] = mapped_column(Text, nullable=True)

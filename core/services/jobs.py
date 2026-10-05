@@ -14,9 +14,18 @@ BACKOFF_SECONDS = 30
 
 
 def enqueue(
-    session: Session, *, tenant_id: str, kind: str, payload: dict[str, Any], created_by: str
+    session: Session,
+    *,
+    tenant_id: str,
+    kind: str,
+    payload: dict[str, Any],
+    created_by: str,
+    delay_seconds: float = 0,
 ) -> Job:
+    """Queue a job, due now or `delay_seconds` from now."""
     job = Job(tenant_id=tenant_id, created_by=created_by, kind=kind, payload=payload)
+    if delay_seconds > 0:
+        job.run_after = datetime.now(UTC) + timedelta(seconds=delay_seconds)
     session.add(job)
     session.flush()
     return job

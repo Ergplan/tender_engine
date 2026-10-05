@@ -492,3 +492,178 @@ def test_runs_on_two_documents_of_one_object_keep_both_documents_candidates(
     issuer = next(f for f in state.fields if f.field_path == "identity.issuer")
     assert issuer.candidate is not None and issuer.candidate.document_id == first.id
     assert issuer.alternative_candidates == 0
+
+
+ONE_SECTION = [
+    {
+        "start_page": 1,
+        "end_page": 3,
+        "heading": "Agreement no, key dates and security",
+        "kind": "other",
+        "confidence": 1,
+    }
+]
+
+
+def group_of(call: dict[str, Any]) -> str:
+    text: str = call["messages"][0]["content"][-1]["text"]
+    return text.split("group `")[1].split("`")[0]
+
+
+def test_groups_with_the_same_pages_share_one_cached_window(
+    make_pipeline: MakePipeline, db: Session
+) -> None:
+    sdk = ScriptedSDK(sections=ONE_SECTION)
+    pipeline = make_pipeline(sdk)
+    run = pipeline.extracted_run(db)
+
+    calls = sdk.extract_calls()
+    assert [group_of(call) for call in calls] == ["identity", "dates", "security"]
+    documents = [call["messages"][0]["content"][0] for call in calls]
+    assert all(block["cache_control"] == {"type": "ephemeral"} for block in documents)
+    assert len({block["source"]["data"] for block in documents}) == 1
+    assert len({call["system"] for call in calls}) == 1
+    logs = list(
+        db.scalars(
+            select(LLMCallLog)
+            .where(LLMCallLog.extraction_run_id == run.id)
+            .order_by(LLMCallLog.created_at)
+        )
+    )
+    assert [(log.cache_write_tokens, log.cache_read_tokens) for log in logs] == [
+        (800, 0),
+        (0, 800),
+        (0, 800),
+    ]
+    assert (run.token_in, run.token_cached, run.token_out) == (3000, 1600, 300)
+    expected = (600 * 10 + 800 * 12.5 + 1600 * 0.25 + 300 * 50) / 1e6
+    assert float(run.cost_usd) == pytest.approx(expected, abs=1e-4)
+    rows = candidates(db, run)
+    assert len(rows) == 7 and run.status == "validated"
+    assert all(row.window_pages == [1, 2, 3] for row in rows.values())
+    assert all(any(s.char_start is not None for s in spans(db, row)) for row in rows.values())
+
+
+def test_windows_are_not_shared_when_sharing_is_switched_off(
+    make_pipeline: MakePipeline, db: Session
+) -> None:
+    sdk = ScriptedSDK(sections=ONE_SECTION)
+    pipeline = make_pipeline(sdk, extract_share_windows=False)
+    run = pipeline.extracted_run(db)
+    assert all(
+        "cache_control" not in call["messages"][0]["content"][0] for call in sdk.extract_calls()
+    )
+    assert (run.token_in, run.token_cached) == (3000, 0)
+
+
+def test_an_interrupted_run_reads_the_calls_it_already_paid_for_from_the_log(
+    make_pipeline: MakePipeline, db: Session
+) -> None:
+    def fail_second_extract_call(number: int, kwargs: dict[str, Any]) -> None:
+        if number == 3:
+            request = httpx2.Request("POST", "https://api.anthropic.com/v1/messages")
+            raise anthropic.InternalServerError(
+                "boom", response=httpx2.Response(500, request=request), body=None
+            )
+
+    sdk = ScriptedSDK(sections=ONE_SECTION, before_call=fail_second_extract_call)
+    pipeline = make_pipeline(sdk)
+    run = pipeline.start_run(db, pipeline.parsed_document(db))
+    with pytest.raises(LLMCallError):
+        pipeline.extract.extract(db, run.id)
+    db.rollback()
+    assert candidates(db, run) == {}  # a shared window is committed as a whole
+
+    sdk.before_call = None
+    pipeline.extract.extract(db, run.id)
+    assert [group_of(call) for call in sdk.extract_calls()] == [
+        "identity",
+        "dates",
+        "dates",
+        "security",
+    ]
+    assert len(candidates(db, run)) == 7
+    identity = candidates(db, run)["identity.issuer"]
+    first_ok = db.scalars(
+        select(LLMCallLog)
+        .where(LLMCallLog.extraction_run_id == run.id, LLMCallLog.status == "ok")
+        .order_by(LLMCallLog.created_at)
+    ).first()
+    assert first_ok is not None and identity.llm_call_log_id == first_ok.id
+
+
+def test_a_batch_run_sends_the_cache_writer_first_and_the_readers_second(
+    make_pipeline: MakePipeline, db: Session
+) -> None:
+    from core.models import LLMBatch
+
+    sdk = ScriptedSDK(sections=ONE_SECTION)
+    sdk.batch_polls = 1
+    pipeline = make_pipeline(sdk, llm_batch_poll_seconds=0)
+    run = pipeline.start_run(db, pipeline.parsed_document(db), mode="batch")
+    pipeline.runner.run_until_idle()
+    db.refresh(run)
+
+    assert sdk.extract_calls() == []  # nothing was called directly
+    batches = list(db.scalars(select(LLMBatch).order_by(LLMBatch.wave)))
+    assert [(b.wave, b.request_count, b.status) for b in batches] == [
+        (1, 1, "collected"),
+        (2, 2, "collected"),
+    ]
+    first, second = (sdk.submitted[b.provider_batch_id] for b in batches)
+    document = first[0]["params"]["messages"][0]["content"][0]
+    assert document["cache_control"] == {"type": "ephemeral", "ttl": "1h"}
+    assert all(
+        r["params"]["messages"][0]["content"][0]["source"] == document["source"] for r in second
+    )
+    logs = list(db.scalars(select(LLMCallLog).where(LLMCallLog.extraction_run_id == run.id)))
+    assert len(logs) == 3 and all(log.mode == "batch" and log.batch_id for log in logs)
+    assert sorted(log.cache_read_tokens for log in logs) == [0, 800, 800]
+    assert run.status == "validated" and run.mode == "batch"
+    assert len(candidates(db, run)) == 7
+    # Half the price of the same run made with direct calls and a five-minute cache write.
+    assert float(run.cost_usd) == pytest.approx(
+        (600 * 10 + 800 * 20 + 1600 * 0.25 + 300 * 50) / 1e6 / 2, abs=1e-4
+    )
+    extract_jobs = list(db.scalars(select(Job).where(Job.kind == "extract")))
+    assert len(extract_jobs) >= 3 and all(job.status == "done" for job in extract_jobs)
+
+
+def test_a_call_that_fails_inside_a_batch_is_made_directly(
+    make_pipeline: MakePipeline, db: Session
+) -> None:
+    sdk = ScriptedSDK(sections=ONE_SECTION)
+    pipeline = make_pipeline(sdk, llm_batch_poll_seconds=0)
+    run = pipeline.start_run(db, pipeline.parsed_document(db), mode="batch")
+    assert pipeline.runner.run_once()  # submits the first wave
+    [first] = sdk.submitted.values()
+    sdk.batch_failures = {first[0]["custom_id"]}
+    pipeline.runner.run_until_idle()
+    db.refresh(run)
+
+    assert [group_of(call) for call in sdk.extract_calls()] == ["identity"]
+    statuses = sorted(
+        (log.mode, log.status)
+        for log in db.scalars(select(LLMCallLog).where(LLMCallLog.extraction_run_id == run.id))
+    )
+    assert statuses == [("batch", "error"), ("batch", "ok"), ("batch", "ok"), ("sync", "ok")]
+    assert run.status == "validated" and len(candidates(db, run)) == 7
+
+
+def test_a_run_mode_other_than_sync_or_batch_is_refused(pipeline: Pipeline, db: Session) -> None:
+    with pytest.raises(ExtractionError):
+        pipeline.start_run(db, pipeline.parsed_document(db), mode="later")
+
+
+def test_the_same_pages_always_give_the_same_pdf_bytes() -> None:
+    import time
+
+    import pymupdf
+
+    from core.services.extract import _sub_pdf
+
+    with pymupdf.open(stream=make_pdf(), filetype="pdf") as source:
+        first = _sub_pdf(source, [1, 3])
+        time.sleep(1.1)  # a file id made from the clock would differ by now
+        assert _sub_pdf(source, [1, 3]) == first
+        assert _sub_pdf(source, [1, 2]) != first

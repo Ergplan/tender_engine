@@ -114,6 +114,7 @@ class AmendmentMapper:
         created_by: str = ACTOR,
         start_runs: bool | str = True,
         is_fixture: bool = False,
+        run_mode: str = "sync",
     ) -> dict[str, Any]:
         """Compare the keyword answer with the full map for one amending document, record
         the comparison, and queue an extraction run: of the union of both (start_runs true
@@ -216,6 +217,7 @@ class AmendmentMapper:
                 object_version=version_no,
                 groups=to_read,
                 is_fixture=is_fixture,
+                mode=run_mode,
             )
         return comparison
 
@@ -233,6 +235,7 @@ def job_handlers(mapper: AmendmentMapper) -> dict[str, Callable[[Session, dict[s
             created_by=payload.get("created_by", ACTOR),
             start_runs=payload.get("start_runs", True),
             is_fixture=payload.get("is_fixture", False),
+            run_mode=payload.get("mode", "sync"),
         )
 
     return {JOB_KIND: amendment_plan}

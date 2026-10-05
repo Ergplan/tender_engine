@@ -667,6 +667,10 @@
             "title": "Id",
             "type": "string"
           },
+          "mode": {
+            "title": "Mode",
+            "type": "string"
+          },
           "model": {
             "title": "Model",
             "type": "string"
@@ -711,6 +715,10 @@
             "title": "Status",
             "type": "string"
           },
+          "token_cached": {
+            "title": "Token Cached",
+            "type": "integer"
+          },
           "token_in": {
             "title": "Token In",
             "type": "integer"
@@ -733,7 +741,9 @@
           "status",
           "started_at",
           "finished_at",
+          "mode",
           "token_in",
+          "token_cached",
           "token_out",
           "cost_usd",
           "error"
@@ -1254,6 +1264,15 @@
       },
       "TenderExtractRequest": {
         "properties": {
+          "mode": {
+            "default": "sync",
+            "enum": [
+              "sync",
+              "batch"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
           "prompt_version": {
             "default": "v1",
             "title": "Prompt Version",
@@ -2625,7 +2644,7 @@
     },
     "/api/v1/tenders/{tender_id}/extract": {
       "post": {
-        "description": "Queue the extraction of one version (the latest by default): one run per document.\nA version after the original is read only for the sections its documents touch. A long\namendment, or one whose text matches no section keyword, is first mapped in full by a\nbackground job, which then queues its run; such a run is not in this response.",
+        "description": "Queue the extraction of one version (the latest by default): one run per document.\nA version after the original is read only for the sections its documents touch. A long\namendment, or one whose text matches no section keyword, is first mapped in full by a\nbackground job, which then queues its run; such a run is not in this response.\n`mode` \"batch\" sends the calls through the batch API for a run nobody waits for.",
         "operationId": "start_extraction_api_v1_tenders__tender_id__extract_post",
         "parameters": [
           {

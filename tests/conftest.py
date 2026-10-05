@@ -54,6 +54,8 @@ def settings(tmp_path_factory: pytest.TempPathFactory) -> Iterator[Settings]:
         data_dir=str(tmp_path_factory.mktemp("data")),
         anthropic_api_key="test-key-not-real",
         anthropic_model="claude-fable-5-1",
+        # A batch run looks at its batch again at once; the scripted SDK ends it at once.
+        llm_batch_poll_seconds=0,
     )
     config = Config("alembic.ini")
     config.attributes["settings"] = test_settings

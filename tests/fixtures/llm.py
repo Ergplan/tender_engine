@@ -1,5 +1,6 @@
 """A scripted stand-in for the Anthropic SDK. Tests never call the real model."""
 
+import json
 from collections.abc import Callable
 from types import SimpleNamespace
 from typing import Any, cast
@@ -109,6 +110,16 @@ class ScriptedSDK:
         self.amendment_changes: list[dict[str, Any]] = []
         self.calls: list[dict[str, Any]] = []
         self.messages = self
+        # The batch API: batches[id] is the list of submitted requests. A batch reports
+        # `ended` after `batch_polls` looks at it; `batch_failures` names custom ids whose
+        # call errors inside the batch.
+        self.batches = self
+        self.submitted: dict[str, list[dict[str, Any]]] = {}
+        self.batch_polls = 0
+        self.batch_failures: set[str] = set()
+        self._polled: dict[str, int] = {}
+        # Pages already written to the cache, by the hash of the cached document.
+        self._cached: set[str] = set()
 
     def parse(self, **kwargs: Any) -> Any:
         self.calls.append(kwargs)
@@ -123,15 +134,57 @@ class ScriptedSDK:
             parsed = model.model_validate(
                 {key: self.answers.get(key, NOT_FOUND) for key in model.model_fields}
             )
+        return self._message(kwargs, parsed.model_dump_json(), parsed)
+
+    def _message(self, params: dict[str, Any], text: str, parsed: Any) -> Any:
+        """1,000 tokens of input; a document marked for the cache is 800 of them, written
+        the first time it is seen and read after that."""
+        read = written = written_1h = 0
+        for block in params["messages"][0]["content"]:
+            if block.get("cache_control"):
+                key = block["source"]["data"]
+                read, written = (800, 0) if key in self._cached else (0, 800)
+                written_1h = written if block["cache_control"].get("ttl") == "1h" else 0
+                self._cached.add(key)
         return SimpleNamespace(
             model="claude-fable-5-1",
             stop_reason="end_turn",
             stop_details=None,
             _request_id=f"req_fake_{len(self.calls)}",
-            usage=SimpleNamespace(input_tokens=1000, output_tokens=100, cache_read_input_tokens=0),
-            content=[SimpleNamespace(type="text", text=parsed.model_dump_json())],
+            usage=SimpleNamespace(
+                input_tokens=1000 - read - written,
+                output_tokens=100,
+                cache_read_input_tokens=read,
+                cache_creation_input_tokens=written,
+                cache_creation=SimpleNamespace(ephemeral_1h_input_tokens=written_1h),
+            ),
+            content=[SimpleNamespace(type="text", text=text)],
             parsed_output=parsed,
         )
+
+    def create(self, requests: list[dict[str, Any]]) -> Any:
+        batch_id = f"msgbatch_fake_{len(self.submitted) + 1}"
+        self.submitted[batch_id] = list(requests)
+        return SimpleNamespace(id=batch_id, processing_status="in_progress")
+
+    def retrieve(self, batch_id: str) -> Any:
+        self._polled[batch_id] = self._polled.get(batch_id, 0) + 1
+        ended = self._polled[batch_id] > self.batch_polls
+        return SimpleNamespace(id=batch_id, processing_status="ended" if ended else "in_progress")
+
+    def results(self, batch_id: str) -> list[Any]:
+        out = []
+        for request in self.submitted[batch_id]:
+            if request["custom_id"] in self.batch_failures:
+                result = SimpleNamespace(type="errored", error="overloaded_error")
+            else:
+                keys = request["params"]["output_config"]["format"]["schema"]["properties"]
+                text = json.dumps({key: self.answers.get(key, NOT_FOUND) for key in keys})
+                result = SimpleNamespace(
+                    type="succeeded", message=self._message(request["params"], text, None)
+                )
+            out.append(SimpleNamespace(custom_id=request["custom_id"], result=result))
+        return out
 
     def extract_calls(self) -> list[dict[str, Any]]:
         return [

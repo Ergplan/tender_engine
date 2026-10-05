@@ -253,13 +253,16 @@ class TenderService:
         created_by: str,
         groups: list[str] | None = None,
         is_fixture: bool = False,
+        mode: str = "sync",
     ) -> list[ExtractionRun]:
         """Queue the extraction of one version (the latest by default): one run per document
         that has groups to read. A later version is read only where it touches the tender.
         An amending document for which keywords find no section, or which is long, is not
         given a run here: a job maps it in full first and then queues its run.
         `groups` narrows the extraction to those sections of what each document would be
-        read for (a re-extraction after a schema or prompt change); no map is made then."""
+        read for (a re-extraction after a schema or prompt change); no map is made then.
+        `mode` "batch" sends the runs through the batch API, for an extraction nobody
+        waits for."""
         compiled = self._catalog.get(tender.tender_type)
         entries = self.versions(session, tender)
         if not entries:
@@ -306,6 +309,7 @@ class TenderService:
                         "prompt_version": prompt_version,
                         "created_by": created_by,
                         "is_fixture": is_fixture,
+                        "mode": mode,
                     },
                     created_by=created_by,
                 )
@@ -325,6 +329,7 @@ class TenderService:
                 object_version=entry.version.version_no,
                 groups=run_groups,
                 is_fixture=is_fixture,
+                mode=mode,
             )
             for document, run_groups in plan
         ]

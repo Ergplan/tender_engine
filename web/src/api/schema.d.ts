@@ -290,6 +290,7 @@ export interface paths {
          *     A version after the original is read only for the sections its documents touch. A long
          *     amendment, or one whose text matches no section keyword, is first mapped in full by a
          *     background job, which then queues its run; such a run is not in this response.
+         *     `mode` "batch" sends the calls through the batch API for a run nobody waits for.
          */
         post: operations["start_extraction_api_v1_tenders__tender_id__extract_post"];
         delete?: never;
@@ -589,6 +590,8 @@ export interface components {
             finished_at: string | null;
             /** Id */
             id: string;
+            /** Mode */
+            mode: string;
             /** Model */
             model: string;
             /** Object Id */
@@ -607,6 +610,8 @@ export interface components {
             started_at: string | null;
             /** Status */
             status: string;
+            /** Token Cached */
+            token_cached: number;
             /** Token In */
             token_in: number;
             /** Token Out */
@@ -786,6 +791,12 @@ export interface components {
         };
         /** TenderExtractRequest */
         TenderExtractRequest: {
+            /**
+             * Mode
+             * @default sync
+             * @enum {string}
+             */
+            mode: "sync" | "batch";
             /**
              * Prompt Version
              * @default v1
