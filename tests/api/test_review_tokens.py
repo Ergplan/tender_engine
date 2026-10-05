@@ -419,3 +419,7 @@ def test_the_command_prints_a_link_and_lists_links(
     lines = review_token_command.listing(pipeline.settings)
     assert len(lines) == 2 and "revoked" in lines[0] and "live until" in lines[1]
     assert "Bela Shah" in lines[1]
+    live = lines[1].rsplit("/", 1)[1]
+    assert review_token_command.revoke(pipeline.settings, "acme-solar-600") == 1
+    assert client.get("/api/v1/review-session", headers=as_reviewer(live)).status_code == 410
+    assert review_token_command.revoke(pipeline.settings, "acme-solar-600") == 0

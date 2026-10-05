@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { Component, type ReactNode, useEffect, useMemo, useState } from "react";
 
 import { ApiError, reviewApi, type ReviewSession, type TenderReview } from "../api/client";
 import { MessagePage } from "./MessagePage";
@@ -9,6 +9,25 @@ type State =
   | { kind: "loading" }
   | { kind: "ready"; session: ReviewSession; review: TenderReview }
   | { kind: "refused"; message: string };
+
+/** A fault in the screen leaves a plain message, not an empty page. Decisions are saved
+ * as they are made, so nothing is lost by reloading. */
+class Safely extends Component<{ children: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  render() {
+    if (this.state.failed)
+      return (
+        <MessagePage
+          title="Something went wrong on this page"
+          message="Reload the page to continue. Every decision you made is already saved."
+        />
+      );
+    return this.props.children;
+  }
+}
 
 /** /review/<token> opens straight into the tender; /review/<token>/summary is the
  * read-only view after completion. */
@@ -45,14 +64,16 @@ export function ReviewApp({ token, summary }: { token: string; summary: boolean 
   if (showSummary)
     return <SummaryPage api={api} tenderId={state.session.tender_id} reviewHref={base} />;
   return (
-    <ReviewScreen
-      api={api}
-      session={state.session}
-      initial={state.review}
-      onCompleted={() => {
-        window.history.pushState(null, "", `${base}/summary`);
-        setShowSummary(true);
-      }}
-    />
+    <Safely>
+      <ReviewScreen
+        api={api}
+        session={state.session}
+        initial={state.review}
+        onCompleted={() => {
+          window.history.pushState(null, "", `${base}/summary`);
+          setShowSummary(true);
+        }}
+      />
+    </Safely>
   );
 }

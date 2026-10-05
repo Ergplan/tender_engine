@@ -1,0 +1,15 @@
+             slug             | v |              doc               | mode  | sections |  status   | token_in | token_cached | token_out | cost_usd | started  | finished 
+------------------------------+---+--------------------------------+-------+----------+-----------+----------+--------------+-----------+----------+----------+----------
+ ntpc-phes-2000mw             | 1 | job_45538.pdf                  | sync  | 10       | validated |   102625 |            0 |     16831 |   2.0914 | 05:03:14 | 05:09:17
+ ntpc-phes-2000mw             | 1 | Tender_notice_page_ntpc-phes-2 | sync  | 10       | validated |    55515 |            0 |     12170 |   1.2697 | 05:06:43 | 05:09:17
+ ntpc-phes-2000mw             | 1 | job_45538.pdf                  | sync  | 10       | validated |    97630 |        75195 |     17604 |   1.1442 | 05:16:50 | 05:23:23
+ ntpc-phes-2000mw             | 1 | Tender_notice_page_ntpc-phes-2 | sync  | 10       | validated |    57103 |        32859 |     13218 |   0.9207 | 05:20:39 | 05:23:23
+ nhpc-fdre-ii                 | 1 | RfS_FDRE_1200MW_NHPC_Tranche-I | batch | 10       | validated |  1016568 |            0 |     58788 |   6.5525 | 05:30:23 | 05:36:15
+ seci-cni-1-700mw             | 1 | RfS_for_700_MW_SPV_Projects_Cn | batch | 10       | validated |   709776 |            0 |     36822 |   4.4694 | 05:30:29 | 05:36:15
+ seci-cni-1-700mw             | 1 | SECI_PPA_Solar_CnI_T1.pdf      | batch | 2        | validated |   150322 |            0 |     11636 |   1.0425 | 05:30:33 | 05:33:52
+ seci-cni-1-700mw             | 2 | Tender_notice_page_seci-cni-1- | batch | 5        | validated |    26202 |        18120 |      7324 |   0.2258 | 05:30:45 | 05:37:16
+ ntpc-rel-600mw-anantapur-wtg | 1 | job_45811.pdf                  | batch | 10       | validated |   365459 |       315270 |     23775 |   1.0599 | 05:30:46 | 05:36:16
+ ntpc-rel-600mw-anantapur-wtg | 1 | tech_job_45811.pdf             | batch | 1        | validated |     5361 |            0 |      2136 |   0.0802 | 05:30:47 | 05:32:56
+ seci-cni-1-700mw             | 2 | Pre-Bid_meeting_notification48 | batch | 2        | validated |    11687 |            0 |      2473 |   0.1203 | 05:30:48 | 05:32:56
+(11 rows)
+

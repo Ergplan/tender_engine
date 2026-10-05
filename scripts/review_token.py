@@ -1,16 +1,19 @@
 """Management command: review links.
 
   python -m scripts.review_token create --tender <slug or id> --reviewer "Name"
+  python -m scripts.review_token revoke --tender <slug or id>
   python -m scripts.review_token list
 
 `create` prints the link to send to the reviewer (WhatsApp, email). A tender has one live
-link: creating another stops the earlier one. A link is valid for 30 days.
+link: creating another stops the earlier one, and `revoke` stops it without a new one. A
+link is valid for 30 days. The link of a completed review stays readable.
 """
 
 import argparse
 import sys
 
 from sqlalchemy import select
+from sqlalchemy.orm import Session
 
 from core.config import Settings
 from core.db import make_engine, make_session_factory
@@ -24,18 +27,29 @@ def review_url(base_url: str, token: str) -> str:
     return f"{base_url.rstrip('/')}/review/{token}"
 
 
+def _tender(session: Session, settings: Settings, tender_ref: str) -> Tender:
+    tender = session.scalar(
+        select(Tender).where(
+            Tender.tenant_id == settings.tenant_id,
+            (Tender.slug == tender_ref) | (Tender.id == tender_ref),
+        )
+    )
+    if tender is None:
+        raise SystemExit(f"no tender with slug or id {tender_ref!r}")
+    return tender
+
+
 def create(settings: Settings, tender_ref: str, reviewer: str) -> str:
     with make_session_factory(make_engine(settings))() as session:
-        tender = session.scalar(
-            select(Tender).where(
-                Tender.tenant_id == settings.tenant_id,
-                (Tender.slug == tender_ref) | (Tender.id == tender_ref),
-            )
-        )
-        if tender is None:
-            raise SystemExit(f"no tender with slug or id {tender_ref!r}")
+        tender = _tender(session, settings, tender_ref)
         token = TokenService(settings.tenant_id).create(session, tender, reviewer, created_by=ACTOR)
         return review_url(settings.public_base_url, token.token)
+
+
+def revoke(settings: Settings, tender_ref: str) -> int:
+    with make_session_factory(make_engine(settings))() as session:
+        tender = _tender(session, settings, tender_ref)
+        return TokenService(settings.tenant_id).revoke(session, tender, created_by=ACTOR)
 
 
 def listing(settings: Settings) -> list[str]:
@@ -64,7 +78,7 @@ def listing(settings: Settings) -> list[str]:
 
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(prog="review_token", description=__doc__)
-    parser.add_argument("command", choices=("create", "list"))
+    parser.add_argument("command", choices=("create", "revoke", "list"))
     parser.add_argument("--tender", default="")
     parser.add_argument("--reviewer", default="")
     args = parser.parse_args(argv[1:])
@@ -73,6 +87,10 @@ def main(argv: list[str]) -> int:
         if not args.tender or not args.reviewer:
             parser.error("create needs --tender and --reviewer")
         print(create(settings, args.tender, args.reviewer))
+    elif args.command == "revoke":
+        if not args.tender:
+            parser.error("revoke needs --tender")
+        print(f"{revoke(settings, args.tender)} link(s) stopped")
     else:
         print("\n".join(listing(settings)))
     return 0

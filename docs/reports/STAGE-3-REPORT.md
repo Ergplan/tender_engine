@@ -1,0 +1,124 @@
+# Stage 3 report: reviewer UI and review tokens
+
+Date: 2026-10-05. Diff: `git diff stage-3-start..HEAD`. Architecture changes: `docs/ARCHITECTURE.md` ("Cost of extraction", "Review tokens and what a request may reach", "The reviewer's view of a tender", "Reviewer screen", "What changed this stage"). Artifacts: `docs/reports/stage-3-artifacts/`.
+
+**The stage is built and deployed. One check of the definition of done is yours: completing one real review from a link, unaided.** The link and what I need back from you are in the last section.
+
+## Definition of done (master prompt, row 3)
+
+| Check | Result |
+| --- | --- |
+| Playwright suite green | Yes. `make test-ui`: 5 of 5 pass (`web/e2e/review.spec.ts`), in Chromium at 1366x768 against a seeded stack behind the same proxy routes as the deployed app |
+| User completes one real review from a token URL unaided | **Open: this is your step** |
+| First PDF page under 3 s on the VM | Yes. On the deployed app, with the 305-page contractual volume of SECI Gaya: first meaningful paint 1.4 s, first PDF page 1.7 s (Chromium on the VM, cold load). On the seeded tender: 0.9 s and 1.2 s. The largest single document of the set has 373 pages; no tender has a 400-page document. Not measured from a reviewer's own connection |
+| No bulk-approve exists | Yes. The screen has Approve, Edit, Not in document and Flag per field and nothing else; the API has no route that decides more than one field (`POST /approvals` takes one candidate). Both the unit test and the browser test assert that no "approve all" exists |
+| `make trace` is clean and every schema field has a complete FIELD-TRACE row | Yes. `docs/FIELD-TRACE.md` has 163 rows, one per field path of the nine tender types; the watcher's `field_trace` check regenerates it and fails on a difference or on a field without a UI component, route or column |
+| `make test` green | 404 Python tests and 37 web unit tests pass; the watcher's nine checks are green |
+| `make deploy` serves the app | Yes, see "Deployment" |
+
+## Before the UI: cost of extraction
+
+### What was built
+
+- **Shared page windows as a cached prefix.** Sections of one run are read from one shared window when that is cheaper by arithmetic on page counts (`core/services/extract_plan.py`). The window's PDF is sent with a cache mark, the system prompt is the text all section prompts inherit, and the section's own prompt text follows the PDF. The prompt files are unchanged.
+- **Batch API.** A run has a mode. `python -m scripts.ingest_tenders extract` now extracts in batch mode (`--sync` for direct calls); the API default stays direct and takes `"mode": "batch"`. A batch run is two batches: the calls that write a shared window to the cache and all unshared calls first, the calls that read the cache second. The worker does not wait on a batch; it looks again every minute.
+- **`llm_call_log`** records the mode, the batch id, the tokens written to and read from the cache, and the cost of each call with the factors that applied (cache read 0.025, cache write 1.25 or 2 for the one-hour cache, batch 0.5).
+- **A call is never paid twice.** Before every call the run looks in the log for an identical call it already made. This is how batch results are read and how an interrupted run resumes.
+- **`python -m scripts.ingest_tenders cost-plan`** prints the page plan of every tender without calling the model.
+
+### Three things the first real runs showed
+
+1. **Calls with different output schemas never share a cache entry.** The provider caches the output schema ahead of the pages. With one typed schema per section, every call wrote the window to the cache again (at 1.25 times the price) and none read it. One schema holding all sections was refused as too large. Calls on a shared window therefore send one generic schema (a list of entries: key, value, confidence, rationale, evidence), and the answer is checked in Python against the section's typed model; an answer that fails is thrown away and the call is repeated alone with the typed model. Unshared windows are sent exactly as in Stage 2. On the real runs after this change (45 calls on shared windows, the end-to-end test included), 1 was repeated, for a stray extra key, which is now dropped instead.
+2. **The page-subset PDFs were not byte-identical between builds** (a fresh file id each time), which would have defeated both the cache and the matching of batch results. Fixed and tested.
+3. **Caching saves little on the large documents.** The assumption in the stage prompt, that pages are re-sent across the field groups, holds only partly: the 13 tenders send 4,835 pages for 3,464 distinct pages, and the windows of different sections mostly cover different pages. Sharing pays where sections read the same few pages: notices, amendments, short documents.
+
+### Measured, before and after
+
+"Before" is the Stage 2 state of each tender (the calls behind its live candidates); "after" is one fresh extraction. Full table and field-by-field comparison: `stage-3-artifacts/cost-measurement.md`; runs: `stage-3-artifacts/extraction-runs.txt`.
+
+| Tender | Mode after | Calls | Input tokens | Read from cache | Output tokens | Cost USD | Fields with a value | Located |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| nhpc-fdre-ii (264 pages) | batch | 13 → 13 | 1,016,568 → 1,016,568 | 0 | 64,808 → 58,788 | 13.41 → 6.55 | 74 → 74 of 89 | 74 → 74 |
+| seci-cni-1-700mw (5 documents, 2 versions) | batch | 16 → 20 | 878,050 → 897,987 | 18,120 | 55,266 → 58,255 | 11.54 → 5.86 | 68 → 68 of 87 | 68 → 68 |
+| ntpc-rel-600mw-anantapur-wtg (14 pages) | batch | 11 → 11 | 176,377 → 370,820 | 315,270 | 20,355 → 25,911 | 2.78 → 1.14 | 28 → 33 of 84 | 28 → 33 |
+| ntpc-phes-2000mw (4 pages) | direct | 12 → 21 | 111,150 → 154,733 | 108,054 | 20,131 → 30,822 | 2.12 → 2.06 | 33 → 32 of 86 | 33 → 32 |
+
+- **Cost.** The three tenders extracted in batch mode cost USD 13.55 against USD 27.73 before: 51% less.
+- **Cache alone, like for like.** The 3-page NTPC notice, same ten sections, direct calls: USD 1.84 in Stage 2, USD 1.14 now (38% less), with 77% of its input read from the cache. Through a batch (the end-to-end test): USD 0.57, 69% less.
+- **Cache hits inside batches.** All 13 second-wave calls read the window the first wave wrote.
+- **Wall-clock.** The three batch tenders (7 runs, 44 calls) were queued at 05:30:23 UTC and all validated by 05:37:16: under 7 minutes with one worker. NHPC FDRE-II alone took 5 min 52 s from queue to validated; its 13 calls took 12 min 23 s one after another in Stage 2. A batch may take up to an hour at the provider; these did not. Direct calls take as long as before (about 23 s per call).
+- **The candidates are not worse.** Evidence-location rate 100% before and after on all four tenders. Fields with a value: 74 → 74, 68 → 68, 28 → 33, 33 → 32. Of 201 fields answered both times, 123 have the same value after normalisation, 73 are long text worded differently, and 5 short values differ, all five in wording, none in a number or a date. The comparison says the values agree, not that they are right; nothing has been reviewed yet.
+- **One side effect of the fresh extraction, not of the cache.** A full extraction reads a published notice for every section its role allows (Stage 2 had read the notices for key dates and eligibility only). That is why three tenders show more calls, and on seci-cni-1-700mw two identity fields now show the notice's shorter wording ("SECI", "ETS Portal") as the current entry, with the RfS wording beside it as the earlier version. See open question 2.
+
+### What to expect for the whole set
+
+`cost-plan` for all 13 tenders (`stage-3-artifacts/cost-plan.md`): input priced in uncached pages falls from 4,835 to 4,435 with direct calls (8% less) and to 2,307 in batch mode (52% less); output is halved in batch mode. A full extraction that cost USD 190.65 in Stage 2 should cost about USD 95 through the batch API. That is a projection from page counts, not a measurement.
+
+## What was built for review
+
+- **Migration 0008.** `review_token`, `tender_review_snapshot`; the `canonical_fact` guard now names the decisions that may carry a fact.
+- **Tokens.** 32 random url-safe characters, 30 days, one live per tender; creating a second revokes the first (`tender/services/tokens.py`). `POST /api/v1/review-tokens` returns the URL; `python -m scripts.review_token create --tender <slug> --reviewer "Name"` prints it; `revoke` and `list` beside it.
+- **Token middleware** (`api/middleware/review_token.py`). A token is its reviewer and reaches only the review routes of its own tender; another tender is 404, any other route 403. Unknown, revoked and expired links answer with a plain sentence that the screen shows. A request from outside without a token reaches nothing but `/health`. `api/middleware/audit.py` writes one audit line per change request.
+- **The reviewer's view** (`GET /tenders/{id}/review`): every field once; the entry to decide is the latest version that states the field, tagged "v2 amendment"; earlier versions' values are shown beside it.
+- **Decisions.** `POST /approvals` gained the decision `flagged` (a note, no fact) and the stale-write check (`previous_approval_id`, 409 when the field was decided again).
+- **Complete review** (`POST /tenders/{id}/complete-review`): refused while a required field is undecided; then the token is completed, the tender is `reviewed`, and the current view is stored in `tender_review_snapshot`. `GET /tenders/{id}/snapshot` returns it.
+- **The screen** (`web/src/review/`), as specified: two panes at 44% and 56% with a draggable divider; header with title, type, agency, reviewer, "37 of 92 fields decided" and Complete review; sections in review order with decided/total; cards with label, help, value formatted by type, confidence pill, red and amber rule lines, evidence chips; the PDF with continuous scroll, thumbnails, search, contents from the section map and highlights; version and document selector; Approve, Edit, Not in document, Flag; Enter, E, N, F, J, K, Escape; immediate save with a tick or the reason; read-only summary with Download JSON.
+- **FIELD-TRACE** generated by `make trace`, checked by the watcher.
+- **Playwright suite** on its own stack (`make test-ui`), nightly in GitHub Actions.
+
+## Things that went differently from the stage prompt
+
+- **A completed token still reads.** The prompt says completed tokens are rejected and also asks for a read-only summary at the same link. A completed link reads everything and is refused every change (409).
+- **The PDF pages are the images rendered at parse time; pdf.js supplies the selectable text layer.** pdf.js alone would have to fetch and draw a 300-page PDF before the first page shows. Highlights come from the stored boxes and do not depend on pdf.js. A page without an image is drawn by pdf.js.
+- **Stored files are served by Caddy under `/files/` after asking the API** whether the token may see the file, not straight from `/data`.
+- **Port 443 is open to the world**, so the token middleware also closes every non-review route to outside requests. Creating tenders, uploading, extracting and creating links work only from inside the VM. `curl https://34.131.65.108/api/v1/tenders` from anywhere now answers 401.
+- **A tender with amendments is reviewed once per field, not once per version.** Marking an amendment's entry "not in document" brings the earlier version's entry back.
+- **Keyboard focus scrolls the PDF only when the field has evidence.**
+- **FIELD-TRACE has one row per field path (163), not per tender type and field (759).** What is the same for every field (routes, middleware, services, tables) is stated once above the table.
+- **The watcher was stopped** during the build (the VM still has 2 cores); every commit was preceded by a full `make check`. It is running again since the deployment.
+
+## Tests
+
+- **Python: 404 pass.** New: the window plan (10), the LLM client's cost, cache layout, replay and batch (4), extraction with shared windows and batches (9), tokens, scoping, the reviewer's view, completion, viewer endpoints, request audit and the link command through HTTP (12), flag and stale decisions, the fact guard under a flag, FIELD-TRACE (5), the cost plan.
+- **Web unit: 37 pass** (formatting, keys, the screen with a fake API, the summary, the link).
+- **Browser: 5 pass**: a replaced link and a wrong link; the layout at 1366x768 without sideways scroll and the load times; an evidence chip scrolling the PDF and highlighting, the amendment's document, search; approve with Enter, edit a date, not in document, flag, and the same after a reload; complete by keyboard and the snapshot endpoint returning the final values, then read-only.
+- **End-to-end with the real model** (`tests/e2e/test_review_flow.py`, run once, `stage-3-artifacts/e2e-real-model.txt`): the 3-page NTPC notice extracted through the batch API (waves of 1 and 9 calls, 77% of input read from the cache, USD 0.57, 299 s), 31 of 31 values with located evidence, then reviewed and completed through a review link, with the snapshot holding the tender number and its evidence. The Stage 1 and Stage 2 real-model tests were not rerun.
+- **Evidence resolver corpus: 218 of 220** (`make evidence-corpus`), unchanged. The two known failures are `real-0080` (a watermark through a heading) and `real-0142` (a wrapped table cell without a number).
+
+Two defects the browser tests found that the unit tests had not: the browser cached a 410 answer and showed it for the next link (every API answer is now `no-store`), and an effect returned the promise Chrome gives from `scrollIntoView`, which blanked the page when the edit form opened (fixed; the screen now also has an error boundary that says to reload).
+
+## The two numbers
+
+From the regenerated `EXTRACTION-SUMMARY.md` (13 tenders, 25 versions, 51 documents): **evidence-location rate 99.8%** (804 of 806 values; the two misses are the same two as in Stage 2, in SECI FDRE-RTC-V Amendment-01); **answer rate 70%** (806 of 1,146 fields), from 37% to 88% per tender. Eight fields are flagged for review by validation. These are candidates; no accuracy number exists until reviews are completed.
+
+## Cost
+
+| Item | USD |
+| --- | --- |
+| Measurement runs on four tenders, including the two probes that showed the cache was not being read | 19.05 |
+| End-to-end test | 0.60 |
+| **Stage 3** | **about 20** |
+| Running total since Stage 1 | **about 280** |
+
+From `llm_call_log.cost_usd` at the configured prices, not the provider's invoice. The independent reviewer's OpenAI calls are not included.
+
+## Deployment
+
+`make deploy` ran after the last code change: images rebuilt, `alembic_version` is `0008`, containers recreated, health probe `{"status":"ok","tenant_id":"ergplan","database":"ok"}` on `https://34.131.65.108/health`. Checked from the VM through the public address: `/health` 200; `/api/v1/tenders` without a link 401; a stored PDF under `/files/` without a link 401; `/review/<anything>` serves the screen, which shows the plain message for a link that is not valid. With a link for SECI Gaya (since revoked) the screen loaded all 91 fields and the 305-page document; screenshots are in `stage-3-artifacts/`. Not checked from a browser outside the VM.
+
+## Independent review (operating rule 15)
+
+To be filled in after the reviewer has run on this draft.
+
+## Open questions
+
+1. **Your review.** See below.
+2. **Published notices on a fresh extraction.** A full extraction reads a notice page for every section its role allows, and where the notice is attached to a later version its short wording becomes the current entry of identity fields (seen on seci-cni-1-700mw). Restricting the role `nit` to key dates would be a schema change, and the `v1` schemas are frozen. Do you want a `v2` that reads notices for key dates only, or leave it for the reviewer to set aside?
+3. **Batch as the default for the command.** Extraction by `ingest_tenders extract` now goes through the batch API. It took minutes here; the provider allows itself up to an hour, and longer on a bad day. Keep it as the default for Stage 4's corpus runs?
+4. **The generic answer schema on shared windows.** It is what makes the cache work, and its answers are checked against the typed model afterwards. If you would rather keep provider-enforced typed output everywhere, `EXTRACT_SHARE_WINDOWS=false` turns sharing off; the cost is the cache saving on short documents.
+5. **VM size.** Still 2 cores and 3.9 GB. The resize commands are in the Stage 2 report.
+6. **A guard for the Stage 4 dashboard** (`/admin/reliability`) is needed before it is built: an admin token is the smallest change.
+
+## Your step: one real review
+
+To be filled in with the link.

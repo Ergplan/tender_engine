@@ -32,28 +32,12 @@ class TokenService:
         self, session: Session, tender: Tender, reviewer_name: str, *, created_by: str
     ) -> ReviewToken:
         """A new token for the tender. Any earlier live token of the tender is revoked:
-        one reviewer per tender."""
+        one reviewer per tender. The link of a completed review stays readable."""
         name = reviewer_name.strip()
         if not name:
             raise ValueError("a reviewer name is required")
         now = datetime.now(UTC)
-        for earlier in session.scalars(
-            select(ReviewToken).where(
-                ReviewToken.tenant_id == self._tenant_id,
-                ReviewToken.tender_id == tender.id,
-                ReviewToken.revoked_at.is_(None),
-            )
-        ):
-            earlier.revoked_at = now
-            audit.record(
-                session,
-                tenant_id=self._tenant_id,
-                actor=created_by,
-                action="revoke",
-                table_name="review_token",
-                row_id=earlier.id,
-                after={"replaced_for": name},
-            )
+        self._revoke(session, tender, created_by, {"replaced_for": name})
         row = ReviewToken(
             tenant_id=self._tenant_id,
             created_by=created_by,
@@ -76,6 +60,38 @@ class TokenService:
         )
         session.commit()
         return row
+
+    def revoke(self, session: Session, tender: Tender, *, created_by: str) -> int:
+        """Stop the tender's live links (a link that went to the wrong person). Returns
+        how many were stopped. A completed review keeps its read-only link."""
+        count = self._revoke(session, tender, created_by, {"reason": "revoked"})
+        session.commit()
+        return count
+
+    def _revoke(self, session: Session, tender: Tender, actor: str, why: dict[str, str]) -> int:
+        now = datetime.now(UTC)
+        rows = list(
+            session.scalars(
+                select(ReviewToken).where(
+                    ReviewToken.tenant_id == self._tenant_id,
+                    ReviewToken.tender_id == tender.id,
+                    ReviewToken.revoked_at.is_(None),
+                    ReviewToken.completed_at.is_(None),
+                )
+            )
+        )
+        for row in rows:
+            row.revoked_at = now
+            audit.record(
+                session,
+                tenant_id=self._tenant_id,
+                actor=actor,
+                action="revoke",
+                table_name="review_token",
+                row_id=row.id,
+                after=why,
+            )
+        return len(rows)
 
     def resolve(self, session: Session, token: str) -> ReviewToken:
         """The token's row, or TokenError. A completed token resolves: its review can

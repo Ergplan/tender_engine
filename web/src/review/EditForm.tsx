@@ -52,7 +52,9 @@ export function EditForm({
   const [problem, setProblem] = useState<string | null>(null);
   const form = useRef<HTMLFormElement>(null);
   // The whole form, Save included, is brought into view when it opens.
-  useEffect(() => form.current?.scrollIntoView({ block: "nearest" }), []);
+  useEffect(() => {
+    form.current?.scrollIntoView({ block: "nearest" });
+  }, []);
   const needsEvidence = !hasLocatedEvidence(candidate);
   const type = field.value_type;
   const suffix = unitSuffix(type, field.unit);

@@ -1,0 +1,8 @@
+
+tender: job_45538.pdf; 10 calls, 10 answered in a batch
+batches (wave, calls): [(1, 1), (2, 9)]; wall clock 299 s
+input tokens 97630, read from the cache 75195 (77%), written to it 8355, output 16422, cost USD 0.5739
+evidence-location rate 31/31; answer rate 31/86
+reviewed 5 required fields through the link; snapshot tender number 'NRE-CS-5846-004(PHES)-9' with 1 evidence item(s)
+.
+1 passed in 311.31s (0:05:11)

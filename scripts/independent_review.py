@@ -23,7 +23,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 # Generated or locked files: large, and not something a reviewer can judge.
 ATTEMPTS, WAIT_SECONDS = 6, 20
-EXCLUDED = ("uv.lock", "web/src/api/openapi.json", "web/src/api/schema.d.ts")
+EXCLUDED = (
+    "uv.lock",
+    "web/package-lock.json",
+    "web/src/api/openapi.json",
+    "web/src/api/schema.d.ts",
+)
 CHECKLIST = """You are an independent reviewer of one stage of a software build. You have no
 other context than the three inputs below. Answer this fixed checklist and nothing else.
 
