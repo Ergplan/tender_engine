@@ -691,6 +691,8 @@ export interface components {
             order: number;
             /** Prompt */
             prompt: string;
+            /** Prompt Version */
+            prompt_version?: string | null;
             /** Roles */
             roles: string[];
         };
@@ -736,6 +738,8 @@ export interface components {
             match_method: string | null;
             /** Match Score */
             match_score: number | null;
+            /** Ordinal */
+            ordinal?: number | null;
             /** Page No */
             page_no: number;
             /** Quote */

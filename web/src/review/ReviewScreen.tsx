@@ -9,7 +9,9 @@ import {
   type TenderReview,
 } from "../api/client";
 import { keyAction, neighbour, nextWhere } from "../lib/keyboard";
+import { minutesLeft } from "../lib/pace";
 import type { CardMode, Decision, SaveState } from "./FieldCard";
+import { GuidePanel } from "./GuidePanel";
 import { approveBlocker, currentEntry, documentName, firstEvidence, type PdfTarget, reviewOrder } from "./model";
 import { type Highlight, PdfPane } from "./PdfPane";
 import { SectionList } from "./SectionList";
@@ -31,6 +33,10 @@ export function ReviewScreen({
   const [mode, setMode] = useState<CardMode>("view");
   const [saves, setSaves] = useState<Record<string, SaveState>>({});
   const [target, setTarget] = useState<PdfTarget | null>(null);
+  // The evidence span the PDF is showing: its chip is marked and only its passage is
+  // highlighted strongly.
+  const [activeEvidence, setActiveEvidence] = useState<string | null>(null);
+  const [decisionTimes, setDecisionTimes] = useState<number[]>([]);
   const [documentId, setDocumentId] = useState(
     () => initial.versions[0]?.documents[0]?.document_id ?? "",
   );
@@ -47,6 +53,7 @@ export function ReviewScreen({
   );
 
   const show = useCallback((evidence: Evidence) => {
+    setActiveEvidence(evidence.id);
     targetKey.current += 1;
     setTarget({
       documentId: evidence.document_id,
@@ -64,6 +71,7 @@ export function ReviewScreen({
       const field = path ? byPath.get(path) : undefined;
       const evidence = field ? firstEvidence(currentEntry(field)) : null;
       if (evidence) show(evidence);
+      else setActiveEvidence(null);
     },
     [byPath, show],
   );
@@ -92,6 +100,7 @@ export function ReviewScreen({
         });
         const fresh = await reload();
         setSaves((before) => ({ ...before, [path]: { kind: "saved" } }));
+        if (decision.decision !== "flagged") setDecisionTimes((before) => [...before, Date.now()]);
         setMode("view");
         if (advance) {
           const undecided = new Set(fresh.fields.filter((f) => !f.decided).map((f) => f.field_path));
@@ -148,8 +157,15 @@ export function ReviewScreen({
     const field = focused ? byPath.get(focused) : undefined;
     return (currentEntry(field ?? ({ current: null, entries: [] } as unknown as ReviewField))?.state.candidate?.evidence ?? [])
       .filter((evidence) => evidence.document_id === documentId)
-      .map((evidence) => ({ pageNo: evidence.page_no, bbox: evidence.bbox ?? null }));
-  }, [byPath, documentId, focused]);
+      .map((evidence) => ({
+        pageNo: evidence.page_no,
+        bbox: evidence.bbox ?? null,
+        active: evidence.id === activeEvidence,
+      }));
+  }, [activeEvidence, byPath, documentId, focused]);
+
+  const undecided = review.total - review.decided;
+  const minutes = minutesLeft(decisionTimes, undecided);
 
   function drag(event: React.PointerEvent) {
     const box = container.current?.getBoundingClientRect();
@@ -188,8 +204,19 @@ export function ReviewScreen({
             <span data-testid="reviewer-name">{session.reviewer_name}</span>
           </p>
         </div>
-        <span data-testid="progress" className="shrink-0 text-sm tabular-nums text-slate-700">
-          {review.decided} of {review.total} fields decided
+        <span className="shrink-0 text-right text-sm tabular-nums text-slate-700">
+          <span data-testid="progress">
+            {review.decided} of {review.total} fields decided
+          </span>
+          <span data-testid="remaining" className="block text-xs text-slate-500">
+            {undecided === 0 ? "none left" : `${undecided} to go`}
+            {minutes !== null && (
+              <span data-testid="time-left" title="From your own pace in this sitting">
+                {" "}
+                · about {minutes} min left
+              </span>
+            )}
+          </span>
         </span>
         {readOnly ? (
           <span className="shrink-0 rounded bg-green-100 px-2 py-1 text-xs font-medium text-green-800">
@@ -212,6 +239,7 @@ export function ReviewScreen({
           </button>
         )}
       </header>
+      {!readOnly && <GuidePanel />}
       {notice && (
         <p role="alert" className="border-b border-red-200 bg-red-50 px-3 py-1 text-sm text-red-800">
           {notice}
@@ -226,6 +254,7 @@ export function ReviewScreen({
             saves={saves}
             readOnly={readOnly}
             documentName={(id) => documentName(review, id)}
+            activeEvidence={activeEvidence}
             onFocus={(path) => path !== focused && focus(path)}
             onMode={(path, next) => {
               if (path !== focused) focus(path, next);

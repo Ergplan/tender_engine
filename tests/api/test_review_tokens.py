@@ -423,3 +423,29 @@ def test_the_command_prints_a_link_and_lists_links(
     assert review_token_command.revoke(pipeline.settings, "acme-solar-600") == 1
     assert client.get("/api/v1/review-session", headers=as_reviewer(live)).status_code == 410
     assert review_token_command.revoke(pipeline.settings, "acme-solar-600") == 0
+
+
+def test_the_summary_is_written_with_its_own_prompt_version_in_one_call(
+    client: TestClient, pipeline: Pipeline, catalog: Any
+) -> None:
+    tender = extracted(client, pipeline)
+    token = link(client, tender["id"])["token"]
+    body = review(client, tender["id"], token)
+    summary = current(body, "core.summary.plain_english_summary")["state"]["candidate"]
+    assert (summary["prompt_name"], summary["prompt_version"]) == ("summary", "v2")
+    assert current(body, EMD)["state"]["candidate"]["prompt_version"] == "v1"
+    assert [e["ordinal"] for e in summary["evidence"]] == [1, 2, 3]
+    assert [e["page_no"] for e in summary["evidence"]] == [1, 2, 3]
+    assert "[3]" in summary["value"]
+    group = next(g for g in catalog.get("solar").schema.groups if g.name == "summary")
+    assert (group.prompt_version, group.max_pages) == (
+        "v2",
+        pipeline.settings.extract_max_pages_per_call,
+    )
+    # The prompt text is in the system prompt, or after the pages on a shared window.
+    sent = next(
+        call["system"] + " ".join(b.get("text", "") for b in call["messages"][0]["content"])
+        for call in pipeline.sdk.extract_calls()
+        if "group `summary`" in call["messages"][0]["content"][-1]["text"]
+    )
+    assert "eight short paragraphs" in sent and "`Money at risk`" in sent

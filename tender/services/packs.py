@@ -48,6 +48,9 @@ class SectionDef(_Strict):
 
     label: str
     prompt: str
+    # The section's prompt version when it is ahead of the run's (see FieldGroup).
+    prompt_version: str | None = None
+    max_pages: int | None = None
     roles: list[str]
     section_kinds: list[str] = Field(default_factory=list)
     keywords: list[str] = Field(default_factory=list)
@@ -106,6 +109,7 @@ class CompiledSection(BaseModel):
     name: str
     label: str
     prompt: str
+    prompt_version: str | None = None
     roles: list[str]
     order: int
 
@@ -335,6 +339,8 @@ def compile_type(pack_dir: Path, tender_type: str, core_dir: Path | None = None)
                 FieldGroup(
                     name=name,
                     prompt_name=sections[name].prompt,
+                    prompt_version=sections[name].prompt_version,
+                    max_pages=sections[name].max_pages,
                     routing=RoutingHints(
                         section_kinds=sections[name].section_kinds,
                         keywords=sections[name].keywords,
@@ -357,6 +363,7 @@ def compile_type(pack_dir: Path, tender_type: str, core_dir: Path | None = None)
                 name=name,
                 label=sections[name].label,
                 prompt=sections[name].prompt,
+                prompt_version=sections[name].prompt_version,
                 roles=sections[name].roles,
                 order=order,
             )

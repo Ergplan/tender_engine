@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 
 import type { Evidence, ReviewEntry, ReviewField } from "../api/client";
-import { confidenceBand, formatList, formatValue } from "../lib/format";
+import { confidenceBand, formatList, formatValue, paragraphs } from "../lib/format";
 import { EditForm, type EditResult } from "./EditForm";
 import { EvidenceChip } from "./EvidenceChip";
-import { approveBlocker, currentEntry, failedRules, versionTag } from "./model";
+import { CONFIDENCE_HINT } from "./guide";
+import { approveBlocker, currentEntry, evidenceNumber, failedRules, versionTag } from "./model";
 
 export type SaveState = { kind: "saving" } | { kind: "saved" } | { kind: "failed"; message: string };
 export type CardMode = "view" | "edit" | "flag";
@@ -21,9 +22,58 @@ const PILL = {
 };
 const BUTTON = "rounded border px-2 py-0.5 text-xs font-medium disabled:opacity-40";
 
-function Value({ value, field }: { value: unknown; field: ReviewField }) {
+const MARKER = /\[\d+\]/;
+
+/** A long text in paragraphs. An evidence marker ("[3]") becomes a small numbered button
+ * that shows the quote it stands for, so each sentence is tied to its evidence. */
+function LongText({ text, onMarker, active }: {
+  text: string;
+  onMarker: (number: number) => void;
+  active: number | null;
+}) {
+  return (
+    <>
+      {paragraphs(text).map((paragraph, index) => (
+        <p key={index} className={index ? "mt-1" : ""}>
+          {paragraph.heading && <span className="font-semibold">{paragraph.heading}: </span>}
+          {paragraph.pieces.map((piece, at) =>
+            "marker" in piece ? (
+              <button
+                key={at}
+                type="button"
+                data-testid="evidence-marker"
+                title={`Show evidence ${piece.marker}`}
+                className={
+                  "mx-0.5 rounded px-1 align-super text-[10px] font-semibold leading-none " +
+                  (active === piece.marker ? "bg-sky-700 text-white" : "bg-sky-100 text-sky-800 hover:bg-sky-200")
+                }
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onMarker(piece.marker);
+                }}
+              >
+                {piece.marker}
+              </button>
+            ) : (
+              <span key={at}>{piece.text}</span>
+            ),
+          )}
+        </p>
+      ))}
+    </>
+  );
+}
+
+function Value({ value, field, onMarker, active }: {
+  value: unknown;
+  field: ReviewField;
+  onMarker: (number: number) => void;
+  active: number | null;
+}) {
   if (value === null || value === undefined)
     return <span className="italic text-slate-500">No value found</span>;
+  if (field.value_type === "long_text" && typeof value === "string")
+    return <LongText text={value} onMarker={onMarker} active={active} />;
   if (Array.isArray(value))
     return (
       <ul className="list-disc pl-4">
@@ -60,6 +110,7 @@ export function FieldCard({
   save,
   readOnly,
   documentName,
+  activeEvidence,
   onFocus,
   onMode,
   onDecide,
@@ -71,6 +122,8 @@ export function FieldCard({
   save: SaveState | undefined;
   readOnly: boolean;
   documentName: (documentId: string) => string;
+  /** The evidence span shown in the PDF just now, if it is one of this field's. */
+  activeEvidence: string | null;
   onFocus: () => void;
   onMode: (mode: CardMode) => void;
   onDecide: (decision: Decision) => void;
@@ -81,6 +134,7 @@ export function FieldCard({
   const element = useRef<HTMLDivElement>(null);
   const [note, setNote] = useState("");
   const [whole, setWhole] = useState(false);
+  const [wholeReason, setWholeReason] = useState(false);
   useEffect(() => {
     if (focused) element.current?.scrollIntoView({ block: "nearest" });
   }, [focused]);
@@ -91,6 +145,14 @@ export function FieldCard({
   const earlier = entry ? field.entries.filter((other) => other !== entry) : [];
   const failures = failedRules(candidate);
   const long = field.value_type === "long_text";
+  const evidence = candidate?.evidence ?? [];
+  const several = evidence.length > 1;
+  const number = (item: Evidence) => (candidate ? evidenceNumber(candidate, item) : 0);
+  const activeNumber = evidence.find((item) => item.id === activeEvidence);
+  const marked = long && typeof candidate?.value === "string" && MARKER.test(candidate.value);
+  // The focused field is shown in full: its text and the model's reasons.
+  const showAll = whole || focused;
+  const showReason = wholeReason || focused;
 
   return (
     <div
@@ -119,12 +181,16 @@ export function FieldCard({
             </span>
           )}
           {candidate && candidate.value !== null && candidate.value !== undefined && (
-            <span
-              data-testid="confidence"
-              title={`Model confidence ${candidate.confidence.toFixed(2)}`}
-              className={"rounded-full px-1.5 py-0.5 text-[11px] font-medium " + PILL[confidenceBand(candidate.confidence)]}
-            >
-              {Math.round(candidate.confidence * 100)}%
+            <span className="flex cursor-help items-center gap-1" title={`Model confidence ${Math.round(candidate.confidence * 100)}%. ${CONFIDENCE_HINT}`}>
+              <span data-testid="confidence-caption" className="text-[10px] text-slate-500">
+                model confidence
+              </span>
+              <span
+                data-testid="confidence"
+                className={"rounded-full px-1.5 py-0.5 text-[11px] font-medium " + PILL[confidenceBand(candidate.confidence)]}
+              >
+                {Math.round(candidate.confidence * 100)}%
+              </span>
             </span>
           )}
         </div>
@@ -132,13 +198,27 @@ export function FieldCard({
 
       <div
         data-testid="field-value"
-        className={"mt-0.5 text-sm text-slate-900 " + (long && !whole ? "line-clamp-4" : "")}
-        onDoubleClick={() => setWhole(!whole)}
+        className={"mt-0.5 text-sm text-slate-900 " + (long && !showAll ? "line-clamp-4" : "")}
       >
-        <Value value={candidate?.value ?? null} field={field} />
+        <Value
+          value={candidate?.value ?? null}
+          field={field}
+          active={activeNumber ? number(activeNumber) : null}
+          onMarker={(wanted) => {
+            const found = evidence.find((item) => number(item) === wanted);
+            if (found) onShowEvidence(found);
+          }}
+        />
       </div>
-      {long && candidate?.value != null && (
-        <button type="button" className="text-xs text-sky-700 underline" onClick={() => setWhole(!whole)}>
+      {long && typeof candidate?.value === "string" && candidate.value.length > 280 && !focused && (
+        <button
+          type="button"
+          className="text-xs text-sky-700 underline"
+          onClick={(event) => {
+            event.stopPropagation();
+            setWhole(!whole);
+          }}
+        >
           {whole ? "Show less" : "Show all"}
         </button>
       )}
@@ -153,17 +233,56 @@ export function FieldCard({
         </p>
       ))}
 
-      {candidate && candidate.evidence.length > 0 && (
+      {candidate && evidence.length > 0 && (
         <div className="mt-1 flex flex-wrap items-center gap-1">
           <span className="text-xs text-slate-500">Evidence</span>
-          {candidate.evidence.map((evidence) => (
-            <EvidenceChip key={evidence.id} evidence={evidence} onShow={onShowEvidence} />
+          {evidence.map((item) => (
+            <EvidenceChip
+              key={item.id}
+              evidence={item}
+              number={several ? number(item) : undefined}
+              active={focused && item.id === activeEvidence}
+              onShow={onShowEvidence}
+            />
           ))}
         </div>
       )}
+      {candidate && several && focused && !marked && (
+        // Which claim each numbered chip supports: the words it quotes.
+        <ol data-testid="evidence-quotes" className="mt-1 space-y-0.5 text-xs text-slate-600">
+          {evidence.map((item) => (
+            <li key={item.id}>
+              <button
+                type="button"
+                className={"text-left hover:underline " + (item.id === activeEvidence ? "font-semibold text-sky-800" : "")}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onShowEvidence(item);
+                }}
+              >
+                <span className="mr-1 font-semibold">{number(item)}</span>
+                p. {item.page_no}: “{item.quote.length > 160 ? `${item.quote.slice(0, 160)}…` : item.quote}”
+              </button>
+            </li>
+          ))}
+        </ol>
+      )}
       {candidate && (
-        <p className="mt-0.5 line-clamp-2 text-xs text-slate-500" title={candidate.rationale}>
+        <p data-testid="rationale" className={"mt-0.5 text-xs text-slate-500 " + (showReason ? "" : "line-clamp-2")}>
           {candidate.rationale}
+          {!focused && candidate.rationale.length > 140 && (
+            <button
+              type="button"
+              data-testid="rationale-toggle"
+              className="ml-1 text-sky-700 underline"
+              onClick={(event) => {
+                event.stopPropagation();
+                setWholeReason(!wholeReason);
+              }}
+            >
+              {wholeReason ? "less" : "more"}
+            </button>
+          )}
         </p>
       )}
 
@@ -172,9 +291,9 @@ export function FieldCard({
           v{other.version_no} {other.version_kind}:{" "}
           {formatValue(other.state.candidate?.value ?? null, field.value_type, field.unit) || "no value"}
           {other.state.approval?.decision === "not_in_document" ? " (set aside)" : ""}
-          {(other.state.candidate?.evidence ?? []).slice(0, 3).map((evidence) => (
-            <span key={evidence.id} className="ml-1 inline-block">
-              <EvidenceChip evidence={evidence} onShow={onShowEvidence} />
+          {(other.state.candidate?.evidence ?? []).slice(0, 3).map((item) => (
+            <span key={item.id} className="ml-1 inline-block">
+              <EvidenceChip evidence={item} active={focused && item.id === activeEvidence} onShow={onShowEvidence} />
             </span>
           ))}
         </p>

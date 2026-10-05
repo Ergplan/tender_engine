@@ -9,9 +9,14 @@ sections:
   summary:
     label: Summary
     prompt: summary
+    # The summary was widened on 2026-10-05, before any review (docs/DECISIONS.md): its
+    # prompt is at v2 whatever version a run asks for, it looks at the pages that state
+    # the headline terms, and it is written in one call.
+    prompt_version: v2
+    max_pages: 40
     roles: [rfs, contractual, nit]
     section_kinds: [cover_and_notice, introduction_and_scope]
-    keywords: [bid information sheet, scope of work, brief scope]
+    keywords: [bid information sheet, scope of work, brief scope, eligibility criteria, net worth, earnest money deposit, performance bank guarantee, bid security, ceiling tariff, terms of payment, liquidated damages, scheduled commissioning, buying entity, location of the project]
   identity_and_scope:
     label: Identity and scope
     prompt: extract/identity_and_scope
@@ -61,7 +66,7 @@ fields:
     label: Plain-English summary
     type: long_text
     required: true
-    help: "Four sentences: what is being procured, how much, where, and by when."
+    help: "Eight short paragraphs: what is procured, buyer and offtaker, location, timeline, eligibility, money at risk, tariff or payment, obligations and penalties."
 
   core.identity.tender_number:
     section: identity_and_scope

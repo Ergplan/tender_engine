@@ -93,3 +93,11 @@ def test_window_cost_counts_one_write_and_cheap_reads() -> None:
     assert window_cost(10, 3, **RATES) == 10 * (1.25 + 2 * 0.025) + 3 * 6
     assert window_cost(50, 2, **RATES) == 50 * (1.25 + 0.025) + 2 * 2 * 6
     assert window_cost(0, 2, **RATES) == 0
+
+
+def test_a_group_with_its_own_cap_joins_no_window_larger_than_that_cap() -> None:
+    windows = {"summary": pages(1, 30), "identity": pages(1, 45), "dates": pages(1, 45)}
+    result = share_windows(windows, max_pages=80, caps={"summary": 40}, **RATES)
+    assert [w.groups for w in result] == [("summary",), ("identity", "dates")]
+    [together] = share_windows(windows, max_pages=80, caps={"summary": 45}, **RATES)
+    assert together.groups == ("summary", "identity", "dates")

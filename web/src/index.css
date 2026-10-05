@@ -1,5 +1,3 @@
-@import "pdfjs-dist/web/pdf_viewer.css";
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -8,6 +6,83 @@ html,
 body,
 #root {
   height: 100%;
+}
+
+/* The screen has one, light, design. Declaring it keeps the browser from giving form
+   controls the dark surface of a dark system theme under the screen's dark text. */
+:root {
+  color-scheme: light;
+}
+body {
+  background-color: #ffffff;
+  color: #0f172a;
+}
+input,
+textarea,
+select {
+  background-color: #ffffff;
+  color: #0f172a;
+}
+
+/* The selectable text pdf.js lays over a page image: the text-layer rules of pdf.js's own
+   viewer stylesheet, and only those. The whole stylesheet is not imported: it declares
+   `color-scheme: light dark` for the page, which under a dark system theme gave every
+   input of this screen a dark surface beneath dark text. */
+.textLayer {
+  position: absolute;
+  text-align: initial;
+  inset: 0;
+  overflow: clip;
+  opacity: 1;
+  line-height: 1;
+  text-size-adjust: none;
+  forced-color-adjust: none;
+  transform-origin: 0 0;
+  caret-color: CanvasText;
+  z-index: 0;
+  --min-font-size: 1;
+  --text-scale-factor: calc(var(--total-scale-factor) * var(--min-font-size));
+  --min-font-size-inv: calc(1 / var(--min-font-size));
+}
+.textLayer :is(span, br) {
+  color: transparent;
+  position: absolute;
+  white-space: pre;
+  cursor: text;
+  transform-origin: 0% 0%;
+}
+.textLayer > :not(.markedContent),
+.textLayer .markedContent span:not(.markedContent) {
+  z-index: 1;
+  --font-height: 0;
+  font-size: calc(var(--text-scale-factor) * var(--font-height));
+  --scale-x: 1;
+  --rotate: 0deg;
+  transform: rotate(var(--rotate)) scaleX(var(--scale-x)) scale(var(--min-font-size-inv));
+}
+.textLayer .markedContent {
+  display: contents;
+}
+.textLayer span[role="img"] {
+  user-select: none;
+  cursor: default;
+}
+.textLayer ::selection {
+  background: rgba(0, 0, 255, 0.25);
+}
+.textLayer br::selection {
+  background: transparent;
+}
+.textLayer .endOfContent {
+  display: block;
+  position: absolute;
+  inset: 100% 0 0;
+  z-index: 0;
+  cursor: default;
+  user-select: none;
+}
+.textLayer.selecting .endOfContent {
+  top: 0;
 }
 
 /* The evidence a reviewer has just asked for: shown strongly, then settles. */

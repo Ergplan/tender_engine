@@ -94,7 +94,38 @@ export function formatValue(value: unknown, valueType: string, unit: string | nu
     const suffix = unitSuffix(valueType, unit);
     return `${trim(number, 3)}${suffix ? ` ${suffix}` : ""}`;
   }
+  if (valueType === "long_text") return stripMarkers(String(value));
   return String(value);
+}
+
+/** A text without its evidence markers ("[3]"), for places that only show it. */
+export function stripMarkers(text: string): string {
+  return text.replace(/\s*\[\d+\]/g, "");
+}
+
+/** A long text as paragraphs, each cut into plain pieces and evidence markers. A paragraph
+ * that opens with a short heading and a colon gives the heading apart. */
+export type TextPiece = { text: string } | { marker: number };
+export type Paragraph = { heading: string | null; pieces: TextPiece[] };
+
+export function paragraphs(text: string): Paragraph[] {
+  return text
+    .split(/\n\s*\n/)
+    .map((block) => block.trim())
+    .filter(Boolean)
+    .map((block) => {
+      const head = /^([A-Z][A-Za-z ,/&-]{2,40}):\s+/.exec(block);
+      const body = head ? block.slice(head[0].length) : block;
+      const pieces: TextPiece[] = [];
+      let last = 0;
+      for (const found of body.matchAll(/\[(\d+)\]/g)) {
+        if (found.index > last) pieces.push({ text: body.slice(last, found.index) });
+        pieces.push({ marker: Number(found[1]) });
+        last = found.index + found[0].length;
+      }
+      if (last < body.length) pieces.push({ text: body.slice(last) });
+      return { heading: head ? head[1] : null, pieces };
+    });
 }
 
 /** Each item of a list as text; a record as "key: value | key: value". */

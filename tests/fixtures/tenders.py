@@ -46,11 +46,30 @@ def _answer(value: Any, quote: str, confidence: float = 0.9) -> dict[str, Any]:
 
 
 RFS_ANSWERS: dict[str, dict[str, Any]] = {
-    "plain_english_summary": _answer(
-        "Acme Renewables Agency invites solar developers. The tender is for 600 MW. "
-        "Projects may be anywhere. Bids are due on 30 March 2026.",
-        "Selection of solar power developers for 600 MW solar PV projects.",
-    ),
+    # As the summary prompt (v2) asks: paragraphs with headings, each sentence ending in
+    # the number of its quote.
+    "plain_english_summary": {
+        "value": (
+            "What is procured: Acme Renewables Agency invites solar developers for 600 MW of "
+            "solar PV projects. [1]\n\n"
+            "Timeline: Bids are due on 30 March 2026. [2]\n\n"
+            "Money at risk: The earnest money deposit is INR 928000 per MW. [3]"
+        ),
+        "confidence": 0.9,
+        "rationale": "Each paragraph rests on the cover page, the bid information sheet or "
+        "the clause on the earnest money deposit, as numbered.",
+        "evidence": [
+            {
+                "page_no": 1,
+                "quote": "Selection of solar power developers for 600 MW solar PV projects.",
+            },
+            {"page_no": 2, "quote": "The last date of bid submission is 30.03.2026"},
+            {
+                "page_no": 3,
+                "quote": "Earnest Money Deposit (EMD) of INR 928000 per MW shall be furnished.",
+            },
+        ],
+    },
     "tender_number": _answer("ACME/RE/2026/007", "RfS No. ACME/RE/2026/007"),
     "issuing_agency": _answer(
         "Acme Renewables Agency", "Issued by Acme Renewables Agency, New Delhi."

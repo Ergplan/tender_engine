@@ -94,6 +94,100 @@ test("an evidence chip scrolls the PDF to its page and highlights the quoted tex
   await expect(page.getByTestId("search-hit").first()).toBeAttached();
 });
 
+const SUMMARY = "core.summary.plain_english_summary";
+
+/** WCAG contrast ratio of an element's text against the first opaque background behind it. */
+async function contrast(page: Page, selector: string): Promise<number> {
+  return page.locator(selector).first().evaluate((element) => {
+    const parse = (color: string) => {
+      const parts = color.match(/[\d.]+/g)!.map(Number);
+      return { rgb: parts.slice(0, 3), alpha: parts.length > 3 ? parts[3] : 1 };
+    };
+    const luminance = (rgb: number[]) => {
+      const [r, g, b] = rgb.map((channel) => {
+        const value = channel / 255;
+        return value <= 0.03928 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+      });
+      return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    };
+    const text = parse(getComputedStyle(element).color).rgb;
+    let surface = [255, 255, 255];
+    for (let node: Element | null = element; node; node = node.parentElement) {
+      const background = parse(getComputedStyle(node).backgroundColor);
+      if (background.alpha > 0.99) {
+        surface = background.rgb;
+        break;
+      }
+    }
+    const [light, dark] = [luminance(text), luminance(surface)].sort((a, b) => b - a);
+    return (light + 0.05) / (dark + 0.05);
+  });
+}
+
+for (const scheme of ["light", "dark"] as const) {
+  test(`what is typed can be read in a ${scheme} system theme`, async ({ page }) => {
+    await page.emulateMedia({ colorScheme: scheme });
+    await page.goto(`/review/${TOKEN}`);
+    // The edit panel of a long text: a textarea, the evidence boxes and the note.
+    await card(page, SUMMARY).getByTestId("edit").click();
+    const form = `[data-field="${SUMMARY}"] form`;
+    await expect(page.locator(`${form} textarea`)).toBeVisible();
+    for (const selector of [`${form} textarea`, `${form} [data-testid="evidence-page"]`, `${form} [data-testid="evidence-quote"]`, `${form} input[aria-label="Note"]`]) {
+      expect(await contrast(page, selector), `${selector} in ${scheme}`).toBeGreaterThanOrEqual(7);
+    }
+    await page.keyboard.press("Escape");
+    // A date, a flag note, the document search and the version selector.
+    await card(page, DEADLINE).getByTestId("edit").click();
+    expect(await contrast(page, `[data-field="${DEADLINE}"] [data-testid="edit-input"]`)).toBeGreaterThanOrEqual(7);
+    await page.keyboard.press("Escape");
+    await card(page, EMD).getByTestId("flag").click();
+    expect(await contrast(page, '[data-testid="flag-note"]')).toBeGreaterThanOrEqual(7);
+    await page.keyboard.press("Escape");
+    expect(await contrast(page, '[data-testid="pdf-search"]')).toBeGreaterThanOrEqual(7);
+    expect(await contrast(page, '[data-testid="version-select"]')).toBeGreaterThanOrEqual(7);
+    // The text a reviewer reads, too.
+    expect(await contrast(page, `[data-field="${EMD}"] [data-testid="field-value"]`)).toBeGreaterThanOrEqual(7);
+  });
+}
+
+test("the guide is open on the first visit and stays as the reviewer leaves it", async ({ page }) => {
+  await page.goto(`/review/${TOKEN}`);
+  const guide = page.getByTestId("guide");
+  await expect(guide).toHaveAttribute("data-open", "yes");
+  await expect(guide).toContainText("become the canonical record");
+  await expect(guide).toContainText("That is a correct answer, not a gap");
+  await expect(guide).toContainText("not a measure of whether the value is correct");
+  // Open, it still leaves the fields and the document on a 768-pixel-high screen.
+  const box = await guide.boundingBox();
+  expect(box!.height).toBeLessThan(230);
+  await expect(page.getByTestId("field-card").first()).toBeVisible();
+  await page.getByTestId("guide-toggle").click();
+  await expect(guide).toHaveAttribute("data-open", "no");
+  await page.reload();
+  await expect(page.getByTestId("guide")).toHaveAttribute("data-open", "no");
+});
+
+test("numbered evidence: each sentence of the summary shows its own passage", async ({ page }) => {
+  await page.goto(`/review/${TOKEN}`);
+  const summary = card(page, SUMMARY);
+  await expect(summary.getByTestId("confidence-caption")).toHaveText("model confidence");
+  await expect(summary.getByTestId("evidence-chip")).toHaveText(["1p. 1", "2p. 2", "3p. 3"]);
+  await expect(summary.getByTestId("evidence-marker")).toHaveText(["1", "2", "3"]);
+  await expect(summary.getByTestId("field-value")).not.toContainText("[1]");
+  // The marker after the third sentence shows the third quote, on page 3, and only it.
+  await summary.getByTestId("evidence-marker").nth(2).click();
+  await expect(page.getByTestId("page-indicator")).toHaveAttribute("data-page", "3");
+  await expect(summary.getByTestId("evidence-chip").nth(2)).toHaveAttribute("data-active", "yes");
+  await expect(page.getByTestId("evidence-highlight")).toHaveCount(1);
+  await expect(page.getByTestId("evidence-highlight-dim")).toHaveCount(2);
+  await summary.getByTestId("evidence-chip").nth(0).click();
+  await expect(page.getByTestId("page-indicator")).toHaveAttribute("data-page", "1");
+  await expect(summary.getByTestId("evidence-chip").nth(0)).toHaveAttribute("data-active", "yes");
+  // The header counts what is left; the section says where to look first.
+  await expect(page.getByTestId("remaining")).toContainText("to go");
+  await expect(summary.getByTestId("rationale")).toContainText("as numbered");
+});
+
 test("approve with Enter, edit a date, mark not in document, flag", async ({ page }) => {
   await page.goto(`/review/${TOKEN}`);
 
@@ -144,6 +238,8 @@ async function tenderId(page: Page): Promise<string> {
 }
 
 test("complete the review by keyboard; the snapshot holds the final values", async ({ page }) => {
+  // Some eighty decisions one after another: minutes on a busy two-core machine.
+  test.setTimeout(300_000);
   await page.goto(`/review/${TOKEN}`);
   const complete = page.getByTestId("complete-review");
   await expect(complete).toBeDisabled();

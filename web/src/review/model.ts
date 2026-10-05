@@ -42,6 +42,23 @@ export function firstEvidence(entry: ReviewEntry | null): Evidence | null {
   return evidence.find(located) ?? evidence[0] ?? null;
 }
 
+/** The number a chip shows: the quote's place in the model's list, else its place here. */
+export function evidenceNumber(candidate: Candidate, evidence: Evidence): number {
+  return evidence.ordinal ?? candidate.evidence.indexOf(evidence) + 1;
+}
+
+export const LOW_CONFIDENCE = 0.5;
+
+/** A field that deserves an early look: not decided yet, and either flagged by a rule or
+ * extracted with low confidence. */
+export function needsAttention(field: ReviewField): boolean {
+  const candidate = currentEntry(field)?.state.candidate;
+  if (!candidate || field.decided) return false;
+  const lowConfidence =
+    candidate.value !== null && candidate.value !== undefined && candidate.confidence < LOW_CONFIDENCE;
+  return candidate.status === "needs_review" || lowConfidence;
+}
+
 export function failedRules(candidate: Candidate | null | undefined) {
   return (candidate?.validation ?? []).filter(
     (result) => !result.passed && result.rule_name !== "evidence_located",

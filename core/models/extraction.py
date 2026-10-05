@@ -99,6 +99,9 @@ class EvidenceSpan(IdMixin, TenantAuditMixin, Base):
     match_score: Mapped[float | None] = mapped_column(Float, nullable=True)
     # How the resolver found the quote: exact, fuzzy, reordered, interleaved, page_boundary.
     match_method: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    # The quote's place in the model's evidence list, from 1. A text that marks its
+    # sentences [1], [2] refers to these. Null on spans stored before migration 0010.
+    ordinal: Mapped[int | None] = mapped_column(Integer, nullable=True)
 
 
 class ValidationResult(IdMixin, TenantAuditMixin, Base):

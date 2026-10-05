@@ -26,7 +26,7 @@ export function selectedPdfText(): { documentId: string; pageNo: number; text: s
   };
 }
 
-const BOX = "rounded border border-slate-300 px-2 py-1 text-sm";
+const BOX = "rounded border border-slate-300 bg-white px-2 py-1 text-sm text-slate-900";
 const INPUT = `w-full ${BOX}`;
 
 /** An inline input typed to the field, with Save and Cancel. */
@@ -124,7 +124,7 @@ export function EditForm({
           <input type="text" className={INPUT} {...common} />
         ) : (
           <textarea
-            rows={type === "long_text" ? 5 : 4}
+            rows={type === "long_text" ? Math.min(Math.max(Math.ceil(text.length / 70), 5), 14) : 4}
             className={INPUT}
             placeholder={
               type === "record_list"

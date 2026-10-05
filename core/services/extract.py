@@ -88,7 +88,8 @@ class _Draft:
     value: Any
     confidence: float
     rationale: str
-    quotes: list[EvidenceQuote]
+    # Each quote with its place in the model's evidence list, from 1.
+    quotes: list[tuple[int, EvidenceQuote]]
     chunk: list[int]
     call_log_id: str
 
@@ -269,7 +270,7 @@ class ExtractService:
             if unknown or not groups:
                 raise ExtractionError(f"schema {schema.name} has no group(s) {unknown}")
         for group in _run_groups(schema, groups):
-            self._llm.prompt(group.prompt_name, prompt_version)
+            self._llm.prompt(group.prompt_name, group.prompt_version or prompt_version)
         run = ExtractionRun(
             tenant_id=tenant_id,
             created_by=created_by,
@@ -358,7 +359,11 @@ class ExtractService:
                         if item.value is None:
                             not_found[field.path].append(item.rationale)
                         else:
-                            quotes = [quote for quote in item.evidence if quote.quote.strip()]
+                            quotes = [
+                                (place, quote)
+                                for place, quote in enumerate(item.evidence, start=1)
+                                if quote.quote.strip()
+                            ]
                             drafts[field.path].append(
                                 _Draft(
                                     value=item.value,
@@ -514,7 +519,7 @@ class ExtractService:
         fields = schema.fields_in(group.name)
         return LLMRequest[BaseModel](
             prompt_name=group.prompt_name,
-            prompt_version=run.prompt_version,
+            prompt_version=group.prompt_version or run.prompt_version,
             content=[
                 part,
                 TextPart(text=_instructions(document, schema, group, fields, chunk, shared)),
@@ -559,12 +564,20 @@ class ExtractService:
             )
         ]
         settings = self._settings
+        caps = {
+            group.name: min(
+                group.max_pages or settings.extract_max_pages_per_group,
+                settings.extract_max_pages_per_group,
+            )
+            for group in schema.groups
+            if group.name in group_names
+        }
         windows = {
             group.name: select_pages(
                 group.routing,
                 sections,
                 page_texts,
-                max_pages=settings.extract_max_pages_per_group,
+                max_pages=caps[group.name],
                 fallback_pages=settings.extract_max_pages_per_call,
                 keyword_pages=settings.extract_keyword_pages,
             )
@@ -580,6 +593,7 @@ class ExtractService:
         return windows, share_windows(
             windows,
             max_pages=settings.extract_max_pages_per_group,
+            caps=caps,
             pages_per_call=settings.extract_max_pages_per_call,
             # A batch run keeps a window in the cache for an hour, between its waves.
             cache_write_factor=settings.llm_cache_write_1h_factor
@@ -659,7 +673,8 @@ class ExtractService:
             return
         for draft in drafts:
             spans = [
-                self._resolve(quote, draft.chunk, run.document_id, pages) for quote in draft.quotes
+                {**self._resolve(quote, draft.chunk, run.document_id, pages), "ordinal": place}
+                for place, quote in draft.quotes
             ]
             if not spans:
                 status, confidence = "rejected", draft.confidence
@@ -710,7 +725,7 @@ class ExtractService:
             rationale=rationale,
             status=status,
             prompt_name=group.prompt_name,
-            prompt_version=run.prompt_version,
+            prompt_version=group.prompt_version or run.prompt_version,
             llm_call_log_id=call_log_id,
             window_pages=window,
         )

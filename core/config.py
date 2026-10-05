@@ -16,7 +16,10 @@ class Settings(BaseSettings):
     anthropic_model: str = "claude-fable-5-1"
     llm_max_retries: int = 4
     llm_timeout_seconds: float = 600.0
-    llm_max_tokens: int = 16000
+    # Reasoning counts towards this limit. 20,000 is as far as a call that is waited for
+    # can go before the SDK asks for streaming; a summary with forty quotes came close to
+    # 16,000.
+    llm_max_tokens: int = 20000
     llm_price_in_per_mtok: float = 10.0
     llm_price_out_per_mtok: float = 50.0
     # Factors on the input price: a read from the prompt cache, a write to it (5-minute

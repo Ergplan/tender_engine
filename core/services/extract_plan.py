@@ -53,6 +53,7 @@ def share_windows(
     windows: dict[str, list[int]],
     *,
     max_pages: int,
+    caps: dict[str, int] | None = None,
     pages_per_call: int,
     cache_write_factor: float,
     cache_read_factor: float,
@@ -61,7 +62,7 @@ def share_windows(
     """Merge the groups' windows where that is cheaper. `windows` maps a group to its
     pages, in schema order; the result keeps that order (a merged window stands where its
     first group stood). A merged window is the union of its groups' pages and never
-    exceeds `max_pages`."""
+    exceeds `max_pages`, nor the cap of any of its groups in `caps`."""
 
     def cost(pages: frozenset[int], groups: int) -> float:
         return window_cost(
@@ -90,7 +91,10 @@ def share_windows(
             for j in range(i + 1, len(clusters)):
                 (names_i, pages_i), (names_j, pages_j) = clusters[i], clusters[j]
                 union = len(pages_i | pages_j)
-                if union > max_pages:
+                limit = min(
+                    [max_pages, *((caps or {}).get(name, max_pages) for name in names_i + names_j)]
+                )
+                if union > limit:
                     continue
                 extra = (union - len(pages_i)) * len(names_i) + (union - len(pages_j)) * len(
                     names_j

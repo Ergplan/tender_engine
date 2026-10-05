@@ -2,7 +2,7 @@ import { act, fireEvent, render, screen, waitFor, within } from "@testing-librar
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { ApiError, type ReviewApi, type TenderReview } from "../api/client";
-import { AMENDMENT_DOC, DOC, makeReview, SESSION } from "./fixtures";
+import { AMENDMENT_DOC, candidate, DOC, evidence, makeReview, SESSION } from "./fixtures";
 import { ReviewScreen } from "./ReviewScreen";
 
 vi.mock("./pdfText", () => ({
@@ -73,7 +73,40 @@ async function open(review = makeReview(), session = SESSION) {
   return { ...fake, onCompleted };
 }
 
-afterEach(() => vi.restoreAllMocks());
+afterEach(() => {
+  vi.restoreAllMocks();
+  window.localStorage.clear();
+});
+
+const SUMMARY = "core.summary.plain_english_summary";
+
+/** The fixture tender with a summary whose sentences carry evidence markers. */
+function withSummary() {
+  const review = makeReview();
+  const spans = [
+    evidence({ id: "s1", ordinal: 1, page_no: 1, bbox: [72, 100, 300, 112], quote: "Selection of solar power developers for 600 MW" }),
+    evidence({ id: "s2", ordinal: 2, page_no: 1, bbox: [72, 140, 300, 152], quote: "Issued by Acme Renewables Agency" }),
+    evidence({ id: "s3", ordinal: 3, page_no: 3, bbox: [72, 100, 300, 112], quote: "EMD of INR 928000 per MW" }),
+  ];
+  const found = candidate(
+    "What is procured: Acme invites bids for 600 MW of solar. [1]\n\nBuyer and offtaker: Acme Renewables Agency issues the tender. [2]\n\nMoney at risk: The EMD is INR 9.28 lakh per MW. [3]",
+    { id: "c-summary", evidence: spans, rationale: "Each paragraph rests on the cover page and the bid information sheet. ".repeat(4).trim() },
+  );
+  const template = review.fields[0];
+  review.sections.unshift({ name: "summary", label: "Summary", order: 0 });
+  review.fields.unshift({
+    ...template,
+    field_path: SUMMARY,
+    label: "Plain-English summary",
+    section: "summary",
+    value_type: "long_text",
+    review_order: 0,
+    current: 0,
+    entries: [{ version_no: 1, version_kind: "original", state: { ...template.entries[0].state, field_path: SUMMARY, value_type: "long_text", candidate: found, approval: null } }],
+  });
+  review.total = review.fields.length;
+  return review;
+}
 
 describe("what the reviewer sees", () => {
   it("shows the tender, the reviewer, progress and a disabled Complete button", async () => {
@@ -287,8 +320,115 @@ describe("completing", () => {
     await open(makeReview(), { ...SESSION, completed_at: "2026-10-05T10:00:00Z" });
     expect(screen.queryByTestId("complete-review")).toBeNull();
     expect(screen.queryByTestId("approve")).toBeNull();
+    expect(screen.queryByTestId("guide")).toBeNull();
     fireEvent.click(card(EMD));
     fireEvent.keyDown(window, { key: "Enter" });
     expect(screen.getByText(/read-only/)).toBeInTheDocument();
+  });
+});
+
+describe("orientation and reading aids", () => {
+  it("opens with the guide expanded", async () => {
+    await open();
+    expect(screen.getByTestId("guide").dataset.open).toBe("yes");
+    expect(screen.getByTestId("guide")).toHaveTextContent("How to decide a field");
+  });
+
+  it("labels the confidence figure as the model's and explains a low one on hover", async () => {
+    await open();
+    expect(within(card(EMD)).getByTestId("confidence-caption")).toHaveTextContent("model confidence");
+    const hint = within(card(PBG)).getByTestId("confidence").parentElement!.getAttribute("title")!;
+    expect(hint).toContain("Model confidence 30%");
+    expect(hint).toContain("not a measure of whether the value is correct");
+    expect(hint).toContain("ambiguously or only in part");
+    expect(hint).toContain("portal Tender ID");
+    expect(hint).toContain("Read the rationale");
+  });
+
+  it("says in a section header how many undecided fields need a closer look", async () => {
+    await open();
+    const [dates, guarantees] = screen.getAllByTestId("section");
+    expect(within(dates).queryByTestId("section-attention")).toBeNull();
+    expect(within(guarantees).getByTestId("section-attention")).toHaveTextContent("1 need a closer look");
+  });
+
+  it("counts what is left, and estimates the time once it knows the pace", async () => {
+    const now = vi.spyOn(Date, "now");
+    const review = makeReview();
+    // Eight fields that can be approved one after another.
+    const emd = review.fields[2];
+    review.fields = Array.from({ length: 8 }, (_, index) => ({
+      ...structuredClone(emd),
+      field_path: `core.guarantees.field_${index}`,
+      review_order: index,
+      entries: [{ ...structuredClone(emd.entries[0]), state: { ...structuredClone(emd.entries[0].state), candidate: candidate(index, { id: `c-${index}` }) } }],
+    }));
+    review.total = 8;
+    await open(review);
+    expect(screen.getByTestId("remaining")).toHaveTextContent("8 to go");
+    expect(screen.queryByTestId("time-left")).toBeNull();
+    fireEvent.keyDown(window, { key: "j" });
+    for (let done = 1; done <= 5; done += 1) {
+      now.mockReturnValue(1_000_000 + done * 30_000);
+      fireEvent.keyDown(window, { key: "Enter" });
+      await waitFor(() => expect(screen.getByTestId("progress")).toHaveTextContent(`${done} of 8`));
+    }
+    expect(screen.getByTestId("remaining")).toHaveTextContent("3 to go");
+    expect(screen.getByTestId("time-left")).toHaveTextContent("about 2 min left");
+  });
+
+  it("shows the rationale in full for the focused field and on request elsewhere", async () => {
+    await open(withSummary());
+    const reason = within(card(SUMMARY)).getByTestId("rationale");
+    expect(reason.className).toContain("line-clamp-2");
+    fireEvent.click(within(card(SUMMARY)).getByTestId("rationale-toggle"));
+    expect(within(card(SUMMARY)).getByTestId("rationale").className).not.toContain("line-clamp-2");
+    fireEvent.click(within(card(SUMMARY)).getByTestId("rationale-toggle"));
+    fireEvent.click(card(SUMMARY));
+    expect(within(card(SUMMARY)).getByTestId("rationale").className).not.toContain("line-clamp-2");
+    expect(within(card(SUMMARY)).queryByTestId("rationale-toggle")).toBeNull();
+  });
+});
+
+describe("evidence on a text of several sentences", () => {
+  it("numbers the chips and ties each sentence to its chip", async () => {
+    await open(withSummary());
+    const summary = card(SUMMARY);
+    const chips = within(summary).getAllByTestId("evidence-chip");
+    expect(chips.map((chip) => chip.textContent)).toEqual(["1p. 1", "2p. 1", "3p. 3"]);
+    expect(within(summary).getByText("What is procured:")).toBeInTheDocument();
+    const markers = within(summary).getAllByTestId("evidence-marker");
+    expect(markers.map((marker) => marker.textContent)).toEqual(["1", "2", "3"]);
+    expect(within(summary).getByTestId("field-value").textContent).not.toContain("[1]");
+    // A single chip is not numbered.
+    expect(within(card(EMD)).getAllByTestId("evidence-chip")[0]).toHaveTextContent(/^p\. 3$/);
+  });
+
+  it("highlights only the passage of the chip being shown and dims the others", async () => {
+    await open(withSummary());
+    const summary = card(SUMMARY);
+    fireEvent.click(within(summary).getAllByTestId("evidence-marker")[1]);
+    await waitFor(() => expect(card(SUMMARY).dataset.focused).toBe("yes"));
+    const chips = within(card(SUMMARY)).getAllByTestId("evidence-chip");
+    expect(chips.map((chip) => chip.dataset.active)).toEqual(["no", "yes", "no"]);
+    // Page 1 holds two of the three passages: one is marked, the other is faint.
+    await waitFor(() => expect(screen.getAllByTestId("evidence-highlight")).toHaveLength(1));
+    expect(screen.getAllByTestId("evidence-highlight-dim")).toHaveLength(2);
+    fireEvent.click(chips[2]);
+    await waitFor(() => expect(screen.getByTestId("page-indicator")).toHaveTextContent("Page 3 of 3"));
+    expect(within(card(SUMMARY)).getAllByTestId("evidence-chip")[2].dataset.active).toBe("yes");
+    expect(screen.getAllByTestId("evidence-highlight")).toHaveLength(1);
+  });
+
+  it("lists the words each numbered chip quotes when the text has no markers", async () => {
+    const review = withSummary();
+    const found = review.fields[0].entries[0].state.candidate!;
+    found.value = "Acme invites bids for 600 MW of solar. Acme Renewables Agency issues the tender.";
+    await open(review);
+    expect(within(card(SUMMARY)).queryByTestId("evidence-quotes")).toBeNull();
+    fireEvent.click(card(SUMMARY));
+    const quotes = within(card(SUMMARY)).getByTestId("evidence-quotes");
+    expect(within(quotes).getAllByRole("listitem")).toHaveLength(3);
+    expect(quotes).toHaveTextContent("2p. 1: “Issued by Acme Renewables Agency”");
   });
 });

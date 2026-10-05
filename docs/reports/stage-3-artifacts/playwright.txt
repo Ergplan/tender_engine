@@ -2,15 +2,19 @@ docker compose --profile e2e up -d --force-recreate api-e2e caddy-e2e
 docker compose --profile e2e run --rm -T playwright; code=$?; \
   docker compose --profile e2e rm -sf api-e2e caddy-e2e >/dev/null 2>&1; exit $code
 
-Running 6 tests using 1 worker
+Running 10 tests using 1 worker
 
-  -  1 [chromium] › e2e/real-load.spec.ts:9:1 › a real tender: first paint under 2 s, first PDF page under 3 s
-  ✓  2 [chromium] › e2e/review.spec.ts:18:1 › a link that was replaced, or is not a link, says so in plain words (1.4s)
-first meaningful paint 1904 ms, first PDF page 1969 ms
-  ✓  3 [chromium] › e2e/review.spec.ts:28:1 › the link opens straight into the tender, laid out for a 1366x768 laptop (3.9s)
-  ✓  4 [chromium] › e2e/review.spec.ts:66:1 › an evidence chip scrolls the PDF to its page and highlights the quoted text (4.6s)
-  ✓  5 [chromium] › e2e/review.spec.ts:97:1 › approve with Enter, edit a date, mark not in document, flag (6.9s)
-  ✓  6 [chromium] › e2e/review.spec.ts:146:1 › complete the review by keyboard; the snapshot holds the final values (48.7s)
+  -   1 [chromium] › e2e/real-load.spec.ts:9:1 › a real tender: first paint under 2 s, first PDF page under 3 s
+  ✓   2 [chromium] › e2e/review.spec.ts:18:1 › a link that was replaced, or is not a link, says so in plain words (3.2s)
+first meaningful paint 4253 ms, first PDF page 6083 ms
+  ✓   3 [chromium] › e2e/review.spec.ts:28:1 › the link opens straight into the tender, laid out for a 1366x768 laptop (10.2s)
+  ✓   4 [chromium] › e2e/review.spec.ts:66:1 › an evidence chip scrolls the PDF to its page and highlights the quoted text (12.5s)
+  ✓   5 [chromium] › e2e/review.spec.ts:128:3 › what is typed can be read in a light system theme (12.1s)
+  ✓   6 [chromium] › e2e/review.spec.ts:128:3 › what is typed can be read in a dark system theme (14.9s)
+  ✓   7 [chromium] › e2e/review.spec.ts:153:1 › the guide is open on the first visit and stays as the reviewer leaves it (6.8s)
+  ✓   8 [chromium] › e2e/review.spec.ts:170:1 › numbered evidence: each sentence of the summary shows its own passage (7.2s)
+  ✓   9 [chromium] › e2e/review.spec.ts:191:1 › approve with Enter, edit a date, mark not in document, flag (17.0s)
+  ✓  10 [chromium] › e2e/review.spec.ts:240:1 › complete the review by keyboard; the snapshot holds the final values (1.1m)
 
   1 skipped
-  5 passed (1.1m)
+  9 passed (2.6m)

@@ -105,3 +105,23 @@ def test_a_newer_run_that_has_not_finished_does_not_hide_the_validated_one(
     db.commit()
     state = pipeline.review_state.for_object(db, "document", document.id)
     assert state.run is not None and state.run.id == run.id
+
+
+def test_of_two_equally_confident_candidates_the_one_with_more_located_quotes_is_shown() -> None:
+    from types import SimpleNamespace
+    from typing import Any, cast
+
+    from core.services.review_state import _best
+
+    def candidate(name: str) -> Candidate:
+        return cast(Candidate, SimpleNamespace(id=name, status="validated", confidence=0.7))
+
+    def spans(*located: bool) -> list[Any]:
+        return [SimpleNamespace(char_start=0 if found else None) for found in located]
+
+    thin, full = candidate("z-thin"), candidate("a-full")
+    evidence = {"z-thin": spans(True, False), "a-full": spans(True, True, True)}
+    assert _best([thin, full], cast(Any, evidence)) is full
+    # Confidence still comes first.
+    thin.confidence = 0.8
+    assert _best([thin, full], cast(Any, evidence)) is thin

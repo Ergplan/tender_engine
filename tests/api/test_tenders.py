@@ -312,6 +312,7 @@ def test_schema_endpoint_returns_the_compiled_field_list(client: TestClient) -> 
         "name": "summary",
         "label": "Summary",
         "prompt": "summary",
+        "prompt_version": "v2",
         "roles": ["rfs", "contractual", "nit"],
         "order": 1,
     }

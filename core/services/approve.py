@@ -383,6 +383,7 @@ class ApprovalService:
             {
                 "kind": "span",
                 "evidence_span_id": span.id,
+                "ordinal": span.ordinal,
                 "document_id": span.document_id,
                 "page_no": span.page_no,
                 "bbox": span.bbox,
@@ -396,7 +397,7 @@ class ApprovalService:
                     EvidenceSpan.candidate_id == candidate.id,
                     EvidenceSpan.tenant_id == self._tenant_id,
                 )
-                .order_by(EvidenceSpan.page_no, EvidenceSpan.id)
+                .order_by(EvidenceSpan.ordinal.nulls_last(), EvidenceSpan.page_no, EvidenceSpan.id)
             )
         ]
         evidence.extend(reviewer_spans)

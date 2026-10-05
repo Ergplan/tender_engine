@@ -8,7 +8,7 @@ Every field is served by `GET /v1/tenders/{tender_id}/review` and written by `PO
 
 | Field | Tender types | UI (web/src) | Section and service | Producer | Rules |
 | --- | --- | --- | --- | --- | --- |
-| `core.summary.plain_english_summary` | all | review/FieldCard value (long_text); review/EditForm textarea | summary: extract('summary') / approve() | LLM summary v1; HUMAN approval | RULE type, evidence_located, required_present |
+| `core.summary.plain_english_summary` | all | review/FieldCard value (long_text); review/EditForm textarea | summary: extract('summary') / approve() | LLM summary v2; HUMAN approval | RULE type, evidence_located, required_present |
 | `core.identity.tender_number` | all | review/FieldCard value (text); review/EditForm text input | identity_and_scope: extract('identity_and_scope') / approve() | LLM extract/identity_and_scope v1; HUMAN approval | RULE type, evidence_located, required_present |
 | `core.identity.issuing_agency` | all | review/FieldCard value (text); review/EditForm text input | identity_and_scope: extract('identity_and_scope') / approve() | LLM extract/identity_and_scope v1; HUMAN approval | RULE type, evidence_located, required_present |
 | `core.identity.title` | all | review/FieldCard value (text); review/EditForm text input | identity_and_scope: extract('identity_and_scope') / approve() | LLM extract/identity_and_scope v1; HUMAN approval | RULE type, evidence_located, required_present |

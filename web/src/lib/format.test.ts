@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 
 import {
   confidenceBand,
+  paragraphs,
+  stripMarkers,
   formatDate,
   formatRupees,
   formatValue,
@@ -79,5 +81,27 @@ describe("editing", () => {
     expect(fromEditText("no", "bool")).toBe(false);
     expect(fromEditText(" a \n\n b ", "list_text")).toEqual(["a", "b"]);
     expect(fromEditText("  ", "text")).toBeNull();
+  });
+});
+
+describe("long text with evidence markers", () => {
+  const text = "What is procured: SECI invites bids for 600 MW. [1] It is solar. [2][3]\n\nLocation: Anywhere in India. [4]\n\nNo heading here.";
+  it("is cut into paragraphs with their headings and markers", () => {
+    const [first, second, third] = paragraphs(text);
+    expect(first.heading).toBe("What is procured");
+    expect(first.pieces).toEqual([
+      { text: "SECI invites bids for 600 MW. " },
+      { marker: 1 },
+      { text: " It is solar. " },
+      { marker: 2 },
+      { marker: 3 },
+    ]);
+    expect(second).toEqual({ heading: "Location", pieces: [{ text: "Anywhere in India. " }, { marker: 4 }] });
+    expect(third).toEqual({ heading: null, pieces: [{ text: "No heading here." }] });
+  });
+  it("is shown without markers where it is only read", () => {
+    expect(stripMarkers("It is solar. [2][3] Next.")).toBe("It is solar. Next.");
+    expect(formatValue("Bids are due. [1]", "long_text", null)).toBe("Bids are due.");
+    expect(formatValue("Clause [1] of the RfS", "text", null)).toBe("Clause [1] of the RfS");
   });
 });

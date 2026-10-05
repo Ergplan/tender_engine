@@ -42,6 +42,28 @@ def test_a_later_document_of_another_role_is_limited_to_its_roles_groups(catalog
 
 def test_touched_groups_match_keywords_case_insensitively(catalog: Catalog) -> None:
     schema = catalog.get("wind").schema
-    names = [group.name for group in schema.groups]
+    names = [group.name for group in schema.groups if group.name != "summary"]
     assert touched_groups(schema, names, ["PERFORMANCE BANK GUARANTEE shall be"]) == ["guarantees"]
     assert touched_groups(schema, ["key_dates"], ["performance bank guarantee"]) == []
+
+
+def test_the_summary_is_written_from_the_base_documents_not_from_a_notice(
+    catalog: Catalog,
+) -> None:
+    solar = catalog.get("solar")
+    notice = ["Tender notice. Earnest money deposit and scope of work as per the RfS."]
+
+    def planned(version_no: int, roles: list[str]) -> list[str]:
+        return plan_groups(
+            solar, version_no=version_no, role="nit", page_texts=notice, version_roles=roles
+        )
+
+    assert "summary" in planned(1, ["nit"]), "a tender known only by its notice"
+    assert "summary" not in planned(1, ["rfs", "nit"]) and "key_dates" in planned(1, ["rfs", "nit"])
+    assert "summary" not in planned(2, ["nit"])
+    rfs = plan_groups(
+        solar, version_no=1, role="rfs", page_texts=notice, version_roles=["rfs", "nit"]
+    )
+    assert "summary" in rfs
+    revised = plan_groups(solar, version_no=2, role="rfs", page_texts=notice, version_roles=["rfs"])
+    assert "summary" in revised, "a revised RfS in a later version is summarised again"

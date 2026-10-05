@@ -145,6 +145,7 @@ def build(catalog: Catalog | None = None) -> str:
                     "types": [],
                     "order": (sections[field.section].order, field.review_order),
                     "prompt": sections[field.section].prompt,
+                    "prompt_version": sections[field.section].prompt_version or PROMPT_VERSION,
                 },
             )
             row["types"].append(tender_type)
@@ -176,7 +177,7 @@ def build(catalog: Catalog | None = None) -> str:
         field: TenderField = row["field"]
         if field.value_type not in components:
             raise TraceError(f"{path}: no UI component for value type {field.value_type!r}")
-        prompt = load_prompt(row["prompt"], PROMPT_VERSION, catalog.prompt_roots)
+        prompt = load_prompt(row["prompt"], row["prompt_version"], catalog.prompt_roots)
         rules = ["type", "evidence_located"]
         definition = catalog.types[row["types"][0]].schema.field(path)
         if definition.required:

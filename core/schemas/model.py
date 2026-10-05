@@ -41,6 +41,11 @@ class FieldGroup(BaseModel):
 
     name: str = Field(pattern=r"^[a-z0-9_]+$")
     prompt_name: str = "extract"
+    # The group's own prompt version, when it is ahead of the version a run asks for.
+    prompt_version: str | None = None
+    # At most this many pages for the group, when fewer than the general cap: a group
+    # whose answer must come from one call sets it to the pages of one call.
+    max_pages: int | None = None
     routing: RoutingHints = Field(default_factory=RoutingHints)
     guidance: str = ""
 

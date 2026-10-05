@@ -36,6 +36,7 @@ class EvidenceView(BaseModel):
     resolution: str
     match_score: float | None
     match_method: str | None
+    ordinal: int | None = None
 
 
 class ValidationView(BaseModel):
@@ -203,7 +204,7 @@ class ReviewStateService:
         for span in session.scalars(
             select(EvidenceSpan)
             .where(EvidenceSpan.tenant_id == self._tenant_id, EvidenceSpan.candidate_id.in_(ids))
-            .order_by(EvidenceSpan.page_no, EvidenceSpan.id)
+            .order_by(EvidenceSpan.ordinal.nulls_last(), EvidenceSpan.page_no, EvidenceSpan.id)
         ):
             evidence[span.candidate_id].append(
                 EvidenceView.model_validate(span, from_attributes=True)
@@ -312,7 +313,8 @@ class ReviewStateService:
 
 
 def _best(candidates: list[Candidate], evidence: dict[str, list[EvidenceView]]) -> Candidate | None:
-    """Prefer a candidate that passed validation, then located evidence, then confidence."""
+    """Prefer a candidate that passed validation, then located evidence, then confidence,
+    then the one with more located quotes (of two summaries, the better supported one)."""
     if not candidates:
         return None
     return max(
@@ -321,6 +323,7 @@ def _best(candidates: list[Candidate], evidence: dict[str, list[EvidenceView]]) 
             c.status == "validated",
             any(span.char_start is not None for span in evidence[c.id]),
             c.confidence,
+            sum(1 for span in evidence[c.id] if span.char_start is not None),
             c.id,
         ),
     )

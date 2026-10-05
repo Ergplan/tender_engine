@@ -7,7 +7,6 @@ pass  openapi_drift
 pass  field_trace
 pass  tsc
 pass  vitest
---- GREEN in 378s
- Test Files  5 passed (5)
-      Tests  37 passed (37)
-404 passed, 5 deselected, 2 warnings in 275.50s (0:04:35)
+--- GREEN in 369s
+410 passed, 5 deselected, 2 warnings in 262.19s (0:04:22)
+      Tests  53 passed (53)

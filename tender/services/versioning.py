@@ -7,11 +7,15 @@ only when the document mentions one of the group's routing keywords. Fields a la
 version does not mention keep the canonical facts of the earlier versions untouched.
 """
 
+from collections.abc import Iterable
+
 from core.schemas import ExtractionSchema
 from tender.services.packs import CompiledType
 
 CHANGE_ROLES = ("amendment", "clarification")
 SUMMARY_SECTION = "summary"
+NOTICE_ROLE = "nit"
+BASE_ROLES = ("rfs", "contractual")
 
 
 def groups_for_role(compiled: CompiledType, role: str) -> list[str]:
@@ -34,10 +38,23 @@ def touched_groups(schema: ExtractionSchema, groups: list[str], page_texts: list
 
 
 def plan_groups(
-    compiled: CompiledType, *, version_no: int, role: str, page_texts: list[str]
+    compiled: CompiledType,
+    *,
+    version_no: int,
+    role: str,
+    page_texts: list[str],
+    version_roles: Iterable[str] = (),
 ) -> list[str]:
-    """The groups to extract from one document of a tender version."""
+    """The groups to extract from one document of a tender version. `version_roles` are
+    the roles of all documents of that version.
+
+    The summary is written from the tender's base documents. A published notice is read
+    for it only when it is all the original version has (a tender known only by its
+    notice); a notice beside an RfS or contractual volume, or attached to a later version,
+    is not."""
     groups = groups_for_role(compiled, role)
+    if role == NOTICE_ROLE and (version_no > 1 or set(version_roles) & set(BASE_ROLES)):
+        groups = [name for name in groups if name != SUMMARY_SECTION]
     if version_no == 1:
         return groups
     return touched_groups(compiled.schema, groups, page_texts)

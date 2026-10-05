@@ -4,7 +4,9 @@ import type { PageInfo, ReviewApi, ReviewVersion, SearchHit, SectionInfo } from 
 import type { PdfTarget } from "./model";
 import type { TextSource } from "./pdfText";
 
-export type Highlight = { pageNo: number; bbox: number[] | null };
+/** A passage of the focused field's evidence. The one being shown is `active`; the others
+ * are drawn faintly, so that several passages on one page can be told apart. */
+export type Highlight = { pageNo: number; bbox: number[] | null; active?: boolean };
 const GAP = 12;
 
 function Box({ bbox, page, scale, className, testId }: {
@@ -304,7 +306,18 @@ export function PdfPane({
               {highlights
                 .filter((highlight) => highlight.pageNo === page.page_no)
                 .map((highlight, index) => (
-                  <Box key={`mark-${index}`} bbox={highlight.bbox} page={page} scale={scale} className="rounded-sm border-sky-500 bg-sky-400/25" testId="evidence-highlight" />
+                  <Box
+                    key={`mark-${index}`}
+                    bbox={highlight.bbox}
+                    page={page}
+                    scale={scale}
+                    className={
+                      highlight.active
+                        ? "rounded-sm border border-sky-600 bg-sky-400/30"
+                        : "rounded-sm border border-dashed border-slate-400 bg-slate-400/10"
+                    }
+                    testId={highlight.active ? "evidence-highlight" : "evidence-highlight-dim"}
+                  />
                 ))}
               {pulse && pulse.pageNo === page.page_no && (
                 <Box key={pulse.key} bbox={pulse.bbox} page={page} scale={scale} className="animate-pulse-once rounded-sm border-amber-500 bg-amber-300/40" testId="evidence-pulse" />

@@ -724,3 +724,48 @@ def test_a_shared_answer_passes_only_as_a_complete_typed_answer_of_the_group() -
         [*good[:2], entry("tenure_years", ["25"])],
     ):
         assert typed_answer(SharedAnswer.model_validate({"fields": bad}), model) is None
+
+
+def test_evidence_keeps_its_place_in_the_models_list(
+    make_pipeline: MakePipeline, db: Session
+) -> None:
+    """A text that marks its sentences [1], [2] refers to the quotes by their place in the
+    answer; a quote that was dropped (empty) must not shift the others."""
+    capacity = {
+        "value": 600,
+        "confidence": 0.9,
+        "rationale": "Capacity clause.",
+        "evidence": [
+            {"page_no": 1, "quote": "  "},
+            {"page_no": 1, "quote": "total contracted capacity under this agreement is 600 MW"},
+            {"page_no": 1, "quote": "The Earnest Money Deposit shall be INR 928000 per MW"},
+        ],
+    }
+    pipeline = make_pipeline(ScriptedSDK(answers(capacity_mw=capacity)))
+    run = pipeline.extracted_run(db)
+    stored = spans(db, candidates(db, run)["security.capacity_mw"])
+    assert sorted(span.ordinal for span in stored) == [2, 3]
+    state = pipeline.review_state.for_object(db, "document", run.document_id)
+    shown = next(f for f in state.fields if f.field_path == "security.capacity_mw").candidate
+    assert shown is not None and [e.ordinal for e in shown.evidence] == [2, 3]
+    assert shown.evidence[1].quote.startswith("The Earnest Money Deposit")
+
+
+def test_a_group_with_its_own_page_cap_and_prompt_version_uses_them(
+    make_pipeline: MakePipeline, db: Session
+) -> None:
+    sdk = ScriptedSDK(sections=ONE_SECTION)
+    pipeline = make_pipeline(sdk)
+    schema = pipeline.schemas.get("test.contract", "v1")
+    dates = next(group for group in schema.groups if group.name == "dates")
+    dates.max_pages = 2
+    try:
+        document = pipeline.parsed_document(db)
+        windows, plan = pipeline.extract.plan_windows(
+            db, document, schema, [group.name for group in schema.groups]
+        )
+        assert len(windows["dates"]) == 2 and len(windows["identity"]) == 3
+        # The capped group does not join a window larger than its cap.
+        assert [w.groups for w in plan] == [("identity", "security"), ("dates",)]
+    finally:
+        dates.max_pages = None

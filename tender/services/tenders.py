@@ -292,6 +292,7 @@ class TenderService:
                 version_no=entry.version.version_no,
                 role=link.role,
                 page_texts=page_texts,
+                version_roles=[other.role for other, _ in entry.documents],
             )
             if groups is not None:
                 narrowed = [name for name in planned if name in groups]

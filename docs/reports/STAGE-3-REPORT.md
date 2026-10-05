@@ -160,11 +160,34 @@ I stopped after three runs: the last found no code defect.
 5. **VM size.** Still 2 cores and 3.9 GB. The resize commands are in the Stage 2 report.
 6. **A guard for the Stage 4 dashboard** (`/admin/reliability`) is needed before it is built: an admin token is the smallest change.
 
+## After the first look at the screens (2026-10-05)
+
+You looked at the screens before reviewing and asked for eight changes, plus a ninth on the confidence figure. All are built, tested and live. No decision had been made in the database, so nothing reviewed was touched.
+
+| # | Asked | Done |
+| --- | --- | --- |
+| 1 | Dark text on a dark surface in the edit panel; a browser test of the contrast | Cause: pdf.js's viewer stylesheet, imported for the text layer, declared `color-scheme: light dark` for the whole page, so a dark system theme gave inputs a dark surface under the screen's dark text. The screen now declares one light design, gives inputs their own surface and text colour, and includes only the text-layer rules. Two browser tests (light and dark system theme) compute the contrast of the edit textarea, the evidence boxes, the note, a date input, the flag note, the search box, the document selector and a field value, and require 7:1. On the old stylesheet the dark-theme test fails at 1.59:1 |
+| 2 | Orientation panel, collapsible, open on first visit and remembered; `docs/REVIEWER-GUIDE.md` | `GuidePanel` under the header: what the review is for, how to decide, what the confidence figure means, the keys. `docs/REVIEWER-GUIDE.md` has the same text, with three more paragraphs on numbered evidence, amended fields and completing; a unit test fails if the guide lacks a sentence of the panel |
+| 3 | Wider summary, a short paragraph per topic with evidence per sentence, re-run for all 13 | Prompt `summary/v2`: eight paragraphs under fixed headings, every sentence ending in the number of its quote. 15 summaries written (13 tenders; SECI CfD-I has a revised RfS, NTPC PHES two notice documents). 453 of 454 quotes located. See below for what it cost and its limit |
+| 4 | Label the confidence figure; hover text | Caption "model confidence" beside the figure. Hover: it is the model's own confidence, not a measure of correctness; a low figure often means an ambiguous or partial statement; the tender-number example; read the rationale first. The same four sentences are in the panel and the guide |
+| 5 | Numbered chips tied to sentences; only the active passage highlighted | Chips of a field with several quotes are numbered. In the summary each sentence ends in a small numbered button that opens its quote. In other fields the focused card lists the words each chip quotes. In the PDF the passage being shown is highlighted and the field's other passages are drawn faintly |
+| 6 | Rationale cut off with no way to expand | Shown in full for the focused field; a "more" link on every other card |
+| 7 | Section headers show where attention is needed | "3 need a closer look": undecided fields that a validation rule flagged or whose confidence is under 0.5. Your own flags are counted beside it |
+| 8 | Fields left or time left in the header | "89 to go" under the progress; after five decisions in a sitting, "about N min left" at your own pace (the median gap between decisions, so a pause does not stretch it) |
+
+**The summary, as written for NHPC FDRE-II** (the tender your link opens): eight paragraphs, 38 quotes, all located. It reads at most 40 pages in one call. Where a topic sits outside those pages it says so: for NHPC it reports that the qualifying thresholds and the EMD formula are in clauses "not on these pages", and gives what the pages do state. The eligibility and guarantee fields themselves are extracted from their own pages and are not affected. If the summary proves too thin in review, the next step is to write it from the extracted fields and their quotes (KNOWN-GAPS.md).
+
+**Changes this needed below the screen** (DECISIONS.md): a section can pin its own prompt version and page cap; `evidence_span.ordinal` (migration 0010) keeps each quote's place; the summary is written from the base documents and not from a notice attached beside or after them; the output limit of a call is 20,000 tokens (one summary hit 16,000 in its batch and succeeded on the direct retry). The summary section's keywords, help text and page cap were edited in the `v1` schema file: the one edit to a frozen file, made on your instruction before any review exists.
+
+**Cost of the summary re-run:** USD 10.44 for 16 calls (15 summaries and the one that was cut off), through the batch API. It is more than "one cheap call per tender" suggests: each call reads 25 to 40 pages and writes a long answer with its quotes. Stage 3 is now at about USD 30 and the running total at about USD 290.
+
+**Checks after these changes:** 410 Python tests and 53 web unit tests pass; the browser suite has 9 tests, all passing (`stage-3-artifacts/playwright.txt`); the nine checks are green (`checks.txt`).
+
 ## Your step: one real review
 
 A link for NHPC FDRE-II is live. It is not written in this file: a review link is the only key to its review, and this file is in the repository. It is in my message to you, and `docker compose exec -T api python -m scripts.review_token list` prints it on the VM.
 
-It opens NHPC FDRE-II (89 fields, 74 with a value, one 264-page RfS), extracted afresh today. The browser will warn once about the certificate (the app is served on a bare IP; KNOWN-GAPS.md). The link is valid for 30 days and is recorded under the reviewer name `venture@aayuda.energy`, taken from your account; every decision you make carries that name. If you want another name or another tender, make a new link before deciding anything (the old one stops working):
+It opens NHPC FDRE-II (89 fields, 74 with a value, one 264-page RfS), extracted afresh today, with the new summary. You said this run will be the timed one. The browser will warn once about the certificate (the app is served on a bare IP; KNOWN-GAPS.md). The link is valid for 30 days and is recorded under the reviewer name `venture@aayuda.energy`, taken from your account; every decision you make carries that name. If you want another name or another tender, make a new link before deciding anything (the old one stops working):
 
 ```
 cd /work/tender_engine && docker compose exec -T api python -m scripts.review_token create --tender <slug> --reviewer "Your Name"

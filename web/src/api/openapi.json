@@ -436,6 +436,17 @@
             "title": "Prompt",
             "type": "string"
           },
+          "prompt_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prompt Version"
+          },
           "roles": {
             "items": {
               "type": "string"
@@ -594,6 +605,17 @@
               }
             ],
             "title": "Match Score"
+          },
+          "ordinal": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ordinal"
           },
           "page_no": {
             "title": "Page No",
