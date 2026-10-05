@@ -10,6 +10,7 @@ at start-up; a conflict between inherited types is an error, never silently reso
 import importlib
 import re
 from dataclasses import dataclass
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -471,7 +472,15 @@ def read_released(pack_dir: Path, version: str) -> dict[str, dict[str, Signature
     path = released_file(pack_dir, version)
     if not path.is_file():
         return None
-    data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    return _parse_released(path, path.stat().st_mtime_ns)
+
+
+@lru_cache(maxsize=32)
+def _parse_released(path: Path, modified: int) -> dict[str, dict[str, Signature]]:
+    """Parsed once per file and change: the files are large, and every tender type of a
+    pack is checked against the same two of them when the packs are loaded."""
+    loader = getattr(yaml, "CSafeLoader", yaml.SafeLoader)
+    data = yaml.load(path.read_text(encoding="utf-8"), Loader=loader) or {}  # noqa: S506
     types = data.get("types")
     if not isinstance(types, dict):
         raise PackError(f"{path}: expected a mapping `types`")

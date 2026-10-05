@@ -8,7 +8,7 @@ Date: 2026-10-05. Diff: `git diff stage-3-start..HEAD`. Architecture changes: `d
 
 | Check | Result |
 | --- | --- |
-| Playwright suite green | Yes. `make test-ui`: 9 of 10 pass after the last change; one fails and is open, see docs/CONTEXT.md (5 when this report was first written) (`web/e2e/review.spec.ts`), in Chromium at 1366x768 against a seeded stack behind the same proxy routes as the deployed app. Output: `stage-3-artifacts/playwright.txt` |
+| Playwright suite green | Yes. `make test-ui`: 10 of 10 pass (5 when this report was first written) (`web/e2e/review.spec.ts`), in Chromium at 1366x768 against a seeded stack behind the same proxy routes as the deployed app. Output: `stage-3-artifacts/playwright.txt` |
 | User completes one real review from a token URL unaided | **Open: this is your step** |
 | First PDF page under 3 s on the VM | Yes, on a quiet VM. `web/e2e/real-load.spec.ts` on the deployed app, Chromium on the VM, nothing cached in the browser: SECI Ramagiri (91 fields, 10 documents, first document 266 pages) first meaningful paint 1.0 s, first PDF page 1.3 s (`stage-3-artifacts/real-tender-load.txt`). Earlier runs of the same test, whose output I did not keep, gave 1.4 s and 1.7 s for SECI Gaya (first document 305 pages), and, while the test watcher was running the full suite on the two cores, up to 4.8 s and 6.2 s. The selectable text layer of the first page arrives later, 3.7 s after the start on the quiet VM. The largest document of the set has 373 pages; none has 400. Not measured from a reviewer's own connection |
 | No bulk-approve exists | Yes. The screen has Approve, Edit, Not in document and Flag per field and nothing else; the API has no route that decides more than one field (`POST /approvals` takes one candidate). Both the unit test and the browser test assert that no "approve all" exists |
@@ -411,11 +411,22 @@ Tests (`tests/tender/test_pack_versions.py`, 18, and one in `tests/core/services
 
 What it cannot see is in KNOWN-GAPS.md: it compares definitions, not meaning. A field whose help text gives it another meaning while its type stays the same passes.
 
+### A defect the browser suite caught after this change
+
+After the version check went in, the last browser test failed: at the end of a full review the summary's Approve stayed disabled. Two things were stacked.
+
+1. **The version check made loading the packs slow.** It parsed the two released files again for every tender type. Loading took 5.6 s on an idle machine, the Python suite took 498 s where it had taken 279 s, and in the browser-test stack the worker's first validation after a start took 17 s. Fixed: each released file is parsed once (`_parse_released` in `tender/services/packs.py`). Loading now takes 1.9 s and the suite, with 20 more tests, 403 s; I did not measure the load time before the version check existed.
+2. **That delay exposed a race that was there before.** The worker writes a new summary in one job and validates it in the next. Between the two, the state reported the summary as current although the new text was not yet in review. The screen then stopped looking for it and the card stayed locked. With the scripted model the gap had always been shorter than the screen's first look, so the test had passed; with the real model, where a rewrite takes about 40 seconds, a reviewer who corrected a field could have been left unable to approve the summary without reloading the page. Fixed: the summary is current only once the text written from the record is validated (`SummaryWriter.state`, `_already_written(..., in_review=True)`). `test_a_correction_to_a_field_has_the_summary_written_again_before_it_can_be_approved` now stops between the two jobs and checks the state there; it fails without the fix.
+
+I found the second one only because the first slowed things down. It is the reason I asked you to hold the timed review.
+
 ### Checks, deployment, review
 
-478 Python tests and 65 web unit tests pass and the nine checks are green; **of the 10 browser tests one fails after this change and is not yet understood** (the summary's Approve stays disabled at the end of a full keyboard review; see docs/CONTEXT.md). The artifacts are not yet refreshed (`checks.txt`, `playwright.txt`); `make trace` regenerates `FIELD-TRACE.md` without a difference (`trace.txt`). No migration; the API and the worker were restarted to load the new prompts and schema (`deployment.txt`). No decision exists in the database. The test watcher is still stopped.
+478 Python tests, 65 web unit tests and 10 browser tests pass; the nine checks are green (`checks.txt`, `playwright.txt`); `make trace` regenerates `FIELD-TRACE.md` without a difference (`trace.txt`). No migration; the API and the worker were restarted to load the prompts, the schema and the two fixes (`deployment.txt`). The test watcher is still stopped.
 
-**Independent review, run 9** (on this change): not yet run. The session ended at its usage limit before the browser failure was resolved.
+**Decisions in the database: yours, on one field.** At 17:33 and 17:35 UTC, through the review link, `sector.power.fdre.excess_energy_structured` of NHPC FDRE-II was first marked not in document and then edited (above contracted capacity, not purchased). That is the field I had pointed out as having two differing answers. I have not touched those rows. The sections read again afterwards (commercial, penalties) do not hold that field, and the summary written at 17:49 UTC was written with your edit in the record. Every earlier statement in this report that the database holds no decision was true when written and is not true now.
+
+{REVIEW}
 
 ### For the timed review
 

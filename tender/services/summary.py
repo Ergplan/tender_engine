@@ -460,8 +460,11 @@ class SummaryWriter:
             if item.field_path != SUMMARY_FIELD and item.current is not None and not item.decided
         )
         prepared = self._prepare(session, tender, review)
+        # Current only once the text written from this record is in review. While it is
+        # stored but not yet validated the reviewer has no summary text to decide, and the
+        # screen must go on looking for the new one.
         current = prepared is None or self._already_written(
-            session, tender, self._llm.input_hash(prepared[0])
+            session, tender, self._llm.input_hash(prepared[0]), in_review=True
         )
         being_written = (
             session.scalar(
@@ -664,8 +667,12 @@ class SummaryWriter:
                 best = (key, candidate, spans)
         return None if best is None else (str(best[1].value), best[2])
 
-    def _already_written(self, session: Session, tender: Tender, input_hash: str) -> bool:
-        """Whether the summary in review was written from exactly this record."""
+    def _already_written(
+        self, session: Session, tender: Tender, input_hash: str, *, in_review: bool = False
+    ) -> bool:
+        """Whether a summary was written from exactly this record: stored (so that it is
+        not written twice), or with `in_review` also validated and shown to the reviewer."""
+        statuses = REVIEWABLE_STATUSES if in_review else ("raw", *REVIEWABLE_STATUSES)
         return (
             session.scalar(
                 select(Candidate.id)
@@ -679,7 +686,7 @@ class SummaryWriter:
                     ExtractionRun.object_id == tender.id,
                     ExtractionRun.mode == RECORD_MODE,
                     Candidate.field_path == SUMMARY_FIELD,
-                    Candidate.status.in_(("raw", *REVIEWABLE_STATUSES)),
+                    Candidate.status.in_(statuses),
                     LLMCallLog.input_hash == input_hash,
                 )
                 .limit(1)

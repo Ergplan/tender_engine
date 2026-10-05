@@ -1,4 +1,4 @@
-Checked from the VM through the public address on 2026-10-05, after the structured-fields change (schema v2):
+Checked from the VM through the public address on 2026-10-05 21:31 UTC, after the quote rule, the version check and the two fixes that followed:
 GET /health -> 200
 GET /api/v1/health -> 200
 GET /api/v1/tenders -> 401
@@ -8,9 +8,11 @@ GET /review/not-a-link -> 200
 POST /api/v1/review-tokens -> 401
 health body: {"status":"ok","tenant_id":"ergplan","database":"ok"}
 alembic_version: 0011
-decisions in the database (approval rows): 0
-located evidence spans without a box: 0 of 10887
-extraction runs by schema version: v1=131, v2=83
+decisions in the database (approval rows): 2
+located evidence spans without a box: 0 of 12770
+extraction runs by schema version: v1=131, v2=130
+prompt versions of the sections served: extract/commercial v3, extract/penalties v3
+released schema files: v1.yaml v2.yaml 
 review links (token not shown):
   nhpc-fdre-ii  venture@aayuda.energy  live until 2026-11-04  https://34.131.65.108/review/<token>
   seci-gaya-60mw  Build check  revoked  https://34.131.65.108/review/<token>
@@ -19,9 +21,8 @@ review links (token not shown):
   seci-ramagiri-70mw-bess  Load check  revoked  https://34.131.65.108/review/<token>
   seci-ramagiri-70mw-bess  Load check  revoked  https://34.131.65.108/review/<token>
 containers (the test watcher is stopped on the owner's instruction):
-api running
-caddy running
-db running
-web running
-worker running
-worker restarted after the review-state correction: worker Up 12 minutes
+api running Up 14 minutes (healthy)
+caddy running Up 15 hours
+db running Up 36 hours (healthy)
+web running Up 5 hours
+worker running Up 14 minutes
