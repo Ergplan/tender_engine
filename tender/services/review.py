@@ -207,13 +207,23 @@ def complete_review(
     review_state: ReviewStateService,
     tender: Tender,
     token: ReviewToken,
+    *,
+    summary_being_written: bool = False,
 ) -> TenderReviewSnapshot:
-    """Close the review: refuse while a required field is undecided; then mark the token
-    completed and the tender reviewed, and store the current view for the gold set."""
+    """Close the review: refuse while a required field is undecided or the summary is
+    being written again; then mark the token completed and the tender reviewed, and store
+    the current view for the gold set."""
     if token.tender_id != tender.id:
         raise LookupError("the review token belongs to another tender")
     if token.completed_at is not None:
         raise TenderError("this review has already been completed")
+    if summary_being_written:
+        # Between the new text being stored and being validated the summary field has no
+        # entry in review, so it would not count as an undecided required field.
+        raise TenderError(
+            "the summary is being written again from your decisions; complete the review "
+            "once it is ready and decided"
+        )
     review = tender_review(session, catalog, tenders, review_state, tender)
     if not review.can_complete:
         raise TenderError(

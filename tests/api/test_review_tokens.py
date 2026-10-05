@@ -570,6 +570,13 @@ def test_a_correction_to_a_field_has_the_summary_written_again_before_it_can_be_
     assert body["summary"] == {"waiting_for": 0, "current": False, "being_written": True}
     summary_field = next(f for f in body["fields"] if f["field_path"] == SUMMARY)
     assert summary_field["current"] is None and not summary_field["decided"]
+    # With no entry to decide, the required summary would not count as undecided: the
+    # review must not be completable across this gap.
+    assert body["required_undecided"] == 0 and body["can_complete"] is False
+    refused = client.post(
+        f"/api/v1/tenders/{tender['id']}/complete-review", headers={"X-Review-Token": token}
+    )
+    assert refused.status_code == 422 and "being written again" in refused.json()["detail"]
 
     pipeline.runner.run_until_idle()
     assert len(pipeline.sdk.summary_calls()) == calls + 1

@@ -322,7 +322,7 @@ The session that built this stopped before its checks were green. Finishing it, 
 
 ### Checks
 
-458 Python tests, 65 web unit tests and 10 browser tests pass; the nine checks are green (`checks.txt`, `playwright.txt`). The browser suite has one new test: a structured field shows every key, says what is not stated, is edited key by key, and holds the edit after a reload. The layout test prints a load time: in the two runs made for this change the first meaningful paint was 5.7 s and 6.0 s and the first PDF page 6.3 s and 6.5 s against 2.2 s and 2.8 s in the run kept before (`playwright.txt` now holds the last run of the stage: 4.8 s and 5.5 s); it is printed, not asserted, on a seeded stack that had just been started on the two cores, and the real-tender load test was not run again.
+458 Python tests, 65 web unit tests and 10 browser tests pass; the nine checks are green (`checks.txt`, `playwright.txt`). The browser suite has one new test: a structured field shows every key, says what is not stated, is edited key by key, and holds the edit after a reload. The layout test prints a load time: in the two runs made for this change the first meaningful paint was 5.7 s and 6.0 s and the first PDF page 6.3 s and 6.5 s against 2.2 s and 2.8 s in the run kept before (`playwright.txt` holds the last run of the stage: 5.6 s and 6.0 s); it is printed, not asserted, on a seeded stack that had just been started on the two cores, and the real-tender load test was not run again.
 
 Deployment: no migration (`alembic_version` is still `0011`); the API reloads from the mounted source and the worker was restarted after the fix (`stage-3-artifacts/deployment.txt`). The test watcher is still stopped.
 
@@ -422,7 +422,7 @@ I found the second one only because the first slowed things down. It is the reas
 
 ### Checks, deployment, review
 
-480 Python tests, 65 web unit tests and 10 browser tests pass; the nine checks are green (`checks.txt`, `playwright.txt`; the browser suite was last run before the change to the trace generator, which touches nothing the screen uses); `make trace` regenerates `FIELD-TRACE.md` without a difference (`trace.txt`). No migration; the API and the worker were restarted to load the prompts, the schema and the two fixes (`deployment.txt`). The test watcher is still stopped.
+480 Python tests, 65 web unit tests and 10 browser tests pass; the nine checks are green (`checks.txt`, `playwright.txt`, both from the last code of the stage); `make trace` regenerates `FIELD-TRACE.md` without a difference (`trace.txt`). No migration; the API and the worker were restarted to load the prompts, the schema and the two fixes (`deployment.txt`). The test watcher is still stopped.
 
 **Decisions in the database: yours, on one field.** At 17:33 and 17:35 UTC, through the review link, `sector.power.fdre.excess_energy_structured` of NHPC FDRE-II was first marked not in document and then edited (above contracted capacity, not purchased). That is the field I had pointed out as having two differing answers. I have not touched those rows. The sections read again afterwards (commercial, penalties) do not hold that field, and the summary written at 17:49 UTC was written with your edit in the record. Every earlier statement in this report that the database holds no decision was true when written and is not true now.
 
@@ -440,7 +440,16 @@ I found the second one only because the first slowed things down. It is the reas
 | e21, e23, e20 | Load times of runs not kept, the timings of the slow load, the failing run of the regression test | The report says which run the artifact holds; the rest are statements of this report |
 | e1, e3 to e7, e9 to e17 | Earlier statements of this report | As in earlier runs: statements a diff cannot prove, or limits already in KNOWN-GAPS.md |
 
-{REVIEW10}
+**Run 10** (after those fixes): (a) 1, (b) none, (c) 1, (d) none, (e) 19. One code defect. Output: `stage-3-artifacts/review-gpt-6.1-sol-run10.txt`.
+
+| # | Finding | Outcome |
+| --- | --- | --- |
+| a1, c1 | The unchanged write paths | As in every run |
+| e19 | In the moment between a rewritten summary being stored and being validated, the summary field has no entry in review, a required field without an entry does not count as undecided, and so the review could be completed without a decided summary | Fixed in code: completion is refused while a summary is being written, and the screen is told it cannot complete (`complete_review(..., summary_being_written=...)`, `get_tender_review`). The test that stops between the two jobs now also tries to complete there and is refused. The moment lasts as long as the worker takes to pick up the validation, a second or two in normal running |
+| e1 | Besides the historical point, one approval request can also flag the summary (when a field is decided again after the summary was approved) | True and by design: the request decides one field, and the summary's approval is withdrawn as a consequence, in the reviewer's name, audited. The table at the top says "no route decides more than one field"; read it with this exception |
+| e2 to e18 | Earlier statements of this report | As in earlier runs |
+
+{REVIEW11}
 
 **An open question from this review.** On NHPC FDRE-II, 17 fields have two reviewable answers, one from each of two page windows of the same section (`structured-fields.txt`, table 22). The card draws the better-evidenced one and gives no sign of the other. For 16 of them I have not compared the two answers. For the seventeenth, excess energy, they differ, and you have already decided it. Options: leave it; show "1 other answer" on the card; or show both values side by side. I have not changed the screen before your timed review.
 

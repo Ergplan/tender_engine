@@ -1,4 +1,4 @@
-Checked from the VM through the public address on 2026-10-05 21:31 UTC, after the quote rule, the version check and the two fixes that followed:
+Checked from the VM through the public address on 2026-10-05 21:59 UTC, after the last change of the stage (completion refused while a summary is being written):
 GET /health -> 200
 GET /api/v1/health -> 200
 GET /api/v1/tenders -> 401

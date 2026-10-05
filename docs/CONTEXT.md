@@ -1,20 +1,26 @@
-# Context for a new session (written 2026-10-05, about 18:40 UTC)
+# Context for a new session (written 2026-10-05, last updated about 22:30 UTC)
 
 Read this first, then `CLAUDE.md`, then the last two sections of `docs/reports/STAGE-3-REPORT.md`.
 
 ## Where the build stands
 
-- **Stage 3 (reviewer UI) is built and deployed but not closed.** Stages 0, 1, 2 are closed. Tags: `stage-0-start` to `stage-3-start`.
+- **Stage 3 (reviewer UI) is built, deployed and checked; it closes when the owner has done one timed review.** Stages 0, 1, 2 are closed. Tags: `stage-0-start` to `stage-3-start`.
 - App: `https://34.131.65.108/` (static IP, never changed). One GCE VM, 2 vCPU, 3.9 GB RAM, 200 GB disk. Six compose services; the test watcher is stopped on the owner's instruction, so run `make check` before every commit (the pre-commit hook needs a fresh `.ci/status.json`).
-- 13 tenders are ingested and extracted under schema `v2`. No reviewer decision exists in the database (0 approvals, 0 canonical facts).
+- 13 tenders are ingested and extracted under schema `v2`. The owner has started deciding fields of NHPC FDRE-II; no other tender has a decision.
 - GCP changes (firewall, addresses) cannot be made by the agent; the owner runs them with the `!` prefix.
 
-## What is open right now (do these first)
+## What is open right now
 
-1. **One browser test fails and must be understood before the timed review.** `make test-ui`: 9 pass, 1 fails: "complete the review by keyboard; the snapshot holds the final values" (`web/e2e/review.spec.ts:305`). After every other field is decided, the summary card's Approve stays disabled with "The summary is being written again from your decisions". It passed before the last change. Facts so far: reproducible on an idle machine; in the test database no `tender_summary` job is queued after the decisions and no record run is under way; computed fresh with the real services (`SummaryWriter.state`) the summary is `current=True`, `waiting_for=0`. So the API process and a fresh process disagree, or the screen's polling does. Not yet bisected. Suspects, all from the last change: the new key `compensation_basis`, prompt `v3` of commercial and penalties, `verify_versions` and field exclusion in `core/services/review_state.py`, `released/v2.yaml`. Next step: `git stash`, run `make test-ui`, then reapply piece by piece. **This is the summary approval a reviewer reaches at the end of a real review, so the owner should not start the timed review until it is resolved.**
-2. **The last report section has placeholders.** In `STAGE-3-REPORT.md`, section "The quote rule and the version check", fill the test counts (478 Python, 65 web unit, browser count once fixed) and the independent review.
-3. **Independent review run 9** (rule 15) has not been run on the last change: `set -a; . ./.env; set +a; .venv/bin/python -m scripts.independent_review --stage 3 > docs/reports/stage-3-artifacts/review-gpt-6.1-sol-run9.txt`.
-4. Refresh the artifacts `checks.txt`, `playwright.txt`, `trace.txt`, `deployment.txt` after the fix, then commit and push.
+1. **The owner's timed review of NHPC FDRE-II.** Everything on the build side of Stage 3 is done; this is the last check of the definition of done. When it is complete: add the time taken and the edited fields to `docs/reports/STAGE-3-REPORT.md` (the fields can be listed from the `approval` table), then Stage 3 is closed.
+2. **Do not disturb the owner's decisions.** The app database holds decisions made through the review link (the first on 2026-10-05 17:33 UTC, on `sector.power.fdre.excess_energy_structured`). Never truncate, re-seed or force a re-extraction of NHPC FDRE-II without asking. A re-extraction of a section supersedes its candidates; a field already decided keeps its approval.
+3. Nothing else is in progress. The working tree is clean and pushed.
+
+## What was fixed late on 2026-10-05 (so you do not look for it again)
+
+- A browser test failed after the schema version check went in. Cause one: the check parsed the released schema files once per tender type, which tripled the pack load time (fixed, parsed once). Cause two, exposed by the delay: the summary was reported as current while its new text was stored but not yet validated, so the screen stopped looking for it (fixed in `SummaryWriter.state`).
+- In that same moment a review could have been completed without a decided summary (found by independent review run 10; fixed, completion is refused while a summary is being written).
+- FIELD-TRACE did not name run rules (review run 9; fixed).
+- Independent reviews 8 to 11 are recorded in the Stage 3 report; outputs in `docs/reports/stage-3-artifacts/`.
 
 ## Decisions made today (details in `docs/DECISIONS.md` and `docs/ARCHITECTURE.md`)
 
@@ -28,17 +34,18 @@ Read this first, then `CLAUDE.md`, then the last two sections of `docs/reports/S
 
 ## What the owner owes
 
-- **The timed review of NHPC FDRE-II**, unaided, from the review link (97 fields, 82 with a value, 8 structured cards). The link is not in the repository: `docker compose exec -T api python -m scripts.review_token list`. Wanted back: the time taken, and anything that made them stop. This closes Stage 3. Not before item 1 above is resolved.
+- **The timed review of NHPC FDRE-II**, unaided, from the review link (97 fields, 82 with a value, 8 structured cards). The link is not in the repository: `docker compose exec -T api python -m scripts.review_token list`. Wanted back: the time taken, and anything that made them stop. This closes Stage 3. The build side is ready for it.
 
 ## Open questions for the owner
 
 1. Do numbers written out in words ("one and a half times") count as printed, and may a printed percentage be given as a multiple? Both are allowed now.
 2. Scope and stage of the amendment diff view.
 3. Guard for `/admin/reliability` before Stage 4 (an admin token is the smallest change).
+3a. A second answer for a field is not shown on its card (17 fields on NHPC FDRE-II have two reviewable answers from two page windows). Leave it, show a count, or show both values?
 4. Published notices on a fresh extraction: read them for key dates only (a schema change), or leave to the reviewer?
 5. Batch API as the default for extraction commands in Stage 4?
 6. VM size: still 2 cores, 3.9 GB.
 
 ## Costs
 
-Model calls in the app database: about USD 356. Report convention: Stage 3 about USD 121, running total about USD 381.
+Model calls in the app database: about USD 356 (the independent reviewer's OpenAI calls are not in it). Report convention: Stage 3 about USD 121, running total about USD 381.

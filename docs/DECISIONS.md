@@ -122,3 +122,5 @@ One dated line per decision. Newest at the bottom.
 - 2026-10-05 The quote check reads "one and half times" as 1.5, as it already read "one and a half times": the document states the number in words, nothing is computed.
 - 2026-10-05 A summary counts as current for the reviewer only once the text written from the record is validated and in review, not when it is merely stored. Before, the state could say current in the moment between the two jobs, and the screen stopped looking for the new text.
 - 2026-10-05 The released schema files are parsed once per file and change. Parsing them for every tender type made loading the packs take three times as long, which is what exposed the line above.
+- 2026-10-05 A review cannot be completed while a summary is being written again: in the moment between the new text being stored and validated the required summary has no entry to decide and would not have blocked completion.
+- 2026-10-05 FIELD-TRACE names run rules as well as cross-field rules: each pack declares which fields a run rule concerns (`RUN_RULE_FIELDS`), and the generator refuses a run rule that does not say.
