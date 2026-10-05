@@ -7,8 +7,9 @@ GET /files/documents/549d8a6e20f6ab0e31edfa52dea21e50fd564fe1c15ec000919eee5ebfd
 GET /review/not-a-link -> 200
 POST /api/v1/review-tokens -> 401
 health body: {"status":"ok","tenant_id":"ergplan","database":"ok"}
-alembic_version: 0009
-located evidence spans without a box: 0 of 3592
+alembic_version: 0010
+decisions in the database (approval rows): 0
+located evidence spans without a box: 0 of 4045
 review links (token not shown):
   nhpc-fdre-ii  venture@aayuda.energy  live until 2026-11-04  https://34.131.65.108/review/<token>
   seci-gaya-60mw  Build check  revoked  https://34.131.65.108/review/<token>

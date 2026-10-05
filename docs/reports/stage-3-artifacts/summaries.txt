@@ -1,0 +1,65 @@
+Summaries shown to the reviewer after the re-run of 2026-10-05 (prompt summary/v2), from the app database:
+             slug             | v |              document              |    status    | prompt | confidence | pages_read | chars | paragraphs | quotes | located 
+------------------------------+---+------------------------------------+--------------+--------+------------+------------+-------+------------+--------+---------
+ nhpc-fdre-ii                 | 1 | RfS_FDRE_1200MW_NHPC_Tranche-II.pd | validated    | v2     |       0.60 |         40 |  3715 |          8 |     38 |      38
+ ntpc-hybrid-03               | 1 | NTPC-1200-MW-Wind-Solar-Hybrid-Pan | needs_review | v2     |       0.72 |         33 |  3744 |          8 |     40 |      39
+ ntpc-phes-2000mw             | 1 | job_45538.pdf                      | validated    | v2     |       0.70 |          3 |  2599 |          8 |     21 |      21
+ ntpc-phes-2000mw             | 1 | Tender_notice_page_ntpc-phes-2000m | validated    | v2     |       0.70 |          1 |  1533 |          8 |      6 |       6
+ ntpc-rel-600mw-anantapur-wtg | 1 | job_45811.pdf                      | validated    | v2     |       0.70 |          4 |  2880 |          8 |     16 |      16
+ recpdcl-beed-tbcb            | 1 | RFP_Beed_05052026.pdf              | validated    | v2     |       0.70 |         26 |  3220 |          8 |     29 |      29
+ seci-cfd-i                   | 1 | RfS_for_1500_MWh_assured_Peak_Supp | validated    | v2     |       0.72 |         25 |  3917 |          8 |     32 |      32
+ seci-cfd-i                   | 2 | Revised_RfS_for_1000_MWh_assured_P | validated    | v2     |       0.72 |         34 |  3840 |          8 |     41 |      41
+ seci-cni-1-700mw             | 1 | RfS_for_700_MW_SPV_Projects_CnI_T1 | validated    | v2     |       0.80 |         25 |  3077 |          8 |     30 |      30
+ seci-ess-iv                  | 1 | RfS-ESS-IV-final_upload.pdf        | validated    | v2     |       0.72 |         30 |  3412 |          8 |     37 |      37
+ seci-fdre-ix                 | 1 | RfS_for_4800_MWh_Peak_Supply_(FDRE | validated    | v2     |       0.72 |         25 |  3042 |          8 |     26 |      26
+ seci-fdre-rtc-v              | 1 | RfS_for_1000_MW-RTC-V-final_upload | validated    | v2     |       0.60 |         34 |  3642 |          8 |     31 |      31
+ seci-gaya-60mw               | 1 | Contractual_tender_document_60_MW_ | validated    | v2     |       0.70 |         26 |  3884 |          8 |     35 |      35
+ seci-ramagiri-70mw-bess      | 1 | Contractual_Documents_70MW_Package | validated    | v2     |       0.72 |         35 |  4063 |          8 |     44 |      44
+ seci-wind-tranche-xx         | 1 | RfS_for_1200_MW_Wind_Tranche-XX.pd | validated    | v2     |       0.78 |         25 |  3035 |          8 |     28 |      28
+(15 rows)
+
+
+Calls of the re-run (mode, status, tokens, cost):
+    at    |             slug             | mode  |  status   | input  | output | cost_usd 
+----------+------------------------------+-------+-----------+--------+--------+----------
+ 08:40:20 | ntpc-phes-2000mw             | batch | ok        |   9605 |   6451 | 0.209300
+ 08:40:21 | ntpc-phes-2000mw             | batch | ok        |   4894 |   3142 | 0.103020
+ 08:40:26 | ntpc-rel-600mw-anantapur-wtg | batch | ok        |  13865 |   5739 | 0.212800
+ 08:41:13 | seci-gaya-60mw               | batch | ok        |  66103 |  11317 | 0.613440
+ 08:41:18 | nhpc-fdre-ii                 | batch | ok        | 106188 |  13968 | 0.880140
+ 08:41:19 | seci-cfd-i                   | batch | ok        |  66595 |  13984 | 0.682575
+ 08:41:21 | seci-cfd-i                   | batch | ok        |  91715 |  14273 | 0.815400
+ 08:41:23 | seci-fdre-ix                 | batch | ok        |  66501 |  10598 | 0.597455
+ 08:41:25 | seci-fdre-rtc-v              | batch | ok        |  90501 |  12463 | 0.764080
+ 08:41:27 | seci-cni-1-700mw             | batch | ok        |  64179 |  10930 | 0.594145
+ 08:41:29 | recpdcl-beed-tbcb            | batch | ok        |  64057 |  10119 | 0.573260
+ 08:41:31 | seci-wind-tranche-xx         | batch | ok        |  67137 |  10361 | 0.594710
+ 08:42:13 | seci-ess-iv                  | batch | ok        |  79250 |  12847 | 0.717425
+ 08:42:18 | seci-ramagiri-70mw-bess      | batch | ok        |  98233 |  13572 | 0.830465
+ 08:43:29 | ntpc-hybrid-03               | batch | truncated |  84635 |  16000 | 0.823175
+ 08:45:27 | ntpc-hybrid-03               | sync  | ok        |  84635 |  11613 | 1.427000
+(16 rows)
+
+ calls | cost_usd 
+-------+----------
+    16 |    10.44
+(1 row)
+
+
+The summary of nhpc-fdre-ii as stored:
+
+What is procured: NHPC Limited is procuring up to 1200 MW of firm and dispatchable renewable power from ISTS-connected RE projects coupled with energy storage, through competitive bidding followed by reverse auction [1]. Each bidder may offer between 50 MW and 600 MW of contracted capacity, quoted in multiples of 10 MW [2][3]. For projects in North-Eastern States and Special Category, the minimum offer is 30 MW [4].
+
+Buyer and offtaker: NHPC Limited issues the RfS and will sign the Power Purchase Agreement with the selected bidders [5]. NHPC buys the power as an intermediary nodal agency and sells it on a back-to-back basis to State Utilities, Discoms or other beneficiaries, who are the Buying Entities [6][7]. The Buying Entities will be named later [8].
+
+Location: Projects may be set up anywhere in India on land identified and arranged by the developer [9]. The developer must build the dedicated transmission network up to the Interconnection/Delivery Point at its own cost [10]. The proposed location is given at bid submission and may be changed up to Financial Closure, but not afterwards [11][12].
+
+Timeline: The bid submission deadline and other bid dates are not printed on these pages; bids are due by the last date and time shown on the CPP portal [13]. Successful bidders must submit the required documents within 70 days of the Letter of Award and achieve Financial Closure within 18 months of the PPA Effective Date [14][15]. The scheduled commissioning period is not printed on these pages; the PPA runs for 25 years from the Scheduled Commissioning Date [16].
+
+Eligibility: The detailed qualifying requirements are in Section 3 of the RfS, which is not among these pages, so the net worth, turnover and liquidity thresholds are not stated here [17]. The financial format shows a minimum net worth test under Clause 3.8.3(i) and a choice of annual turnover, PBDIT or line of credit under Clause 3.8.3(ii), with consortium members meeting the net worth in proportion to equity commitment [18][19][20]. Developers with commissioned or under-construction RE plants that have untied capacity may also bid [21].
+
+Money at risk: The Earnest Money Deposit is set by the formula in Clause 3.24(i) in lakh per MW of capacity offered, which is not on these pages; the EMD bank guarantee stays valid 12 months from the last date of bid submission [22][23]. The Performance Bank Guarantee is also sized under Clause 3.24, is submitted before the PPA is signed and is valid until 9 months after the Scheduled Commissioning Date [24][25][26]. The EMD can be forfeited if the bidder withdraws or modifies its bid during validity or adopts corrupt practices, and the PBG can be encashed if supply does not start by the SCSD [27][28].
+
+Tariff or payment: Each bidder quotes a single tariff for its whole offered capacity, applicable for all 25 years, and selection is by e-bidding followed by reverse auction [29][30]. NHPC signs a 25-year PPA; any extension beyond 25 years is by mutual agreement [31][32]. Power in excess of the Contracted Capacity may be sold to third parties or power exchanges without a No Objection Certificate [33].
+
+Obligations and penalties: The developer must supply the contracted capacity of firm and dispatchable power, maintain 90% peak availability (measured monthly) and meet the minimum CUF annually; shortfalls in both attract damages [34][35]. Energy supplied below the minimum CUF/availability is penalised at one and a half times the PPA tariff for the shortfall [36]. Delay in Financial Closure may be extended only on payment of Rs. 1,000 per day per MW, and GNA penalties caused by developer-attributable commissioning delay are passed on to the developer [37][38].
