@@ -221,6 +221,8 @@ Checks after this change: 422 Python tests, 54 web unit tests and 9 browser test
 
 **Independent review, run 5** (on this change): (a) 2, (b) none, (c) 1, (d) none, (e) 15. One code defect, fixed: where a reviewer had edited a field and given their own evidence, the summary took the corrected value but the model's original quote; it now inherits the reviewer's evidence, and a field the model could not evidence joins the summary once a reviewer has (`test_a_field_the_reviewer_corrected_brings_the_reviewers_evidence_to_the_summary`). Three report statements corrected against the artifacts (fields failing validation, input tokens per call, which version a summary belongs to). The rest are the unchanged write paths a diff cannot certify and statements of this report. Output: `stage-3-artifacts/review-gpt-6.1-sol-run5.txt`.
 
+**Run 6** (after that fix): (a) 1, (b) none, (c) 1, (d) none, (e) 14. No code defect: (a) and (c) are again the unchanged write paths, (e) statements a diff cannot prove. I stopped here. Output: `stage-3-artifacts/review-gpt-6.1-sol-run6.txt`.
+
 ## Your step: one real review
 
 A link for NHPC FDRE-II is live. It is not written in this file: a review link is the only key to its review, and this file is in the repository. It is in my message to you, and `docker compose exec -T api python -m scripts.review_token list` prints it on the VM.
