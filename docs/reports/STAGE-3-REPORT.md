@@ -13,7 +13,7 @@ Date: 2026-10-05. Diff: `git diff stage-3-start..HEAD`. Architecture changes: `d
 | First PDF page under 3 s on the VM | Yes, on a quiet VM. `web/e2e/real-load.spec.ts` on the deployed app, Chromium on the VM, nothing cached in the browser: SECI Ramagiri (91 fields, 10 documents, first document 266 pages) first meaningful paint 1.0 s, first PDF page 1.3 s (`stage-3-artifacts/real-tender-load.txt`). Earlier runs of the same test, whose output I did not keep, gave 1.4 s and 1.7 s for SECI Gaya (first document 305 pages), and, while the test watcher was running the full suite on the two cores, up to 4.8 s and 6.2 s. The selectable text layer of the first page arrives later, 3.7 s after the start on the quiet VM. The largest document of the set has 373 pages; none has 400. Not measured from a reviewer's own connection |
 | No bulk-approve exists | Yes. The screen has Approve, Edit, Not in document and Flag per field and nothing else; the API has no route that decides more than one field (`POST /approvals` takes one candidate). Both the unit test and the browser test assert that no "approve all" exists |
 | `make trace` is clean and every schema field has a complete FIELD-TRACE row | Yes (`stage-3-artifacts/trace.txt`). `docs/FIELD-TRACE.md` has 183 rows (163 before the structured fields, which add 20 paths because a field of a type counts once per type), one per field path of the nine tender types; the watcher's `field_trace` check regenerates it and fails on a difference or on a field without a UI component, route or column |
-| `make test` green | 480 Python tests and 65 web unit tests pass; the nine checks are green (`stage-3-artifacts/checks.txt`). The Tests section below gives the counts of the first report, 404 and 37 |
+| `make test` green | 481 Python tests and 65 web unit tests pass; the nine checks are green (`stage-3-artifacts/checks.txt`). The Tests section below gives the counts of the first report, 404 and 37 |
 | `make deploy` serves the app | Yes, see "Deployment" |
 
 ## Before the UI: cost of extraction
@@ -322,7 +322,7 @@ The session that built this stopped before its checks were green. Finishing it, 
 
 ### Checks
 
-458 Python tests, 65 web unit tests and 10 browser tests pass; the nine checks are green (`checks.txt`, `playwright.txt`). The browser suite has one new test: a structured field shows every key, says what is not stated, is edited key by key, and holds the edit after a reload. The layout test prints a load time: in the two runs made for this change the first meaningful paint was 5.7 s and 6.0 s and the first PDF page 6.3 s and 6.5 s against 2.2 s and 2.8 s in the run kept before (`playwright.txt` holds the last run of the stage: 5.6 s and 6.0 s); it is printed, not asserted, on a seeded stack that had just been started on the two cores, and the real-tender load test was not run again.
+458 Python tests, 65 web unit tests and 10 browser tests pass; the nine checks are green (`checks.txt`, `playwright.txt`). The browser suite has one new test: a structured field shows every key, says what is not stated, is edited key by key, and holds the edit after a reload. The layout test prints a load time: in the two runs made for this change the first meaningful paint was 5.7 s and 6.0 s and the first PDF page 6.3 s and 6.5 s against 2.2 s and 2.8 s in the run kept before (`playwright.txt` holds the last run of the stage: 5.8 s and 6.4 s); it is printed, not asserted, on a seeded stack that had just been started on the two cores, and the real-tender load test was not run again.
 
 Deployment: no migration (`alembic_version` is still `0011`); the API reloads from the mounted source and the worker was restarted after the fix (`stage-3-artifacts/deployment.txt`). The test watcher is still stopped.
 
@@ -422,9 +422,9 @@ I found the second one only because the first slowed things down. It is the reas
 
 ### Checks, deployment, review
 
-480 Python tests, 65 web unit tests and 10 browser tests pass; the nine checks are green (`checks.txt`, `playwright.txt`, both from the last code of the stage); `make trace` regenerates `FIELD-TRACE.md` without a difference (`trace.txt`). No migration; the API and the worker were restarted to load the prompts, the schema and the two fixes (`deployment.txt`). The test watcher is still stopped.
+481 Python tests, 65 web unit tests and 10 browser tests pass; the nine checks are green (`checks.txt`, `playwright.txt`, both from the last code of the stage); `make trace` regenerates `FIELD-TRACE.md` without a difference (`trace.txt`). No migration; the API and the worker were restarted to load the prompts, the schema and the two fixes (`deployment.txt`). The test watcher is still stopped.
 
-**Decisions in the database: yours, on one field.** At 17:33 and 17:35 UTC, through the review link, `sector.power.fdre.excess_energy_structured` of NHPC FDRE-II was first marked not in document and then edited (above contracted capacity, not purchased). That is the field I had pointed out as having two differing answers. I have not touched those rows. The sections read again afterwards (commercial, penalties) do not hold that field, and the summary written at 17:49 UTC was written with your edit in the record. Every earlier statement in this report that the database holds no decision was true when written and is not true now.
+**Decisions in the database: yours, on one field.** At 17:33 and 17:35 UTC, through the review link, `sector.power.fdre.excess_energy_structured` of NHPC FDRE-II was first marked not in document and then edited (above contracted capacity, not purchased). That is the field I had pointed out as having two differing answers. I have not touched those rows. The sections read again afterwards (commercial, penalties) do not hold that field. The summary does not read structured fields, so your edit does not change it; the summary of 17:49 UTC was written because the two sections had been read again. Every earlier statement in this report that the database holds no decision was true when written and is not true now.
 
 **Independent review, run 9** (on this change): (a) 1, (b) none, (c) 1, (d) none, (e) 24. One code defect, in the trace generator. Output: `stage-3-artifacts/review-gpt-6.1-sol-run9.txt`.
 
@@ -449,7 +449,16 @@ I found the second one only because the first slowed things down. It is the reas
 | e1 | Besides the historical point, one approval request can also flag the summary (when a field is decided again after the summary was approved) | True and by design: the request decides one field, and the summary's approval is withdrawn as a consequence, in the reviewer's name, audited. The table at the top says "no route decides more than one field"; read it with this exception |
 | e2 to e18 | Earlier statements of this report | As in earlier runs |
 
-{REVIEW11}
+**Run 11** (after that fix): (a) 1, (b) none, (c) 1, (d) none, (e) 20. One code defect, small, in code from earlier in the stage. Output: `stage-3-artifacts/review-gpt-6.1-sol-run11.txt`.
+
+| # | Finding | Outcome |
+| --- | --- | --- |
+| a1, c1 | The unchanged write paths | As in every run |
+| e20 | A request made with a valid link and then refused (a route the link may not use, another tender, a change after completion) was audited under "api", not under the reviewer's name | Fixed in code: the middleware keeps who asked for the request audit also when it refuses; access is still granted only on admission (`review_identity` in `api/middleware/review_token.py`, one test) |
+| e19 | I wrote that the summary of 17:49 was written with your edit in the record; the summary does not read structured fields | Report corrected |
+| e1 to e18 | Earlier statements of this report, and by-design behaviour already answered in run 10 | As in earlier runs |
+
+{REVIEW12}
 
 **An open question from this review.** On NHPC FDRE-II, 17 fields have two reviewable answers, one from each of two page windows of the same section (`structured-fields.txt`, table 22). The card draws the better-evidenced one and gives no sign of the other. For 16 of them I have not compared the two answers. For the seventeenth, excess energy, they differ, and you have already decided it. Options: leave it; show "1 other answer" on the card; or show both values side by side. I have not changed the screen before your timed review.
 

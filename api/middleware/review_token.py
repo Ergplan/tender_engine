@@ -71,6 +71,7 @@ def install(app: FastAPI) -> None:
         request: Request, call_next: Callable[[Request], Awaitable[Response]]
     ) -> Response:
         request.state.review = None
+        request.state.review_identity = None
         path = request.url.path
         if not path.startswith(API + "/"):
             return await call_next(request)
@@ -105,6 +106,9 @@ def _admit(request: Request, token: str) -> str | None:
             reviewer=row.reviewer_name,
             completed=row.completed_at is not None,
         )
+        # Who asked is known from here on, also if the request is then refused. Only the
+        # request audit reads this; access is granted by request.state.review alone.
+        request.state.review_identity = context
         match = next(
             (
                 found

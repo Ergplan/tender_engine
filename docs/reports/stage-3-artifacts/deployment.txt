@@ -1,4 +1,4 @@
-Checked from the VM through the public address on 2026-10-05 21:59 UTC, after the last change of the stage (completion refused while a summary is being written):
+Checked from the VM through the public address on 2026-10-05 22:14 UTC, after the last change of the stage (the request audit names the reviewer of a refused request):
 GET /health -> 200
 GET /api/v1/health -> 200
 GET /api/v1/tenders -> 401

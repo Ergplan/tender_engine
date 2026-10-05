@@ -30,7 +30,10 @@ def install(app: FastAPI) -> None:
 
 
 def _record(request: Request, status: int) -> None:
-    review = getattr(request.state, "review", None)
+    # The admitted review, or the identity of a valid link whose request was refused.
+    review = getattr(request.state, "review", None) or getattr(
+        request.state, "review_identity", None
+    )
     actor = review.reviewer if review else (request.headers.get("x-reviewer") or "api").strip()
     try:
         with request.app.state.session_factory() as session:

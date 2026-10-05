@@ -124,3 +124,4 @@ One dated line per decision. Newest at the bottom.
 - 2026-10-05 The released schema files are parsed once per file and change. Parsing them for every tender type made loading the packs take three times as long, which is what exposed the line above.
 - 2026-10-05 A review cannot be completed while a summary is being written again: in the moment between the new text being stored and validated the required summary has no entry to decide and would not have blocked completion.
 - 2026-10-05 FIELD-TRACE names run rules as well as cross-field rules: each pack declares which fields a run rule concerns (`RUN_RULE_FIELDS`), and the generator refuses a run rule that does not say.
+- 2026-10-05 The request audit names the reviewer also for a request that a valid link is refused; the identity kept for this grants nothing.

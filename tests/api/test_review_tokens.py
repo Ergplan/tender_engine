@@ -425,6 +425,34 @@ def test_every_change_request_is_audited_with_the_reviewer_and_its_outcome(
     assert reads == []
 
 
+def test_a_refused_request_with_a_valid_link_is_audited_under_the_reviewers_name(
+    client: TestClient, pipeline: Pipeline, db: Session
+) -> None:
+    """A link that is valid but may not do what was asked: the refusal names who asked."""
+    tender = extracted(client, pipeline)
+    token = link(client, tender["id"])["token"]
+    refused = client.post(
+        "/api/v1/review-tokens",
+        json={"tender_id": tender["id"], "reviewer_name": "Someone Else"},
+        headers=as_reviewer(token),
+    )
+    assert refused.status_code >= 400
+    unknown = client.post(
+        "/api/v1/review-tokens",
+        json={"tender_id": tender["id"], "reviewer_name": "Someone Else"},
+        headers={"X-Review-Token": "not-a-link-at-all-0000000000000000"},
+    )
+    assert unknown.status_code >= 400
+    rows = [
+        row
+        for row in db.scalars(select(AuditLog).where(AuditLog.table_name == "request"))
+        if row.after and row.after["path"] == "/api/v1/review-tokens" and row.after["status"] >= 400
+    ]
+    by_actor = {row.actor: row.after["review_token_id"] for row in rows}
+    assert by_actor.get("Asha Rao"), "the valid link's refusal carries the reviewer and the link"
+    assert by_actor.get("api", "missing") is None, "an unknown link has no reviewer to name"
+
+
 def test_the_command_prints_a_link_and_lists_links(
     client: TestClient, pipeline: Pipeline, db: Session
 ) -> None:
