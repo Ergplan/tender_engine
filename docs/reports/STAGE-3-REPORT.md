@@ -196,7 +196,7 @@ After the eight changes you asked for the summary to be written from the extract
 Two things I adjusted after reading the first real summary:
 
 - Amounts are also given to the model the way tenders write them, so the text reads "INR 13000000 (INR 1.3 crore) per MW".
-- A summary with more than twelve passages keeps its chips behind a toggle ("128 passages, numbered in the text. Show the list"); the numbers in the text are the way in, and the passage being looked at is shown as a chip.
+- A summary with more than twelve passages kept its chips behind a toggle. (Replaced later the same day: the summary card has no chips at all, see "Three changes to the summary card".)
 
 One thing you will notice: a sentence that rests on a field with several quotes carries all of them, so some sentences end in six or eight numbers. That is what inheriting the field's evidence means, and I have kept it. If it is too heavy to read, the alternative is one number per field (its first quote); say so.
 
@@ -213,7 +213,7 @@ Tested on the synthetic tender with a scripted model (`tests/tender/test_summary
 
 Three things to know:
 
-1. **The summary is not rewritten when you decide a field.** It is written when extraction ends. If you correct a field during the review, the summary keeps the earlier value until it is asked for again. Since the summary is the first card, you may want to decide it last.
+1. **The summary was not rewritten when you decided a field.** (Changed later the same day: it is now decided after the fields and written again from your decisions, see "Three changes to the summary card".)
 2. **A field without located evidence is left out of the summary** (it has no evidence to pass on). It is still flagged as a field.
 3. **Whether a sentence says what its field says is not checked by code**, only that its number is a real field's evidence. That check is the review of the summary card.
 
@@ -236,6 +236,8 @@ Checks after this change: 422 Python tests, 54 web unit tests and 9 browser test
 **One consequence you should know before the timed review:** the summary is a required field, so Complete review now needs every field that has a candidate to be decided, not only the required ones. A field left flagged keeps the summary locked. For NHPC FDRE-II that is 88 fields and then the summary.
 
 Also changed: values reach the summary model as an approval would store them, with dates in words ("12 April 2024") and amounts also in lakh and crore.
+
+**Independent review, run 7** (on this change): (a) 1, (b) none, (c) 1, (d) none, (e) 18. One code defect, in a test: the real-model end-to-end test still decided the summary before the other fields, which the new rule refuses. It now runs the worker as deployed (with the second pass), checks that the summary is refused early, decides every other field and then the summary; it was run again with the real model (`e2e-real-model.txt`). Two earlier paragraphs of this report that the third change had made untrue are marked as replaced. The rest are the unchanged write paths and statements a diff cannot prove. Output: `stage-3-artifacts/review-gpt-6.1-sol-run7.txt`.
 
 Checks: 427 Python tests, 57 web unit tests and 9 browser tests pass (`checks.txt`, `playwright.txt`). The browser suite now runs a whole review in which a corrected deadline makes the summary be written again before it is approved. Stage 3 is at about USD 37 and the running total at about USD 297. The test watcher is stopped, as you asked, so that your timing is not disturbed.
 

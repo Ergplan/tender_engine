@@ -20,8 +20,10 @@ from api.main import create_app
 from core.config import Settings
 from core.llm.client import LLMClient
 from core.models import ExtractionRun, LLMBatch, LLMCallLog
+from core.services.extract import ExtractService
 from core.storage import LocalStorage
 from tender.services.packs import build_registry
+from tender.services.worker_jobs import tender_jobs
 from tests.e2e.test_fdre_core_pipeline import _job_errors
 from worker.runner import Runner
 
@@ -48,7 +50,17 @@ def test_a_real_tender_is_extracted_in_a_batch_and_reviewed_through_a_link(
     storage = LocalStorage(local.data_dir)
     schemas, catalog = build_registry()
     llm = LLMClient(local, session_factory, prompt_roots=catalog.prompt_roots)
-    runner = Runner(local, session_factory, storage, schemas, llm)
+    extract = ExtractService(llm, storage, schemas, local)
+    # The worker as deployed: with the tender layer's jobs, so the summary is written
+    # from the record once the extraction is validated.
+    runner = Runner(
+        local,
+        session_factory,
+        storage,
+        schemas,
+        llm,
+        *tender_jobs(llm, catalog, extract, schemas, local.tenant_id),
+    )
     client = TestClient(create_app(local, schemas, storage, llm, catalog))
 
     created = client.post(
@@ -88,6 +100,8 @@ def test_a_real_tender_is_extracted_in_a_batch_and_reviewed_through_a_link(
     run = db.get_one(ExtractionRun, run_id)
     assert run.status == "validated", _job_errors(db)
     seconds = time.monotonic() - began
+    # The second pass: the summary written from the record (one text-only call).
+    runner.run_until_idle(max_jobs=5)
 
     calls = list(db.scalars(select(LLMCallLog).where(LLMCallLog.extraction_run_id == run_id)))
     batches = list(db.scalars(select(LLMBatch).where(LLMBatch.extraction_run_id == run_id)))
@@ -130,10 +144,25 @@ def test_a_real_tender_is_extracted_in_a_batch_and_reviewed_through_a_link(
     assert returned >= 5 and located / returned >= TARGET
     assert review["can_complete"] is False
 
+    summary_path = "core.summary.plain_english_summary"
+    summary = next(f for f in review["fields"] if f["field_path"] == summary_path)
+    written = summary["entries"][summary["current"]]["state"]["candidate"]
+    assert written["prompt_name"] == "summary_record", "the summary in review is the second pass"
+    assert all(span["source"] and span["char_start"] is not None for span in written["evidence"])
+    print(
+        f"summary written from the record: {len(written['evidence'])} inherited passages, "
+        f"{written['value'].count(chr(10) + chr(10)) + 1} paragraphs"
+    )
+    early = client.post(
+        "/api/v1/approvals",
+        json={"candidate_id": written["id"], "decision": "approved"},
+        headers=reviewer,
+    )
+    assert early.status_code == 422 and "decide the other fields first" in early.json()["detail"]
+
+    # Every other field, then the summary: it is written from them and decided last.
     decided = 0
-    for field in review["fields"]:
-        if not field["required"]:
-            continue
+    for field in [f for f in review["fields"] if f["field_path"] != summary_path] + [summary]:
         entry = field["entries"][field["current"]]
         candidate = entry["state"]["candidate"]
         approvable = candidate["value"] is not None and any(
@@ -157,7 +186,7 @@ def test_a_real_tender_is_extracted_in_a_batch_and_reviewed_through_a_link(
     values = {f["field_path"]: f for f in snapshot["snapshot"]["view"]["fields"]}
     number = values["core.identity.tender_number"]
     print(
-        f"reviewed {decided} required fields through the link; snapshot tender number "
+        f"reviewed {decided} fields through the link, the summary last; snapshot tender number "
         f"{number['value']!r} with {len(number['evidence'])} evidence item(s)"
     )
     assert snapshot["snapshot"]["decided"] == decided and number["value"] and number["evidence"]
