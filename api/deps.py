@@ -7,6 +7,7 @@ from fastapi import Depends, Header, Request
 from sqlalchemy.orm import Session
 
 from api.middleware.errors import AppError
+from api.middleware.review_token import ReviewContext
 from core.config import Settings
 from core.schemas import SchemaRegistry
 from core.services.approve import ApprovalService
@@ -16,6 +17,7 @@ from core.services.review_state import ReviewStateService
 from core.storage import Storage
 from tender.services.packs import Catalog
 from tender.services.tenders import TenderService
+from tender.services.tokens import TokenService
 
 
 def get_settings(request: Request) -> Settings:
@@ -33,14 +35,28 @@ def get_tenant_id(settings: Annotated[Settings, Depends(get_settings)]) -> str:
     return settings.tenant_id
 
 
-def get_reviewer(x_reviewer: Annotated[str | None, Header()] = None) -> str:
-    """Phase 1 identity: the X-Reviewer header, set by the token middleware from Stage 3."""
+def get_review(request: Request) -> ReviewContext | None:
+    """The reviewer of the request's review token, set by api.middleware.review_token."""
+    review: ReviewContext | None = getattr(request.state, "review", None)
+    return review
+
+
+ReviewDep = Annotated[ReviewContext | None, Depends(get_review)]
+
+
+def get_reviewer(review: ReviewDep, x_reviewer: Annotated[str | None, Header()] = None) -> str:
+    """Who decides: the reviewer name of the review token. A request made inside the
+    deployment, which carries no token, names the reviewer in the X-Reviewer header."""
+    if review is not None:
+        return review.reviewer
     if x_reviewer is None or not x_reviewer.strip():
         raise AppError("validation_failed", "the X-Reviewer header is required")
     return x_reviewer.strip()
 
 
-def get_actor(x_reviewer: Annotated[str | None, Header()] = None) -> str:
+def get_actor(review: ReviewDep, x_reviewer: Annotated[str | None, Header()] = None) -> str:
+    if review is not None:
+        return review.reviewer
     return x_reviewer.strip() if x_reviewer and x_reviewer.strip() else "api"
 
 
@@ -109,3 +125,10 @@ def get_tenders(catalog: CatalogDep, extract: ExtractDep, tenant_id: TenantDep) 
 
 
 TendersDep = Annotated[TenderService, Depends(get_tenders)]
+
+
+def get_tokens(tenant_id: TenantDep) -> TokenService:
+    return TokenService(tenant_id)
+
+
+TokensDep = Annotated[TokenService, Depends(get_tokens)]

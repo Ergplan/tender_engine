@@ -16,6 +16,22 @@ log = logging.getLogger("api")
 
 ERROR_STATUS: dict[str, tuple[int, str]] = {
     "not_found": (404, "The requested record does not exist."),
+    "review_link_required": (401, "This page needs a review link. Open the link you were sent."),
+    "review_link_invalid": (
+        401,
+        "This review link is not valid. Check that you opened the full link you were sent.",
+    ),
+    "review_link_revoked": (
+        410,
+        "This review link has been replaced by a newer one. Ask for the current link.",
+    ),
+    "review_link_expired": (410, "This review link has expired. Ask for a new one."),
+    "review_completed": (
+        409,
+        "This review has been completed and can no longer be changed.",
+    ),
+    "not_allowed": (403, "This is not available with a review link."),
+    "conflict": (409, "This was changed since you loaded it. It has been reloaded."),
     "validation_failed": (422, "The request did not pass validation."),
     "dependency_unavailable": (503, "A required service is not available. Try again shortly."),
     "internal_error": (500, "Something went wrong on our side. The error has been logged."),

@@ -134,13 +134,14 @@ class SharedAnswer(BaseModel):
 
 def typed_answer(answer: BaseModel, model: type[BaseModel]) -> BaseModel | None:
     """A SharedAnswer as the group's own model, or None when it is not a complete, well
-    typed answer for the group: a field missing, given twice or unknown, or a value of the
-    wrong kind."""
+    typed answer for the group: a field missing or given twice, or a value of the wrong
+    kind. An entry whose key is no field of the group is dropped."""
     entries = getattr(answer, "fields", None)
     if not isinstance(entries, list):
         return None
-    by_key = {entry.key: entry for entry in entries}
-    if len(by_key) != len(entries) or set(by_key) != set(model.model_fields):
+    own = [entry for entry in entries if entry.key in model.model_fields]
+    by_key = {entry.key: entry for entry in own}
+    if len(by_key) != len(own) or set(by_key) != set(model.model_fields):
         return None
     try:
         return model.model_validate(

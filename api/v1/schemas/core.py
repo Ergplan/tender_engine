@@ -19,6 +19,24 @@ class DocumentOut(BaseModel):
     error: str | None
     created_at: datetime
     created_by: str
+    # Where the proxy serves the PDF itself, with range requests.
+    file_url: str
+
+
+class PageOut(BaseModel):
+    page_no: int
+    # In PDF points; evidence boxes are in the same units, from the top left corner.
+    width: float
+    height: float
+    has_text_layer: bool
+    # The page as a PNG, served by the proxy.
+    render_url: str | None
+
+
+class SearchHit(BaseModel):
+    page_no: int
+    bbox: list[float] | None
+    snippet: str
 
 
 class SectionOut(BaseModel):
@@ -70,10 +88,13 @@ class ReviewerEvidence(BaseModel):
 
 class ApprovalRequest(BaseModel):
     candidate_id: str
-    decision: Literal["approved", "edited", "not_in_document", "rejected"]
+    decision: Literal["approved", "edited", "not_in_document", "rejected", "flagged"]
     final_value: Any = None
     note: str | None = None
     evidence: list[ReviewerEvidence] | None = None
+    # The active decision on the field as the caller last saw it (null: none). When the
+    # key is sent and the field has since been decided again, the write is refused (409).
+    previous_approval_id: str | None = None
 
 
 class ApprovalOut(BaseModel):

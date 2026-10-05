@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Response
 
-from api.deps import ApprovalsDep, ReviewerDep, ReviewStateDep, SessionDep
+from api.deps import ApprovalsDep, ReviewDep, ReviewerDep, ReviewStateDep, SessionDep
 from api.middleware.errors import AppError
 from api.v1.schemas.core import ApprovalOut, ApprovalRequest
 from core.schemas import UnknownSchemaError
-from core.services.approve import ApprovalError
+from core.services.approve import UNCHECKED, ApprovalError, StaleDecisionError
 from core.services.review_state import CanonicalFactView, ReviewState
 
 router = APIRouter(tags=["review"])
@@ -32,9 +32,13 @@ def post_approval(
     session: SessionDep,
     approvals: ApprovalsDep,
     reviewer: ReviewerDep,
+    review: ReviewDep,
 ) -> ApprovalOut:
     """Record a reviewer's decision. This is the only route that produces a canonical fact.
-    An identical repeat returns the existing approval with 200 and writes nothing."""
+    An identical repeat returns the existing approval with 200 and writes nothing. When
+    the request names `previous_approval_id` (null: the field was undecided) and the field
+    has been decided again since, the write is refused with 409. With a review token, only
+    candidates of the token's tender can be decided."""
     try:
         outcome = approvals.approve(
             session,
@@ -44,7 +48,13 @@ def post_approval(
             reviewer=reviewer,
             note=body.note,
             evidence=[item.model_dump() for item in body.evidence] if body.evidence else None,
+            previous_approval_id=body.previous_approval_id
+            if "previous_approval_id" in body.model_fields_set
+            else UNCHECKED,
+            object_scope=("tender", review.tender_id) if review else None,
         )
+    except StaleDecisionError as exc:
+        raise AppError("conflict", str(exc)) from exc
     except ApprovalError as exc:
         raise AppError("validation_failed", str(exc)) from exc
     except LookupError as exc:

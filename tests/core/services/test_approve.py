@@ -436,3 +436,75 @@ def test_a_value_whose_evidence_was_not_located_cannot_simply_be_approved(
     assert outcome.canonical_fact is not None and outcome.feedback is None
     kinds = [item["kind"] for item in outcome.canonical_fact.evidence]
     assert kinds == ["span", "reviewer_span", "reviewer_decision"]
+
+
+def test_a_flag_is_recorded_without_a_fact_and_withdraws_an_earlier_decision(
+    pipeline: Pipeline, db: Session
+) -> None:
+    from core.models import CanonicalFact
+
+    run = pipeline.extracted_run(db)
+    candidate = db.scalars(
+        select(Candidate).where(
+            Candidate.extraction_run_id == run.id, Candidate.field_path == "security.emd_per_mw"
+        )
+    ).one()
+    approved = pipeline.approvals.approve(
+        db, candidate_id=candidate.id, decision="approved", reviewer="Asha"
+    )
+    assert approved.canonical_fact is not None
+    flagged = pipeline.approvals.approve(
+        db, candidate_id=candidate.id, decision="flagged", reviewer="Asha", note="unsure"
+    )
+    assert flagged.canonical_fact is None and flagged.feedback is None
+    assert flagged.approval.decision == "flagged" and flagged.approval.note == "unsure"
+    facts = list(db.scalars(select(CanonicalFact)))
+    assert [fact.is_current for fact in facts] == [False]
+    with pytest.raises(ApprovalError):
+        pipeline.approvals.approve(
+            db, candidate_id=candidate.id, decision="flagged", final_value=1, reviewer="Asha"
+        )
+
+
+def test_a_decision_made_on_an_outdated_view_of_the_field_is_refused(
+    pipeline: Pipeline, db: Session
+) -> None:
+    from core.services.approve import StaleDecisionError
+
+    run = pipeline.extracted_run(db)
+    candidate = db.scalars(
+        select(Candidate).where(
+            Candidate.extraction_run_id == run.id, Candidate.field_path == "security.emd_per_mw"
+        )
+    ).one()
+    first = pipeline.approvals.approve(
+        db,
+        candidate_id=candidate.id,
+        decision="approved",
+        reviewer="Asha",
+        previous_approval_id=None,
+    )
+    with pytest.raises(StaleDecisionError):
+        pipeline.approvals.approve(
+            db,
+            candidate_id=candidate.id,
+            decision="not_in_document",
+            reviewer="Asha",
+            previous_approval_id=None,
+        )
+    second = pipeline.approvals.approve(
+        db,
+        candidate_id=candidate.id,
+        decision="not_in_document",
+        reviewer="Asha",
+        previous_approval_id=first.approval.id,
+    )
+    assert second.created and second.approval.supersedes_approval_id == first.approval.id
+    with pytest.raises(LookupError):
+        pipeline.approvals.approve(
+            db,
+            candidate_id=candidate.id,
+            decision="approved",
+            reviewer="Asha",
+            object_scope=("tender", "0" * 32),
+        )

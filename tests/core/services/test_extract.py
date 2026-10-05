@@ -713,10 +713,13 @@ def test_a_shared_answer_passes_only_as_a_complete_typed_answer_of_the_group() -
     assert typed is not None
     assert typed.emd_per_mw.value == 928000 and typed.tenure_years.value is None  # type: ignore[attr-defined]
 
+    extra = typed_answer(SharedAnswer.model_validate({"fields": [*good, entry("x", 1)]}), model)
+    assert extra == typed, "an entry that is no field of the group is dropped"
+
     for bad in (
         good[:2],  # a field missing
         [*good, entry("emd_per_mw", 1)],  # a field twice
-        [*good[:2], entry("tenure", 25)],  # an unknown key
+        [*good[:2], entry("tenure", 25)],  # a field under another name
         [*good[:2], entry("tenure_years", "twenty-five")],  # the wrong kind of value
         [*good[:2], entry("tenure_years", ["25"])],
     ):

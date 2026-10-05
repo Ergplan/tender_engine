@@ -99,7 +99,7 @@ def test_full_pipeline_through_the_http_api(
     state = client.get("/api/v1/review-state", params={**params, "version": 1}).json()
     assert (state["decided"], state["required_undecided"]) == (2, 2)
     tables = set(db.scalars(select(AuditLog.table_name)))
-    assert tables == {"candidate", "approval", "canonical_fact", "feedback"}
+    assert tables == {"candidate", "approval", "canonical_fact", "feedback", "request"}
 
 
 def test_a_repeated_identical_approval_is_200_and_writes_nothing(
@@ -108,13 +108,15 @@ def test_a_repeated_identical_approval_is_200_and_writes_nothing(
     _, fields = reviewed_document(client, pipeline)
     request = {"candidate_id": fields["identity.issuer"]["candidate"]["id"], "decision": "approved"}
     first = client.post("/api/v1/approvals", json=request, headers=REVIEWER)
-    audits = db.scalar(select(func.count()).select_from(AuditLog))
+    # The request itself is audited each time; the repeat writes nothing to a truth table.
+    truth = select(func.count()).select_from(AuditLog).where(AuditLog.table_name != "request")
+    audits = db.scalar(truth)
     second = client.post("/api/v1/approvals", json=request, headers=REVIEWER)
     assert (first.status_code, second.status_code) == (201, 200)
     assert second.json()["id"] == first.json()["id"] and second.json()["created"] is False
     assert second.json()["canonical_fact_id"] == first.json()["canonical_fact_id"]
     assert db.scalar(select(func.count()).select_from(CanonicalFact)) == 1
-    assert db.scalar(select(func.count()).select_from(AuditLog)) == audits
+    assert db.scalar(truth) == audits
 
 
 def test_approval_requires_the_reviewer_header(

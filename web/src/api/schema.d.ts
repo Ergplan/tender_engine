@@ -16,7 +16,10 @@ export interface paths {
         /**
          * Post Approval
          * @description Record a reviewer's decision. This is the only route that produces a canonical fact.
-         *     An identical repeat returns the existing approval with 200 and writes nothing.
+         *     An identical repeat returns the existing approval with 200 and writes nothing. When
+         *     the request names `previous_approval_id` (null: the field was undecided) and the field
+         *     has been decided again since, the write is refused with 409. With a review token, only
+         *     candidates of the token's tender can be decided.
          */
         post: operations["post_approval_api_v1_approvals_post"];
         delete?: never;
@@ -102,6 +105,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/documents/{document_id}/pages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Pages
+         * @description Every page with its size, so a viewer can lay the document out before any page is
+         *     drawn, and where its image is served.
+         */
+        get: operations["get_pages_api_v1_documents__document_id__pages_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/documents/{document_id}/pages/{page_no}/render": {
         parameters: {
             query?: never;
@@ -114,6 +138,27 @@ export interface paths {
          * @description The page as a PNG at the configured render resolution.
          */
         get: operations["get_page_render_api_v1_documents__document_id__pages__page_no__render_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/documents/{document_id}/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Search Document
+         * @description Where the text occurs in the document, ignoring case: page, box and the words
+         *     around it. At most 200 places.
+         */
+        get: operations["search_document_api_v1_documents__document_id__search_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -148,6 +193,27 @@ export interface paths {
         };
         /** Get Extraction Run */
         get: operations["get_extraction_run_api_v1_extraction_runs__run_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/files-auth": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Authorise File
+         * @description Asked by the proxy before it serves a stored file (a PDF or a page image): the file
+         *     must belong to a document of the review token's tender.
+         */
+        get: operations["authorise_file_api_v1_files_auth_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -197,6 +263,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/review-session": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Review Session
+         * @description Who the review token is and which tender it opens.
+         */
+        get: operations["get_review_session_api_v1_review_session_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/review-state": {
         parameters: {
             query?: never;
@@ -211,6 +297,27 @@ export interface paths {
         get: operations["get_review_state_api_v1_review_state_get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/review-tokens": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Review Token
+         * @description A review link for one tender and one reviewer, valid for 30 days. An earlier link
+         *     for the tender stops working. Not reachable with a review token or from outside.
+         */
+        post: operations["create_review_token_api_v1_review_tokens_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -275,6 +382,28 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/tenders/{tender_id}/complete-review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Complete Review
+         * @description Complete the review of the token's tender: refused while a required field has no
+         *     decision. Marks the token completed and the tender reviewed, and stores the current
+         *     view as the snapshot the gold set is made from.
+         */
+        post: operations["complete_review_api_v1_tenders__tender_id__complete_review_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/tenders/{tender_id}/extract": {
         parameters: {
             query?: never;
@@ -299,6 +428,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/tenders/{tender_id}/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Tender Review
+         * @description The tender as the reviewer sees it: every field once, with what each version says
+         *     about it and the entry to decide (the latest version that states the field).
+         */
+        get: operations["get_tender_review_api_v1_tenders__tender_id__review_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/tenders/{tender_id}/review-state": {
         parameters: {
             query?: never;
@@ -311,6 +461,26 @@ export interface paths {
          * @description Core's review state for one version of the tender (the latest extracted by default).
          */
         get: operations["get_review_state_api_v1_tenders__tender_id__review_state_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tenders/{tender_id}/snapshot": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Snapshot
+         * @description The final values of the tender's latest completed review.
+         */
+        get: operations["get_snapshot_api_v1_tenders__tender_id__snapshot_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -408,13 +578,15 @@ export interface components {
              * Decision
              * @enum {string}
              */
-            decision: "approved" | "edited" | "not_in_document" | "rejected";
+            decision: "approved" | "edited" | "not_in_document" | "rejected" | "flagged";
             /** Evidence */
             evidence?: components["schemas"]["ReviewerEvidence"][] | null;
             /** Final Value */
             final_value?: unknown;
             /** Note */
             note?: string | null;
+            /** Previous Approval Id */
+            previous_approval_id?: string | null;
         };
         /** ApprovalView */
         ApprovalView: {
@@ -533,6 +705,8 @@ export interface components {
             created_by: string;
             /** Error */
             error: string | null;
+            /** File Url */
+            file_url: string;
             /** Filename */
             filename: string;
             /** Id */
@@ -714,6 +888,93 @@ export interface components {
             /** Tenant Id */
             tenant_id: string;
         };
+        /** PageOut */
+        PageOut: {
+            /** Has Text Layer */
+            has_text_layer: boolean;
+            /** Height */
+            height: number;
+            /** Page No */
+            page_no: number;
+            /** Render Url */
+            render_url: string | null;
+            /** Width */
+            width: number;
+        };
+        /** ReviewDocument */
+        ReviewDocument: {
+            /** Document Id */
+            document_id: string;
+            /** Filename */
+            filename: string;
+            /** Page Count */
+            page_count: number | null;
+            /** Role */
+            role: string;
+        };
+        /**
+         * ReviewEntry
+         * @description What one version says about a field: core's field state for that version.
+         */
+        ReviewEntry: {
+            state: components["schemas"]["FieldState"];
+            /** Version Kind */
+            version_kind: string;
+            /** Version No */
+            version_no: number;
+        };
+        /** ReviewField */
+        ReviewField: {
+            /** Current */
+            current: number | null;
+            /** Decided */
+            decided: boolean;
+            /** Entries */
+            entries: components["schemas"]["ReviewEntry"][];
+            /** Enum Values */
+            enum_values: string[] | null;
+            /** Field Path */
+            field_path: string;
+            /** Flagged */
+            flagged: boolean;
+            /** Help Text */
+            help_text: string;
+            /** Label */
+            label: string;
+            /** Required */
+            required: boolean;
+            /** Review Order */
+            review_order: number;
+            /** Section */
+            section: string;
+            /** Unit */
+            unit: string | null;
+            /** Value Type */
+            value_type: string;
+        };
+        /** ReviewSection */
+        ReviewSection: {
+            /** Label */
+            label: string;
+            /** Name */
+            name: string;
+            /** Order */
+            order: number;
+        };
+        /** ReviewSessionOut */
+        ReviewSessionOut: {
+            /** Completed At */
+            completed_at: string | null;
+            /**
+             * Expires At
+             * Format: date-time
+             */
+            expires_at: string;
+            /** Reviewer Name */
+            reviewer_name: string;
+            /** Tender Id */
+            tender_id: string;
+        };
         /** ReviewState */
         ReviewState: {
             /** Decided */
@@ -733,6 +994,40 @@ export interface components {
             runs: components["schemas"]["RunView"][];
             /** Total */
             total: number;
+        };
+        /** ReviewTokenCreate */
+        ReviewTokenCreate: {
+            /** Reviewer Name */
+            reviewer_name: string;
+            /** Tender Id */
+            tender_id: string;
+        };
+        /** ReviewTokenOut */
+        ReviewTokenOut: {
+            /**
+             * Expires At
+             * Format: date-time
+             */
+            expires_at: string;
+            /** Reviewer Name */
+            reviewer_name: string;
+            /** Tender Id */
+            tender_id: string;
+            /** Token */
+            token: string;
+            /** Url */
+            url: string;
+        };
+        /** ReviewVersion */
+        ReviewVersion: {
+            /** Documents */
+            documents: components["schemas"]["ReviewDocument"][];
+            /** Issued On */
+            issued_on: string | null;
+            /** Kind */
+            kind: string;
+            /** Version No */
+            version_no: number;
         };
         /**
          * ReviewerEvidence
@@ -763,6 +1058,15 @@ export interface components {
             /** Status */
             status: string;
         };
+        /** SearchHit */
+        SearchHit: {
+            /** Bbox */
+            bbox: number[] | null;
+            /** Page No */
+            page_no: number;
+            /** Snippet */
+            snippet: string;
+        };
         /** SectionOut */
         SectionOut: {
             /** Confidence */
@@ -777,6 +1081,24 @@ export interface components {
             kind: string;
             /** Start Page */
             start_page: number;
+        };
+        /** SnapshotOut */
+        SnapshotOut: {
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Id */
+            id: string;
+            /** Reviewer */
+            reviewer: string;
+            /** Snapshot */
+            snapshot: {
+                [key: string]: unknown;
+            };
+            /** Tender Id */
+            tender_id: string;
         };
         /** TenderCreate */
         TenderCreate: {
@@ -862,6 +1184,33 @@ export interface components {
             tender_type: string;
             /** Title */
             title: string;
+        };
+        /** TenderReview */
+        TenderReview: {
+            /** Can Complete */
+            can_complete: boolean;
+            /** Decided */
+            decided: number;
+            /** Fields */
+            fields: components["schemas"]["ReviewField"][];
+            /** Issuing Agency */
+            issuing_agency: string;
+            /** Required Undecided */
+            required_undecided: number;
+            /** Sections */
+            sections: components["schemas"]["ReviewSection"][];
+            /** Status */
+            status: string;
+            /** Tender Id */
+            tender_id: string;
+            /** Tender Type */
+            tender_type: string;
+            /** Title */
+            title: string;
+            /** Total */
+            total: number;
+            /** Versions */
+            versions: components["schemas"]["ReviewVersion"][];
         };
         /**
          * TenderReviewState
@@ -1184,6 +1533,37 @@ export interface operations {
             };
         };
     };
+    get_pages_api_v1_documents__document_id__pages_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PageOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     get_page_render_api_v1_documents__document_id__pages__page_no__render_get: {
         parameters: {
             query?: never;
@@ -1203,6 +1583,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    search_document_api_v1_documents__document_id__search_get: {
+        parameters: {
+            query: {
+                q: string;
+            };
+            header?: never;
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SearchHit"][];
                 };
             };
             /** @description Validation Error */
@@ -1278,6 +1691,35 @@ export interface operations {
             };
         };
     };
+    authorise_file_api_v1_files_auth_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-forwarded-uri"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     health_api_v1_health_get: {
         parameters: {
             query?: never;
@@ -1318,6 +1760,26 @@ export interface operations {
             };
         };
     };
+    get_review_session_api_v1_review_session_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewSessionOut"];
+                };
+            };
+        };
+    };
     get_review_state_api_v1_review_state_get: {
         parameters: {
             query: {
@@ -1338,6 +1800,41 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ReviewState"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_review_token_api_v1_review_tokens_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-reviewer"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReviewTokenCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewTokenOut"];
                 };
             };
             /** @description Validation Error */
@@ -1468,6 +1965,37 @@ export interface operations {
             };
         };
     };
+    complete_review_api_v1_tenders__tender_id__complete_review_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tender_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SnapshotOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     start_extraction_api_v1_tenders__tender_id__extract_post: {
         parameters: {
             query?: never;
@@ -1505,6 +2033,37 @@ export interface operations {
             };
         };
     };
+    get_tender_review_api_v1_tenders__tender_id__review_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tender_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TenderReview"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     get_review_state_api_v1_tenders__tender_id__review_state_get: {
         parameters: {
             query?: {
@@ -1525,6 +2084,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["TenderReviewState"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_snapshot_api_v1_tenders__tender_id__snapshot_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tender_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SnapshotOut"];
                 };
             };
             /** @description Validation Error */

@@ -64,14 +64,16 @@ The layout in `CLAUDE.md` is authoritative. Additions made under operating rule 
 | `candidate` | model output for one field: value (jsonb), value_type, confidence, rationale, status `raw/validated/needs_review/superseded/not_found/rejected`, prompt name and version, the call log row, the page window | inserted by `ExtractService` only; **immutable** except `status` (trigger `candidate_immutable`) | 1 |
 | `evidence_span` | where the value is written: document, page, bbox, char range, quote, how it was located (`stated_page/adjacent_page/window_page/unresolved`), match score | inserted by `ExtractService` only; **append-only** (trigger) | 1 |
 | `validation_result` | one row per rule per candidate: rule name, passed, message | `ValidationService.validate` | 1 |
-| `approval` | a reviewer's decision `approved/edited/not_in_document/rejected` with final value, reviewer, note; `active` or `superseded` | `ApprovalService.approve` only | 1 |
-| `canonical_fact` | truth: object, version, field, value, value_type, approval, evidence copied from the candidate (plus the reviewer's decision when it was not a plain approval), `is_current` | **`ApprovalService.approve` only**. Trigger `canonical_fact_guard` (migration 0004): a row is accepted only under a live approval (active, not a rejection) of the same tenant, object, version and field; afterwards it can be retired (`is_current`, `superseded_at`) once its approval is superseded, and never changed or deleted | 1 |
+| `approval` | a reviewer's decision `approved/edited/not_in_document/rejected/flagged` with final value, reviewer, note; `active` or `superseded`. A flag ("unsure, come back") keeps the note, withdraws an earlier decision and decides nothing | `ApprovalService.approve` only | 1, 3 |
+| `canonical_fact` | truth: object, version, field, value, value_type, approval, evidence copied from the candidate (plus the reviewer's decision when it was not a plain approval), `is_current` | **`ApprovalService.approve` only**. Trigger `canonical_fact_guard` (migration 0004): a row is accepted only under a live approval (active, and one of approved, edited, not_in_document since migration 0008) of the same tenant, object, version and field; afterwards it can be retired (`is_current`, `superseded_at`) once its approval is superseded, and never changed or deleted | 1 |
 | `feedback` | candidate value, final value, `delta_kind` (`format/wrong_value/missing/extra`), reviewer, prompt version | `ApprovalService.approve` only; nothing reads it at runtime | 1 |
 | `audit_log` | actor, action, table, row id, before, after, at | `core.services.audit.record`, called by extract, validate and approve; **append-only** (trigger) | 1 |
 | `job` | kind, payload, status `queued/running/done/failed`, attempts, max_attempts, last_error, run_after | `core.services.jobs` | 1 |
 | `tender` | tender_type, issuing_agency, external_ref, title, slug (folder name for tenders ingested by the command), status `ingested/extracted/in_review/reviewed/published`, current_version_id | `tender.services.tenders.TenderService` | 2 |
 | `tender_version` | tender_id, version_no, kind `original/corrigendum/amendment/clarification`, issued_on, summary_of_change, supersedes_version_id. Never edited: a change to a tender is a new row | `TenderService.add_version`; audited | 2 |
 | `tender_version_document` | tender_version_id, document_id, role (`rfs`, `amendment`, `clarification`, `ppa`, `psa`, `cfda`, `technical`, `contractual`, `nit`) | `TenderService.add_version` and `attach_document`; audited on the version | 2 |
+| `review_token` | the link a reviewer opens: token (32 random url-safe characters, unique), tender_id, reviewer_name, expires_at (30 days), completed_at, revoked_at. One live token per tender | `tender.services.tokens.TokenService.create` (revokes the earlier one; audited); `completed_at` by `tender.services.review.complete_review` | 3 |
+| `tender_review_snapshot` | the current view of a tender when its review was completed (jsonb: every field's final value, version and evidence, the reviewer, the flagged fields), for the gold set | `tender.services.review.complete_review`; audited on the tender | 3 |
 | `tender_field_def` | the compiled schemas, one row per tender type and field: path, namespace (`core` or `sector`), domain, subdomain, section, label, value_type, required, help_text, review_order | `tender.services.field_defs.sync_field_defs` when the API starts; replaced only when the packs changed | 2 |
 
 Every table carries `tenant_id`, `created_at`, `created_by` through `core.models.base.TenantAuditMixin`; a test fails if a table is added without them.
@@ -118,9 +120,30 @@ Native PDF pages cost about 2,800 input tokens each, and in Stage 2 every field 
 | `api/v1/core/documents.py` | `POST /api/v1/documents` (multipart), `GET /api/v1/documents/{id}`, `GET /api/v1/documents/{id}/pages/{n}/render`, `GET /api/v1/documents/{id}/sections` | 1 |
 | `api/v1/core/extraction.py` | `POST /api/v1/documents/{id}/extract`, `GET /api/v1/extraction-runs/{id}` | 1 |
 | `api/v1/core/review.py` | `GET /api/v1/review-state`, `POST /api/v1/approvals`, `GET /api/v1/canonical` | 1 |
+| `api/v1/core/documents.py` | `GET /api/v1/documents/{id}/pages` (size of every page and where its image is served), `GET /api/v1/documents/{id}/search?q=` (page, box and snippet of each occurrence) | 3 |
+| `api/v1/tenders/review.py` | `POST /api/v1/review-tokens`, `GET /api/v1/review-session`, `GET /api/v1/tenders/{id}/review` (the tender as the reviewer sees it), `POST /api/v1/tenders/{id}/complete-review`, `GET /api/v1/tenders/{id}/snapshot`, `GET /api/v1/files-auth` (asked by the proxy before it serves a stored file) | 3 |
 | `api/v1/tenders/tenders.py` | `POST /api/v1/tenders`, `GET /api/v1/tenders`, `GET /api/v1/tenders/{id}`, `POST /api/v1/tenders/{id}/versions` (multipart: file, kind, issued_on, role, summary_of_change; with version_no the document joins an existing version), `GET /api/v1/tenders/{id}/versions`, `GET /api/v1/tenders/{id}/view`, `POST /api/v1/tenders/{id}/extract`, `GET /api/v1/tenders/{id}/review-state` (core's review state for one version, plus the fields that version changes), `GET /api/v1/schemas/tender/{type}`, `GET /api/v1/reports/extraction-summary` | 2 |
 
-Tenant resolution is the request dependency `api.deps.get_tenant_id`, which returns the configured single tenant in phase 1. Errors go through `api/middleware/errors.py`: a request id on every response and a typed error payload. The reviewer of an approval comes from the `X-Reviewer` header in phase 1 (`api.deps.get_reviewer`); the Stage 3 token middleware will set it. The API never calls the model: it queues jobs and reads state.
+Tenant resolution is the request dependency `api.deps.get_tenant_id`, which returns the configured single tenant in phase 1. Errors go through `api/middleware/errors.py`: a request id on every response and a typed error payload. The API never calls the model: it queues jobs and reads state.
+
+### Review tokens and what a request may reach (Stage 3)
+
+`api/middleware/review_token.py` runs on every `/api/v1/` request.
+
+- A request with a review token (header `X-Review-Token`, or the cookie `review_token` for the page images and the PDF the browser fetches itself) is that token's reviewer (`request.state.review`; `api.deps.get_reviewer` returns the token's reviewer name, whatever `X-Reviewer` says). It may call only the routes in `ALLOWED`: the review session, its own tender (`/tenders/{id}` with `versions`, `review`, `review-state`, `view`, `snapshot`, `complete-review`), the schema, the documents of that tender (`pages`, `sections`, `search`, page render), `POST /approvals` and `files-auth`. Another tender or one of its documents is 404; any other route is 403. `ApprovalService.approve` is given the token's tender as `object_scope`, so a candidate of another tender is not found.
+- An unknown token is 401, a revoked or expired one 410, each with a plain sentence the screen shows as it is. A completed review can be read and not changed: every non-GET request is 409.
+- A request that came through the public proxy (Caddy adds `X-Public-Request`, which a client cannot remove) and carries no token is 401, whatever it asks for, except `/health`. Port 443 is open to the world, so this is what stands between the internet and the API.
+- A request made inside the deployment (management commands, tests, `docker compose exec`) carries neither and is not limited; it names its reviewer in `X-Reviewer`. `POST /review-tokens`, tender creation, uploads and extraction are reachable only this way.
+
+`api/middleware/audit.py` writes one `audit_log` row (`table_name = "request"`) for every non-GET request under `/api/v1/`: the actor, the path, the status it ended with and the token id. Stored files (`/files/documents/<sha>.pdf`, `/files/renders/<sha>/<n>.png`) are served by Caddy from `/data`, with range requests and a one-day private cache, after `forward_auth` to `GET /api/v1/files-auth`, which checks that the file belongs to a document of the token's tender.
+
+### The reviewer's view of a tender (Stage 3)
+
+`tender.services.review.tender_review` (`GET /tenders/{id}/review`) is the read model of the reviewer screen. Core's review state is per object version; here every field appears once, with one entry per version that says something about it: the original always, a later version only where it gives a value (or has been decided). The entry to decide (`current`) is the latest one the reviewer has not set aside as "not in document", so what is reviewed is the tender's current value, tagged with its version; setting an amendment's entry aside brings the earlier one back. A field is decided when its current entry is approved, edited or not in document; a flag does not count. `can_complete` is true once no required field is undecided.
+
+`complete_review` (`POST /tenders/{id}/complete-review`, with the review token) refuses while a required field is undecided, then sets `review_token.completed_at` and `tender.status = reviewed`, stores `current_view` as a `tender_review_snapshot`, and audits it. It writes no canonical fact.
+
+A decision carries the active decision the reviewer last saw (`previous_approval_id`, null for none); when the field has been decided again since, `ApprovalService.approve` raises `StaleDecisionError` and the API answers 409.
 
 ## Tender domain layer (Stage 2)
 
@@ -226,3 +249,5 @@ One GCE VM (`instance-20261004-081207`, asia-south2-b), static IP `34.131.65.108
 
 - Migration 0007: `llm_call_log.mode`, `cache_write_tokens`, `batch_id`, `cost_usd`; `extraction_run.mode`, `token_cached`; `llm_batch`.
 - Cost of extraction: shared page windows as a cached prefix (`core/services/extract_plan.py`), batch runs in two waves, replay of logged calls, per-call cost (`core/llm/pricing.py`).
+- Migration 0008: `review_token`, `tender_review_snapshot`; the `canonical_fact` guard names the decisions that may carry a fact.
+- Review tokens (`tender/services/tokens.py`, `scripts/review_token.py`), token and audit middleware, the reviewer's view of a tender and completion (`tender/services/review.py`), flag decision and stale-write refusal in `ApprovalService`, document pages and search.

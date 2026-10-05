@@ -35,6 +35,14 @@ class ApprovalError(ValueError):
     """The decision cannot be recorded as asked. The message is safe to show a reviewer."""
 
 
+class StaleDecisionError(ApprovalError):
+    """The field was decided by someone else, or again, since the caller last read it."""
+
+
+# Passed as `previous_approval_id` by a caller that does not check for a stale write.
+UNCHECKED = "unchecked"
+
+
 @dataclass(frozen=True)
 class ApprovalOutcome:
     approval: Approval
@@ -61,8 +69,15 @@ class ApprovalService:
         reviewer: str,
         note: str | None = None,
         evidence: list[dict[str, Any]] | None = None,
+        previous_approval_id: str | None = UNCHECKED,
+        object_scope: tuple[str, str] | None = None,
     ) -> ApprovalOutcome:
         """Record a human decision. Idempotent: an identical repeat writes nothing.
+
+        `previous_approval_id` is the active decision on the field as the caller last saw
+        it (None: undecided). When it is given and the field's active decision is another
+        one, the write is refused as stale. `object_scope` (object_type, object_id) limits
+        the call to candidates of that object; any other candidate is not found.
 
         `evidence` is the reviewer's own evidence for an edited value: a list of
         {page_no, quote}. It is required when the candidate has none (the model found no
@@ -88,6 +103,8 @@ class ApprovalService:
         if row is None:
             raise LookupError(f"candidate {candidate_id} not found")
         candidate, run = row
+        if object_scope is not None and (run.object_type, run.object_id) != object_scope:
+            raise LookupError(f"candidate {candidate_id} not found")
         if candidate.status not in DECIDABLE_STATUSES:
             raise ApprovalError(f"a {candidate.status} candidate cannot be decided")
         field = self._schemas.get(run.schema_name, run.schema_version).field(candidate.field_path)
@@ -150,6 +167,13 @@ class ApprovalService:
             .with_for_update()
             .execution_options(populate_existing=True)
         )
+        if previous_approval_id != UNCHECKED and previous_approval_id != (
+            current.id if current else None
+        ):
+            session.rollback()
+            raise StaleDecisionError(
+                "this field was decided again since it was loaded; it has been reloaded"
+            )
         if current is not None and (
             current.candidate_id,
             current.decision,
@@ -423,6 +447,8 @@ def classify_delta(decision: str, raw_candidate: Any, candidate: Any, final: Any
     extra: the model had a value and the reviewer says the document has none.
     format: same value, different form. wrong_value: a different value, or a rejection.
     """
+    if decision == "flagged":
+        return None
     if decision == "rejected":
         return "wrong_value"
     if raw_candidate is None:

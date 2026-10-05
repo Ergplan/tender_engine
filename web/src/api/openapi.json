@@ -101,7 +101,8 @@
               "approved",
               "edited",
               "not_in_document",
-              "rejected"
+              "rejected",
+              "flagged"
             ],
             "title": "Decision",
             "type": "string"
@@ -133,6 +134,17 @@
               }
             ],
             "title": "Note"
+          },
+          "previous_approval_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Previous Approval Id"
           }
         },
         "required": [
@@ -464,6 +476,10 @@
             ],
             "title": "Error"
           },
+          "file_url": {
+            "title": "File Url",
+            "type": "string"
+          },
           "filename": {
             "title": "Filename",
             "type": "string"
@@ -505,7 +521,8 @@
           "status",
           "error",
           "created_at",
-          "created_by"
+          "created_by",
+          "file_url"
         ],
         "title": "DocumentOut",
         "type": "object"
@@ -1048,6 +1065,264 @@
         "title": "HealthResponse",
         "type": "object"
       },
+      "PageOut": {
+        "properties": {
+          "has_text_layer": {
+            "title": "Has Text Layer",
+            "type": "boolean"
+          },
+          "height": {
+            "title": "Height",
+            "type": "number"
+          },
+          "page_no": {
+            "title": "Page No",
+            "type": "integer"
+          },
+          "render_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Render Url"
+          },
+          "width": {
+            "title": "Width",
+            "type": "number"
+          }
+        },
+        "required": [
+          "page_no",
+          "width",
+          "height",
+          "has_text_layer",
+          "render_url"
+        ],
+        "title": "PageOut",
+        "type": "object"
+      },
+      "ReviewDocument": {
+        "properties": {
+          "document_id": {
+            "title": "Document Id",
+            "type": "string"
+          },
+          "filename": {
+            "title": "Filename",
+            "type": "string"
+          },
+          "page_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Page Count"
+          },
+          "role": {
+            "title": "Role",
+            "type": "string"
+          }
+        },
+        "required": [
+          "document_id",
+          "role",
+          "filename",
+          "page_count"
+        ],
+        "title": "ReviewDocument",
+        "type": "object"
+      },
+      "ReviewEntry": {
+        "description": "What one version says about a field: core's field state for that version.",
+        "properties": {
+          "state": {
+            "$ref": "#/components/schemas/FieldState"
+          },
+          "version_kind": {
+            "title": "Version Kind",
+            "type": "string"
+          },
+          "version_no": {
+            "title": "Version No",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "version_no",
+          "version_kind",
+          "state"
+        ],
+        "title": "ReviewEntry",
+        "type": "object"
+      },
+      "ReviewField": {
+        "properties": {
+          "current": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current"
+          },
+          "decided": {
+            "title": "Decided",
+            "type": "boolean"
+          },
+          "entries": {
+            "items": {
+              "$ref": "#/components/schemas/ReviewEntry"
+            },
+            "title": "Entries",
+            "type": "array"
+          },
+          "enum_values": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enum Values"
+          },
+          "field_path": {
+            "title": "Field Path",
+            "type": "string"
+          },
+          "flagged": {
+            "title": "Flagged",
+            "type": "boolean"
+          },
+          "help_text": {
+            "title": "Help Text",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "required": {
+            "title": "Required",
+            "type": "boolean"
+          },
+          "review_order": {
+            "title": "Review Order",
+            "type": "integer"
+          },
+          "section": {
+            "title": "Section",
+            "type": "string"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          },
+          "value_type": {
+            "title": "Value Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "field_path",
+          "label",
+          "section",
+          "value_type",
+          "unit",
+          "required",
+          "help_text",
+          "enum_values",
+          "review_order",
+          "entries",
+          "current",
+          "decided",
+          "flagged"
+        ],
+        "title": "ReviewField",
+        "type": "object"
+      },
+      "ReviewSection": {
+        "properties": {
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "order": {
+            "title": "Order",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "name",
+          "label",
+          "order"
+        ],
+        "title": "ReviewSection",
+        "type": "object"
+      },
+      "ReviewSessionOut": {
+        "properties": {
+          "completed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "reviewer_name": {
+            "title": "Reviewer Name",
+            "type": "string"
+          },
+          "tender_id": {
+            "title": "Tender Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tender_id",
+          "reviewer_name",
+          "expires_at",
+          "completed_at"
+        ],
+        "title": "ReviewSessionOut",
+        "type": "object"
+      },
       "ReviewState": {
         "properties": {
           "decided": {
@@ -1111,6 +1386,97 @@
           "required_undecided"
         ],
         "title": "ReviewState",
+        "type": "object"
+      },
+      "ReviewTokenCreate": {
+        "properties": {
+          "reviewer_name": {
+            "title": "Reviewer Name",
+            "type": "string"
+          },
+          "tender_id": {
+            "title": "Tender Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tender_id",
+          "reviewer_name"
+        ],
+        "title": "ReviewTokenCreate",
+        "type": "object"
+      },
+      "ReviewTokenOut": {
+        "properties": {
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "reviewer_name": {
+            "title": "Reviewer Name",
+            "type": "string"
+          },
+          "tender_id": {
+            "title": "Tender Id",
+            "type": "string"
+          },
+          "token": {
+            "title": "Token",
+            "type": "string"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "url",
+          "token",
+          "tender_id",
+          "reviewer_name",
+          "expires_at"
+        ],
+        "title": "ReviewTokenOut",
+        "type": "object"
+      },
+      "ReviewVersion": {
+        "properties": {
+          "documents": {
+            "items": {
+              "$ref": "#/components/schemas/ReviewDocument"
+            },
+            "title": "Documents",
+            "type": "array"
+          },
+          "issued_on": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Issued On"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "version_no": {
+            "title": "Version No",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "version_no",
+          "kind",
+          "issued_on",
+          "documents"
+        ],
+        "title": "ReviewVersion",
         "type": "object"
       },
       "ReviewerEvidence": {
@@ -1190,6 +1556,39 @@
         "title": "RunView",
         "type": "object"
       },
+      "SearchHit": {
+        "properties": {
+          "bbox": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "number"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bbox"
+          },
+          "page_no": {
+            "title": "Page No",
+            "type": "integer"
+          },
+          "snippet": {
+            "title": "Snippet",
+            "type": "string"
+          }
+        },
+        "required": [
+          "page_no",
+          "bbox",
+          "snippet"
+        ],
+        "title": "SearchHit",
+        "type": "object"
+      },
       "SectionOut": {
         "properties": {
           "confidence": {
@@ -1226,6 +1625,41 @@
           "confidence"
         ],
         "title": "SectionOut",
+        "type": "object"
+      },
+      "SnapshotOut": {
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "reviewer": {
+            "title": "Reviewer",
+            "type": "string"
+          },
+          "snapshot": {
+            "additionalProperties": true,
+            "title": "Snapshot",
+            "type": "object"
+          },
+          "tender_id": {
+            "title": "Tender Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "tender_id",
+          "reviewer",
+          "created_at",
+          "snapshot"
+        ],
+        "title": "SnapshotOut",
         "type": "object"
       },
       "TenderCreate": {
@@ -1486,6 +1920,83 @@
           "created_by"
         ],
         "title": "TenderOut",
+        "type": "object"
+      },
+      "TenderReview": {
+        "properties": {
+          "can_complete": {
+            "title": "Can Complete",
+            "type": "boolean"
+          },
+          "decided": {
+            "title": "Decided",
+            "type": "integer"
+          },
+          "fields": {
+            "items": {
+              "$ref": "#/components/schemas/ReviewField"
+            },
+            "title": "Fields",
+            "type": "array"
+          },
+          "issuing_agency": {
+            "title": "Issuing Agency",
+            "type": "string"
+          },
+          "required_undecided": {
+            "title": "Required Undecided",
+            "type": "integer"
+          },
+          "sections": {
+            "items": {
+              "$ref": "#/components/schemas/ReviewSection"
+            },
+            "title": "Sections",
+            "type": "array"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "tender_id": {
+            "title": "Tender Id",
+            "type": "string"
+          },
+          "tender_type": {
+            "title": "Tender Type",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          },
+          "versions": {
+            "items": {
+              "$ref": "#/components/schemas/ReviewVersion"
+            },
+            "title": "Versions",
+            "type": "array"
+          }
+        },
+        "required": [
+          "tender_id",
+          "tender_type",
+          "title",
+          "issuing_agency",
+          "status",
+          "versions",
+          "sections",
+          "fields",
+          "decided",
+          "total",
+          "required_undecided",
+          "can_complete"
+        ],
+        "title": "TenderReview",
         "type": "object"
       },
       "TenderReviewState": {
@@ -1923,7 +2434,7 @@
   "paths": {
     "/api/v1/approvals": {
       "post": {
-        "description": "Record a reviewer's decision. This is the only route that produces a canonical fact.\nAn identical repeat returns the existing approval with 200 and writes nothing.",
+        "description": "Record a reviewer's decision. This is the only route that produces a canonical fact.\nAn identical repeat returns the existing approval with 200 and writes nothing. When\nthe request names `previous_approval_id` (null: the field was undecided) and the field\nhas been decided again since, the write is refused with 409. With a review token, only\ncandidates of the token's tender can be decided.",
         "operationId": "post_approval_api_v1_approvals_post",
         "parameters": [
           {
@@ -2224,6 +2735,53 @@
         ]
       }
     },
+    "/api/v1/documents/{document_id}/pages": {
+      "get": {
+        "description": "Every page with its size, so a viewer can lay the document out before any page is\ndrawn, and where its image is served.",
+        "operationId": "get_pages_api_v1_documents__document_id__pages_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "document_id",
+            "required": true,
+            "schema": {
+              "title": "Document Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PageOut"
+                  },
+                  "title": "Response Get Pages Api V1 Documents  Document Id  Pages Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Pages",
+        "tags": [
+          "documents"
+        ]
+      }
+    },
     "/api/v1/documents/{document_id}/pages/{page_no}/render": {
       "get": {
         "description": "The page as a PNG at the configured render resolution.",
@@ -2269,6 +2827,62 @@
           }
         },
         "summary": "Get Page Render",
+        "tags": [
+          "documents"
+        ]
+      }
+    },
+    "/api/v1/documents/{document_id}/search": {
+      "get": {
+        "description": "Where the text occurs in the document, ignoring case: page, box and the words\naround it. At most 200 places.",
+        "operationId": "search_document_api_v1_documents__document_id__search_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "document_id",
+            "required": true,
+            "schema": {
+              "title": "Document Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "q",
+            "required": true,
+            "schema": {
+              "title": "Q",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SearchHit"
+                  },
+                  "title": "Response Search Document Api V1 Documents  Document Id  Search Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Search Document",
         "tags": [
           "documents"
         ]
@@ -2362,6 +2976,49 @@
         ]
       }
     },
+    "/api/v1/files-auth": {
+      "get": {
+        "description": "Asked by the proxy before it serves a stored file (a PDF or a page image): the file\nmust belong to a document of the review token's tender.",
+        "operationId": "authorise_file_api_v1_files_auth_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-forwarded-uri",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Forwarded-Uri"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Authorise File",
+        "tags": [
+          "review"
+        ]
+      }
+    },
     "/api/v1/health": {
       "get": {
         "description": "Healthy means the database answers and the configured tenant row exists.",
@@ -2403,6 +3060,28 @@
         "summary": "Get Extraction Summary",
         "tags": [
           "tenders"
+        ]
+      }
+    },
+    "/api/v1/review-session": {
+      "get": {
+        "description": "Who the review token is and which tender it opens.",
+        "operationId": "get_review_session_api_v1_review_session_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewSessionOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Review Session",
+        "tags": [
+          "review"
         ]
       }
     },
@@ -2469,6 +3148,66 @@
           }
         },
         "summary": "Get Review State",
+        "tags": [
+          "review"
+        ]
+      }
+    },
+    "/api/v1/review-tokens": {
+      "post": {
+        "description": "A review link for one tender and one reviewer, valid for 30 days. An earlier link\nfor the tender stops working. Not reachable with a review token or from outside.",
+        "operationId": "create_review_token_api_v1_review_tokens_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-reviewer",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Reviewer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewTokenCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewTokenOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Review Token",
         "tags": [
           "review"
         ]
@@ -2642,6 +3381,49 @@
         ]
       }
     },
+    "/api/v1/tenders/{tender_id}/complete-review": {
+      "post": {
+        "description": "Complete the review of the token's tender: refused while a required field has no\ndecision. Marks the token completed and the tender reviewed, and stores the current\nview as the snapshot the gold set is made from.",
+        "operationId": "complete_review_api_v1_tenders__tender_id__complete_review_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tender_id",
+            "required": true,
+            "schema": {
+              "title": "Tender Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SnapshotOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Complete Review",
+        "tags": [
+          "review"
+        ]
+      }
+    },
     "/api/v1/tenders/{tender_id}/extract": {
       "post": {
         "description": "Queue the extraction of one version (the latest by default): one run per document.\nA version after the original is read only for the sections its documents touch. A long\namendment, or one whose text matches no section keyword, is first mapped in full by a\nbackground job, which then queues its run; such a run is not in this response.\n`mode` \"batch\" sends the calls through the batch API for a run nobody waits for.",
@@ -2715,6 +3497,49 @@
         ]
       }
     },
+    "/api/v1/tenders/{tender_id}/review": {
+      "get": {
+        "description": "The tender as the reviewer sees it: every field once, with what each version says\nabout it and the entry to decide (the latest version that states the field).",
+        "operationId": "get_tender_review_api_v1_tenders__tender_id__review_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tender_id",
+            "required": true,
+            "schema": {
+              "title": "Tender Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TenderReview"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Tender Review",
+        "tags": [
+          "review"
+        ]
+      }
+    },
     "/api/v1/tenders/{tender_id}/review-state": {
       "get": {
         "description": "Core's review state for one version of the tender (the latest extracted by default).",
@@ -2771,6 +3596,49 @@
         "summary": "Get Review State",
         "tags": [
           "tenders"
+        ]
+      }
+    },
+    "/api/v1/tenders/{tender_id}/snapshot": {
+      "get": {
+        "description": "The final values of the tender's latest completed review.",
+        "operationId": "get_snapshot_api_v1_tenders__tender_id__snapshot_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tender_id",
+            "required": true,
+            "schema": {
+              "title": "Tender Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SnapshotOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Snapshot",
+        "tags": [
+          "review"
         ]
       }
     },

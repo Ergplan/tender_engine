@@ -7,7 +7,9 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from core.models.base import Base, IdMixin, TenantAuditMixin
 
-DECISIONS = ("approved", "edited", "not_in_document", "rejected")
+# flagged: "unsure, come back". It records the reviewer's note, withdraws an earlier
+# decision on the field and decides nothing.
+DECISIONS = ("approved", "edited", "not_in_document", "rejected", "flagged")
 DELTA_KINDS = ("exact", "format", "wrong_value", "missing", "extra")
 
 

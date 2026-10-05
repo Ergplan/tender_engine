@@ -1,7 +1,7 @@
 """Pydantic I/O models for the tender routers."""
 
 from datetime import date, datetime
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
@@ -68,6 +68,35 @@ class TenderReviewState(BaseModel):
     # Required fields the tender as a whole lacks up to this version.
     missing_required: list[str] = Field(default_factory=list)
     state: ReviewState
+
+
+class ReviewTokenCreate(BaseModel):
+    tender_id: str
+    reviewer_name: str
+
+
+class ReviewTokenOut(BaseModel):
+    url: str
+    token: str
+    tender_id: str
+    reviewer_name: str
+    expires_at: datetime
+
+
+class ReviewSessionOut(BaseModel):
+    tender_id: str
+    reviewer_name: str
+    expires_at: datetime
+    # Set once the review is completed: it can then be read and no longer changed.
+    completed_at: datetime | None
+
+
+class SnapshotOut(BaseModel):
+    id: str
+    tender_id: str
+    reviewer: str
+    created_at: datetime
+    snapshot: dict[str, Any]
 
 
 class TenderSchemaOut(BaseModel):

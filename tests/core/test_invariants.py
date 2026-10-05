@@ -221,6 +221,20 @@ def test_canonical_fact_insert_is_refused_under_a_superseded_or_rejecting_approv
     assert db.scalar(select(func.count()).select_from(CanonicalFact)) == 1
 
 
+def test_canonical_fact_insert_is_refused_under_a_flag(pipeline: Pipeline, db: Session) -> None:
+    """A flag is an approval row that decides nothing; the database refuses a fact under it."""
+    fact = one_fact(pipeline, db)
+    candidate_id = db.get_one(Approval, fact.approval_id).candidate_id
+    flag = pipeline.approvals.approve(
+        db, candidate_id=candidate_id, decision="flagged", reviewer="Ravi", note="unsure"
+    ).approval
+    assert flag.status == "active"
+    db.add(fact_like(fact, approval_id=flag.id))
+    with pytest.raises(DBAPIError, match="canonical_fact insert refused: no live approval"):
+        db.flush()
+    db.rollback()
+
+
 def _python_files() -> list[Path]:
     return [path for directory in CODE_DIRS for path in (ROOT / directory).rglob("*.py")]
 

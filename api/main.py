@@ -5,8 +5,9 @@ import logging
 from fastapi import FastAPI
 from sqlalchemy.exc import SQLAlchemyError
 
-from api.middleware import errors
+from api.middleware import audit, errors, review_token
 from api.v1.core import documents, extraction, health, review
+from api.v1.tenders import review as tender_review
 from api.v1.tenders import tenders
 from core.config import Settings
 from core.db import make_engine, make_session_factory
@@ -17,7 +18,14 @@ from tender.services.field_defs import sync_field_defs
 from tender.services.packs import Catalog, load_catalog
 
 log = logging.getLogger("api")
-V1_ROUTERS = (health.router, documents.router, extraction.router, review.router, tenders.router)
+V1_ROUTERS = (
+    health.router,
+    documents.router,
+    extraction.router,
+    review.router,
+    tenders.router,
+    tender_review.router,
+)
 
 
 def create_app(
@@ -28,7 +36,7 @@ def create_app(
     catalog: Catalog | None = None,
 ) -> FastAPI:
     settings = settings or Settings()
-    app = FastAPI(title="Tender Intelligence Engine", version="0.2.0")
+    app = FastAPI(title="Tender Intelligence Engine", version="0.3.0")
     app.state.settings = settings
     app.state.engine = make_engine(settings)
     app.state.session_factory = make_session_factory(app.state.engine)
@@ -48,6 +56,10 @@ def create_app(
     except SQLAlchemyError:
         # The table is for introspection only; the schemas are served from the catalog.
         log.exception("tender_field_def could not be refreshed")
+    # The last one installed runs first: request id and error payloads around everything,
+    # then the audit line of the request, then the review token.
+    review_token.install(app)
+    audit.install(app)
     errors.install(app)
     # /health at the root is what Caddy and make deploy probe; the versioned copy is the API.
     app.include_router(health.router)
