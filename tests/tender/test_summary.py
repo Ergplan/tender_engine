@@ -184,7 +184,10 @@ def test_after_extraction_the_summary_is_written_from_the_fields_without_a_docum
     blocks = call["messages"][0]["content"]
     assert [block["type"] for block in blocks] == ["text"]
     sent = blocks[0]["text"]
-    assert "F7 | Guarantees | EMD per MW (INR per MW) | 928000 | original tender" in sent
+    assert (
+        "F7 | Guarantees | EMD per MW (INR per MW) | 928000 (that is INR 9.28 lakh) | "
+        "original tender" in sent
+    )
     assert "| Key dates | Bid submission deadline | 30.03.2026 | original tender" in sent
     assert "N1 | What is procured | Acme Renewables Agency invites solar developers" in sent
     assert "plain_english_summary" not in sent and "Plain-English summary" not in sent
@@ -296,7 +299,7 @@ def test_the_summary_is_not_written_twice_from_the_same_record_and_follows_an_ed
     run = writer.write(db, tender.id, is_fixture=True)
     assert run is not None and run.status == "extracted"
     sent = pipeline.sdk.summary_calls()[-1]["messages"][0]["content"][0]["text"]
-    assert "EMD per MW (INR per MW) | 1000000 | original tender" in sent
+    assert "EMD per MW (INR per MW) | 1000000 (that is INR 10 lakh) | original tender" in sent
     pipeline.runner.run_until_idle()
     assert live_summary(db, tender.id)[1].id == run.id
 
@@ -360,3 +363,13 @@ def test_only_a_record_run_takes_a_candidate_from_the_record_and_only_with_locat
         pipeline.extract.record_candidate(
             db, record_run, SUMMARY_FIELD, spans=[{**good, "char_start": None}], **common
         )
+
+
+def test_amounts_are_also_given_the_way_tenders_write_them() -> None:
+    from tender.services.summary import rupees
+
+    assert rupees(13000000) == "INR 1.3 crore"
+    assert rupees(928000) == "INR 9.28 lakh"
+    assert rupees(100000000) == "INR 10 crore"
+    assert rupees(59000) == "INR 59,000"
+    assert rupees(0.02) == "INR 0.02"

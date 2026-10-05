@@ -108,12 +108,15 @@ def field_sources(review: TenderReview, section_labels: dict[str, str]) -> list[
             continue
         value, spans, version, version_no = found
         unit = f" ({item.unit})" if item.unit else ""
+        shown = _text(value)
+        if item.value_type == "money_inr" and isinstance(value, int | float):
+            shown += f" (that is {rupees(float(value))})"
         sources.append(
             Source(
                 id=f"F{len(sources) + 1}",
                 line=(
                     f"{section_labels.get(item.section, item.section)} | {item.label}{unit} | "
-                    f"{_text(value)} | {version}"
+                    f"{shown} | {version}"
                 ),
                 name=item.label,
                 spans=spans,
@@ -141,6 +144,14 @@ def _field_value(item: ReviewField) -> tuple[Any, list[EvidenceView], str, int] 
         else f"current value, from version {entry.version_no} ({entry.version_kind})"
     )
     return value, spans, version, entry.version_no
+
+
+def rupees(amount: float) -> str:
+    """An amount the way Indian tenders write it: 13000000 is "INR 1.3 crore"."""
+    for size, word in ((1e7, "crore"), (1e5, "lakh")):
+        if abs(amount) >= size:
+            return f"INR {amount / size:.4g} {word}"
+    return f"INR {amount:,.10g}"
 
 
 def _text(value: Any) -> str:

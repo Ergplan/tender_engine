@@ -23,6 +23,7 @@ const PILL = {
 const BUTTON = "rounded border px-2 py-0.5 text-xs font-medium disabled:opacity-40";
 
 const MARKER = /\[\d+\]/;
+const MANY_CHIPS = 12;
 
 /** A long text in paragraphs. An evidence marker ("[3]") becomes a small numbered button
  * that shows the quote it stands for, so each sentence is tied to its evidence. */
@@ -135,6 +136,7 @@ export function FieldCard({
   const [note, setNote] = useState("");
   const [whole, setWhole] = useState(false);
   const [wholeReason, setWholeReason] = useState(false);
+  const [allChips, setAllChips] = useState(false);
   useEffect(() => {
     if (focused) element.current?.scrollIntoView({ block: "nearest" });
   }, [focused]);
@@ -236,7 +238,24 @@ export function FieldCard({
       {candidate && evidence.length > 0 && (
         <div className="mt-1 flex flex-wrap items-center gap-1">
           <span className="text-xs text-slate-500">Evidence</span>
-          {evidence.map((item) => (
+          {/* A text whose sentences carry their numbers does not need a wall of chips:
+              the passage being shown, and the rest on request. */}
+          {marked && evidence.length > MANY_CHIPS && (
+            <button
+              type="button"
+              data-testid="chips-toggle"
+              className="text-xs text-sky-700 underline"
+              onClick={(event) => {
+                event.stopPropagation();
+                setAllChips(!allChips);
+              }}
+            >
+              {allChips ? "Hide the list" : `${evidence.length} passages, numbered in the text. Show the list`}
+            </button>
+          )}
+          {evidence
+            .filter((item) => !marked || evidence.length <= MANY_CHIPS || allChips || item.id === activeEvidence)
+            .map((item) => (
             <EvidenceChip
               key={item.id}
               evidence={item}

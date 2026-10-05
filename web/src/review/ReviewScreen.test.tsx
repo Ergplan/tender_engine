@@ -432,3 +432,23 @@ describe("evidence on a text of several sentences", () => {
     expect(quotes).toHaveTextContent("2p. 1: “Issued by Acme Renewables Agency”");
   });
 });
+
+describe("a summary with many passages", () => {
+  it("keeps the chips behind a toggle and shows the one being looked at", async () => {
+    const review = withSummary();
+    const found = review.fields[0].entries[0].state.candidate!;
+    found.evidence = Array.from({ length: 14 }, (_, index) =>
+      evidence({ id: `m${index + 1}`, ordinal: index + 1, page_no: (index % 3) + 1, bbox: [72, 100 + index * 20, 300, 112 + index * 20] }),
+    );
+    found.value = "What is procured: Acme invites bids. [1][2]\n\nMoney at risk: The EMD is set. [14]";
+    await open(review);
+    const summary = card(SUMMARY);
+    expect(within(summary).queryAllByTestId("evidence-chip")).toHaveLength(0);
+    expect(within(summary).getByTestId("chips-toggle")).toHaveTextContent("14 passages, numbered in the text");
+    fireEvent.click(within(summary).getAllByTestId("evidence-marker")[2]);
+    await waitFor(() => expect(within(card(SUMMARY)).getAllByTestId("evidence-chip")).toHaveLength(1));
+    expect(within(card(SUMMARY)).getByTestId("evidence-chip")).toHaveTextContent("14p. 2");
+    fireEvent.click(within(card(SUMMARY)).getByTestId("chips-toggle"));
+    expect(within(card(SUMMARY)).getAllByTestId("evidence-chip")).toHaveLength(14);
+  });
+});

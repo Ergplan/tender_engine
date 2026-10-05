@@ -1,65 +1,73 @@
-Summaries shown to the reviewer after the re-run of 2026-10-05 (prompt summary/v2), from the app database:
-             slug             | v |              document              |    status    | prompt | confidence | pages_read | chars | paragraphs | quotes | located 
-------------------------------+---+------------------------------------+--------------+--------+------------+------------+-------+------------+--------+---------
- nhpc-fdre-ii                 | 1 | RfS_FDRE_1200MW_NHPC_Tranche-II.pd | validated    | v2     |       0.60 |         40 |  3715 |          8 |     38 |      38
- ntpc-hybrid-03               | 1 | NTPC-1200-MW-Wind-Solar-Hybrid-Pan | needs_review | v2     |       0.72 |         33 |  3744 |          8 |     40 |      39
- ntpc-phes-2000mw             | 1 | job_45538.pdf                      | validated    | v2     |       0.70 |          3 |  2599 |          8 |     21 |      21
- ntpc-phes-2000mw             | 1 | Tender_notice_page_ntpc-phes-2000m | validated    | v2     |       0.70 |          1 |  1533 |          8 |      6 |       6
- ntpc-rel-600mw-anantapur-wtg | 1 | job_45811.pdf                      | validated    | v2     |       0.70 |          4 |  2880 |          8 |     16 |      16
- recpdcl-beed-tbcb            | 1 | RFP_Beed_05052026.pdf              | validated    | v2     |       0.70 |         26 |  3220 |          8 |     29 |      29
- seci-cfd-i                   | 1 | RfS_for_1500_MWh_assured_Peak_Supp | validated    | v2     |       0.72 |         25 |  3917 |          8 |     32 |      32
- seci-cfd-i                   | 2 | Revised_RfS_for_1000_MWh_assured_P | validated    | v2     |       0.72 |         34 |  3840 |          8 |     41 |      41
- seci-cni-1-700mw             | 1 | RfS_for_700_MW_SPV_Projects_CnI_T1 | validated    | v2     |       0.80 |         25 |  3077 |          8 |     30 |      30
- seci-ess-iv                  | 1 | RfS-ESS-IV-final_upload.pdf        | validated    | v2     |       0.72 |         30 |  3412 |          8 |     37 |      37
- seci-fdre-ix                 | 1 | RfS_for_4800_MWh_Peak_Supply_(FDRE | validated    | v2     |       0.72 |         25 |  3042 |          8 |     26 |      26
- seci-fdre-rtc-v              | 1 | RfS_for_1000_MW-RTC-V-final_upload | validated    | v2     |       0.60 |         34 |  3642 |          8 |     31 |      31
- seci-gaya-60mw               | 1 | Contractual_tender_document_60_MW_ | validated    | v2     |       0.70 |         26 |  3884 |          8 |     35 |      35
- seci-ramagiri-70mw-bess      | 1 | Contractual_Documents_70MW_Package | validated    | v2     |       0.72 |         35 |  4063 |          8 |     44 |      44
- seci-wind-tranche-xx         | 1 | RfS_for_1200_MW_Wind_Tranche-XX.pd | validated    | v2     |       0.78 |         25 |  3035 |          8 |     28 |      28
-(15 rows)
+Summaries in review after the second pass of 2026-10-05 (written from the record, prompt summary_record/v1), from the app database:
+             slug             | version |  mode  |  status   |     prompt     | confidence | chars | paragraphs | passages | located | documents | input | output | cost_usd 
+------------------------------+---------+--------+-----------+----------------+------------+-------+------------+----------+---------+-----------+-------+--------+----------
+ nhpc-fdre-ii                 |       1 | record | validated | summary_record |       0.90 |  6319 |          8 |      128 |     128 |         1 |  9163 |   3867 |   0.2850
+ ntpc-hybrid-03               |       1 | record | validated | summary_record |       0.90 |  4780 |          8 |       92 |      92 |         1 |  7130 |   3264 |   0.2345
+ ntpc-phes-2000mw             |       1 | record | validated | summary_record |       0.86 |  2517 |          8 |       34 |      34 |         2 |  3365 |   1932 |   0.1302
+ ntpc-rel-600mw-anantapur-wtg |       1 | record | validated | summary_record |       0.90 |  3385 |          8 |       36 |      36 |         2 |  4274 |   2257 |   0.1556
+ recpdcl-beed-tbcb            |       1 | record | validated | summary_record |       0.86 |  5297 |          8 |       92 |      92 |         1 |  7067 |   3282 |   0.2348
+ seci-cfd-i                   |       4 | record | validated | summary_record |       0.88 |  5107 |          8 |      111 |     111 |         6 |  9896 |   4883 |   0.3431
+ seci-cni-1-700mw             |       2 | record | validated | summary_record |       0.90 |  5159 |          8 |       94 |      94 |         4 |  8195 |   2728 |   0.2184
+ seci-ess-iv                  |       1 | record | validated | summary_record |       0.86 |  4968 |          8 |       90 |      90 |         2 |  7674 |   4529 |   0.3032
+ seci-fdre-ix                 |       2 | record | validated | summary_record |       0.86 |  4942 |          8 |       84 |      84 |         4 |  9303 |   3674 |   0.2767
+ seci-fdre-rtc-v              |       5 | record | validated | summary_record |       0.86 |  6067 |          8 |      112 |     112 |         7 |  9013 |   4467 |   0.3135
+ seci-gaya-60mw               |       1 | record | validated | summary_record |       0.88 |  6423 |          8 |      109 |     109 |         3 |  8399 |   5009 |   0.3344
+ seci-ramagiri-70mw-bess      |       3 | record | validated | summary_record |       0.85 |  6981 |          8 |       97 |      97 |         6 |  8032 |   3547 |   0.2577
+ seci-wind-tranche-xx         |       2 | record | validated | summary_record |       0.90 |  5211 |          8 |      100 |     100 |         4 |  8188 |   3254 |   0.2446
+(13 rows)
 
-
-Calls of the re-run (mode, status, tokens, cost):
-    at    |             slug             | mode  |  status   | input  | output | cost_usd 
-----------+------------------------------+-------+-----------+--------+--------+----------
- 08:40:20 | ntpc-phes-2000mw             | batch | ok        |   9605 |   6451 | 0.209300
- 08:40:21 | ntpc-phes-2000mw             | batch | ok        |   4894 |   3142 | 0.103020
- 08:40:26 | ntpc-rel-600mw-anantapur-wtg | batch | ok        |  13865 |   5739 | 0.212800
- 08:41:13 | seci-gaya-60mw               | batch | ok        |  66103 |  11317 | 0.613440
- 08:41:18 | nhpc-fdre-ii                 | batch | ok        | 106188 |  13968 | 0.880140
- 08:41:19 | seci-cfd-i                   | batch | ok        |  66595 |  13984 | 0.682575
- 08:41:21 | seci-cfd-i                   | batch | ok        |  91715 |  14273 | 0.815400
- 08:41:23 | seci-fdre-ix                 | batch | ok        |  66501 |  10598 | 0.597455
- 08:41:25 | seci-fdre-rtc-v              | batch | ok        |  90501 |  12463 | 0.764080
- 08:41:27 | seci-cni-1-700mw             | batch | ok        |  64179 |  10930 | 0.594145
- 08:41:29 | recpdcl-beed-tbcb            | batch | ok        |  64057 |  10119 | 0.573260
- 08:41:31 | seci-wind-tranche-xx         | batch | ok        |  67137 |  10361 | 0.594710
- 08:42:13 | seci-ess-iv                  | batch | ok        |  79250 |  12847 | 0.717425
- 08:42:18 | seci-ramagiri-70mw-bess      | batch | ok        |  98233 |  13572 | 0.830465
- 08:43:29 | ntpc-hybrid-03               | batch | truncated |  84635 |  16000 | 0.823175
- 08:45:27 | ntpc-hybrid-03               | sync  | ok        |  84635 |  11613 | 1.427000
+Calls of prompt summary_record (the two errors are the calls refused for lack of credit; the first ok call is the NHPC summary before amounts were also given in lakh and crore):
+    at    | status | input | output | cost_usd | seconds |                                           error                                            
+----------+--------+-------+--------+----------+---------+--------------------------------------------------------------------------------------------
+ 10:31:41 | error  |     0 |      0 | 0.000000 |       1 | http_400: Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', '
+ 10:49:15 | error  |     0 |      0 | 0.000000 |       1 | http_400: Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', '
+ 12:06:53 | ok     |  9072 |   2688 | 0.225120 |      38 | 
+ 12:10:07 | ok     |  7674 |   4529 | 0.303190 |      48 | 
+ 12:11:05 | ok     |  8399 |   5009 | 0.334440 |      58 | 
+ 12:11:48 | ok     |  8032 |   3547 | 0.257670 |      44 | 
+ 12:12:32 | ok     |  9163 |   3867 | 0.284980 |      43 | 
+ 12:13:20 | ok     |  9896 |   4883 | 0.343110 |      48 | 
+ 12:14:09 | ok     |  9303 |   3674 | 0.276730 |      49 | 
+ 12:14:55 | ok     |  9013 |   4467 | 0.313480 |      46 | 
+ 12:15:17 | ok     |  3365 |   1932 | 0.130250 |      22 | 
+ 12:15:57 | ok     |  7130 |   3264 | 0.234500 |      39 | 
+ 12:16:31 | ok     |  8195 |   2728 | 0.218350 |      34 | 
+ 12:17:13 | ok     |  7067 |   3282 | 0.234770 |      42 | 
+ 12:17:40 | ok     |  4274 |   2257 | 0.155590 |      26 | 
+ 12:18:17 | ok     |  8188 |   3254 | 0.244580 |      38 | 
 (16 rows)
 
- calls | cost_usd 
--------+----------
-    16 |    10.44
+ ok_calls | cost_usd 
+----------+----------
+       14 |     3.56
 (1 row)
 
+ summaries_no_longer_in_review 
+-------------------------------
+                            38
+(1 row)
+
+ decisions_in_database 
+-----------------------
+                     0
+(1 row)
 
 The summary of nhpc-fdre-ii as stored:
 
-What is procured: NHPC Limited is procuring up to 1200 MW of firm and dispatchable renewable power from ISTS-connected RE projects coupled with energy storage, through competitive bidding followed by reverse auction [1]. Each bidder may offer between 50 MW and 600 MW of contracted capacity, quoted in multiples of 10 MW [2][3]. For projects in North-Eastern States and Special Category, the minimum offer is 30 MW [4].
+What is procured: NHPC Limited is procuring 1200 MW of Firm and Dispatchable renewable power from ISTS-connected renewable energy projects coupled with an energy storage system, on an anywhere-in-India basis, under tariff-based competitive bidding with an e-reverse auction (Tranche-II, Open Category). [1][2][3][4][5][6][7] Each bidder may offer between 50 MW and 600 MW of contracted capacity, quoted in multiples of 10 MW, with a lower minimum of 30 MW for projects in North-Eastern and Special Category States. [8][9][10][11][12][13][14] Storage is mandatory, and the developer must keep at least 90% availability of contracted capacity during peak hours while declaring an annual CUF of not less than 40% and disclosing the solar, wind and ESS components. [15][16][17][18][19][20][21]
 
-Buyer and offtaker: NHPC Limited issues the RfS and will sign the Power Purchase Agreement with the selected bidders [5]. NHPC buys the power as an intermediary nodal agency and sells it on a back-to-back basis to State Utilities, Discoms or other beneficiaries, who are the Buying Entities [6][7]. The Buying Entities will be named later [8].
+Buyer and offtaker: NHPC Limited issues the RfS and will sign the Power Purchase Agreement with each selected bidder. [22][23][24][25][26][27][28] NHPC acts as intermediary procurer and trading licensee, buying the power under the PPA and selling it on a back-to-back basis under Power Sale Agreements to Buying Entities such as Discoms and end procurers. [29][30][31][32][33] The Buying Entities will be named later. [34]
 
-Location: Projects may be set up anywhere in India on land identified and arranged by the developer [9]. The developer must build the dedicated transmission network up to the Interconnection/Delivery Point at its own cost [10]. The proposed location is given at bid submission and may be changed up to Financial Closure, but not afterwards [11][12].
+Location: Projects may be located anywhere in India provided they connect to the ISTS, on land identified and arranged by the developer, who must hold 100% of the land in its name for the full PPA term on or before the Scheduled Commencement of Supply Date. [35][36][37][38][39] The delivery point is the point at 220 kV or above at the CTU substation where the project's power is injected into the ISTS, with metering on the low voltage side of the CTU/STU substation. [40][41][42] The developer builds and pays for the dedicated transmission line up to the Interconnection Point with no reimbursement, and the proposed location given at bid submission may be changed up to Financial Closure but not afterwards. [43][44][45][46][47][48][49][50]
 
-Timeline: The bid submission deadline and other bid dates are not printed on these pages; bids are due by the last date and time shown on the CPP portal [13]. Successful bidders must submit the required documents within 70 days of the Letter of Award and achieve Financial Closure within 18 months of the PPA Effective Date [14][15]. The scheduled commissioning period is not printed on these pages; the PPA runs for 25 years from the Scheduled Commissioning Date [16].
+Timeline: The RfS was issued on 2024-03-15, queries were due by 2024-03-26, the pre-bid meeting was on 2024-03-28, bids were due by 2024-04-12 and technical bids open on 2024-04-17, while the e-reverse auction and price bid opening dates are to be intimated separately by NHPC. [51][52][53][54][55][56][57][58][59] Bids remain valid for 180 days and the PPA is to be signed within a 90-day window. [60][61][62] Financial closure is due 18 months from the effective date and scheduled commissioning 24 months from the effective date. [63][64][65]
 
-Eligibility: The detailed qualifying requirements are in Section 3 of the RfS, which is not among these pages, so the net worth, turnover and liquidity thresholds are not stated here [17]. The financial format shows a minimum net worth test under Clause 3.8.3(i) and a choice of annual turnover, PBDIT or line of credit under Clause 3.8.3(ii), with consortium members meeting the net worth in proportion to equity commitment [18][19][20]. Developers with commissioned or under-construction RE plants that have untied capacity may also bid [21].
+Eligibility: No prior project experience or commissioned capacity is required; bidders need only deploy commercially established and operational solar PV, wind and ESS technologies. [66][67] Bidders must show net worth of INR 13000000 (INR 1.3 crore) per MW, turnover of INR 6380000 (INR 63.8 lakh) per MW and liquidity of INR 1276000 (INR 12.76 lakh) per MW. [68][69][70][71] Consortia may bid and parent or affiliate credentials may be used, but controlling shareholding cannot change from RfS submission until PPA execution and at least 51% must be held in the project company until 1 year after SCSD (or 1 year from COD for consortium members). [72][73][74][75][76][77][78]
 
-Money at risk: The Earnest Money Deposit is set by the formula in Clause 3.24(i) in lakh per MW of capacity offered, which is not on these pages; the EMD bank guarantee stays valid 12 months from the last date of bid submission [22][23]. The Performance Bank Guarantee is also sized under Clause 3.24, is submitted before the PPA is signed and is valid until 9 months after the Scheduled Commissioning Date [24][25][26]. The EMD can be forfeited if the bidder withdraws or modifies its bid during validity or adopts corrupt practices, and the PBG can be encashed if supply does not start by the SCSD [27][28].
+Money at risk: The Earnest Money Deposit is INR 9,28,000 per MW of solar plus INR 12,64,000 per MW of wind plus INR 14,64,000 per MW of ESS, capped at Rs. 10 Crores per project, valid for 12 months, alongside a bid processing fee of INR 300000 (INR 3 lakh) and success charges of INR 100000 (INR 1 lakh) per MW. [79][80][81][82][83][84] Before signing the PPA the selected bidder must furnish a Performance Bank Guarantee of INR 23,20,000 per MW of solar plus INR 31,60,000 per MW of wind plus INR 36,60,000 per MW of ESS, valid up to 9 months after the Scheduled Commissioning Date. [85][86][87] An amount equal to the EMD is encashed if the selected bidder fails to submit documents, meet eligibility or sign the PPA in time, the PBG is encashed per day of delay in supply beyond SCSD up to 6 months and for any damages under the PPA, and otherwise the EMD is released within fifteen days of the reverse auction for unsuccessful bidders or after PBG verification and PPA signing for selected bidders, with the PBG returned after commissioning net of liquidated damages. [88][89][90][91][92][93][94][95]
 
-Tariff or payment: Each bidder quotes a single tariff for its whole offered capacity, applicable for all 25 years, and selection is by e-bidding followed by reverse auction [29][30]. NHPC signs a 25-year PPA; any extension beyond 25 years is by mutual agreement [31][32]. Power in excess of the Contracted Capacity may be sold to third parties or power exchanges without a No Objection Certificate [33].
+Tariff or payment: The successful bidder is paid a fixed tariff under a PPA with a tenure of 25 years. [96][97][98][99] NHPC provides a monthly unconditional, revolving and irrevocable Letter of Credit sized at the estimated average monthly billing, drawable if undisputed bills remain unpaid 30 days after the Due Date, and coverage from its Payment Security Fund requires the generator to pay PSM charges of 2 paisa (Rs. 0.02)/kWh as a discount on monthly tariff payments. [100][101][102][103][104] Late payments carry a surcharge at SBI one-year MCLR plus 5% for the first month, rising 0.5% each further month and capped at 3% above the base rate, and generation compensation at the PPA tariff is payable for grid unavailability or backdown beyond 175 hours a year, with 95% of exchange sale proceeds adjusted against it. [105][106][107][108][109][110][111]
 
-Obligations and penalties: The developer must supply the contracted capacity of firm and dispatchable power, maintain 90% peak availability (measured monthly) and meet the minimum CUF annually; shortfalls in both attract damages [34][35]. Energy supplied below the minimum CUF/availability is penalised at one and a half times the PPA tariff for the shortfall [36]. Delay in Financial Closure may be extended only on payment of Rs. 1,000 per day per MW, and GNA penalties caused by developer-attributable commissioning delay are passed on to the developer [37][38].
+Obligations and penalties: The developer must supply the contracted capacity with at least 90% availability during four daily peak hours (2 hours within 05:00-10:00 and 2 hours within 18:00-23:00 as scheduled by the Buying Entity), declare an annual CUF of not less than 40% and keep it within +10% / -15% of the declared value for the 25-year term, with 100% of the energy from RE sources, using ALMM-listed equipment and obtaining connectivity and all clearances itself. [43][44][112][113][114][115][15][16][17][116][117] A shortfall in peak-hour availability (calculated monthly) or in annual energy below the permissible lower CUF limit, attributable to the developer, costs 1.5 times the tariff for each unit not supplied, both damages applying in the same Contract Year, and continued failure is an Event of Default with damages equal to 24 months of tariff for contracted capacity. [118][119][120][121][122][123] Delay in commencement of supply beyond SCSD is penalised by per-day encashment of the PBG proportionate to the uncommissioned capacity for up to 6 months, after which the PPA is liable to termination. [124][125][92][93][94][95][126][127][128]
+
+Rationale: Several long fields (payment security, termination compensation, change in law, PBG triggers) were truncated in the record and only their stated parts were used; the ISTS waiver cut-off, GNA details and capacity-addition flexibility were left out for brevity. Written from the extracted fields; each number is the evidence of the field it follows: [1] Title; [2][3] Procurement mode; [4][5] Tender type as stated; [6] Total capacity; [7] page summary, what is procured; [8][9] Minimum bid capacity; [10][11] Maximum bid capacity; [12][13] page summary, what is procured; [14] page summary, what is procured; [15][16][17] Demand profile; [16][18] Assured availability; [19] Storage mandatory; [20][21] Component disclosure required; [22][23] Issuing agency; [24][25][26][27] Draft agreements referenced; [28] page summary, buyer and offtaker; [29][30][31] Offtaker; [32][33] page summary, buyer and offtaker; [34] page summary, buyer and offtaker; [35][36] Location constraint; [37][38] Land responsibility; [39] page summary, location; [40] Delivery point; [41][42] Metering point; [43][44] Connectivity responsibility; [45][46][47] Line to pooling station; [48] page summary, location; [49][50] page summary, location; [51][52] Date of issue; [53] Pre-bid meeting date; [54] Last date for queries; [55][56] Bid submission deadline; [57] Technical bid opening date; [58][59] Dates deferred to another document; [60][61] Bid validity; [60] Bid validity unit; [62] PPA signing window; [63][64] Financial closure; [63] Financial closure counted; [65] Scheduled commissioning; [65] Commissioning counted from; [66][67] Technical experience requirement; [68] Turnover requirement; [68] Turnover stated as; [69][70] Liquidity requirement; [69] Liquidity stated as; [71] Net worth per MW; [72][73] Consortium allowed; [74] Parent or affiliate credentials allowed; [75][76][77][78] Shareholding lock-in; [79][80] EMD formula or amount as stated; [81] Success charges; [82][83] Bid processing fee; [84] EMD validity; [85] PBG formula or amount as stated; [86][87] PBG schedule; [88][89][90][91] Guarantee release conditions; [92][93][94][95] PBG encashment triggers; [96][97] PPA tenure; [98][99] Tariff structure; [100][101][102][103][104] Payment security mechanism; [105][106][107] Late payment surcharge; [108][109][110][111] Deemed generation; [112][113] ALMM required; [114][115] Clearances responsibility; [116][117] Peak window; [118][119][120] Shortfall penalty basis; [118][121][122] Availability shortfall penalty; [119][123] Shortfall compensation multiple; [124][125] Maximum extension with penalty; [126][127][128] Delay that leads to termination.
