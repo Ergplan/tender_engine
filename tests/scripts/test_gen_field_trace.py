@@ -56,3 +56,27 @@ def test_a_missing_route_fails_the_trace(catalog: Catalog, monkeypatch: pytest.M
 
 def test_the_committed_file_is_current() -> None:
     assert gen_field_trace.main(["gen_field_trace", "--check"]) == 0
+
+
+def test_rows_name_the_run_rules_that_concern_the_field(catalog: Catalog) -> None:
+    rows = {
+        line.split("`")[1]: line
+        for line in gen_field_trace.build(catalog).splitlines()
+        if line.startswith("| `")
+    }
+    # A rule on the whole run names no field paths; each says which fields it concerns.
+    assert all("later_version_evidence" in row for row in rows.values())
+    structured = {path for path, row in rows.items() if "structured_numbers_quoted" in row}
+    with_keys = {
+        field.path for compiled in catalog.types.values() for field in compiled.fields if field.keys
+    }
+    assert structured == with_keys and "core.guarantees.emd_structured" in structured
+    assert "core.identity.tender_number" not in structured
+
+
+def test_a_run_rule_that_does_not_say_which_fields_it_concerns_fails_the_trace(
+    catalog: Catalog, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(gen_field_trace, "run_rule_fields", lambda: {})
+    with pytest.raises(gen_field_trace.TraceError, match="does not say which fields it concerns"):
+        gen_field_trace.build(catalog)

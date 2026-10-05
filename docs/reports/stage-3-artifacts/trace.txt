@@ -1,5 +1,5 @@
 docker compose run --rm --no-deps -T tests python -m scripts.gen_field_trace
 wrote docs/FIELD-TRACE.md
-sha256 of docs/FIELD-TRACE.md before make trace: 511cdbf2b1f6496d
-sha256 of docs/FIELD-TRACE.md after make trace:  511cdbf2b1f6496d
+sha256 of docs/FIELD-TRACE.md before make trace: 5402f11d294663bb
+sha256 of docs/FIELD-TRACE.md after make trace:  5402f11d294663bb
 regenerated without a difference (183 field rows)

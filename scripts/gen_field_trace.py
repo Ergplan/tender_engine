@@ -9,6 +9,7 @@ prompt files, the rule functions and the web sources. The command fails when a f
 no UI component, no route or no table, so the document cannot drift from the code.
 """
 
+import importlib
 import inspect
 import re
 import sys
@@ -95,6 +96,16 @@ def rule_fields(catalog: Catalog) -> dict[str, list[str]]:
     return by_field
 
 
+def run_rule_fields() -> dict[str, Any]:
+    """Run rule -> the test of which fields it concerns, declared beside the rules in each
+    pack (`RUN_RULE_FIELDS`). A run rule sees a whole run and names no field paths."""
+    declared: dict[str, Any] = {}
+    for pack in ("core", "power"):
+        module = importlib.import_module(f"tender.domain_packs.{pack}.validation")
+        declared.update(module.RUN_RULE_FIELDS)
+    return declared
+
+
 def _strings(value: Any) -> list[str]:
     if isinstance(value, str):
         return [value]
@@ -136,6 +147,7 @@ def build(catalog: Catalog | None = None) -> str:
         for index, name in enumerate(("page_no", "bbox", "char_start", "quote"))
     )
     cross = rule_fields(catalog)
+    concerns = run_rule_fields()
 
     rows: dict[str, dict[str, Any]] = {}
     for tender_type in sorted(catalog.types):
@@ -191,6 +203,11 @@ def build(catalog: Catalog | None = None) -> str:
         if definition.validation.regex:
             rules.append("regex")
         rules += cross.get(path, [])
+        for run_rule in catalog.types[row["types"][0]].schema.run_rules:
+            if run_rule not in concerns:
+                raise TraceError(f"run rule {run_rule!r} does not say which fields it concerns")
+            if concerns[run_rule](definition):
+                rules.append(run_rule)
         types = "all" if row["types"] == all_types else ", ".join(row["types"])
         producer = f"LLM {prompt.name} {prompt.version}"
         service = f"extract('{field.section}')"

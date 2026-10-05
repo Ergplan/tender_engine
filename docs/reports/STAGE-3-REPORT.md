@@ -13,7 +13,7 @@ Date: 2026-10-05. Diff: `git diff stage-3-start..HEAD`. Architecture changes: `d
 | First PDF page under 3 s on the VM | Yes, on a quiet VM. `web/e2e/real-load.spec.ts` on the deployed app, Chromium on the VM, nothing cached in the browser: SECI Ramagiri (91 fields, 10 documents, first document 266 pages) first meaningful paint 1.0 s, first PDF page 1.3 s (`stage-3-artifacts/real-tender-load.txt`). Earlier runs of the same test, whose output I did not keep, gave 1.4 s and 1.7 s for SECI Gaya (first document 305 pages), and, while the test watcher was running the full suite on the two cores, up to 4.8 s and 6.2 s. The selectable text layer of the first page arrives later, 3.7 s after the start on the quiet VM. The largest document of the set has 373 pages; none has 400. Not measured from a reviewer's own connection |
 | No bulk-approve exists | Yes. The screen has Approve, Edit, Not in document and Flag per field and nothing else; the API has no route that decides more than one field (`POST /approvals` takes one candidate). Both the unit test and the browser test assert that no "approve all" exists |
 | `make trace` is clean and every schema field has a complete FIELD-TRACE row | Yes (`stage-3-artifacts/trace.txt`). `docs/FIELD-TRACE.md` has 183 rows (163 before the structured fields, which add 20 paths because a field of a type counts once per type), one per field path of the nine tender types; the watcher's `field_trace` check regenerates it and fails on a difference or on a field without a UI component, route or column |
-| `make test` green | 478 Python tests and 65 web unit tests pass; the nine checks are green (`stage-3-artifacts/checks.txt`). The Tests section below gives the counts of the first report, 404 and 37 |
+| `make test` green | 480 Python tests and 65 web unit tests pass; the nine checks are green (`stage-3-artifacts/checks.txt`). The Tests section below gives the counts of the first report, 404 and 37 |
 | `make deploy` serves the app | Yes, see "Deployment" |
 
 ## Before the UI: cost of extraction
@@ -84,7 +84,7 @@ Date: 2026-10-05. Diff: `git diff stage-3-start..HEAD`. Architecture changes: `d
 - **Python: 404 pass.** New: the window plan (10), the LLM client's cost, cache layout, replay and batch (4), extraction with shared windows and batches (9), tokens, scoping, the reviewer's view, completion, viewer endpoints, request audit and the link command through HTTP (12), flag and stale decisions, the fact guard under a flag, FIELD-TRACE (5), the cost plan.
 - **Web unit: 37 pass** (formatting, keys, the screen with a fake API, the summary, the link).
 - **Browser: 5 pass**: a replaced link and a wrong link; the layout at 1366x768 without sideways scroll and the load times; an evidence chip scrolling the PDF and highlighting, the amendment's document, search; approve with Enter, edit a date, not in document, flag, and the same after a reload; complete by keyboard and the snapshot endpoint returning the final values, then read-only.
-- **End-to-end with the real model** (`tests/e2e/test_review_flow.py`, run once, `stage-3-artifacts/e2e-real-model.txt`): the 3-page NTPC notice extracted through the batch API (waves of 1 and 9 calls, 77% of input read from the cache, USD 0.57, 299 s), 31 of 31 values with located evidence, then reviewed and completed through a review link, with the snapshot holding the tender number and its evidence. The Stage 1 and Stage 2 real-model tests were not rerun.
+- **End-to-end with the real model** (`tests/e2e/test_review_flow.py`, run once, `stage-3-artifacts/e2e-real-model.txt`): the 3-page NTPC notice extracted through the batch API (waves of 1 and 9 calls, 77% of input read from the cache, USD 0.57, 299 s in that first run; the artifact now holds the rerun made after review run 7: USD 0.65, 334 s), 31 of 31 values with located evidence, then reviewed and completed through a review link, with the snapshot holding the tender number and its evidence. The Stage 1 and Stage 2 real-model tests were not rerun.
 - **Evidence resolver corpus: 218 of 220** (`make evidence-corpus`, `stage-3-artifacts/evidence-corpus.txt`), unchanged. The two known failures are `real-0080` (a watermark through a heading) and `real-0142` (a wrapped table cell without a number).
 
 Two defects the browser tests found that the unit tests had not: the browser cached a 410 answer and showed it for the next link (every API answer is now `no-store`), and an effect returned the promise Chrome gives from `scrollIntoView`, which blanked the page when the edit form opened (fixed; the screen now also has an error boundary that says to reload).
@@ -251,7 +251,7 @@ The record is to feed a financial model, and a model computes with numbers. Pros
 - A structured field is extracted in the same call as its prose parent, with its own quotes. Nothing is derived from the prose by a model.
 - The model writes a record as `key: value` lines and code types them, so the answer schema is the same for every field and the cached prefix of a shared window survives.
 - `v2` adds fields and retypes one list (transmission `elements`, whose kV and route km became numbers). It is registered as also reading `v1`, so sections that did not gain a field were not read again. The section that holds the retyped list was read again on the one transmission tender, and its `v1` candidates are superseded (`stage-3-artifacts/structured-fields.txt`, table 8). Nothing checks that a version declared as readable is compatible with the earlier one; the declaration in the pack is trusted (KNOWN-GAPS.md).
-- On the screen a record is a card of labelled values with units, every key shown, "not stated" where the document is silent. An edit has one input per key.
+- On the screen a record is a card of labelled values with units, every key shown, "not stated" where the document is silent. A list of records shows, per item, the keys that item states. An edit of a record has one input per key; a list is edited as text lines.
 - Two checks that call no model, and `ingest_tenders revalidate` to run them again on finished runs.
 
 ### Cost of the v2 pass
@@ -307,7 +307,7 @@ A key and its scalar disagree (3), all of the kind "the scalar is stated, the ke
 
 What the first check cannot see is in KNOWN-GAPS.md: it compares numbers, not meaning, so "10 Crores" satisfies a 10 anywhere in the quotes.
 
-One thing you will notice on NHPC FDRE-II: the FDRE section is read in two windows, and the two answers for excess energy differ (above the maximum CUF at the PPA tariff, against above contracted capacity and not purchased). The card shows one and says there is an alternative. That is a question for the review, not something a check decides.
+One thing you will notice on NHPC FDRE-II: the FDRE section is read in two windows, and the two answers for excess energy differ (above the maximum CUF at the PPA tariff, against above contracted capacity and not purchased). The card shows the better-evidenced one. (Corrected after review run 9: I had written that the card says there is an alternative. It does not; the count of other answers is in the API's answer and is not drawn on the card. See the open question at the end of the next section.) Which of the two is right is a question for the review, not something a check decides.
 
 ### A defect found while finishing
 
@@ -322,7 +322,7 @@ The session that built this stopped before its checks were green. Finishing it, 
 
 ### Checks
 
-458 Python tests, 65 web unit tests and 10 browser tests pass; the nine checks are green (`checks.txt`, `playwright.txt`). The browser suite has one new test: a structured field shows every key, says what is not stated, is edited key by key, and holds the edit after a reload. The layout test prints a load time: in the two runs made for this change the first meaningful paint was 5.7 s and 6.0 s and the first PDF page 6.3 s and 6.5 s (the second run is the one kept in `playwright.txt`), against 2.2 s and 2.8 s in the run kept before; it is printed, not asserted, on a seeded stack that had just been started on the two cores, and the real-tender load test was not run again.
+458 Python tests, 65 web unit tests and 10 browser tests pass; the nine checks are green (`checks.txt`, `playwright.txt`). The browser suite has one new test: a structured field shows every key, says what is not stated, is edited key by key, and holds the edit after a reload. The layout test prints a load time: in the two runs made for this change the first meaningful paint was 5.7 s and 6.0 s and the first PDF page 6.3 s and 6.5 s against 2.2 s and 2.8 s in the run kept before (`playwright.txt` now holds the last run of the stage: 4.8 s and 5.5 s); it is printed, not asserted, on a seeded stack that had just been started on the two cores, and the real-tender load test was not run again.
 
 Deployment: no migration (`alembic_version` is still `0011`); the API reloads from the mounted source and the worker was restarted after the fix (`stage-3-artifacts/deployment.txt`). The test watcher is still stopped.
 
@@ -384,7 +384,7 @@ How the same fields read now (`structured-fields.txt`, tables 16 and 17):
 
 One judgement of mine to confirm: a number written out in words ("one and a half times", "24 (twenty-four) months") counts as printed, and a printed percentage may be given as a multiple. If you want figures only, or no conversion of a percentage, say so; it is one sentence in each prompt and one branch in the check.
 
-**The re-run.** Both sections were read again on all 13 tenders: 47 extraction runs (NHPC FDRE-II directly first, to see the prompts work, then the other twelve through the batch API), 68 model calls.
+**The re-run.** Both sections were read again on all 13 tenders: 34 extraction runs (one for NHPC FDRE-II directly first, to see the prompts work, then 33 for the other twelve through the batch API), 68 model calls, followed by 13 summary runs (`structured-fields.txt`, table 21).
 
 | Item | Calls | USD |
 | --- | --- | --- |
@@ -415,18 +415,34 @@ What it cannot see is in KNOWN-GAPS.md: it compares definitions, not meaning. A 
 
 After the version check went in, the last browser test failed: at the end of a full review the summary's Approve stayed disabled. Two things were stacked.
 
-1. **The version check made loading the packs slow.** It parsed the two released files again for every tender type. Loading took 5.6 s on an idle machine, the Python suite took 498 s where it had taken 279 s, and in the browser-test stack the worker's first validation after a start took 17 s. Fixed: each released file is parsed once (`_parse_released` in `tender/services/packs.py`). Loading now takes 1.9 s and the suite, with 20 more tests, 403 s; I did not measure the load time before the version check existed.
+1. **The version check made loading the packs slow.** It parsed the two released files again for every tender type. Loading took 5.6 s on an idle machine, the Python suite took 498 s where it had taken 279 s, and in the browser-test stack the worker's first validation after a start took 17 s. Fixed: each released file is parsed once (`_parse_released` in `tender/services/packs.py`). Loading now takes 1.9 s and the suite, with 22 more tests, 301 s in its last run; I did not measure the load time before the version check existed.
 2. **That delay exposed a race that was there before.** The worker writes a new summary in one job and validates it in the next. Between the two, the state reported the summary as current although the new text was not yet in review. The screen then stopped looking for it and the card stayed locked. With the scripted model the gap had always been shorter than the screen's first look, so the test had passed; with the real model, where a rewrite takes about 40 seconds, a reviewer who corrected a field could have been left unable to approve the summary without reloading the page. Fixed: the summary is current only once the text written from the record is validated (`SummaryWriter.state`, `_already_written(..., in_review=True)`). `test_a_correction_to_a_field_has_the_summary_written_again_before_it_can_be_approved` now stops between the two jobs and checks the state there; it fails without the fix.
 
 I found the second one only because the first slowed things down. It is the reason I asked you to hold the timed review.
 
 ### Checks, deployment, review
 
-478 Python tests, 65 web unit tests and 10 browser tests pass; the nine checks are green (`checks.txt`, `playwright.txt`); `make trace` regenerates `FIELD-TRACE.md` without a difference (`trace.txt`). No migration; the API and the worker were restarted to load the prompts, the schema and the two fixes (`deployment.txt`). The test watcher is still stopped.
+480 Python tests, 65 web unit tests and 10 browser tests pass; the nine checks are green (`checks.txt`, `playwright.txt`; the browser suite was last run before the change to the trace generator, which touches nothing the screen uses); `make trace` regenerates `FIELD-TRACE.md` without a difference (`trace.txt`). No migration; the API and the worker were restarted to load the prompts, the schema and the two fixes (`deployment.txt`). The test watcher is still stopped.
 
 **Decisions in the database: yours, on one field.** At 17:33 and 17:35 UTC, through the review link, `sector.power.fdre.excess_energy_structured` of NHPC FDRE-II was first marked not in document and then edited (above contracted capacity, not purchased). That is the field I had pointed out as having two differing answers. I have not touched those rows. The sections read again afterwards (commercial, penalties) do not hold that field, and the summary written at 17:49 UTC was written with your edit in the record. Every earlier statement in this report that the database holds no decision was true when written and is not true now.
 
-{REVIEW}
+**Independent review, run 9** (on this change): (a) 1, (b) none, (c) 1, (d) none, (e) 24. One code defect, in the trace generator. Output: `stage-3-artifacts/review-gpt-6.1-sol-run9.txt`.
+
+| # | Finding | Outcome |
+| --- | --- | --- |
+| a1, c1 | Invariants and audit of the unchanged write paths cannot be certified from the diff | As in every run: not resolvable by code |
+| e2 | FIELD-TRACE lists cross-field rules but no run rules, so `structured_numbers_quoted` was missing from the rows of the structured fields | Fixed in code: each pack declares which fields a run rule concerns (`RUN_RULE_FIELDS`), the generator lists them and refuses a run rule that does not say (two tests). All 183 rows now also name `later_version_evidence`; the 20 structured rows name `structured_numbers_quoted` |
+| e19 | The card does not say that a field has another answer | Report corrected. The gap is real and is in KNOWN-GAPS.md and the open question below |
+| e22 | 47 extraction runs was wrong | Corrected: 34 extraction runs and 13 summary runs (`structured-fields.txt`, table 21) |
+| e18 | "Every key shown" does not hold for a list of records | Report corrected |
+| e8 | The real-model figures no longer matched their artifact | Report says which run each figure is from |
+| e24 | Your two decisions and the time of the summary had no retained evidence | `structured-fields.txt`, tables 20 and 21 |
+| e21, e23, e20 | Load times of runs not kept, the timings of the slow load, the failing run of the regression test | The report says which run the artifact holds; the rest are statements of this report |
+| e1, e3 to e7, e9 to e17 | Earlier statements of this report | As in earlier runs: statements a diff cannot prove, or limits already in KNOWN-GAPS.md |
+
+{REVIEW10}
+
+**An open question from this review.** On NHPC FDRE-II, 17 fields have two reviewable answers, one from each of two page windows of the same section (`structured-fields.txt`, table 22). The card draws the better-evidenced one and gives no sign of the other. For 16 of them I have not compared the two answers. For the seventeenth, excess energy, they differ, and you have already decided it. Options: leave it; show "1 other answer" on the card; or show both values side by side. I have not changed the screen before your timed review.
 
 ### For the timed review
 

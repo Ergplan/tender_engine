@@ -13,3 +13,4 @@ CROSS_FIELD_RULES: dict[str, CrossFieldRule] = {
     "power_structured_agrees_with_scalar": power_structured_agrees_with_scalar,
 }
 RUN_RULES: dict[str, RunRule] = {}
+RUN_RULE_FIELDS: dict[str, object] = {}

@@ -1,6 +1,6 @@
 """Shared validators of the core pack: rules on fields every tender has. Plain Python."""
 
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from typing import Any
 
 from sqlalchemy import select
@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 from core.models import Candidate, EvidenceSpan, ExtractionRun
 from core.models.extraction import RECORD_MODE
-from core.schemas import CandidateOutcome, CrossFieldRule, RuleOutcome, RunRule
+from core.schemas import CandidateOutcome, CrossFieldRule, FieldDef, RuleOutcome, RunRule
 from tender.domain_packs.core.structured import (
     QUOTED_RULE,
     structured_agrees_with_scalar,
@@ -132,4 +132,10 @@ CROSS_FIELD_RULES: dict[str, CrossFieldRule] = {
 RUN_RULES: dict[str, RunRule] = {
     "later_version_evidence": later_version_evidence,
     QUOTED_RULE: structured_numbers_quoted,
+}
+# Which fields each run rule concerns, for the field trace (scripts/gen_field_trace.py):
+# a run rule sees the whole run, so unlike a cross-field rule it names no field paths.
+RUN_RULE_FIELDS: dict[str, Callable[[FieldDef], bool]] = {
+    "later_version_evidence": lambda field: True,
+    QUOTED_RULE: lambda field: bool(field.keys),
 }

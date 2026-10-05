@@ -226,3 +226,52 @@ v2.yaml
          2 |     2
 (1 row)
 
+
+20. Decisions in the app database (queried 2026-10-05 21:35 UTC):
+     slug     |                 field_path                 |    decision     |   status   |       reviewer        |   decided_at_utc    |                                                                    final_value                                                                    
+--------------+--------------------------------------------+-----------------+------------+-----------------------+---------------------+---------------------------------------------------------------------------------------------------------------------------------------------------
+ nhpc-fdre-ii | sector.power.fdre.excess_energy_structured | not_in_document | superseded | venture@aayuda.energy | 2026-10-05 17:33:44 | 
+ nhpc-fdre-ii | sector.power.fdre.excess_energy_structured | edited          | active     | venture@aayuda.energy | 2026-10-05 17:35:50 | {"above": "contracted_capacity", "price_basis": "not_purchased", "pct_of_tariff": null, "fixed_inr_per_kwh": null, "procurer_first_right": false}
+(2 rows)
+
+ approvals | canonical_facts | current_facts | feedback 
+-----------+-----------------+---------------+----------
+         2 |               2 |             1 |        1
+(1 row)
+
+21. Record (summary) runs of NHPC FDRE-II, and the extraction runs of the re-run by mode:
+  mode  |  status   |     created_utc     |    finished_utc     
+--------+-----------+---------------------+---------------------
+ sync   | validated | 2026-10-05 17:46:07 | 2026-10-05 17:49:26
+ record | validated | 2026-10-05 17:49:26 | 2026-10-05 17:50:08
+(2 rows)
+
+  mode  | runs | tenders 
+--------+------+---------
+ batch  |   33 |      12
+ record |   13 |      13
+ sync   |    1 |       1
+(3 rows)
+
+22. Alternative answers: fields in review with more than one reviewable candidate from the same run (two windows of one section), NHPC FDRE-II:
+                         field_path                         | reviewable_candidates 
+------------------------------------------------------------+-----------------------
+ core.documents.annexure_formats                            |                     2
+ core.documents.draft_agreements_referenced                 |                     2
+ core.documents.required_documents                          |                     2
+ sector.power.common.clearances_responsibility              |                     2
+ sector.power.common.connectivity_responsibility            |                     2
+ sector.power.common.land_responsibility                    |                     2
+ sector.power.common.line_to_pooling_station_responsibility |                     2
+ sector.power.fdre.assured_availability_percent             |                     2
+ sector.power.fdre.availability_shortfall_penalty           |                     2
+ sector.power.fdre.component_disclosure_required            |                     2
+ sector.power.fdre.demand_profile                           |                     2
+ sector.power.fdre.demand_profile_structured                |                     2
+ sector.power.fdre.excess_energy_structured                 |                     2
+ sector.power.fdre.firmness_definition                      |                     2
+ sector.power.fdre.peak_window_definition                   |                     2
+ sector.power.fdre.shortfall_compensation_multiple          |                     2
+ sector.power.fdre.storage_mandatory                        |                     2
+(17 rows)
+
