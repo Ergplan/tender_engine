@@ -1,0 +1,131 @@
+Structured fields (schema v2): the v2 pass and the two checks. Queries on the app database, 2026-10-05 17:21 UTC.
+
+1. Extraction runs by schema version and mode (cost_usd of the run rows):
+ sv |  mode  |  status   | runs | tokens_in | tokens_out |  usd   |        first        |        last         
+----+--------+-----------+------+-----------+------------+--------+---------------------+---------------------
+ v1 | sync   | validated |   82 |  16702667 |    1186824 | 225.67 | 2026-10-04 15:17:17 | 2026-10-05 16:13:37
+ v1 | batch  | validated |   22 |   3343468 |     320331 |  23.99 | 2026-10-05 05:30:23 | 2026-10-05 08:45:28
+ v1 | record | validated |   27 |    217110 |      90663 |   6.70 | 2026-10-05 12:06:16 | 2026-10-05 13:37:26
+ v2 | sync   | validated |    1 |    432867 |      37844 |   6.22 | 2026-10-05 15:29:36 | 2026-10-05 16:15:50
+ v2 | record | validated |   39 |    255339 |     133872 |   9.25 | 2026-10-05 15:36:20 | 2026-10-05 17:06:35
+ v2 | batch  | validated |   43 |   6117541 |     501531 |  41.43 | 2026-10-05 15:37:52 | 2026-10-05 16:15:50
+(6 rows)
+
+2. Tenders and runs of the v2 pass that read documents:
+ tenders | runs | sync | batch 
+---------+------+------+-------
+      13 |   44 |    1 |    43
+(1 row)
+
+3. Model calls since the v2 pass began (2026-10-05 15:00 UTC), by mode and prompt:
+ mode  |       prompt_name        | pv | status | calls | tokens_in | cache_read | tokens_out |  usd  |        first        |        last         
+-------+--------------------------+----+--------+-------+-----------+------------+------------+-------+---------------------+---------------------
+ sync  | extract/guarantees       | v2 | ok     |     1 |    105077 |          0 |       6364 |  1.37 | 2026-10-05 15:30:46 | 2026-10-05 15:30:46
+ sync  | extract/commercial       | v2 | ok     |     1 |     92397 |          0 |       9401 |  1.39 | 2026-10-05 15:32:31 | 2026-10-05 15:32:31
+ sync  | extract/penalties        | v2 | ok     |     1 |     91723 |          0 |       6083 |  1.22 | 2026-10-05 15:33:36 | 2026-10-05 15:33:36
+ sync  | extract/fdre_profile     | v2 | ok     |     2 |    143670 |          0 |      15996 |  2.24 | 2026-10-05 15:35:09 | 2026-10-05 15:36:19
+ sync  | summary_record           | v1 | ok     |    39 |    255339 |          0 |     133872 |  9.25 | 2026-10-05 15:37:09 | 2026-10-05 17:06:34
+ batch | extract/guarantees       | v2 | ok     |    30 |   1067476 |      18241 |      91464 |  8.51 | 2026-10-05 15:40:04 | 2026-10-05 16:12:19
+ batch | extract/commercial       | v2 | ok     |    38 |   1829642 |     144039 |     131236 | 12.45 | 2026-10-05 15:41:02 | 2026-10-05 16:12:19
+ batch | extract/epc_scope        | v2 | ok     |    13 |   1002904 |       3682 |      87645 |  7.21 | 2026-10-05 15:41:14 | 2026-10-05 15:51:00
+ batch | extract/penalties        | v2 | ok     |    28 |    884137 |     144039 |      96959 |  6.86 | 2026-10-05 15:41:20 | 2026-10-05 16:12:19
+ batch | extract/wind_tech        | v2 | ok     |     3 |     86010 |          0 |       7333 |  0.61 | 2026-10-05 15:41:55 | 2026-10-05 15:45:45
+ batch | extract/bess_performance | v2 | ok     |     2 |     97510 |       3563 |       8818 |  0.71 | 2026-10-05 15:42:23 | 2026-10-05 15:45:48
+ batch | extract/fdre_profile     | v2 | ok     |    10 |    356437 |     124788 |      60585 |  3.31 | 2026-10-05 15:42:49 | 2026-10-05 15:49:31
+ batch | extract/hybrid_mix       | v2 | ok     |     1 |     72308 |          0 |       2922 |  0.43 | 2026-10-05 15:42:52 | 2026-10-05 15:42:52
+ batch | extract/tbcb_elements    | v2 | ok     |     2 |    146147 |          0 |      11128 |  1.01 | 2026-10-05 15:42:56 | 2026-10-05 15:42:56
+ batch | extract/solar_tech       | v2 | ok     |     1 |     48679 |          0 |       3441 |  0.33 | 2026-10-05 16:12:19 | 2026-10-05 16:12:19
+(15 rows)
+
+                     part                     | calls | tokens_in | cache_read | tokens_out |  usd  
+----------------------------------------------+-------+-----------+------------+------------+-------
+ reading the sections again                   |   133 |   6024117 |     438352 |     539375 | 47.65
+ summaries after the pass (incomplete record) |    26 |    145713 |          0 |      86419 |  5.78
+ summaries from the complete record           |    13 |    109626 |          0 |      47453 |  3.47
+(3 rows)
+
+ all_calls_in_database_usd | calls 
+---------------------------+-------
+                    329.32 |   724
+(1 row)
+
+4. Structured fields per tender (a field counts once; it has a value if any live candidate has one):
+             slug             | fields | with_value 
+------------------------------+--------+------------
+ nhpc-fdre-ii                 |      8 |          8
+ ntpc-hybrid-03               |      8 |          7
+ ntpc-phes-2000mw             |      6 |          0
+ ntpc-rel-600mw-anantapur-wtg |      8 |          1
+ recpdcl-beed-tbcb            |      8 |          3
+ seci-cfd-i                   |      8 |          7
+ seci-cni-1-700mw             |      8 |          8
+ seci-ess-iv                  |      8 |          7
+ seci-fdre-ix                 |      8 |          8
+ seci-fdre-rtc-v              |      8 |          8
+ seci-gaya-60mw               |      8 |          4
+ seci-ramagiri-70mw-bess      |      8 |          5
+ seci-wind-tranche-xx         |      8 |          7
+                              |    102 |         73
+(14 rows)
+
+5. Live candidates of structured fields and of the retyped list (transmission elements), by status:
+          kind           |    status    | candidates | with_value | with_located_evidence 
+-------------------------+--------------+------------+------------+-----------------------
+ elements (retyped list) | validated    |          2 |          2 |                     2
+ structured field        | needs_review |         13 |         13 |                    13
+ structured field        | not_found    |        129 |          0 |                     0
+ structured field        | validated    |        102 |        102 |                   102
+(4 rows)
+
+6. Results of the two checks:
+              rule_name              | passed | results | candidates 
+-------------------------------------+--------+---------+------------
+ power_structured_agrees_with_scalar | f      |       2 |          2
+ power_structured_agrees_with_scalar | t      |      33 |         33
+ structured_agrees_with_scalar       | f      |       1 |          1
+ structured_agrees_with_scalar       | t      |      14 |         14
+ structured_numbers_quoted           | f      |       9 |          9
+ structured_numbers_quoted           | t      |     108 |        108
+(6 rows)
+
+7. Every failure:
+          slug           |                    field_path                    |    status    |              rule_name              |                                                  message                                                  
+-------------------------+--------------------------------------------------+--------------+-------------------------------------+-----------------------------------------------------------------------------------------------------------
+ seci-cfd-i              | sector.power.fdre.demand_profile_structured      | needs_review | power_structured_agrees_with_scalar | assured_availability_percent is 90 but `peak_availability_pct` of demand_profile_structured is not stated
+ seci-fdre-ix            | sector.power.fdre.demand_profile_structured      | needs_review | power_structured_agrees_with_scalar | assured_availability_percent is 90 but `peak_availability_pct` of demand_profile_structured is not stated
+ seci-ramagiri-70mw-bess | core.penalties.delay_ld_structured               | needs_review | structured_agrees_with_scalar       | delay_ld_per_mw_per_day_inr is 20250 but `rate_inr_per_mw_per_day` of delay_ld_structured is not stated
+ nhpc-fdre-ii            | sector.power.common.deemed_generation_structured | needs_review | structured_numbers_quoted           | not printed in this field's quotes: compensation_pct_of_tariff 100
+ ntpc-hybrid-03          | core.penalties.shortfall_rules                   | needs_review | structured_numbers_quoted           | not printed in this field's quotes: 1.penalty_multiple_of_tariff 1.5
+ seci-cfd-i              | core.penalties.shortfall_rules                   | needs_review | structured_numbers_quoted           | not printed in this field's quotes: 1.threshold_pct 90
+ seci-cni-1-700mw        | sector.power.common.deemed_generation_structured | needs_review | structured_numbers_quoted           | not printed in this field's quotes: compensation_pct_of_tariff 100
+ seci-fdre-ix            | core.penalties.shortfall_rules                   | needs_review | structured_numbers_quoted           | not printed in this field's quotes: 1.threshold_pct 90
+ seci-fdre-ix            | core.penalties.shortfall_rules                   | needs_review | structured_numbers_quoted           | not printed in this field's quotes: 1.threshold_pct 90
+ seci-fdre-ix            | sector.power.common.deemed_generation_structured | needs_review | structured_numbers_quoted           | not printed in this field's quotes: compensation_pct_of_tariff 100
+ seci-fdre-rtc-v         | sector.power.common.deemed_generation_structured | needs_review | structured_numbers_quoted           | not printed in this field's quotes: compensation_pct_of_tariff 100
+ seci-wind-tranche-xx    | sector.power.common.deemed_generation_structured | needs_review | structured_numbers_quoted           | not printed in this field's quotes: compensation_pct_of_tariff 100
+(12 rows)
+
+8. The retyped list: candidates of sector.power.transmission.elements by the schema version of their run:
+ sv |   status   | count 
+----+------------+-------
+ v1 | superseded |     2
+ v2 | validated  |     2
+(2 rows)
+
+9. NHPC FDRE-II as the review shows it (from docs/reports/EXTRACTION-SUMMARY.md, regenerated after the review-state correction):
+| fdre | nhpc-fdre-ii | 1 | 1 | 264 | 97 | 82 | 82 | 100% | 85% | 2 | 2,774,678 | 200,960 | 30.36 |
+| **fully extracted** | 13 of 13 tenders | 25 | 51 | 3464 | 1248 | 876 | 874 | 100% | 70% | 18 | 26,959,366 | 2,223,612 | 309.79 |
+
+10. Times (UTC): first v2 run created; first summary written after the pass; review_state.py corrected (file time); worker restarted:
+    first_v2_run     
+---------------------
+ 2026-10-05 15:29:36
+(1 row)
+
+ first_summary_after_the_pass 
+------------------------------
+ 2026-10-05 15:37:09
+(1 row)
+
+core/services/review_state.py modified: 2026-10-05 16:55:11
+worker started: 2026-10-05T16:56:56.

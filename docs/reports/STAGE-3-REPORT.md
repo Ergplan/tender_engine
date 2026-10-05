@@ -250,7 +250,7 @@ The record is to feed a financial model, and a model computes with numbers. Pros
 - 15 structured fields and one retyped list, in schema `v2`. Six are in every tender type (EMD, PBG, payment security, delay LD, shortfall rules, deemed generation); the rest belong to a type (FDRE demand profile and excess energy; CUF terms and excess energy for solar, wind and hybrid; two each for BESS, EPC and transmission, whose `elements` now carry kV and route km as numbers).
 - A structured field is extracted in the same call as its prose parent, with its own quotes. Nothing is derived from the prose by a model.
 - The model writes a record as `key: value` lines and code types them, so the answer schema is the same for every field and the cached prefix of a shared window survives.
-- `v2` only adds fields, so it is registered as also reading `v1`: sections that did not gain a field were not read again.
+- `v2` adds fields and retypes one list (transmission `elements`, whose kV and route km became numbers). It is registered as also reading `v1`, so sections that did not gain a field were not read again. The section that holds the retyped list was read again on the one transmission tender, and its `v1` candidates are superseded (`stage-3-artifacts/structured-fields.txt`, table 8). Nothing checks that a version declared as readable is compatible with the earlier one; the declaration in the pack is trusted (KNOWN-GAPS.md).
 - On the screen a record is a card of labelled values with units, every key shown, "not stated" where the document is silent. An edit has one input per key.
 - Two checks that call no model, and `ingest_tenders revalidate` to run them again on finished runs.
 
@@ -275,7 +275,7 @@ Only the ten sections that gained a field were read again, on all 13 tenders: 44
 | Summaries written once more from the complete record | 13 | 3.47 |
 | **The v2 pass in all** | **172** | **56.90** |
 
-From `llm_call_log.cost_usd` at the configured prices, not the provider's invoice. USD 5.78 of it bought nothing: those summaries were replaced. Stage 3 is now at about USD 94 and the running total at about USD 354.
+From `llm_call_log.cost_usd` at the configured prices, not the provider's invoice; the query results behind this table and the ones below are kept in `stage-3-artifacts/structured-fields.txt`. USD 5.78 of it bought nothing: those summaries were replaced. Stage 3 is now at about USD 94 and the running total at about USD 354.
 
 ### What came back
 
@@ -311,7 +311,7 @@ One thing you will notice on NHPC FDRE-II: the FDRE section is read in two windo
 
 The session that built this stopped before its checks were green. Finishing it, I found three things. The first is the one that matters.
 
-1. **After the v2 pass the review showed only the fields that had been read again.** `v2` is registered as also reading `v1`, but the review state still kept only runs whose schema version equalled the newest run's. With a `v2` run as the newest, every field of a section that was not read again (identity, key dates, eligibility, connectivity, documents) lost its candidate: NHPC FDRE-II showed 37 values instead of 82, and the regenerated summary file 365 values instead of 876. Nothing was lost in the database; the candidates were there and validated. It was live on your review link for about an hour and a half, from the v2 pass until the fix. No decision was made in that time.
+1. **After the v2 pass the review showed only the fields that had been read again.** `v2` is registered as also reading `v1`, but the review state still kept only runs whose schema version equalled the newest run's. With a `v2` run as the newest, every field of a section that was not read again (identity, key dates, eligibility, connectivity, documents) lost its candidate: NHPC FDRE-II showed 37 values instead of 82, and the regenerated summary file 365 values instead of 876. Nothing was lost in the database; the candidates were there and validated. It was live on your review link for about eighty minutes, from about 15:36 UTC, when NHPC's `v2` run was validated, until the correction at 16:55 UTC (the times are in `structured-fields.txt`, table 10). No decision was made in that time. The counts of 37 and 365 are from the summary file as I first regenerated it; that version of the file was replaced and is not kept.
    - Fixed in `core/services/review_state.py`: runs of every version registered with the same content are read together (`SchemaRegistry.versions_read_as`). A version that changes or removes a field has other content and is still read on its own.
    - Two tests, the first of which failed before the fix: `test_runs_of_an_earlier_schema_version_are_read_under_a_later_one_that_only_adds` and `test_runs_of_a_schema_version_with_other_fields_are_not_mixed_in`.
    - The summary is written from the record through the same code, so the 13 summaries written after the pass had lost those fields too (NHPC's no longer mentioned net worth, turnover or the pre-bid date). All 13 are written again from the complete record, validated, every passage located (`stage-3-artifacts/summaries.txt`).
@@ -320,7 +320,7 @@ The session that built this stopped before its checks were green. Finishing it, 
 
 ### Checks
 
-458 Python tests, 65 web unit tests and 10 browser tests pass; the nine checks are green (`checks.txt`, `playwright.txt`). The browser suite has one new test: a structured field shows every key, says what is not stated, is edited key by key, and holds the edit after a reload. The load time that the layout test prints was 5.7 s and 6.0 s in the two runs made for this change, against 2.2 s in the run kept before it; it is printed, not asserted, on a seeded stack that had just been started on the two cores, and the real-tender load test was not run again.
+458 Python tests, 65 web unit tests and 10 browser tests pass; the nine checks are green (`checks.txt`, `playwright.txt`). The browser suite has one new test: a structured field shows every key, says what is not stated, is edited key by key, and holds the edit after a reload. The layout test prints a load time: in the two runs made for this change the first meaningful paint was 5.7 s and 6.0 s and the first PDF page 6.3 s and 6.5 s (the second run is the one kept in `playwright.txt`), against 2.2 s and 2.8 s in the run kept before; it is printed, not asserted, on a seeded stack that had just been started on the two cores, and the real-tender load test was not run again.
 
 Deployment: no migration (`alembic_version` is still `0011`); the API reloads from the mounted source and the worker was restarted after the fix (`stage-3-artifacts/deployment.txt`). The test watcher is still stopped.
 
@@ -330,7 +330,20 @@ Deployment: no migration (`alembic_version` is still `0011`); the API reloads fr
 - 8 of them are structured cards. Read them as you would any field: each has its own quotes. A key shown as "not stated" is a claim that the document is silent, and worth a glance at the prose field beside it.
 - The summary is the one written at 17:00 UTC from the complete record.
 
-**Independent review, run 8** (on this change): not yet run when this draft was committed; its result replaces this line.
+**Independent review, run 8** (on this change): (a) 1, (b) none, (c) 1, (d) none, (e) 20. No code defect. Output: `stage-3-artifacts/review-gpt-6.1-sol-run8.txt`.
+
+| # | Finding | Outcome |
+| --- | --- | --- |
+| a1, c1 | Invariants and audit of the unchanged write paths cannot be certified from the diff | As in runs 1 to 7: not resolvable by code |
+| e17 | "`v2` only adds fields" is not exact: the transmission `elements` list is retyped, and the `v1` registration is replaced by the `v2` content without a check that the two are compatible | Report, DECISIONS.md and ARCHITECTURE.md corrected to what was done. In the data no harm follows: the two `v1` candidates of that list are superseded and the live ones come from the `v2` run (`structured-fields.txt`, table 8). That no check exists is in KNOWN-GAPS.md; whether to build one is a decision for you (see below) |
+| e18 | The totals of the v2 pass and the populations of the two checks had no retained query result | `structured-fields.txt` now holds the queries: runs, calls and cost by prompt, fields and candidates, the results of both checks and every failure |
+| e19 | The chronology of the defect is not provable: the 37 and 365 values, the length of the exposure, the failing run of the new test, that the browser test found the record defect | The times are now in the artifact and the report says which numbers are not kept. The rest are statements of this report |
+| e20 | The two load measurements did not match the artifact | Report corrected: it had mixed the paint and the PDF times |
+| e1 to e16 | Earlier statements of this report: historical test totals, deployments, load times not kept, costs outside the call log, your instructions, the first page-read summaries, what a prompt asks for but no rule enforces | As in earlier runs: statements a diff cannot prove, or limits already listed in KNOWN-GAPS.md. They do not block the stage under rule 15 |
+
+I stopped after this run: it found no code defect, and the changes after it are to the report, two documents and one artifact.
+
+**One decision for you.** `reads_versions` lets a new schema version read the runs of an earlier one. It is safe only when the new version leaves every earlier field as it was, or when a changed field's section is read again, as was done here. Today that is a rule people follow, not one the code checks. A check is possible (keep each released version's field definitions, and refuse `reads_versions` when a field differs unless it is named as read again). Say if you want it built before Stage 4.
 
 ## Your step: one real review
 
