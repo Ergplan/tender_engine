@@ -15,7 +15,8 @@ def test_every_field_of_every_tender_type_has_a_complete_row(catalog: Catalog) -
         cells = [cell.strip() for cell in row.strip("|").split("|")]
         assert len(cells) == 6 and all(cells), row
         assert cells[2].startswith("review/FieldCard value (") and "review/EditForm" in cells[2]
-        assert "extract('" in cells[3] and "approve()" in cells[3]
+        assert "approve()" in cells[3]
+        assert "extract('" in cells[3] or "SummaryWriter.write()" in cells[3]
         assert cells[4].startswith("LLM ") and "; HUMAN approval" in cells[4]
         assert cells[5].startswith("RULE type, evidence_located")
     assert "GET /v1/tenders/{tender_id}/review" in text and "POST /v1/approvals" in text
@@ -25,7 +26,7 @@ def test_every_field_of_every_tender_type_has_a_complete_row(catalog: Catalog) -
 def test_rows_are_in_review_order_and_name_the_rules_of_a_field(catalog: Catalog) -> None:
     rows = [line for line in gen_field_trace.build(catalog).splitlines() if line.startswith("| `")]
     assert rows[0].startswith("| `core.summary.plain_english_summary` | all |")
-    assert "LLM summary v2" in rows[0]
+    assert "LLM summary_record v1 from the record (narrative: LLM summary v2)" in rows[0]
     deadline = next(row for row in rows if "`core.key_dates.bid_submission_deadline`" in row)
     assert "required_present" in deadline and "date_order" in deadline
     assert "LLM extract/key_dates v1" in deadline and "date picker" in deadline

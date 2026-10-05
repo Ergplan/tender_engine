@@ -23,6 +23,7 @@ from core.models import Approval, Candidate, CanonicalFact, EvidenceSpan
 from core.schemas import SchemaRegistry
 from core.services.approve import ApprovalService
 from core.services.extract import ExtractService
+from tender.services import summary
 from tender.services.packs import Catalog, TenderField, load_catalog
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -188,11 +189,17 @@ def build(catalog: Catalog | None = None) -> str:
             rules.append("regex")
         rules += cross.get(path, [])
         types = "all" if row["types"] == all_types else ", ".join(row["types"])
+        producer = f"LLM {prompt.name} {prompt.version}"
+        service = f"extract('{field.section}')"
+        if path == summary.SUMMARY_FIELD:
+            # Written in a second pass from the record; the page-read summary feeds it.
+            record = load_prompt(summary.PROMPT_NAME, summary.PROMPT_VERSION, catalog.prompt_roots)
+            producer = f"LLM {record.name} {record.version} from the record (narrative: {producer})"
+            service = "tender.services.summary.SummaryWriter.write()"
         lines.append(
             f"| `{path}` | {types} | review/FieldCard value ({field.value_type}); "
             f"review/EditForm {components[field.value_type]} | {field.section}: "
-            f"extract('{field.section}') / approve() | LLM {prompt.name} {prompt.version}; "
-            f"HUMAN approval | RULE {', '.join(rules)} |"
+            f"{service} / approve() | {producer}; HUMAN approval | RULE {', '.join(rules)} |"
         )
     return "\n".join(lines) + "\n"
 

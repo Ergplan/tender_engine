@@ -38,6 +38,7 @@ class Runner:
         schemas: SchemaRegistry,
         llm: LLMClient,
         extra_handlers: dict[str, Handler] | None = None,
+        on_validated: Callable[[Session, str], None] | None = None,
     ) -> None:
         self._settings = settings
         self._session_factory = session_factory
@@ -45,14 +46,22 @@ class Runner:
         self._section_map = SectionMapper(llm, settings.tenant_id)
         self._extract = ExtractService(llm, storage, schemas, settings)
         self._validate = ValidationService(schemas, settings.tenant_id)
+        self._on_validated = on_validated
         self._handlers: dict[str, Handler] = {
             "parse": lambda s, p: _ignore(self._parse.parse(s, p["document_id"])),
             "section_map": lambda s, p: _ignore(self._section_map.map(s, p["document_id"])),
             "extract": lambda s, p: _ignore(self._extract.extract(s, p["extraction_run_id"])),
-            "validate": lambda s, p: _ignore(self._validate.validate(s, p["extraction_run_id"])),
+            "validate": self._validated,
             # Job kinds of the domain layer, handed in by whoever builds the runner.
             **(extra_handlers or {}),
         }
+
+    def _validated(self, session: Session, payload: dict[str, Any]) -> None:
+        """Validate the run; then tell the domain layer, which may have a second pass to
+        queue once the runs of its object are all in."""
+        self._validate.validate(session, payload["extraction_run_id"])
+        if self._on_validated is not None:
+            self._on_validated(session, payload["extraction_run_id"])
 
     def run_once(self) -> bool:
         """Run the next due job, if any. Returns whether a job was run."""

@@ -489,6 +489,28 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/tenders/{tender_id}/summarize": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Summarize
+         * @description Queue the summary of the tender, written from its extracted record: each sentence
+         *     carries the evidence of the fields it draws on. The worker queues it by itself when
+         *     the extraction of a tender ends; this asks for it again (after a field was edited).
+         */
+        post: operations["summarize_api_v1_tenders__tender_id__summarize_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/tenders/{tender_id}/versions": {
         parameters: {
             query?: never;
@@ -1101,6 +1123,13 @@ export interface components {
             snapshot: {
                 [key: string]: unknown;
             };
+            /** Tender Id */
+            tender_id: string;
+        };
+        /** SummaryQueued */
+        SummaryQueued: {
+            /** Queued */
+            queued: boolean;
             /** Tender Id */
             tender_id: string;
         };
@@ -2119,6 +2148,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SnapshotOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    summarize_api_v1_tenders__tender_id__summarize_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-reviewer"?: string | null;
+            };
+            path: {
+                tender_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SummaryQueued"];
                 };
             };
             /** @description Validation Error */

@@ -15,6 +15,7 @@ from core.models import Document, ExtractionRun
 from scripts import ingest_tenders
 from scripts.ingest_tenders import Manifest, ManifestFile, Services, plan_versions
 from tender.models import Tender, TenderVersion
+from tender.services.worker_jobs import summary_writer
 from tests.conftest import Pipeline
 from tests.fixtures.llm import ScriptedSDK
 from tests.fixtures.pdfs import make_pdf
@@ -32,6 +33,13 @@ def services_of(pipeline: Pipeline) -> Services:
         tenders=pipeline.tenders,
         review=pipeline.review_state,
         extract=pipeline.extract,
+        summaries=summary_writer(
+            pipeline.llm,
+            pipeline.catalog,
+            pipeline.extract,
+            pipeline.schemas,
+            pipeline.settings.tenant_id,
+        ),
     )
 
 
@@ -283,7 +291,10 @@ def test_amendment_routing_records_the_comparison_for_every_amending_document(
     ingest_tenders.amendment_routing(services, mode="missing")
     pipeline.runner.run_until_idle()
     newest = db.scalars(
-        select(ExtractionRun).order_by(ExtractionRun.created_at.desc(), ExtractionRun.id).limit(1)
+        select(ExtractionRun)
+        .where(ExtractionRun.mode != "record")
+        .order_by(ExtractionRun.created_at.desc(), ExtractionRun.id)
+        .limit(1)
     ).one()
     assert newest.groups == ["guarantees"] and newest.object_version == 2
 

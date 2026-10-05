@@ -16,6 +16,8 @@ You open the review from the link you were sent. The link is yours: your name is
 4. Not in document if the tender genuinely does not state it. That is a correct answer, not a gap.
 5. Flag if you are unsure, and move on. A flagged field is not counted as decided.
 
+The summary at the top is written from the fields below it, not read from the document a second time. Each of its sentences carries the evidence of the fields it draws on, so a number after a sentence opens the same passage as the chip of that field. If a value in the summary is wrong, the field it comes from is wrong: correct the field.
+
 When a field has several evidence chips they are numbered. In the summary, each sentence ends with the number of the chip that supports it; in other fields, the focused field lists the words each chip quotes. The passage of the chip you clicked is the one highlighted in the document; the others are drawn faintly.
 
 A field that comes from an amendment carries a tag such as "v2 amendment" and shows what the earlier version said. If the amendment does not in fact change the field, mark it Not in document: the earlier version's value comes back for you to decide.

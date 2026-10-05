@@ -21,10 +21,10 @@ from core.services.extract import ExtractService
 from core.services.ingest import IngestService
 from core.storage import make_storage
 from tender.models import ReviewToken
-from tender.services.amendment_map import AmendmentMapper, job_handlers
 from tender.services.packs import build_registry
 from tender.services.tenders import TenderService
 from tender.services.tokens import TokenService
+from tender.services.worker_jobs import tender_jobs
 from tests.fixtures.llm import ScriptedSDK
 from tests.fixtures.pdfs import make_pdf
 from tests.fixtures.tenders import AMENDMENT_ANSWERS, AMENDMENT_PAGES, RFS_ANSWERS, RFS_PAGES
@@ -71,7 +71,7 @@ def seed(settings: Settings) -> None:
         storage,
         schemas,
         llm,
-        job_handlers(AmendmentMapper(llm, catalog, extract, settings.tenant_id)),
+        *tender_jobs(llm, catalog, extract, schemas, settings.tenant_id),
     )
     ingest = IngestService(storage, settings.tenant_id)
     tenders = TenderService(catalog, extract, settings.tenant_id)

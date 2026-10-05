@@ -7,6 +7,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from core.models import Candidate, EvidenceSpan, ExtractionRun
+from core.models.extraction import RECORD_MODE
 from core.schemas import CandidateOutcome, CrossFieldRule, RuleOutcome, RunRule
 from tender.models import TenderVersion, TenderVersionDocument
 
@@ -75,6 +76,10 @@ def later_version_evidence(
     """Corrigendum rule: a value produced for a later version of a tender must carry
     evidence from a document of that version, not from the original."""
     if run.object_type != "tender" or run.object_version <= 1 or not candidates:
+        return []
+    if run.mode == RECORD_MODE:
+        # Written from the tender's record as it stands at this version, not read from
+        # this version's document: its evidence is that of the fields it draws on.
         return []
     own_documents = set(
         session.scalars(

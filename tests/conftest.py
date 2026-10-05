@@ -27,9 +27,9 @@ from core.services.extract import ExtractService
 from core.services.ingest import IngestService
 from core.services.review_state import ReviewStateService
 from core.storage import LocalStorage
-from tender.services.amendment_map import AmendmentMapper, job_handlers
 from tender.services.packs import Catalog, load_catalog
 from tender.services.tenders import TenderService
+from tender.services.worker_jobs import tender_jobs
 from tests.fixtures.llm import ScriptedSDK
 from tests.fixtures.pdfs import make_pdf
 from tests.fixtures.schemas import SCHEMA_NAME, SCHEMA_VERSION, make_registry
@@ -180,7 +180,7 @@ def make_pipeline(
                 storage,
                 schemas,
                 llm,
-                job_handlers(AmendmentMapper(llm, catalog, extract, local.tenant_id)),
+                *tender_jobs(llm, catalog, extract, schemas, local.tenant_id),
             ),
             ingest=IngestService(storage, local.tenant_id),
             extract=extract,

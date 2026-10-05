@@ -185,11 +185,34 @@ You looked at the screens before reviewing and asked for eight changes, plus a n
 
 **Checks after these changes:** 410 Python tests and 53 web unit tests pass; the browser suite has 9 tests, all passing (`stage-3-artifacts/playwright.txt`); the nine checks are green (`checks.txt`).
 
+## The summary written from the record (2026-10-05, second change)
+
+After the eight changes you asked for the summary to be written from the extracted fields instead of from a 40-page window. That is built, tested and deployed. **It has not yet run on the real tenders: the model account ran out of credit on the first call** (HTTP 400, "Your credit balance is too low"). The 13 tenders still show the page-read summaries of this morning. Once the account is refilled, `docker compose exec -T api python -m scripts.ingest_tenders summarize` writes all 13 (one text-only call each, no pages sent).
+
+How it works (ARCHITECTURE.md, "The summary: a second pass over the record"):
+
+- When the last extraction run of a tender is validated, the worker queues the summary. It is also available on request (`POST /tenders/{id}/summarize`, `ingest_tenders summarize`).
+- The model gets the record as a list of sources: every field that has a value with located evidence (the current value: an amendment's where it changes the field, the reviewer's where they have decided), each with an id. It returns eight paragraphs and, for every sentence, the ids it rests on. No document is attached.
+- Code, not the model, writes the numbers after the sentences and copies the fields' evidence onto the summary. A number in the summary opens the same passage as the chip of the field it comes from. Nothing is located anew.
+- A topic the record does not hold says so, in a sentence without a number.
+- The page-read summary (`summary/v2`) is still made during extraction and feeds only the first three topics (what is procured, buyer and offtaker, location), which no single field holds.
+- The summary is stored as a candidate like any other, in a run marked `record`, and replaces the earlier summaries of the tender in review. If the call fails nothing is stored and the earlier summary stays, which is the state the 13 tenders are in now.
+
+Tested on the synthetic tender with a scripted model (`tests/tender/test_summary.py`, 9 tests; the API and browser suites): the summary's evidence spans are copies of the fields' spans; after an amendment the summary is written again and the deadline's number opens the amendment; a record that has not changed is not summarised twice; a reviewer's edit is what the summary reads. Not yet seen: what the real model writes from a real record of 70 to 80 fields.
+
+Three things to know:
+
+1. **The summary is not rewritten when you decide a field.** It is written when extraction ends. If you correct a field during the review, the summary keeps the earlier value until it is asked for again. Since the summary is the first card, you may want to decide it last.
+2. **A field without located evidence is left out of the summary** (it has no evidence to pass on). It is still flagged as a field.
+3. **Whether a sentence says what its field says is not checked by code**, only that its number is a real field's evidence. That check is the review of the summary card.
+
+Checks after this change: 420 Python tests, 53 web unit tests and 9 browser tests pass; the nine checks are green. The independent reviewer was not run on this change: it needs the report to say how the real run went, which needs the credit.
+
 ## Your step: one real review
 
 A link for NHPC FDRE-II is live. It is not written in this file: a review link is the only key to its review, and this file is in the repository. It is in my message to you, and `docker compose exec -T api python -m scripts.review_token list` prints it on the VM.
 
-It opens NHPC FDRE-II (89 fields, 74 with a value, one 264-page RfS), extracted afresh today, with the new summary. You said this run will be the timed one. The browser will warn once about the certificate (the app is served on a bare IP; KNOWN-GAPS.md). The link is valid for 30 days and is recorded under the reviewer name `venture@aayuda.energy`, taken from your account; every decision you make carries that name. If you want another name or another tender, make a new link before deciding anything (the old one stops working):
+It opens NHPC FDRE-II (89 fields, 74 with a value, one 264-page RfS), extracted afresh today. You said this run will be the timed one. Until the model account is refilled and the summaries are written again, its summary is still the one read from 40 pages. The browser will warn once about the certificate (the app is served on a bare IP; KNOWN-GAPS.md). The link is valid for 30 days and is recorded under the reviewer name `venture@aayuda.energy`, taken from your account; every decision you make carries that name. If you want another name or another tender, make a new link before deciding anything (the old one stops working):
 
 ```
 cd /work/tender_engine && docker compose exec -T api python -m scripts.review_token create --tender <slug> --reviewer "Your Name"

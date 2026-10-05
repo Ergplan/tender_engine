@@ -9,8 +9,8 @@ from core.db import make_engine, make_session_factory
 from core.llm.client import LLMClient
 from core.services.extract import ExtractService
 from core.storage import make_storage
-from tender.services.amendment_map import AmendmentMapper, job_handlers
 from tender.services.packs import build_registry
+from tender.services.worker_jobs import tender_jobs
 from worker.runner import Runner
 
 
@@ -19,10 +19,10 @@ def build_runner(settings: Settings) -> Runner:
     schemas, catalog = build_registry()
     storage = make_storage(settings)
     llm = LLMClient(settings, session_factory, prompt_roots=catalog.prompt_roots)
-    mapper = AmendmentMapper(
-        llm, catalog, ExtractService(llm, storage, schemas, settings), settings.tenant_id
+    handlers, after_validation = tender_jobs(
+        llm, catalog, ExtractService(llm, storage, schemas, settings), schemas, settings.tenant_id
     )
-    return Runner(settings, session_factory, storage, schemas, llm, job_handlers(mapper))
+    return Runner(settings, session_factory, storage, schemas, llm, handlers, after_validation)
 
 
 def main() -> None:

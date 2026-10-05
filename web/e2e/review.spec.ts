@@ -171,7 +171,9 @@ test("numbered evidence: each sentence of the summary shows its own passage", as
   await page.goto(`/review/${TOKEN}`);
   const summary = card(page, SUMMARY);
   await expect(summary.getByTestId("confidence-caption")).toHaveText("model confidence");
-  await expect(summary.getByTestId("evidence-chip")).toHaveText(["1p. 1", "2p. 2", "3p. 3"]);
+  // Written from the record as amended: the deadline's passage is in the amendment (its
+  // page 1), the other two in the RfS.
+  await expect(summary.getByTestId("evidence-chip")).toHaveText(["1p. 1", "2p. 1", "3p. 3"]);
   await expect(summary.getByTestId("evidence-marker")).toHaveText(["1", "2", "3"]);
   await expect(summary.getByTestId("field-value")).not.toContainText("[1]");
   // The marker after the third sentence shows the third quote, on page 3, and only it.
@@ -179,13 +181,21 @@ test("numbered evidence: each sentence of the summary shows its own passage", as
   await expect(page.getByTestId("page-indicator")).toHaveAttribute("data-page", "3");
   await expect(summary.getByTestId("evidence-chip").nth(2)).toHaveAttribute("data-active", "yes");
   await expect(page.getByTestId("evidence-highlight")).toHaveCount(1);
-  await expect(page.getByTestId("evidence-highlight-dim")).toHaveCount(2);
+  await expect(page.getByTestId("evidence-highlight-dim")).toHaveCount(1);
+  // The sentence on the timeline opens the amendment, where the deadline field's quote is.
+  await summary.getByTestId("evidence-marker").nth(1).click();
+  await expect(page.getByTestId("page-indicator")).toContainText("Page 1 of 1");
+  await expect(summary.getByTestId("evidence-chip").nth(1)).toHaveAttribute("data-active", "yes");
+  await expect(page.locator('[data-page-no="1"] [data-testid="text-layer"]')).toContainText("extended to 15.04.2026");
   await summary.getByTestId("evidence-chip").nth(0).click();
   await expect(page.getByTestId("page-indicator")).toHaveAttribute("data-page", "1");
   await expect(summary.getByTestId("evidence-chip").nth(0)).toHaveAttribute("data-active", "yes");
   // The header counts what is left; the section says where to look first.
   await expect(page.getByTestId("remaining")).toContainText("to go");
-  await expect(summary.getByTestId("rationale")).toContainText("as numbered");
+  // The summary is written from the fields: its third passage is the EMD field's own.
+  await expect(summary.getByTestId("rationale")).toContainText("Written from the extracted fields");
+  await expect(summary.getByTestId("rationale")).toContainText("[3] EMD per MW");
+  await expect(summary.getByTestId("field-value")).toContainText("Eligibility: The record does not state this.");
 });
 
 test("approve with Enter, edit a date, mark not in document, flag", async ({ page }) => {

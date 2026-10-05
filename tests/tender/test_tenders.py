@@ -174,7 +174,8 @@ def test_candidates_of_a_tender_carry_the_version_and_namespaced_paths(
     assert candidates[EMD].value == 928000 and candidates[EMD].status == "validated"
     assert candidates[DEADLINE].value == "30.03.2026"
     assert candidates[EMD].prompt_name == "extract/guarantees"
-    assert candidates["core.summary.plain_english_summary"].prompt_name == "summary"
+    # The summary in review is the one written from the record, after extraction.
+    assert candidates["core.summary.plain_english_summary"].prompt_name == "summary_record"
     rules = {
         row.rule_name: row.passed
         for row in db.scalars(
@@ -190,7 +191,11 @@ def test_an_amendment_is_extracted_only_where_it_touches_the_tender(
 ) -> None:
     tender = extracted_tender(pipeline, db)
     amended_tender(pipeline, db, tender)
-    (run,) = db.scalars(select(ExtractionRun).where(ExtractionRun.object_version == 2))
+    (run,) = db.scalars(
+        select(ExtractionRun).where(
+            ExtractionRun.object_version == 2, ExtractionRun.mode != "record"
+        )
+    )
     assert run.groups == ["key_dates"] and run.status == "validated"
     second = live(db, tender.id, 2)
     assert second[DEADLINE].value == "15.04.2026" and second[DEADLINE].status == "validated"
@@ -425,7 +430,11 @@ def test_an_amendment_no_keyword_matches_is_mapped_in_full_before_it_is_read(
     assert queued.kind == "amendment_plan"
     pipeline.runner.run_until_idle()
 
-    (run,) = db.scalars(select(ExtractionRun).where(ExtractionRun.object_version == 2))
+    (run,) = db.scalars(
+        select(ExtractionRun).where(
+            ExtractionRun.object_version == 2, ExtractionRun.mode != "record"
+        )
+    )
     assert run.groups == ["key_dates"] and run.status == "validated"
     assert live(db, tender.id, 2)[DEADLINE].value == "15.04.2026"
     ((version_id, record),) = routing_records(db, "ergplan")

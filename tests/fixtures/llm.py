@@ -10,6 +10,16 @@ import anthropic
 
 from core.services.section_map import SectionMapOutput
 
+SUMMARY_HEADINGS = (
+    "What is procured",
+    "Buyer and offtaker",
+    "Location",
+    "Timeline",
+    "Eligibility",
+    "Money at risk",
+    "Tariff or payment",
+    "Obligations and penalties",
+)
 DEFAULT_SECTIONS = [
     {
         "start_page": 1,
@@ -138,6 +148,8 @@ class ScriptedSDK:
             parsed = SectionMapOutput.model_validate({"sections": self.sections})
         elif model.__name__ == "AmendmentMapOutput":
             parsed = model.model_validate({"changes": self.amendment_changes})
+        elif model.__name__ == "RecordSummary":
+            parsed = model.model_validate(self.record_summary(kwargs))
         elif model.__name__ == "SharedAnswer":
             parsed = model.model_validate(self._shared_answer(kwargs))
         else:
@@ -209,12 +221,50 @@ class ScriptedSDK:
         keys = re.findall(r"^- `(\w+)`:", text, flags=re.MULTILINE)
         return {"fields": [{"key": key, **self.answers.get(key, NOT_FOUND)} for key in keys]}
 
+    def record_summary(self, params: dict[str, Any]) -> dict[str, Any]:
+        """A summary written from the record: the first topic rests on the narrative
+        sentences and the tender title's field, the timeline on the bid deadline, money at
+        risk on the EMD; the other topics say the record does not state them. A test may
+        replace this method."""
+        text: str = params["messages"][0]["content"][-1]["text"]
+        ids = dict(re.findall(r"^([FN]\d+) \| (.*)$", text, flags=re.MULTILINE))
+
+        def having(*words: str) -> list[str]:
+            return [key for key, line in ids.items() if any(word in line for word in words)]
+
+        told = {
+            "What is procured": (
+                "The tender invites bids.",
+                [*having("What is procured"), *having("| Title |")][:2],
+            ),
+            "Timeline": (
+                "Bids are due on the date the record gives.",
+                having("Bid submission deadline"),
+            ),
+            "Money at risk": (
+                "The earnest money deposit is as the record gives it.",
+                having("EMD per MW"),
+            ),
+        }
+        paragraphs = []
+        for heading in SUMMARY_HEADINGS:
+            words, sources = told.get(heading, ("The record does not state this.", []))
+            if not sources:
+                words = "The record does not state this."
+            paragraphs.append(
+                {"heading": heading, "sentences": [{"text": words, "sources": sources}]}
+            )
+        return {"paragraphs": paragraphs, "confidence": 0.85, "rationale": "Scripted."}
+
+    def summary_calls(self) -> list[dict[str, Any]]:
+        return [call for call in self.calls if call["output_format"].__name__ == "RecordSummary"]
+
     def extract_calls(self) -> list[dict[str, Any]]:
         return [
             call
             for call in self.calls
             if call["output_format"] is not SectionMapOutput
-            and call["output_format"].__name__ != "AmendmentMapOutput"
+            and call["output_format"].__name__ not in ("AmendmentMapOutput", "RecordSummary")
         ]
 
     def as_sdk(self) -> anthropic.Anthropic:

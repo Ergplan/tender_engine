@@ -11,12 +11,14 @@ from api.deps import (
     ReviewStateDep,
     SessionDep,
     SettingsDep,
+    SummaryWriterDep,
     TenantDep,
     TendersDep,
 )
 from api.middleware.errors import AppError
 from api.v1.schemas.core import ExtractionRunOut
 from api.v1.schemas.tenders import (
+    SummaryQueued,
     TenderCreate,
     TenderExtractRequest,
     TenderOut,
@@ -235,6 +237,22 @@ def start_extraction(
         raise AppError("validation_failed", str(exc)) from exc
     except LookupError as exc:
         raise AppError("not_found", str(exc)) from exc
+
+
+@router.post("/tenders/{tender_id}/summarize", response_model=SummaryQueued, status_code=202)
+def summarize(
+    tender_id: str,
+    session: SessionDep,
+    tenders: TendersDep,
+    writer: SummaryWriterDep,
+    actor: ActorDep,
+) -> SummaryQueued:
+    """Queue the summary of the tender, written from its extracted record: each sentence
+    carries the evidence of the fields it draws on. The worker queues it by itself when
+    the extraction of a tender ends; this asks for it again (after a field was edited)."""
+    tender = _tender(tenders, session, tender_id)
+    queued = writer.queue_if_settled(session, tender.id, created_by=actor)
+    return SummaryQueued(tender_id=tender.id, queued=queued)
 
 
 @router.get("/tenders/{tender_id}/review-state", response_model=TenderReviewState)

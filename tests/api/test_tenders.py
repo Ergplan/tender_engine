@@ -278,7 +278,9 @@ def test_full_tender_flow_with_an_amendment_through_the_http_api(
 
     latest = client.get(f"/api/v1/tenders/{tid}/review-state").json()
     assert (latest["version_no"], latest["version_kind"]) == (2, "amendment")
-    assert latest["changed_fields"] == [DEADLINE]
+    # The amendment changes the deadline; the summary is written again from the record
+    # as amended and belongs to version 2 as well.
+    assert latest["changed_fields"] == ["core.summary.plain_english_summary", DEADLINE]
     assert latest["missing_required"] == [], "the amendment need not restate required fields"
     second = {field["field_path"]: field for field in latest["state"]["fields"]}
     assert second[DEADLINE]["candidate"]["value"] == "15.04.2026"
@@ -373,7 +375,8 @@ def test_extraction_summary_is_served_as_data_and_as_the_markdown_report(
         1,
     )
     assert (row["fields"], row["with_value"], row["located"]) == (fields, 9, 9)
-    assert (row["runs"], row["unfinished_runs"], row["pages"]) == (1, 0, 3)
+    # The extraction of the RfS, and the summary written from its record afterwards.
+    assert (row["runs"], row["unfinished_runs"], row["pages"]) == (2, 0, 3)
     assert row["failing_validation"] == 0
     assert body["model"] == "claude-fable-5-1" and body["calls"] >= 10
     assert body["total_cost_usd"] > 0 and float(row["cost_usd"]) > 0

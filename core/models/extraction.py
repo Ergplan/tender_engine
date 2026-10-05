@@ -10,6 +10,10 @@ from core.models.base import Base, IdMixin, TenantAuditMixin
 
 RUN_STATUSES = ("queued", "running", "extracted", "validated", "failed")
 RUN_MODES = ("sync", "batch")
+# A run that read no page: its candidates were written from the object's other candidates
+# (the record), and their evidence is inherited from those. Not a mode a caller can ask
+# ExtractService.start_run for.
+RECORD_MODE = "record"
 # raw: inserted, not yet validated. validated: every rule passed. needs_review: a rule failed.
 # superseded: a later run produced a candidate for the same field.
 # not_found: the model returned no value. rejected: a value came without evidence.

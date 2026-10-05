@@ -8,6 +8,7 @@
   python -m scripts.ingest_tenders wait    [--timeout seconds]
   python -m scripts.ingest_tenders summary [--out docs/reports/EXTRACTION-SUMMARY.md]
   python -m scripts.ingest_tenders cost-plan [--only slug,slug]
+  python -m scripts.ingest_tenders summarize [--only slug,slug]
 
 `ingest` reads <root>/<type>/<slug>/manifest.yaml, creates each tender, groups its files
 into versions and uploads them; the worker parses and section-maps them. `extract` queues
@@ -43,8 +44,10 @@ from core.storage import make_storage
 from tender.services import extraction_summary
 from tender.services.amendment_map import routing_records
 from tender.services.packs import Catalog, build_registry
+from tender.services.summary import SummaryWriter
 from tender.services.tenders import JOB_KIND, OBJECT_TYPE, TenderError, TenderService
 from tender.services.versioning import CHANGE_ROLES
+from tender.services.worker_jobs import summary_writer
 
 ACTOR = "ingest_tenders"
 DEFAULT_ROOT = Path("/work/tenders")
@@ -87,6 +90,7 @@ class Services:
     tenders: TenderService
     review: ReviewStateService
     extract: ExtractService
+    summaries: SummaryWriter
 
 
 def build_services(settings: Settings | None = None) -> Services:
@@ -104,6 +108,7 @@ def build_services(settings: Settings | None = None) -> Services:
         tenders=TenderService(catalog, extract, settings.tenant_id),
         review=ReviewStateService(schemas, settings.tenant_id),
         extract=extract,
+        summaries=summary_writer(llm, catalog, extract, schemas, settings.tenant_id),
     )
 
 
@@ -450,6 +455,19 @@ def _plan_row(name: str, row: list[float]) -> str:
     return f"| {name} | " + " | ".join(cells) + " |"
 
 
+def summarize(services: Services, only: set[str] | None = None) -> list[str]:
+    """Queue the summary of every tender, written from its extracted record. The worker
+    queues it by itself when a tender's extraction ends; this is for asking again."""
+    lines = []
+    with services.session_factory() as session:
+        for tender in services.tenders.all(session):
+            if only and tender.slug not in only:
+                continue
+            queued = services.summaries.queue_if_settled(session, tender.id, created_by=ACTOR)
+            lines.append(f"{tender.slug}: {'queued' if queued else 'not queued (work under way)'}")
+    return lines
+
+
 def pending_jobs(services: Services) -> dict[str, int]:
     with services.session_factory() as session:
         rows = session.execute(
@@ -498,6 +516,7 @@ def main(argv: list[str]) -> int:
             "amendment-routing",
             "routing-report",
             "cost-plan",
+            "summarize",
         ),
     )
     parser.add_argument("--root", type=Path, default=DEFAULT_ROOT)
@@ -523,6 +542,8 @@ def main(argv: list[str]) -> int:
         print("\n".join(amendment_routing(services, only, args.mode)))
     elif args.command == "routing-report":
         print("\n".join(routing_report(services)))
+    elif args.command == "summarize":
+        print("\n".join(summarize(services, only)))
     elif args.command == "cost-plan":
         print("\n".join(cost_plan(services, only)))
     elif args.command == "resume":

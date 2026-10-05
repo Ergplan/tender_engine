@@ -1684,6 +1684,24 @@
         "title": "SnapshotOut",
         "type": "object"
       },
+      "SummaryQueued": {
+        "properties": {
+          "queued": {
+            "title": "Queued",
+            "type": "boolean"
+          },
+          "tender_id": {
+            "title": "Tender Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tender_id",
+          "queued"
+        ],
+        "title": "SummaryQueued",
+        "type": "object"
+      },
       "TenderCreate": {
         "properties": {
           "agency": {
@@ -3661,6 +3679,65 @@
         "summary": "Get Snapshot",
         "tags": [
           "review"
+        ]
+      }
+    },
+    "/api/v1/tenders/{tender_id}/summarize": {
+      "post": {
+        "description": "Queue the summary of the tender, written from its extracted record: each sentence\ncarries the evidence of the fields it draws on. The worker queues it by itself when\nthe extraction of a tender ends; this asks for it again (after a field was edited).",
+        "operationId": "summarize_api_v1_tenders__tender_id__summarize_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tender_id",
+            "required": true,
+            "schema": {
+              "title": "Tender Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-reviewer",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Reviewer"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SummaryQueued"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Summarize",
+        "tags": [
+          "tenders"
         ]
       }
     },

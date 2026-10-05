@@ -70,6 +70,13 @@ class TenderReviewState(BaseModel):
     state: ReviewState
 
 
+class SummaryQueued(BaseModel):
+    tender_id: str
+    # False when an extraction of the tender is still under way (the summary is queued
+    # by the worker when it ends) or the summary is queued already.
+    queued: bool
+
+
 class ReviewTokenCreate(BaseModel):
     tender_id: str
     reviewer_name: str

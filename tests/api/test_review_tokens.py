@@ -425,27 +425,53 @@ def test_the_command_prints_a_link_and_lists_links(
     assert review_token_command.revoke(pipeline.settings, "acme-solar-600") == 0
 
 
-def test_the_summary_is_written_with_its_own_prompt_version_in_one_call(
+def test_the_summary_in_review_is_written_from_the_record_with_inherited_evidence(
     client: TestClient, pipeline: Pipeline, catalog: Any
 ) -> None:
     tender = extracted(client, pipeline)
     token = link(client, tender["id"])["token"]
     body = review(client, tender["id"], token)
     summary = current(body, "core.summary.plain_english_summary")["state"]["candidate"]
-    assert (summary["prompt_name"], summary["prompt_version"]) == ("summary", "v2")
-    assert current(body, EMD)["state"]["candidate"]["prompt_version"] == "v1"
+    assert (summary["prompt_name"], summary["prompt_version"]) == ("summary_record", "v1")
+    assert summary["status"] == "validated"
     assert [e["ordinal"] for e in summary["evidence"]] == [1, 2, 3]
-    assert [e["page_no"] for e in summary["evidence"]] == [1, 2, 3]
-    assert "[3]" in summary["value"]
-    group = next(g for g in catalog.get("solar").schema.groups if g.name == "summary")
-    assert (group.prompt_version, group.max_pages) == (
-        "v2",
-        pipeline.settings.extract_max_pages_per_call,
+    assert all(e["char_start"] is not None for e in summary["evidence"])
+    # The sentence on the EMD carries the evidence of the EMD field, not a quote of its own.
+    emd = current(body, EMD)["state"]["candidate"]["evidence"][0]
+    inherited = summary["evidence"][2]
+    assert (
+        "Money at risk: The earnest money deposit is as the record gives it. [3]"
+        in summary["value"]
     )
-    # The prompt text is in the system prompt, or after the pages on a shared window.
+    for key in ("document_id", "page_no", "char_start", "char_end", "bbox", "quote"):
+        assert inherited[key] == emd[key]
+    assert inherited["id"] != emd["id"]
+    assert "Eligibility: The record does not state this." in summary["value"]
+
+    # The page-read summary is still made, with its own prompt version, as the source of
+    # the narrative sentences.
+    group = next(g for g in catalog.get("solar").schema.groups if g.name == "summary")
+    assert (group.prompt_version, group.max_pages) == ("v2", 40)
     sent = next(
         call["system"] + " ".join(b.get("text", "") for b in call["messages"][0]["content"])
         for call in pipeline.sdk.extract_calls()
         if "group `summary`" in call["messages"][0]["content"][-1]["text"]
     )
     assert "eight short paragraphs" in sent and "`Money at risk`" in sent
+
+
+def test_the_summary_can_be_asked_for_again_but_not_with_a_review_link(
+    client: TestClient, pipeline: Pipeline
+) -> None:
+    tender = extracted(client, pipeline)
+    token = link(client, tender["id"])["token"]
+    refused = client.post(f"/api/v1/tenders/{tender['id']}/summarize", headers=as_reviewer(token))
+    assert refused.status_code == 403
+    calls = len(pipeline.sdk.summary_calls())
+    asked = client.post(f"/api/v1/tenders/{tender['id']}/summarize", headers=ASHA)
+    assert asked.status_code == 202 and asked.json() == {"tender_id": tender["id"], "queued": True}
+    again = client.post(f"/api/v1/tenders/{tender['id']}/summarize", headers=ASHA)
+    assert again.json()["queued"] is False, "it is queued already"
+    pipeline.runner.run_until_idle()
+    assert len(pipeline.sdk.summary_calls()) == calls, "the record has not changed: no new call"
+    assert client.post(f"/api/v1/tenders/{'0' * 32}/summarize", headers=ASHA).status_code == 404

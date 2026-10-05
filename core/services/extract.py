@@ -38,7 +38,7 @@ from core.models import (
     Page,
     Section,
 )
-from core.models.extraction import RUN_MODES
+from core.models.extraction import RECORD_MODE, RUN_MODES
 from core.schemas import ExtractionSchema, FieldDef, FieldGroup, RoutingHints, SchemaRegistry
 from core.schemas.types import JsonKind
 from core.services import audit, jobs
@@ -698,6 +698,63 @@ class ExtractService:
                 spans,
             )
 
+    def record_candidate(
+        self,
+        session: Session,
+        run: ExtractionRun,
+        field_path: str,
+        *,
+        value: Any,
+        confidence: float,
+        rationale: str,
+        spans: list[dict[str, Any]],
+        call_log_id: str,
+        prompt_name: str,
+        prompt_version: str,
+    ) -> Candidate:
+        """Insert the candidate of a run that was written from the object's record rather
+        than read from pages (run.mode "record"). Its evidence spans are inherited: each
+        names its own document and is already located. The same insert, audit line and
+        refusal of a candidate without evidence as for any other candidate."""
+        if run.mode != RECORD_MODE:
+            raise ExtractionError("only a record run takes a candidate written from the record")
+        if not spans or any(span.get("char_start") is None for span in spans):
+            raise ExtractionError("a candidate written from the record needs located evidence")
+        schema = self._schemas.get(run.schema_name, run.schema_version)
+        field = schema.field(field_path)
+        group = next(group for group in schema.groups if group.name == field.group)
+        return self._add_candidate(
+            session,
+            run,
+            group,
+            field,
+            value,
+            min(max(float(confidence), 0.0), 1.0),
+            rationale,
+            "raw",
+            [],
+            call_log_id,
+            spans,
+            prompt=(prompt_name, prompt_version),
+        )
+
+    def supersede(self, session: Session, candidate: Candidate, by_run: ExtractionRun) -> None:
+        """Take a live candidate out of review because `by_run` replaces it. Audited."""
+        if candidate.status not in LIVE_STATUSES:
+            return
+        before = candidate.status
+        candidate.status = "superseded"
+        audit.record(
+            session,
+            tenant_id=candidate.tenant_id,
+            actor=ACTOR,
+            action="status_change",
+            table_name="candidate",
+            row_id=candidate.id,
+            before={"status": before},
+            after={"status": "superseded", "superseded_by_run": by_run.id},
+        )
+
     def _add_candidate(
         self,
         session: Session,
@@ -711,7 +768,8 @@ class ExtractService:
         window: list[int],
         call_log_id: str | None,
         spans: list[dict[str, Any]],
-    ) -> None:
+        prompt: tuple[str, str] | None = None,
+    ) -> Candidate:
         if status == "raw" and not spans:
             raise AssertionError("a reviewable candidate must carry evidence")
         candidate = Candidate(
@@ -724,21 +782,21 @@ class ExtractService:
             confidence=confidence,
             rationale=rationale,
             status=status,
-            prompt_name=group.prompt_name,
-            prompt_version=group.prompt_version or run.prompt_version,
+            prompt_name=prompt[0] if prompt else group.prompt_name,
+            prompt_version=prompt[1] if prompt else group.prompt_version or run.prompt_version,
             llm_call_log_id=call_log_id,
             window_pages=window,
         )
         session.add(candidate)
         session.flush()
         for span in spans:
+            # A span read from the run's document; an inherited one names its own.
             session.add(
                 EvidenceSpan(
                     tenant_id=run.tenant_id,
                     created_by=ACTOR,
                     candidate_id=candidate.id,
-                    document_id=run.document_id,
-                    **span,
+                    **{"document_id": run.document_id, **span},
                 )
             )
         audit.record(
@@ -757,6 +815,7 @@ class ExtractService:
                 "evidence_spans": len(spans),
             },
         )
+        return candidate
 
     def _resolve(
         self, quote: EvidenceQuote, chunk: list[int], document_id: str, pages: "_PageCache"

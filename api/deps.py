@@ -16,8 +16,10 @@ from core.services.ingest import IngestService
 from core.services.review_state import ReviewStateService
 from core.storage import Storage
 from tender.services.packs import Catalog
+from tender.services.summary import SummaryWriter
 from tender.services.tenders import TenderService
 from tender.services.tokens import TokenService
+from tender.services.worker_jobs import summary_writer
 
 
 def get_settings(request: Request) -> Settings:
@@ -125,6 +127,20 @@ def get_tenders(catalog: CatalogDep, extract: ExtractDep, tenant_id: TenantDep) 
 
 
 TendersDep = Annotated[TenderService, Depends(get_tenders)]
+
+
+def get_summary_writer(
+    request: Request,
+    catalog: CatalogDep,
+    extract: ExtractDep,
+    schemas: SchemasDep,
+    tenant_id: TenantDep,
+) -> SummaryWriter:
+    """Only to queue the summary: the API never calls the model."""
+    return summary_writer(request.app.state.llm, catalog, extract, schemas, tenant_id)
+
+
+SummaryWriterDep = Annotated[SummaryWriter, Depends(get_summary_writer)]
 
 
 def get_tokens(tenant_id: TenantDep) -> TokenService:
