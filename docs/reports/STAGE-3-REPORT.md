@@ -77,7 +77,7 @@ Date: 2026-10-05. Diff: `git diff stage-3-start..HEAD`. Architecture changes: `d
 - **A tender with amendments is reviewed once per field, not once per version.** Marking an amendment's entry "not in document" brings the earlier version's entry back.
 - **Keyboard focus scrolls the PDF only when the field has evidence.**
 - **FIELD-TRACE has one row per field path (163), not per tender type and field (759).** What is the same for every field (routes, middleware, services, tables) is stated once above the table.
-- **The watcher was stopped** during the build (the VM still has 2 cores); every commit was preceded by a full `make check`. It is running again since the deployment.
+- **The watcher was stopped** for most of the build and during the load measurements (the VM still has 2 cores); commits made while it was stopped were preceded by a full `make check`. It was started again at the end of the stage.
 
 ## Tests
 
@@ -140,6 +140,16 @@ Reviewer: `scripts/independent_review.py` on `gpt-6.1-sol`, given only the stage
 | e5 | Turning edited lines back into records is not in the diff | It is in unchanged code; the report names the function and says no browser test exercises it |
 | e6 | The watcher's history and where the two defects were found are not provable | Statements of this report |
 | e7 | The review link was missing from the draft | The last section now says where the link is; the link itself is kept out of the repository |
+
+**Run 3** (after those fixes): (a) 1, (b) none, (c) 1, (d) none, (e) 9. No new code defect.
+
+| # | Finding | Outcome |
+| --- | --- | --- |
+| a1, c1 | Invariants and audit of the unchanged write paths cannot be certified from the diff | As in runs 1 and 2: not resolvable by code |
+| e8 | The deployment artifact showed migration 0008 while the report says 0009 | Artifact regenerated after the last change: `deployment.txt` now shows 0009, the review links by tender and reviewer, and the count of located spans without a box (e5) |
+| e1 to e7, e9 | That no other API route decides several fields, the load times not kept, the count of shared calls, the earlier PDF bytes, the record-list parser in unchanged code, the watcher's history, the live link | Statements of this report that a diff cannot prove; they do not block the stage under rule 15 |
+
+I stopped after three runs: the last found no code defect.
 
 ## Open questions
 
