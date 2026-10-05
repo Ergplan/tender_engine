@@ -47,6 +47,7 @@ def checks() -> list[Check]:
         ),
         Check("pytest", ((py, "-m", "pytest", "-p", "no:cacheprovider"),)),
         Check("openapi_drift", ((py, "-m", "scripts.export_openapi", "--check"),)),
+        Check("field_trace", ((py, "-m", "scripts.gen_field_trace", "--check"),)),
         Check("tsc", (("node", str(NODE_BIN / "typescript/bin/tsc"), "--noEmit"),), WEB),
         Check("vitest", (("node", str(NODE_BIN / "vitest/vitest.mjs"), "run"),), WEB),
     ]

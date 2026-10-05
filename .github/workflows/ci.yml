@@ -2,6 +2,10 @@ name: ci
 on:
   push:
   pull_request:
+  schedule:
+    # The browser suite, nightly.
+    - cron: "30 20 * * *"
+  workflow_dispatch:
 
 jobs:
   checks:
@@ -33,7 +37,30 @@ jobs:
       - run: npm ci --no-audit --no-fund
         working-directory: web
       # The same script the watcher runs on the VM: ruff, mypy, alembic check, pytest,
-      # OpenAPI drift, tsc, vitest. Slow tests that call the real LLM are excluded.
+      # OpenAPI drift, field trace, tsc, vitest. Slow tests that call the real LLM are
+      # excluded.
       - run: uv run python infra/ci/run_checks.py --once
       - if: always()
         run: cat .ci/latest.log
+
+  ui:
+    # The reviewer screen in a real browser, on a seeded tender with a scripted model:
+    # the same `make test-ui` as on the VM. Nightly and on demand.
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          cp .env.example .env
+          sudo mkdir -p /data /work/tenders && sudo chown 1000:1000 /data
+          mkdir -p .ci/e2e-data
+      - run: docker compose build web tests
+      - run: docker compose run --rm -T --no-deps web npm ci --no-audit --no-fund
+      - run: docker compose up -d db web
+      - run: make test-ui
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright
+          path: .ci/playwright
+

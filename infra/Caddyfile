@@ -5,17 +5,9 @@
 	auto_https disable_redirects
 }
 
+import Caddyfile.routes
+
 https://34.131.65.108 {
 	tls internal
-	encode gzip
-
-	handle /health {
-		reverse_proxy api:8000
-	}
-	handle /api/* {
-		reverse_proxy api:8000
-	}
-	handle {
-		reverse_proxy web:5173
-	}
+	import app api:8000
 }

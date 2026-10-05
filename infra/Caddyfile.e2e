@@ -1,0 +1,11 @@
+# The same routes over plain HTTP inside the compose network, in front of the API that
+# serves the seeded test tender. Used only by `make test-ui`.
+{
+	auto_https off
+}
+
+import Caddyfile.routes
+
+:8080 {
+	import app api-e2e:8000
+}

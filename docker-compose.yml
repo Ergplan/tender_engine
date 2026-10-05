@@ -66,8 +66,11 @@ services:
       - "443:443"
     volumes:
       - ./infra/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./infra/Caddyfile.routes:/etc/caddy/Caddyfile.routes:ro
       - caddy_data:/data
       - caddy_config:/config
+      # Stored PDFs and page images, served under /files after the API's token check.
+      - /data:/srv/files:ro
     depends_on:
       - api
       - web
@@ -92,6 +95,68 @@ services:
         condition: service_healthy
       web:
         condition: service_started
+
+  # The stack the browser tests run against (`make test-ui`): an API on its own database
+  # and data folder, seeded with a synthetic tender and a scripted model, behind the same
+  # proxy routes as the deployed app. Started only with the e2e profile.
+  api-e2e:
+    <<: *python
+    profiles: [e2e]
+    build:
+      context: .
+      dockerfile: infra/docker/Dockerfile.python
+      target: tests
+    image: tender-engine-tests
+    environment:
+      DATABASE_URL: postgresql+psycopg://tender:tender@db:5432/tender_e2e
+      DATA_DIR: /e2e-data
+      PUBLIC_BASE_URL: http://caddy-e2e:8080
+      ANTHROPIC_API_KEY: not-used-the-model-is-scripted
+    volumes:
+      - .:/app
+      - ./.ci/e2e-data:/e2e-data
+    command: >
+      sh -c "python -m tests.e2e.seed_review &&
+             uvicorn api.main:create_app --factory --host 0.0.0.0 --port 8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')"]
+      interval: 3s
+      timeout: 5s
+      retries: 40
+    restart: "no"
+
+  caddy-e2e:
+    image: caddy:2
+    profiles: [e2e]
+    volumes:
+      - ./infra/Caddyfile.e2e:/etc/caddy/Caddyfile:ro
+      - ./infra/Caddyfile.routes:/etc/caddy/Caddyfile.routes:ro
+      - ./.ci/e2e-data:/srv/files:ro
+    depends_on:
+      api-e2e:
+        condition: service_healthy
+      web:
+        condition: service_started
+    restart: "no"
+
+  playwright:
+    image: mcr.microsoft.com/playwright:v1.63.0-noble
+    profiles: [e2e]
+    working_dir: /app/web
+    environment:
+      CI: "1"
+      BASE_URL: http://caddy-e2e:8080
+      HOME: /tmp
+    user: "1000:1000"
+    volumes:
+      - ./web:/app/web
+      - web_node_modules:/app/web/node_modules
+      - ./.ci:/app/.ci
+    depends_on:
+      caddy-e2e:
+        condition: service_started
+    command: npx playwright test
+    restart: "no"
 
 volumes:
   pgdata:

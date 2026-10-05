@@ -1,0 +1,38 @@
+# The routes of the app, shared by the deployed site (Caddyfile) and the stack the
+# browser tests run against (Caddyfile.e2e). Argument: the API upstream.
+(app) {
+	encode gzip
+
+	handle /health {
+		reverse_proxy {args[0]}
+	}
+
+	# Every request that reaches the API through this proxy is marked as coming from
+	# outside. The API then refuses it unless it carries a valid review token
+	# (api/middleware/review_token.py). A client cannot remove the mark.
+	handle /api/* {
+		reverse_proxy {args[0]} {
+			header_up X-Public-Request 1
+		}
+	}
+
+	# Stored files, read-only: /files/documents/<sha>.pdf and /files/renders/<sha>/<n>.png.
+	# The API is asked first whether the review token may see the file; then the file is
+	# served from disk, with range requests (the PDF viewer reads the PDF in pieces) and a
+	# one-day private cache (a stored file never changes).
+	handle /files/* {
+		@not_read not method GET HEAD
+		respond @not_read 405
+		forward_auth {args[0]} {
+			uri /api/v1/files-auth
+			header_up X-Public-Request 1
+		}
+		root * /srv
+		header Cache-Control "private, max-age=86400, immutable"
+		file_server
+	}
+
+	handle {
+		reverse_proxy web:5173
+	}
+}

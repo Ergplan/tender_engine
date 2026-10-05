@@ -107,6 +107,7 @@ def test_a_second_token_revokes_the_first(client: TestClient, pipeline: Pipeline
     second = link(client, tender["id"], "Bela Shah")["token"]
     refused = client.get("/api/v1/review-session", headers=as_reviewer(first))
     assert refused.status_code == 410 and refused.json()["error_type"] == "review_link_revoked"
+    assert refused.headers["cache-control"] == "no-store", "a browser must not reuse a refusal"
     assert "newer one" in refused.json()["message"]
     assert client.get("/api/v1/review-session", headers=as_reviewer(second)).status_code == 200
 

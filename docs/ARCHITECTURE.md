@@ -8,7 +8,8 @@ Kept current in the same commit as the code that changes it. Sources of authorit
 flowchart LR
   R[Reviewer browser] -- "443 (TLS, internal CA)" --> C[caddy]
   C -- "/" --> W[web: React + Vite]
-  C -- "/api/*, /health" --> A[api: FastAPI, routes only]
+  C -- "/api/*, /health (marked public)" --> A[api: FastAPI, routes only]
+  C -- "/files/* after asking the API" --> V
   A --> D[(db: PostgreSQL 16)]
   K[worker: job poller] --> D
   A --> V[/data volume/]
@@ -23,8 +24,9 @@ flowchart LR
 | `db` | `postgres:16` | default | databases `tender` (app) and `tender_ci` (watcher and pytest) |
 | `api` | `infra/docker/Dockerfile.python` (target `app`) | `uvicorn api.main:create_app --factory` | routes only; no business logic, no LLM calls |
 | `worker` | same image | `python -m worker.main` | one process; polls `job` every 2 s and runs the parse → section map → extract → validate chain |
-| `web` | `infra/docker/Dockerfile.web` | Vite dev server | calls `/api/v1/*` through `web/src/api/` only |
-| `caddy` | `caddy:2` | `infra/Caddyfile` | TLS with Caddy's internal CA on the static IP |
+| `web` | `infra/docker/Dockerfile.web` | Vite dev server | the reviewer screen; calls `/api/v1/*` through `web/src/api/` only |
+| `caddy` | `caddy:2` | `infra/Caddyfile` (routes in `infra/Caddyfile.routes`) | TLS with Caddy's internal CA on the static IP; marks API requests as public; serves stored files from `/data` (read-only mount) after `forward_auth` to the API |
+| `api-e2e`, `caddy-e2e`, `playwright` | tests image, `caddy:2`, `mcr.microsoft.com/playwright` | compose profile `e2e`, started only by `make test-ui` | the browser tests: an API on database `tender_e2e` seeded by `tests/e2e/seed_review.py` with a scripted model, the same proxy routes over HTTP, and Playwright |
 | `tests` | `infra/docker/Dockerfile.python` (target `tests`: dev dependencies plus Node) | `python infra/ci/run_checks.py --watch` | the continuous test pipeline |
 
 ## Repository layout
@@ -49,6 +51,16 @@ The layout in `CLAUDE.md` is authoritative. Additions made under operating rule 
 | `core/evidence/` | the quote resolver (`resolver.py`) and its corpus loader (`corpus.py`); imports nothing from the rest of core | Stage 2 |
 | `tests/core/evidence_corpus/` | real and deliberate cases for the resolver, with page text and character boxes | Stage 2 |
 | `tests/scripts/` | tests of the management commands in `scripts/` | Stage 2 |
+| `core/services/extract_plan.py`, `core/llm/pricing.py` | which field groups share a page window; what a call costs | Stage 3 |
+| `tender/models/review.py`, `tender/services/tokens.py`, `tender/services/review.py` | review tokens and snapshots; the reviewer's view of a tender and completing a review | Stage 3 |
+| `api/middleware/review_token.py`, `api/middleware/audit.py` | named in the layout; built in Stage 3 | Stage 3 |
+| `api/v1/tenders/review.py` | the review router (tokens, session, tender review, completion, snapshot, file authorisation) | Stage 3 |
+| `web/src/review/` | `ReviewApp` (the link), `ReviewScreen` (the two panes, keys, saving), `SectionList`, `FieldCard`, `EditForm`, `EvidenceChip`, `PdfPane` with `pdfText` (pdf.js), `SummaryPage`, `MessagePage`, `model.ts` | Stage 3 |
+| `web/src/lib/` | `format.ts` (values by type), `keyboard.ts` (the reviewer's keys) | Stage 3 |
+| `web/e2e/`, `web/playwright.config.ts` | the Playwright suite, run by `make test-ui` | Stage 3 |
+| `tests/e2e/seed_review.py` | seeds the browser-test database | Stage 3 |
+| `infra/Caddyfile.routes`, `infra/Caddyfile.e2e` | the proxy routes shared by the deployed site and the browser-test stack | Stage 3 |
+| `scripts/review_token.py`, `scripts/gen_field_trace.py` | review links; `docs/FIELD-TRACE.md` | Stage 3 |
 
 ## Data model
 
@@ -189,6 +201,20 @@ A `tender_version` owns many documents through a link table, each with a role. T
 - Nothing changes in the evidence model: an `evidence_span` already names a document id, so a canonical fact shows which document, page and box it came from.
 - The roles are the same vocabulary used in `/work/tenders/<type>/<slug>/manifest.yaml`.
 
+## Reviewer screen (Stage 3)
+
+`/review/<token>` opens straight into the tender; there is no list page. `web/src/review/ReviewApp.tsx` stores the token as a cookie (for the files the browser fetches itself), asks `GET /review-session` and `GET /tenders/{id}/review`, and shows the API's own sentence when the link cannot be used. Every call goes through `web/src/api/client.ts` with the token in `X-Review-Token`.
+
+- **Left pane, 44%** (`SectionList`, `FieldCard`): the sections in review order, collapsible, each with decided/total; one card per field with label, help on hover, the value formatted by type (`lib/format.ts`: 12 Mar 2026, ₹ 25 lakh/MW, 19.0%), a confidence pill (green from 0.8, amber from 0.5, red below), failed rules as a red line and warnings in amber, one "p. 47" chip per evidence span (dashed with a question mark when the quote was not located), the model's rationale, a "v2 amendment" tag when the value comes from a later version, and what earlier versions said.
+- **Right pane, 56%** (`PdfPane`): every page laid out at once from `GET /documents/{id}/pages` (sizes), each showing its pre-rendered PNG from `/files/renders/...` (lazy; the first two eagerly), so the first page is on screen before pdf.js has loaded. pdf.js (`pdfText.ts`, loaded on demand) reads the PDF by range requests from `/files/documents/...` and lays the selectable text layer over the pages in view; a page without a render is drawn by pdf.js. Search (`GET /documents/{id}/search`, hits marked on the pages), contents from the section map, a strip of page thumbnails, zoom, and a selector for the versions and their documents. The divider between the panes is draggable.
+- **Evidence**: clicking a chip, or focusing a field, scrolls the PDF to the page (switching document when the evidence is in another one), marks the box of the quoted text, and pulses it; the focused field's evidence stays marked. A quote that was not located outlines its page.
+- **Actions** (`ReviewScreen.decide`): Approve, Edit, Not in document and Flag each send `POST /approvals` at once, with the candidate and the decision it replaces; nothing is kept as a draft. The card shows "Saved" or the reason it was not saved; a stale decision (409) reloads the review. Edit opens an input typed to the field (date picker, number with unit, yes/no, dropdown, text) and takes the page and the words that state the value, required when the candidate has no located evidence; "Use text selected in the PDF" fills them from a selection in the right pane. Approve is not offered for a value without located evidence.
+- **Keys** (`lib/keyboard.ts`): Enter approves and moves to the next undecided field, E edits, N marks not in document, F flags, J and K move, Escape cancels. Keys do nothing while typing in an input.
+- **Complete review**: enabled once no required field is undecided; asks once, then `POST /tenders/{id}/complete-review`, and shows the summary at `/review/<token>/summary` with Download JSON. The link then opens the review read-only.
+- There is no bulk approve, no approve-all for a section and no timed auto-advance.
+
+`docs/FIELD-TRACE.md` is generated by `make trace` (`scripts/gen_field_trace.py`) from the compiled schemas, the API's OpenAPI document, the ORM models, the prompt files, the rule functions and the web sources: one row per field path in review order. The `field_trace` check of the watcher regenerates it and fails when the committed file differs, or when a field has no UI component for its value type, no route or no column.
+
 ## Independent review (operating rule 15, from Stage 1)
 
 Before each stage report, a reviewer from a different model family (OpenAI through `OPENAI_API_KEY`) runs in a fresh context. It receives only the stage diff (`git diff stage-N-start..HEAD`), `CLAUDE.md` and the stage prompt, and answers a fixed five-point checklist. Code defects are fixed and the reviewer is rerun until it reports no new code defect; findings that code cannot resolve are listed in the stage report with a one-line rationale and do not block the stage (rule 15 as amended on 2026-10-04). Stage starts are tagged `stage-N-start`.
@@ -203,7 +229,7 @@ A failure is stored with its traceback in `job.last_error`. A retryable failure 
 
 ## Continuous test pipeline
 
-`infra/ci/run_checks.py` runs inside the `tests` service, started by `make up`. On every save under the source folders, and again if anything is saved while a run is in progress, it re-runs: `ruff check`, `ruff format --check`, `mypy` on `core tender api worker`, `alembic upgrade head` then `alembic check` against `tender_ci`, `pytest` scoped to the changed package and then the full suite, `openapi` drift between the API and `web/src/api/schema.d.ts`, `tsc --noEmit` and `vitest run` for `web/`. Each run writes `.ci/status.json` (name, pass/fail, duration, first failing message per check) and `.ci/latest.log`. `infra/hooks/pre-commit` refuses a commit when any entry is red or the status is older than the newest staged source file. Tests marked `slow` call the real LLM and run only on `make test-e2e`.
+`infra/ci/run_checks.py` runs inside the `tests` service, started by `make up`. On every save under the source folders, and again if anything is saved while a run is in progress, it re-runs: `ruff check`, `ruff format --check`, `mypy` on `core tender api worker`, `alembic upgrade head` then `alembic check` against `tender_ci`, `pytest` scoped to the changed package and then the full suite, `openapi` drift between the API and `web/src/api/schema.d.ts`, `field_trace` (the generated `docs/FIELD-TRACE.md` against the code), `tsc --noEmit` and `vitest run` for `web/`. Each run writes `.ci/status.json` (name, pass/fail, duration, first failing message per check) and `.ci/latest.log`. `infra/hooks/pre-commit` refuses a commit when any entry is red or the status is older than the newest staged source file. Tests marked `slow` call the real LLM and run only on `make test-e2e`. The browser suite (`web/e2e/review.spec.ts`, Playwright in its own container against the seeded `e2e` stack) runs on `make test-ui` and nightly in GitHub Actions; it is not part of the watcher.
 
 ## Deployment
 
@@ -251,3 +277,4 @@ One GCE VM (`instance-20261004-081207`, asia-south2-b), static IP `34.131.65.108
 - Cost of extraction: shared page windows as a cached prefix (`core/services/extract_plan.py`), batch runs in two waves, replay of logged calls, per-call cost (`core/llm/pricing.py`).
 - Migration 0008: `review_token`, `tender_review_snapshot`; the `canonical_fact` guard names the decisions that may carry a fact.
 - Review tokens (`tender/services/tokens.py`, `scripts/review_token.py`), token and audit middleware, the reviewer's view of a tender and completion (`tender/services/review.py`), flag decision and stale-write refusal in `ApprovalService`, document pages and search.
+- Reviewer screen in `web/src/review/` with `web/src/lib/`; generated client refreshed; `docs/FIELD-TRACE.md` and its check; Playwright suite and the `e2e` compose profile; proxy routes for stored files.

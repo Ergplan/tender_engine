@@ -1,3 +1,30 @@
+@import "pdfjs-dist/web/pdf_viewer.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+/* The evidence a reviewer has just asked for: shown strongly, then settles. */
+@keyframes pulse-once {
+  0% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.animate-pulse-once {
+  animation: pulse-once 1.6s ease-out forwards;
+  border-width: 2px;
+}

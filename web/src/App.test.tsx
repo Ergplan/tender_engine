@@ -3,41 +3,37 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { App } from "./App";
 
-function mockFetch(status: number, body: unknown) {
-  vi.stubGlobal(
-    "fetch",
-    vi.fn().mockResolvedValue(
-      new Response(JSON.stringify(body), {
-        status,
-        headers: { "Content-Type": "application/json", "X-Request-Id": "req-1" },
-      }),
-    ),
-  );
+vi.mock("./review/pdfText", () => ({ openPdf: async () => ({}) }));
+
+function respond(status: number, body: unknown) {
+  return new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json" } });
 }
 
 afterEach(() => vi.unstubAllGlobals());
 
 describe("App", () => {
-  it("shows the tenant when the API is healthy", async () => {
-    mockFetch(200, { status: "ok", tenant_id: "ergplan", database: "ok" });
-    render(<App />);
-    expect(await screen.findByText("ergplan")).toBeInTheDocument();
-    expect(fetch).toHaveBeenCalledWith("/api/v1/health", expect.anything());
+  it("asks for the review link when the address is not one", () => {
+    render(<App path="/" />);
+    expect(screen.getByRole("alert")).toHaveTextContent("Open the review link you were sent");
   });
 
-  it("shows the API's own message when it reports an error", async () => {
-    mockFetch(503, {
-      error_type: "dependency_unavailable",
-      message: "A required service is not available. Try again shortly.",
-      request_id: "req-1",
-    });
-    render(<App />);
-    expect(await screen.findByRole("alert")).toHaveTextContent("A required service is not available");
+  it("sends the token with every call and keeps it for the files the browser fetches", async () => {
+    const token = "A".repeat(32);
+    const fetchMock = vi.fn().mockResolvedValue(
+      respond(410, { error_type: "review_link_expired", message: "This review link has expired. Ask for a new one." }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+    render(<App path={`/review/${token}`} />);
+    expect(await screen.findByRole("alert")).toHaveTextContent("This review link has expired. Ask for a new one.");
+    const [url, init] = fetchMock.mock.calls[0];
+    expect(url).toBe("/api/v1/review-session");
+    expect(init.headers["X-Review-Token"]).toBe(token);
+    expect(document.cookie).toContain(`review_token=${token}`);
   });
 
   it("shows a plain message when the API cannot be reached", async () => {
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new TypeError("network down")));
-    render(<App />);
-    expect(await screen.findByRole("alert")).toHaveTextContent("The API is not reachable.");
+    render(<App path={`/review/${"B".repeat(32)}`} />);
+    expect(await screen.findByRole("alert")).toHaveTextContent("Check your connection and reload");
   });
 });

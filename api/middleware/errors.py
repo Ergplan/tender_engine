@@ -72,6 +72,10 @@ def install(app: FastAPI) -> None:
             log.exception("unhandled error on %s", request.url.path)
             response = AppError("internal_error").response(request_id)
         response.headers["X-Request-Id"] = request_id
+        # An answer of the API is never reused by a browser: what a link may see changes
+        # (a refusal such as 410 would otherwise be cached and shown for the next link).
+        if "cache-control" not in response.headers:
+            response.headers["Cache-Control"] = "no-store"
         return response
 
     @app.exception_handler(AppError)

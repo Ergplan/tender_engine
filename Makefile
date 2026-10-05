@@ -1,9 +1,9 @@
-# Tender Intelligence Engine. `make trace` and `make report` arrive in Stages 3 and 4.
+# Tender Intelligence Engine. `make report` arrives in Stage 4.
 COMPOSE := docker compose
 STATIC_IP := $(shell cat infra/STATIC-IP.txt)
 RUN_TESTS := $(COMPOSE) run --rm --no-deps -T tests
 
-.PHONY: up down test test-e2e check watch migrate deploy logs smoke client hooks evidence-corpus
+.PHONY: up down test test-e2e test-ui check watch migrate deploy logs smoke client hooks evidence-corpus trace
 
 up: hooks ## start the app and the test watcher
 	$(COMPOSE) up -d --build
@@ -18,6 +18,11 @@ test: ## full python suite and web unit tests, once
 
 test-e2e: ## slow tests that call the real LLM on a real tender PDF
 	$(RUN_TESTS) python -m pytest -p no:cacheprovider -m slow -s tests/e2e
+
+test-ui: ## the reviewer screen in a real browser (Playwright), on a seeded test tender
+	$(COMPOSE) --profile e2e up -d --force-recreate api-e2e caddy-e2e
+	$(COMPOSE) --profile e2e run --rm -T playwright; code=$$?; \
+	  $(COMPOSE) --profile e2e rm -sf api-e2e caddy-e2e >/dev/null 2>&1; exit $$code
 
 check: ## every watcher check once; writes .ci/status.json
 	$(RUN_TESTS) python infra/ci/run_checks.py --once
@@ -49,6 +54,9 @@ smoke: ## one real, logged call to the extraction model
 
 evidence-corpus: ## pass rate of the evidence resolver on tests/core/evidence_corpus
 	$(RUN_TESTS) python -m scripts.evidence_corpus run --failures
+
+trace: ## regenerate docs/FIELD-TRACE.md from the schemas, routes, models and web sources
+	$(RUN_TESTS) python -m scripts.gen_field_trace
 
 client: ## regenerate the OpenAPI document and the TypeScript client types
 	$(RUN_TESTS) python -m scripts.export_openapi --write

@@ -15,5 +15,7 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     setupFiles: ["./src/test-setup.ts"],
+    // The browser tests in e2e/ are Playwright's, run by `make test-ui`.
+    include: ["src/**/*.test.{ts,tsx}"],
   },
 });
