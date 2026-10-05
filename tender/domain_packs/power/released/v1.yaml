@@ -1,0 +1,2219 @@
+# Field definitions of pack `power` as released in version v1: per tender type,
+# every field with what a stored value depends on (type, unit, allowed values, keys).
+# Written by `python -m scripts.release_schema`. Never edited by hand: the pack loader
+# compares schema versions against this file.
+# Generated from the pack files of commit fbbd991, the last commit of schema v1.
+pack: power
+types:
+  bess:
+    core.commercial.change_in_law_clause:
+      type: long_text
+    core.commercial.late_payment_surcharge:
+      type: text
+    core.commercial.offtaker:
+      type: text
+    core.commercial.payment_security_mechanism:
+      type: long_text
+    core.commercial.termination_compensation:
+      type: long_text
+    core.documents.annexure_formats:
+      type: list_text
+    core.documents.draft_agreements_referenced:
+      type: list_text
+    core.documents.required_documents:
+      type: list_text
+    core.eligibility.consortium_allowed:
+      type: bool
+    core.eligibility.liquidity_basis:
+      enum:
+      - absolute
+      - per_mw
+      type: enum
+    core.eligibility.liquidity_requirement_inr:
+      type: money_inr
+      unit: INR
+    core.eligibility.max_consortium_members:
+      type: int
+    core.eligibility.parent_affiliate_credentials_allowed:
+      type: bool
+    core.eligibility.shareholding_lock_in:
+      type: long_text
+    core.eligibility.technical_experience_requirement:
+      type: long_text
+    core.eligibility.turnover_basis:
+      enum:
+      - absolute
+      - per_mw
+      type: enum
+    core.eligibility.turnover_requirement_inr:
+      type: money_inr
+      unit: INR
+    core.guarantees.bg_release_conditions:
+      type: long_text
+    core.guarantees.bg_validity_months:
+      type: duration_months
+      unit: months
+    core.guarantees.emd_form:
+      enum:
+      - bg
+      - insurance_surety
+      - cash
+      - other
+      type: enum
+    core.guarantees.emd_formula:
+      type: long_text
+    core.guarantees.emd_per_mw_inr:
+      type: money_inr
+      unit: INR per MW
+    core.guarantees.pbg_formula:
+      type: long_text
+    core.guarantees.pbg_per_mw_inr:
+      type: money_inr
+      unit: INR per MW
+    core.guarantees.pbg_schedule:
+      type: long_text
+    core.guarantees.processing_fee_inr:
+      type: money_inr
+      unit: INR
+    core.guarantees.success_charge_inr:
+      type: money_inr
+      unit: INR per MW
+    core.identity.issuing_agency:
+      type: text
+    core.identity.portal:
+      type: text
+    core.identity.procurement_mode:
+      enum:
+      - single_stage_two_envelope
+      - two_stage
+      - e_reverse_auction
+      - other
+      type: enum
+    core.identity.tender_number:
+      type: text
+    core.identity.tender_type_as_stated:
+      type: text
+    core.identity.title:
+      type: text
+    core.key_dates.bid_submission_deadline:
+      type: date
+    core.key_dates.bid_validity:
+      type: int
+    core.key_dates.bid_validity_unit:
+      enum:
+      - days
+      - months
+      type: enum
+    core.key_dates.dates_deferred_note:
+      type: long_text
+    core.key_dates.era_date:
+      type: date
+    core.key_dates.loa_timeline:
+      type: text
+    core.key_dates.nit_date:
+      type: date
+    core.key_dates.pre_bid_meeting_date:
+      type: date
+    core.key_dates.query_deadline:
+      type: date
+    core.key_dates.technical_opening_date:
+      type: date
+    core.penalties.delay_ld_per_mw_per_day_inr:
+      type: money_inr
+      unit: INR per MW per day
+    core.penalties.max_scod_extension_months:
+      type: duration_months
+      unit: months
+    core.penalties.pbg_encashment_triggers:
+      type: long_text
+    core.penalties.shortfall_penalty_basis:
+      type: long_text
+    core.penalties.termination_delay_months:
+      type: duration_months
+      unit: months
+    core.summary.plain_english_summary:
+      type: long_text
+    sector.power.bess.augmentation_obligation:
+      type: text
+    sector.power.bess.availability_floor_percent:
+      type: percent
+      unit: percent
+    sector.power.bess.availability_penalty:
+      type: long_text
+    sector.power.bess.capacity_charge_inr_lakh_per_mw_month:
+      type: decimal
+      unit: INR lakh per MW per month
+    sector.power.bess.capacity_mw:
+      type: mw
+      unit: MW
+    sector.power.bess.capacity_mwh:
+      type: mwh
+      unit: MWh
+    sector.power.bess.cycles_per_day:
+      type: decimal
+    sector.power.bess.degradation_obligation:
+      type: text
+    sector.power.bess.dispatch_control:
+      enum:
+      - procurer
+      - developer
+      - sldc
+      type: enum
+    sector.power.bess.end_of_life_terms:
+      type: text
+    sector.power.bess.round_trip_efficiency_guarantee_percent:
+      type: percent
+      unit: percent
+    sector.power.bess.soc_constraints:
+      type: text
+    sector.power.bess.vgf_inr:
+      type: money_inr
+      unit: INR per MWh
+    sector.power.bess.warranty_years:
+      type: int
+      unit: years
+    sector.power.common.almm_required:
+      type: bool
+    sector.power.common.clearances_responsibility:
+      type: text
+    sector.power.common.connectivity_responsibility:
+      enum:
+      - developer
+      - procurer
+      - shared
+      type: enum
+    sector.power.common.dcr_required:
+      type: bool
+    sector.power.common.deemed_generation_clause:
+      type: long_text
+    sector.power.common.delivery_point:
+      type: text
+    sector.power.common.financial_closure_months:
+      type: duration_months
+      unit: months
+    sector.power.common.financial_closure_reference:
+      enum:
+      - effective_date
+      - ppa_signing
+      - loa
+      - before_scod
+      type: enum
+    sector.power.common.gna_requirement:
+      type: long_text
+    sector.power.common.ists_waiver_cutoff_date:
+      type: date
+    sector.power.common.land_responsibility:
+      type: text
+    sector.power.common.line_to_pooling_station_responsibility:
+      type: text
+    sector.power.common.local_content_rule:
+      type: long_text
+    sector.power.common.location_constraint:
+      enum:
+      - ists_anywhere
+      - state_specific
+      - named_substation
+      - named_site
+      type: enum
+    sector.power.common.max_bid_mw:
+      type: mw
+      unit: MW
+    sector.power.common.max_projects_per_bidder:
+      type: int
+    sector.power.common.metering_point:
+      type: text
+    sector.power.common.min_bid_mw:
+      type: mw
+      unit: MW
+    sector.power.common.min_commissioned_mw:
+      type: mw
+      unit: MW
+    sector.power.common.named_states_or_sites:
+      type: list_text
+    sector.power.common.net_worth_per_mw_inr:
+      type: money_inr
+      unit: INR per MW
+    sector.power.common.ppa_signing_window_days:
+      type: int
+      unit: days
+    sector.power.common.ppa_tenure_years:
+      type: int
+      unit: years
+    sector.power.common.scod_months:
+      type: duration_months
+      unit: months
+    sector.power.common.scod_reference:
+      enum:
+      - effective_date
+      - ppa_signing
+      - loa
+      type: enum
+    sector.power.common.tariff_ceiling_inr_per_kwh:
+      type: decimal
+      unit: INR per kWh
+    sector.power.common.tariff_structure:
+      enum:
+      - fixed
+      - escalating
+      - two_part
+      - capacity_charge
+      type: enum
+    sector.power.common.total_capacity_mw:
+      type: mw
+      unit: MW
+    sector.power.common.total_capacity_mwh:
+      type: mwh
+      unit: MWh
+    sector.power.common.under_construction_counts:
+      type: bool
+  epc:
+    core.commercial.change_in_law_clause:
+      type: long_text
+    core.commercial.late_payment_surcharge:
+      type: text
+    core.commercial.offtaker:
+      type: text
+    core.commercial.payment_security_mechanism:
+      type: long_text
+    core.commercial.termination_compensation:
+      type: long_text
+    core.documents.annexure_formats:
+      type: list_text
+    core.documents.draft_agreements_referenced:
+      type: list_text
+    core.documents.required_documents:
+      type: list_text
+    core.eligibility.consortium_allowed:
+      type: bool
+    core.eligibility.liquidity_basis:
+      enum:
+      - absolute
+      - per_mw
+      type: enum
+    core.eligibility.liquidity_requirement_inr:
+      type: money_inr
+      unit: INR
+    core.eligibility.max_consortium_members:
+      type: int
+    core.eligibility.parent_affiliate_credentials_allowed:
+      type: bool
+    core.eligibility.shareholding_lock_in:
+      type: long_text
+    core.eligibility.technical_experience_requirement:
+      type: long_text
+    core.eligibility.turnover_basis:
+      enum:
+      - absolute
+      - per_mw
+      type: enum
+    core.eligibility.turnover_requirement_inr:
+      type: money_inr
+      unit: INR
+    core.guarantees.bg_release_conditions:
+      type: long_text
+    core.guarantees.bg_validity_months:
+      type: duration_months
+      unit: months
+    core.guarantees.emd_form:
+      enum:
+      - bg
+      - insurance_surety
+      - cash
+      - other
+      type: enum
+    core.guarantees.emd_formula:
+      type: long_text
+    core.guarantees.emd_per_mw_inr:
+      type: money_inr
+      unit: INR per MW
+    core.guarantees.pbg_formula:
+      type: long_text
+    core.guarantees.pbg_per_mw_inr:
+      type: money_inr
+      unit: INR per MW
+    core.guarantees.pbg_schedule:
+      type: long_text
+    core.guarantees.processing_fee_inr:
+      type: money_inr
+      unit: INR
+    core.guarantees.success_charge_inr:
+      type: money_inr
+      unit: INR per MW
+    core.identity.issuing_agency:
+      type: text
+    core.identity.portal:
+      type: text
+    core.identity.procurement_mode:
+      enum:
+      - single_stage_two_envelope
+      - two_stage
+      - e_reverse_auction
+      - other
+      type: enum
+    core.identity.tender_number:
+      type: text
+    core.identity.tender_type_as_stated:
+      type: text
+    core.identity.title:
+      type: text
+    core.key_dates.bid_submission_deadline:
+      type: date
+    core.key_dates.bid_validity:
+      type: int
+    core.key_dates.bid_validity_unit:
+      enum:
+      - days
+      - months
+      type: enum
+    core.key_dates.dates_deferred_note:
+      type: long_text
+    core.key_dates.era_date:
+      type: date
+    core.key_dates.loa_timeline:
+      type: text
+    core.key_dates.nit_date:
+      type: date
+    core.key_dates.pre_bid_meeting_date:
+      type: date
+    core.key_dates.query_deadline:
+      type: date
+    core.key_dates.technical_opening_date:
+      type: date
+    core.penalties.delay_ld_per_mw_per_day_inr:
+      type: money_inr
+      unit: INR per MW per day
+    core.penalties.max_scod_extension_months:
+      type: duration_months
+      unit: months
+    core.penalties.pbg_encashment_triggers:
+      type: long_text
+    core.penalties.shortfall_penalty_basis:
+      type: long_text
+    core.penalties.termination_delay_months:
+      type: duration_months
+      unit: months
+    core.summary.plain_english_summary:
+      type: long_text
+    sector.power.common.almm_required:
+      type: bool
+    sector.power.common.clearances_responsibility:
+      type: text
+    sector.power.common.connectivity_responsibility:
+      enum:
+      - developer
+      - procurer
+      - shared
+      type: enum
+    sector.power.common.dcr_required:
+      type: bool
+    sector.power.common.deemed_generation_clause:
+      type: long_text
+    sector.power.common.delivery_point:
+      type: text
+    sector.power.common.financial_closure_months:
+      type: duration_months
+      unit: months
+    sector.power.common.financial_closure_reference:
+      enum:
+      - effective_date
+      - ppa_signing
+      - loa
+      - before_scod
+      type: enum
+    sector.power.common.gna_requirement:
+      type: long_text
+    sector.power.common.ists_waiver_cutoff_date:
+      type: date
+    sector.power.common.land_responsibility:
+      type: text
+    sector.power.common.line_to_pooling_station_responsibility:
+      type: text
+    sector.power.common.local_content_rule:
+      type: long_text
+    sector.power.common.location_constraint:
+      enum:
+      - ists_anywhere
+      - state_specific
+      - named_substation
+      - named_site
+      type: enum
+    sector.power.common.max_bid_mw:
+      type: mw
+      unit: MW
+    sector.power.common.max_projects_per_bidder:
+      type: int
+    sector.power.common.metering_point:
+      type: text
+    sector.power.common.min_bid_mw:
+      type: mw
+      unit: MW
+    sector.power.common.min_commissioned_mw:
+      type: mw
+      unit: MW
+    sector.power.common.named_states_or_sites:
+      type: list_text
+    sector.power.common.net_worth_per_mw_inr:
+      type: money_inr
+      unit: INR per MW
+    sector.power.common.ppa_signing_window_days:
+      type: int
+      unit: days
+    sector.power.common.scod_months:
+      type: duration_months
+      unit: months
+    sector.power.common.scod_reference:
+      enum:
+      - effective_date
+      - ppa_signing
+      - loa
+      type: enum
+    sector.power.common.tariff_structure:
+      enum:
+      - fixed
+      - escalating
+      - two_part
+      - capacity_charge
+      type: enum
+    sector.power.common.total_capacity_mw:
+      type: mw
+      unit: MW
+    sector.power.common.total_capacity_mwh:
+      type: mwh
+      unit: MWh
+    sector.power.common.under_construction_counts:
+      type: bool
+    sector.power.epc.boq_structure:
+      type: text
+    sector.power.epc.defect_liability_months:
+      type: duration_months
+      unit: months
+    sector.power.epc.drawing_approval_cycle:
+      type: text
+    sector.power.epc.ld_delay:
+      type: text
+    sector.power.epc.ld_performance:
+      type: text
+    sector.power.epc.milestone_payment_schedule:
+      type: long_text
+    sector.power.epc.om_period_months:
+      type: duration_months
+      unit: months
+    sector.power.epc.performance_ratio_guarantee_percent:
+      type: percent
+      unit: percent
+    sector.power.epc.price_schedule_structure:
+      type: text
+    sector.power.epc.retention_percent:
+      type: percent
+      unit: percent
+    sector.power.epc.scope_matrix:
+      item_keys:
+      - item
+      - supply
+      - erection
+      - commissioning
+      - om
+      type: record_list
+    sector.power.epc.supply_service_split:
+      type: bool
+    sector.power.epc.taxes_duties_treatment:
+      type: text
+    sector.power.epc.warranty_terms:
+      type: text
+  fdre:
+    core.commercial.change_in_law_clause:
+      type: long_text
+    core.commercial.late_payment_surcharge:
+      type: text
+    core.commercial.offtaker:
+      type: text
+    core.commercial.payment_security_mechanism:
+      type: long_text
+    core.commercial.termination_compensation:
+      type: long_text
+    core.documents.annexure_formats:
+      type: list_text
+    core.documents.draft_agreements_referenced:
+      type: list_text
+    core.documents.required_documents:
+      type: list_text
+    core.eligibility.consortium_allowed:
+      type: bool
+    core.eligibility.liquidity_basis:
+      enum:
+      - absolute
+      - per_mw
+      type: enum
+    core.eligibility.liquidity_requirement_inr:
+      type: money_inr
+      unit: INR
+    core.eligibility.max_consortium_members:
+      type: int
+    core.eligibility.parent_affiliate_credentials_allowed:
+      type: bool
+    core.eligibility.shareholding_lock_in:
+      type: long_text
+    core.eligibility.technical_experience_requirement:
+      type: long_text
+    core.eligibility.turnover_basis:
+      enum:
+      - absolute
+      - per_mw
+      type: enum
+    core.eligibility.turnover_requirement_inr:
+      type: money_inr
+      unit: INR
+    core.guarantees.bg_release_conditions:
+      type: long_text
+    core.guarantees.bg_validity_months:
+      type: duration_months
+      unit: months
+    core.guarantees.emd_form:
+      enum:
+      - bg
+      - insurance_surety
+      - cash
+      - other
+      type: enum
+    core.guarantees.emd_formula:
+      type: long_text
+    core.guarantees.emd_per_mw_inr:
+      type: money_inr
+      unit: INR per MW
+    core.guarantees.pbg_formula:
+      type: long_text
+    core.guarantees.pbg_per_mw_inr:
+      type: money_inr
+      unit: INR per MW
+    core.guarantees.pbg_schedule:
+      type: long_text
+    core.guarantees.processing_fee_inr:
+      type: money_inr
+      unit: INR
+    core.guarantees.success_charge_inr:
+      type: money_inr
+      unit: INR per MW
+    core.identity.issuing_agency:
+      type: text
+    core.identity.portal:
+      type: text
+    core.identity.procurement_mode:
+      enum:
+      - single_stage_two_envelope
+      - two_stage
+      - e_reverse_auction
+      - other
+      type: enum
+    core.identity.tender_number:
+      type: text
+    core.identity.tender_type_as_stated:
+      type: text
+    core.identity.title:
+      type: text
+    core.key_dates.bid_submission_deadline:
+      type: date
+    core.key_dates.bid_validity:
+      type: int
+    core.key_dates.bid_validity_unit:
+      enum:
+      - days
+      - months
+      type: enum
+    core.key_dates.dates_deferred_note:
+      type: long_text
+    core.key_dates.era_date:
+      type: date
+    core.key_dates.loa_timeline:
+      type: text
+    core.key_dates.nit_date:
+      type: date
+    core.key_dates.pre_bid_meeting_date:
+      type: date
+    core.key_dates.query_deadline:
+      type: date
+    core.key_dates.technical_opening_date:
+      type: date
+    core.penalties.delay_ld_per_mw_per_day_inr:
+      type: money_inr
+      unit: INR per MW per day
+    core.penalties.max_scod_extension_months:
+      type: duration_months
+      unit: months
+    core.penalties.pbg_encashment_triggers:
+      type: long_text
+    core.penalties.shortfall_penalty_basis:
+      type: long_text
+    core.penalties.termination_delay_months:
+      type: duration_months
+      unit: months
+    core.summary.plain_english_summary:
+      type: long_text
+    sector.power.common.almm_required:
+      type: bool
+    sector.power.common.clearances_responsibility:
+      type: text
+    sector.power.common.connectivity_responsibility:
+      enum:
+      - developer
+      - procurer
+      - shared
+      type: enum
+    sector.power.common.dcr_required:
+      type: bool
+    sector.power.common.deemed_generation_clause:
+      type: long_text
+    sector.power.common.delivery_point:
+      type: text
+    sector.power.common.financial_closure_months:
+      type: duration_months
+      unit: months
+    sector.power.common.financial_closure_reference:
+      enum:
+      - effective_date
+      - ppa_signing
+      - loa
+      - before_scod
+      type: enum
+    sector.power.common.gna_requirement:
+      type: long_text
+    sector.power.common.ists_waiver_cutoff_date:
+      type: date
+    sector.power.common.land_responsibility:
+      type: text
+    sector.power.common.line_to_pooling_station_responsibility:
+      type: text
+    sector.power.common.local_content_rule:
+      type: long_text
+    sector.power.common.location_constraint:
+      enum:
+      - ists_anywhere
+      - state_specific
+      - named_substation
+      - named_site
+      type: enum
+    sector.power.common.max_bid_mw:
+      type: mw
+      unit: MW
+    sector.power.common.max_projects_per_bidder:
+      type: int
+    sector.power.common.metering_point:
+      type: text
+    sector.power.common.min_bid_mw:
+      type: mw
+      unit: MW
+    sector.power.common.min_commissioned_mw:
+      type: mw
+      unit: MW
+    sector.power.common.named_states_or_sites:
+      type: list_text
+    sector.power.common.net_worth_per_mw_inr:
+      type: money_inr
+      unit: INR per MW
+    sector.power.common.ppa_signing_window_days:
+      type: int
+      unit: days
+    sector.power.common.ppa_tenure_years:
+      type: int
+      unit: years
+    sector.power.common.scod_months:
+      type: duration_months
+      unit: months
+    sector.power.common.scod_reference:
+      enum:
+      - effective_date
+      - ppa_signing
+      - loa
+      type: enum
+    sector.power.common.tariff_ceiling_inr_per_kwh:
+      type: decimal
+      unit: INR per kWh
+    sector.power.common.tariff_structure:
+      enum:
+      - fixed
+      - escalating
+      - two_part
+      - capacity_charge
+      type: enum
+    sector.power.common.total_capacity_mw:
+      type: mw
+      unit: MW
+    sector.power.common.total_capacity_mwh:
+      type: mwh
+      unit: MWh
+    sector.power.common.under_construction_counts:
+      type: bool
+    sector.power.fdre.assured_availability_percent:
+      type: percent
+      unit: percent
+    sector.power.fdre.availability_shortfall_penalty:
+      type: long_text
+    sector.power.fdre.capacity_addition_flexibility:
+      type: text
+    sector.power.fdre.component_disclosure_required:
+      type: bool
+    sector.power.fdre.demand_profile:
+      type: long_text
+    sector.power.fdre.excess_energy_price_inr_per_kwh:
+      type: decimal
+      unit: INR per kWh
+    sector.power.fdre.firmness_definition:
+      type: long_text
+    sector.power.fdre.peak_window_definition:
+      type: text
+    sector.power.fdre.shortfall_compensation_multiple:
+      type: decimal
+    sector.power.fdre.storage_mandatory:
+      type: bool
+  generation:
+    core.commercial.change_in_law_clause:
+      type: long_text
+    core.commercial.late_payment_surcharge:
+      type: text
+    core.commercial.offtaker:
+      type: text
+    core.commercial.payment_security_mechanism:
+      type: long_text
+    core.commercial.termination_compensation:
+      type: long_text
+    core.documents.annexure_formats:
+      type: list_text
+    core.documents.draft_agreements_referenced:
+      type: list_text
+    core.documents.required_documents:
+      type: list_text
+    core.eligibility.consortium_allowed:
+      type: bool
+    core.eligibility.liquidity_basis:
+      enum:
+      - absolute
+      - per_mw
+      type: enum
+    core.eligibility.liquidity_requirement_inr:
+      type: money_inr
+      unit: INR
+    core.eligibility.max_consortium_members:
+      type: int
+    core.eligibility.parent_affiliate_credentials_allowed:
+      type: bool
+    core.eligibility.shareholding_lock_in:
+      type: long_text
+    core.eligibility.technical_experience_requirement:
+      type: long_text
+    core.eligibility.turnover_basis:
+      enum:
+      - absolute
+      - per_mw
+      type: enum
+    core.eligibility.turnover_requirement_inr:
+      type: money_inr
+      unit: INR
+    core.guarantees.bg_release_conditions:
+      type: long_text
+    core.guarantees.bg_validity_months:
+      type: duration_months
+      unit: months
+    core.guarantees.emd_form:
+      enum:
+      - bg
+      - insurance_surety
+      - cash
+      - other
+      type: enum
+    core.guarantees.emd_formula:
+      type: long_text
+    core.guarantees.emd_per_mw_inr:
+      type: money_inr
+      unit: INR per MW
+    core.guarantees.pbg_formula:
+      type: long_text
+    core.guarantees.pbg_per_mw_inr:
+      type: money_inr
+      unit: INR per MW
+    core.guarantees.pbg_schedule:
+      type: long_text
+    core.guarantees.processing_fee_inr:
+      type: money_inr
+      unit: INR
+    core.guarantees.success_charge_inr:
+      type: money_inr
+      unit: INR per MW
+    core.identity.issuing_agency:
+      type: text
+    core.identity.portal:
+      type: text
+    core.identity.procurement_mode:
+      enum:
+      - single_stage_two_envelope
+      - two_stage
+      - e_reverse_auction
+      - other
+      type: enum
+    core.identity.tender_number:
+      type: text
+    core.identity.tender_type_as_stated:
+      type: text
+    core.identity.title:
+      type: text
+    core.key_dates.bid_submission_deadline:
+      type: date
+    core.key_dates.bid_validity:
+      type: int
+    core.key_dates.bid_validity_unit:
+      enum:
+      - days
+      - months
+      type: enum
+    core.key_dates.dates_deferred_note:
+      type: long_text
+    core.key_dates.era_date:
+      type: date
+    core.key_dates.loa_timeline:
+      type: text
+    core.key_dates.nit_date:
+      type: date
+    core.key_dates.pre_bid_meeting_date:
+      type: date
+    core.key_dates.query_deadline:
+      type: date
+    core.key_dates.technical_opening_date:
+      type: date
+    core.penalties.delay_ld_per_mw_per_day_inr:
+      type: money_inr
+      unit: INR per MW per day
+    core.penalties.max_scod_extension_months:
+      type: duration_months
+      unit: months
+    core.penalties.pbg_encashment_triggers:
+      type: long_text
+    core.penalties.shortfall_penalty_basis:
+      type: long_text
+    core.penalties.termination_delay_months:
+      type: duration_months
+      unit: months
+    core.summary.plain_english_summary:
+      type: long_text
+    sector.power.common.almm_required:
+      type: bool
+    sector.power.common.clearances_responsibility:
+      type: text
+    sector.power.common.connectivity_responsibility:
+      enum:
+      - developer
+      - procurer
+      - shared
+      type: enum
+    sector.power.common.dcr_required:
+      type: bool
+    sector.power.common.deemed_generation_clause:
+      type: long_text
+    sector.power.common.delivery_point:
+      type: text
+    sector.power.common.financial_closure_months:
+      type: duration_months
+      unit: months
+    sector.power.common.financial_closure_reference:
+      enum:
+      - effective_date
+      - ppa_signing
+      - loa
+      - before_scod
+      type: enum
+    sector.power.common.gna_requirement:
+      type: long_text
+    sector.power.common.ists_waiver_cutoff_date:
+      type: date
+    sector.power.common.land_responsibility:
+      type: text
+    sector.power.common.line_to_pooling_station_responsibility:
+      type: text
+    sector.power.common.local_content_rule:
+      type: long_text
+    sector.power.common.location_constraint:
+      enum:
+      - ists_anywhere
+      - state_specific
+      - named_substation
+      - named_site
+      type: enum
+    sector.power.common.max_bid_mw:
+      type: mw
+      unit: MW
+    sector.power.common.max_projects_per_bidder:
+      type: int
+    sector.power.common.metering_point:
+      type: text
+    sector.power.common.min_bid_mw:
+      type: mw
+      unit: MW
+    sector.power.common.min_commissioned_mw:
+      type: mw
+      unit: MW
+    sector.power.common.named_states_or_sites:
+      type: list_text
+    sector.power.common.net_worth_per_mw_inr:
+      type: money_inr
+      unit: INR per MW
+    sector.power.common.ppa_signing_window_days:
+      type: int
+      unit: days
+    sector.power.common.ppa_tenure_years:
+      type: int
+      unit: years
+    sector.power.common.scod_months:
+      type: duration_months
+      unit: months
+    sector.power.common.scod_reference:
+      enum:
+      - effective_date
+      - ppa_signing
+      - loa
+      type: enum
+    sector.power.common.tariff_ceiling_inr_per_kwh:
+      type: decimal
+      unit: INR per kWh
+    sector.power.common.tariff_structure:
+      enum:
+      - fixed
+      - escalating
+      - two_part
+      - capacity_charge
+      type: enum
+    sector.power.common.total_capacity_mw:
+      type: mw
+      unit: MW
+    sector.power.common.total_capacity_mwh:
+      type: mwh
+      unit: MWh
+    sector.power.common.under_construction_counts:
+      type: bool
+    sector.power.generation.availability_norm_percent:
+      type: percent
+      unit: percent
+    sector.power.generation.capacity_charge_recovery_rule:
+      type: text
+    sector.power.generation.fuel_supply_arrangement:
+      type: text
+    sector.power.generation.fuel_type:
+      type: text
+    sector.power.generation.heat_rate_or_design_energy:
+      type: text
+    sector.power.generation.tariff_two_part:
+      type: bool
+    sector.power.generation.water_clearance_responsibility:
+      type: text
+  hybrid:
+    core.commercial.change_in_law_clause:
+      type: long_text
+    core.commercial.late_payment_surcharge:
+      type: text
+    core.commercial.offtaker:
+      type: text
+    core.commercial.payment_security_mechanism:
+      type: long_text
+    core.commercial.termination_compensation:
+      type: long_text
+    core.documents.annexure_formats:
+      type: list_text
+    core.documents.draft_agreements_referenced:
+      type: list_text
+    core.documents.required_documents:
+      type: list_text
+    core.eligibility.consortium_allowed:
+      type: bool
+    core.eligibility.liquidity_basis:
+      enum:
+      - absolute
+      - per_mw
+      type: enum
+    core.eligibility.liquidity_requirement_inr:
+      type: money_inr
+      unit: INR
+    core.eligibility.max_consortium_members:
+      type: int
+    core.eligibility.parent_affiliate_credentials_allowed:
+      type: bool
+    core.eligibility.shareholding_lock_in:
+      type: long_text
+    core.eligibility.technical_experience_requirement:
+      type: long_text
+    core.eligibility.turnover_basis:
+      enum:
+      - absolute
+      - per_mw
+      type: enum
+    core.eligibility.turnover_requirement_inr:
+      type: money_inr
+      unit: INR
+    core.guarantees.bg_release_conditions:
+      type: long_text
+    core.guarantees.bg_validity_months:
+      type: duration_months
+      unit: months
+    core.guarantees.emd_form:
+      enum:
+      - bg
+      - insurance_surety
+      - cash
+      - other
+      type: enum
+    core.guarantees.emd_formula:
+      type: long_text
+    core.guarantees.emd_per_mw_inr:
+      type: money_inr
+      unit: INR per MW
+    core.guarantees.pbg_formula:
+      type: long_text
+    core.guarantees.pbg_per_mw_inr:
+      type: money_inr
+      unit: INR per MW
+    core.guarantees.pbg_schedule:
+      type: long_text
+    core.guarantees.processing_fee_inr:
+      type: money_inr
+      unit: INR
+    core.guarantees.success_charge_inr:
+      type: money_inr
+      unit: INR per MW
+    core.identity.issuing_agency:
+      type: text
+    core.identity.portal:
+      type: text
+    core.identity.procurement_mode:
+      enum:
+      - single_stage_two_envelope
+      - two_stage
+      - e_reverse_auction
+      - other
+      type: enum
+    core.identity.tender_number:
+      type: text
+    core.identity.tender_type_as_stated:
+      type: text
+    core.identity.title:
+      type: text
+    core.key_dates.bid_submission_deadline:
+      type: date
+    core.key_dates.bid_validity:
+      type: int
+    core.key_dates.bid_validity_unit:
+      enum:
+      - days
+      - months
+      type: enum
+    core.key_dates.dates_deferred_note:
+      type: long_text
+    core.key_dates.era_date:
+      type: date
+    core.key_dates.loa_timeline:
+      type: text
+    core.key_dates.nit_date:
+      type: date
+    core.key_dates.pre_bid_meeting_date:
+      type: date
+    core.key_dates.query_deadline:
+      type: date
+    core.key_dates.technical_opening_date:
+      type: date
+    core.penalties.delay_ld_per_mw_per_day_inr:
+      type: money_inr
+      unit: INR per MW per day
+    core.penalties.max_scod_extension_months:
+      type: duration_months
+      unit: months
+    core.penalties.pbg_encashment_triggers:
+      type: long_text
+    core.penalties.shortfall_penalty_basis:
+      type: long_text
+    core.penalties.termination_delay_months:
+      type: duration_months
+      unit: months
+    core.summary.plain_english_summary:
+      type: long_text
+    sector.power.common.almm_required:
+      type: bool
+    sector.power.common.clearances_responsibility:
+      type: text
+    sector.power.common.connectivity_responsibility:
+      enum:
+      - developer
+      - procurer
+      - shared
+      type: enum
+    sector.power.common.dcr_required:
+      type: bool
+    sector.power.common.deemed_generation_clause:
+      type: long_text
+    sector.power.common.delivery_point:
+      type: text
+    sector.power.common.financial_closure_months:
+      type: duration_months
+      unit: months
+    sector.power.common.financial_closure_reference:
+      enum:
+      - effective_date
+      - ppa_signing
+      - loa
+      - before_scod
+      type: enum
+    sector.power.common.gna_requirement:
+      type: long_text
+    sector.power.common.ists_waiver_cutoff_date:
+      type: date
+    sector.power.common.land_responsibility:
+      type: text
+    sector.power.common.line_to_pooling_station_responsibility:
+      type: text
+    sector.power.common.local_content_rule:
+      type: long_text
+    sector.power.common.location_constraint:
+      enum:
+      - ists_anywhere
+      - state_specific
+      - named_substation
+      - named_site
+      type: enum
+    sector.power.common.max_bid_mw:
+      type: mw
+      unit: MW
+    sector.power.common.max_projects_per_bidder:
+      type: int
+    sector.power.common.metering_point:
+      type: text
+    sector.power.common.min_bid_mw:
+      type: mw
+      unit: MW
+    sector.power.common.min_commissioned_mw:
+      type: mw
+      unit: MW
+    sector.power.common.named_states_or_sites:
+      type: list_text
+    sector.power.common.net_worth_per_mw_inr:
+      type: money_inr
+      unit: INR per MW
+    sector.power.common.ppa_signing_window_days:
+      type: int
+      unit: days
+    sector.power.common.ppa_tenure_years:
+      type: int
+      unit: years
+    sector.power.common.scod_months:
+      type: duration_months
+      unit: months
+    sector.power.common.scod_reference:
+      enum:
+      - effective_date
+      - ppa_signing
+      - loa
+      type: enum
+    sector.power.common.tariff_ceiling_inr_per_kwh:
+      type: decimal
+      unit: INR per kWh
+    sector.power.common.tariff_structure:
+      enum:
+      - fixed
+      - escalating
+      - two_part
+      - capacity_charge
+      type: enum
+    sector.power.common.total_capacity_mw:
+      type: mw
+      unit: MW
+    sector.power.common.total_capacity_mwh:
+      type: mwh
+      unit: MWh
+    sector.power.common.under_construction_counts:
+      type: bool
+    sector.power.hybrid.combined_cuf_floor_percent:
+      type: percent
+      unit: percent
+    sector.power.hybrid.excess_generation_treatment:
+      type: text
+    sector.power.hybrid.min_share_per_resource_percent:
+      type: percent
+      unit: percent
+    sector.power.hybrid.oversizing_allowance_percent:
+      type: percent
+      unit: percent
+    sector.power.hybrid.storage_metering_rule:
+      type: text
+    sector.power.hybrid.storage_permitted:
+      type: bool
+  ipp:
+    core.commercial.change_in_law_clause:
+      type: long_text
+    core.commercial.late_payment_surcharge:
+      type: text
+    core.commercial.offtaker:
+      type: text
+    core.commercial.payment_security_mechanism:
+      type: long_text
+    core.commercial.termination_compensation:
+      type: long_text
+    core.documents.annexure_formats:
+      type: list_text
+    core.documents.draft_agreements_referenced:
+      type: list_text
+    core.documents.required_documents:
+      type: list_text
+    core.eligibility.consortium_allowed:
+      type: bool
+    core.eligibility.liquidity_basis:
+      enum:
+      - absolute
+      - per_mw
+      type: enum
+    core.eligibility.liquidity_requirement_inr:
+      type: money_inr
+      unit: INR
+    core.eligibility.max_consortium_members:
+      type: int
+    core.eligibility.parent_affiliate_credentials_allowed:
+      type: bool
+    core.eligibility.shareholding_lock_in:
+      type: long_text
+    core.eligibility.technical_experience_requirement:
+      type: long_text
+    core.eligibility.turnover_basis:
+      enum:
+      - absolute
+      - per_mw
+      type: enum
+    core.eligibility.turnover_requirement_inr:
+      type: money_inr
+      unit: INR
+    core.guarantees.bg_release_conditions:
+      type: long_text
+    core.guarantees.bg_validity_months:
+      type: duration_months
+      unit: months
+    core.guarantees.emd_form:
+      enum:
+      - bg
+      - insurance_surety
+      - cash
+      - other
+      type: enum
+    core.guarantees.emd_formula:
+      type: long_text
+    core.guarantees.emd_per_mw_inr:
+      type: money_inr
+      unit: INR per MW
+    core.guarantees.pbg_formula:
+      type: long_text
+    core.guarantees.pbg_per_mw_inr:
+      type: money_inr
+      unit: INR per MW
+    core.guarantees.pbg_schedule:
+      type: long_text
+    core.guarantees.processing_fee_inr:
+      type: money_inr
+      unit: INR
+    core.guarantees.success_charge_inr:
+      type: money_inr
+      unit: INR per MW
+    core.identity.issuing_agency:
+      type: text
+    core.identity.portal:
+      type: text
+    core.identity.procurement_mode:
+      enum:
+      - single_stage_two_envelope
+      - two_stage
+      - e_reverse_auction
+      - other
+      type: enum
+    core.identity.tender_number:
+      type: text
+    core.identity.tender_type_as_stated:
+      type: text
+    core.identity.title:
+      type: text
+    core.key_dates.bid_submission_deadline:
+      type: date
+    core.key_dates.bid_validity:
+      type: int
+    core.key_dates.bid_validity_unit:
+      enum:
+      - days
+      - months
+      type: enum
+    core.key_dates.dates_deferred_note:
+      type: long_text
+    core.key_dates.era_date:
+      type: date
+    core.key_dates.loa_timeline:
+      type: text
+    core.key_dates.nit_date:
+      type: date
+    core.key_dates.pre_bid_meeting_date:
+      type: date
+    core.key_dates.query_deadline:
+      type: date
+    core.key_dates.technical_opening_date:
+      type: date
+    core.penalties.delay_ld_per_mw_per_day_inr:
+      type: money_inr
+      unit: INR per MW per day
+    core.penalties.max_scod_extension_months:
+      type: duration_months
+      unit: months
+    core.penalties.pbg_encashment_triggers:
+      type: long_text
+    core.penalties.shortfall_penalty_basis:
+      type: long_text
+    core.penalties.termination_delay_months:
+      type: duration_months
+      unit: months
+    core.summary.plain_english_summary:
+      type: long_text
+    sector.power.common.almm_required:
+      type: bool
+    sector.power.common.clearances_responsibility:
+      type: text
+    sector.power.common.connectivity_responsibility:
+      enum:
+      - developer
+      - procurer
+      - shared
+      type: enum
+    sector.power.common.dcr_required:
+      type: bool
+    sector.power.common.deemed_generation_clause:
+      type: long_text
+    sector.power.common.delivery_point:
+      type: text
+    sector.power.common.financial_closure_months:
+      type: duration_months
+      unit: months
+    sector.power.common.financial_closure_reference:
+      enum:
+      - effective_date
+      - ppa_signing
+      - loa
+      - before_scod
+      type: enum
+    sector.power.common.gna_requirement:
+      type: long_text
+    sector.power.common.ists_waiver_cutoff_date:
+      type: date
+    sector.power.common.land_responsibility:
+      type: text
+    sector.power.common.line_to_pooling_station_responsibility:
+      type: text
+    sector.power.common.local_content_rule:
+      type: long_text
+    sector.power.common.location_constraint:
+      enum:
+      - ists_anywhere
+      - state_specific
+      - named_substation
+      - named_site
+      type: enum
+    sector.power.common.max_bid_mw:
+      type: mw
+      unit: MW
+    sector.power.common.max_projects_per_bidder:
+      type: int
+    sector.power.common.metering_point:
+      type: text
+    sector.power.common.min_bid_mw:
+      type: mw
+      unit: MW
+    sector.power.common.min_commissioned_mw:
+      type: mw
+      unit: MW
+    sector.power.common.named_states_or_sites:
+      type: list_text
+    sector.power.common.net_worth_per_mw_inr:
+      type: money_inr
+      unit: INR per MW
+    sector.power.common.ppa_signing_window_days:
+      type: int
+      unit: days
+    sector.power.common.ppa_tenure_years:
+      type: int
+      unit: years
+    sector.power.common.scod_months:
+      type: duration_months
+      unit: months
+    sector.power.common.scod_reference:
+      enum:
+      - effective_date
+      - ppa_signing
+      - loa
+      type: enum
+    sector.power.common.tariff_ceiling_inr_per_kwh:
+      type: decimal
+      unit: INR per kWh
+    sector.power.common.tariff_structure:
+      enum:
+      - fixed
+      - escalating
+      - two_part
+      - capacity_charge
+      type: enum
+    sector.power.common.total_capacity_mw:
+      type: mw
+      unit: MW
+    sector.power.common.total_capacity_mwh:
+      type: mwh
+      unit: MWh
+    sector.power.common.under_construction_counts:
+      type: bool
+    sector.power.ipp.cuf_ceiling_percent:
+      type: percent
+      unit: percent
+    sector.power.ipp.cuf_floor_percent:
+      type: percent
+      unit: percent
+    sector.power.ipp.degradation_cap_percent:
+      type: percent
+      unit: percent
+    sector.power.ipp.ists_waiver_status:
+      type: text
+    sector.power.ipp.payment_security_mechanism:
+      type: text
+    sector.power.ipp.pbg_cost_basis:
+      type: text
+    sector.power.ipp.pbg_duration_months:
+      type: duration_months
+      unit: months
+    sector.power.ipp.ppa_tenure_years:
+      type: int
+      unit: years
+    sector.power.ipp.scod_months:
+      type: duration_months
+      unit: months
+    sector.power.ipp.tariff_ceiling_inr_per_kwh:
+      type: decimal
+      unit: INR per kWh
+  solar:
+    core.commercial.change_in_law_clause:
+      type: long_text
+    core.commercial.late_payment_surcharge:
+      type: text
+    core.commercial.offtaker:
+      type: text
+    core.commercial.payment_security_mechanism:
+      type: long_text
+    core.commercial.termination_compensation:
+      type: long_text
+    core.documents.annexure_formats:
+      type: list_text
+    core.documents.draft_agreements_referenced:
+      type: list_text
+    core.documents.required_documents:
+      type: list_text
+    core.eligibility.consortium_allowed:
+      type: bool
+    core.eligibility.liquidity_basis:
+      enum:
+      - absolute
+      - per_mw
+      type: enum
+    core.eligibility.liquidity_requirement_inr:
+      type: money_inr
+      unit: INR
+    core.eligibility.max_consortium_members:
+      type: int
+    core.eligibility.parent_affiliate_credentials_allowed:
+      type: bool
+    core.eligibility.shareholding_lock_in:
+      type: long_text
+    core.eligibility.technical_experience_requirement:
+      type: long_text
+    core.eligibility.turnover_basis:
+      enum:
+      - absolute
+      - per_mw
+      type: enum
+    core.eligibility.turnover_requirement_inr:
+      type: money_inr
+      unit: INR
+    core.guarantees.bg_release_conditions:
+      type: long_text
+    core.guarantees.bg_validity_months:
+      type: duration_months
+      unit: months
+    core.guarantees.emd_form:
+      enum:
+      - bg
+      - insurance_surety
+      - cash
+      - other
+      type: enum
+    core.guarantees.emd_formula:
+      type: long_text
+    core.guarantees.emd_per_mw_inr:
+      type: money_inr
+      unit: INR per MW
+    core.guarantees.pbg_formula:
+      type: long_text
+    core.guarantees.pbg_per_mw_inr:
+      type: money_inr
+      unit: INR per MW
+    core.guarantees.pbg_schedule:
+      type: long_text
+    core.guarantees.processing_fee_inr:
+      type: money_inr
+      unit: INR
+    core.guarantees.success_charge_inr:
+      type: money_inr
+      unit: INR per MW
+    core.identity.issuing_agency:
+      type: text
+    core.identity.portal:
+      type: text
+    core.identity.procurement_mode:
+      enum:
+      - single_stage_two_envelope
+      - two_stage
+      - e_reverse_auction
+      - other
+      type: enum
+    core.identity.tender_number:
+      type: text
+    core.identity.tender_type_as_stated:
+      type: text
+    core.identity.title:
+      type: text
+    core.key_dates.bid_submission_deadline:
+      type: date
+    core.key_dates.bid_validity:
+      type: int
+    core.key_dates.bid_validity_unit:
+      enum:
+      - days
+      - months
+      type: enum
+    core.key_dates.dates_deferred_note:
+      type: long_text
+    core.key_dates.era_date:
+      type: date
+    core.key_dates.loa_timeline:
+      type: text
+    core.key_dates.nit_date:
+      type: date
+    core.key_dates.pre_bid_meeting_date:
+      type: date
+    core.key_dates.query_deadline:
+      type: date
+    core.key_dates.technical_opening_date:
+      type: date
+    core.penalties.delay_ld_per_mw_per_day_inr:
+      type: money_inr
+      unit: INR per MW per day
+    core.penalties.max_scod_extension_months:
+      type: duration_months
+      unit: months
+    core.penalties.pbg_encashment_triggers:
+      type: long_text
+    core.penalties.shortfall_penalty_basis:
+      type: long_text
+    core.penalties.termination_delay_months:
+      type: duration_months
+      unit: months
+    core.summary.plain_english_summary:
+      type: long_text
+    sector.power.common.almm_required:
+      type: bool
+    sector.power.common.clearances_responsibility:
+      type: text
+    sector.power.common.connectivity_responsibility:
+      enum:
+      - developer
+      - procurer
+      - shared
+      type: enum
+    sector.power.common.dcr_required:
+      type: bool
+    sector.power.common.deemed_generation_clause:
+      type: long_text
+    sector.power.common.delivery_point:
+      type: text
+    sector.power.common.financial_closure_months:
+      type: duration_months
+      unit: months
+    sector.power.common.financial_closure_reference:
+      enum:
+      - effective_date
+      - ppa_signing
+      - loa
+      - before_scod
+      type: enum
+    sector.power.common.gna_requirement:
+      type: long_text
+    sector.power.common.ists_waiver_cutoff_date:
+      type: date
+    sector.power.common.land_responsibility:
+      type: text
+    sector.power.common.line_to_pooling_station_responsibility:
+      type: text
+    sector.power.common.local_content_rule:
+      type: long_text
+    sector.power.common.location_constraint:
+      enum:
+      - ists_anywhere
+      - state_specific
+      - named_substation
+      - named_site
+      type: enum
+    sector.power.common.max_bid_mw:
+      type: mw
+      unit: MW
+    sector.power.common.max_projects_per_bidder:
+      type: int
+    sector.power.common.metering_point:
+      type: text
+    sector.power.common.min_bid_mw:
+      type: mw
+      unit: MW
+    sector.power.common.min_commissioned_mw:
+      type: mw
+      unit: MW
+    sector.power.common.named_states_or_sites:
+      type: list_text
+    sector.power.common.net_worth_per_mw_inr:
+      type: money_inr
+      unit: INR per MW
+    sector.power.common.ppa_signing_window_days:
+      type: int
+      unit: days
+    sector.power.common.ppa_tenure_years:
+      type: int
+      unit: years
+    sector.power.common.scod_months:
+      type: duration_months
+      unit: months
+    sector.power.common.scod_reference:
+      enum:
+      - effective_date
+      - ppa_signing
+      - loa
+      type: enum
+    sector.power.common.tariff_ceiling_inr_per_kwh:
+      type: decimal
+      unit: INR per kWh
+    sector.power.common.tariff_structure:
+      enum:
+      - fixed
+      - escalating
+      - two_part
+      - capacity_charge
+      type: enum
+    sector.power.common.total_capacity_mw:
+      type: mw
+      unit: MW
+    sector.power.common.total_capacity_mwh:
+      type: mwh
+      unit: MWh
+    sector.power.common.under_construction_counts:
+      type: bool
+    sector.power.solar.almm_list_requirement:
+      type: text
+    sector.power.solar.annual_degradation_cap_percent:
+      type: percent
+      unit: percent
+    sector.power.solar.augmentation_rules:
+      type: text
+    sector.power.solar.dcr_share_percent:
+      type: percent
+      unit: percent
+    sector.power.solar.land_type_restrictions:
+      type: text
+    sector.power.solar.max_cuf_percent:
+      type: percent
+      unit: percent
+    sector.power.solar.min_cuf_percent:
+      type: percent
+      unit: percent
+    sector.power.solar.repowering_allowed:
+      type: bool
+  transmission:
+    core.commercial.change_in_law_clause:
+      type: long_text
+    core.commercial.late_payment_surcharge:
+      type: text
+    core.commercial.offtaker:
+      type: text
+    core.commercial.payment_security_mechanism:
+      type: long_text
+    core.commercial.termination_compensation:
+      type: long_text
+    core.documents.annexure_formats:
+      type: list_text
+    core.documents.draft_agreements_referenced:
+      type: list_text
+    core.documents.required_documents:
+      type: list_text
+    core.eligibility.consortium_allowed:
+      type: bool
+    core.eligibility.liquidity_basis:
+      enum:
+      - absolute
+      - per_mw
+      type: enum
+    core.eligibility.liquidity_requirement_inr:
+      type: money_inr
+      unit: INR
+    core.eligibility.max_consortium_members:
+      type: int
+    core.eligibility.parent_affiliate_credentials_allowed:
+      type: bool
+    core.eligibility.shareholding_lock_in:
+      type: long_text
+    core.eligibility.technical_experience_requirement:
+      type: long_text
+    core.eligibility.turnover_basis:
+      enum:
+      - absolute
+      - per_mw
+      type: enum
+    core.eligibility.turnover_requirement_inr:
+      type: money_inr
+      unit: INR
+    core.guarantees.bg_release_conditions:
+      type: long_text
+    core.guarantees.bg_validity_months:
+      type: duration_months
+      unit: months
+    core.guarantees.emd_form:
+      enum:
+      - bg
+      - insurance_surety
+      - cash
+      - other
+      type: enum
+    core.guarantees.emd_formula:
+      type: long_text
+    core.guarantees.emd_per_mw_inr:
+      type: money_inr
+      unit: INR per MW
+    core.guarantees.pbg_formula:
+      type: long_text
+    core.guarantees.pbg_per_mw_inr:
+      type: money_inr
+      unit: INR per MW
+    core.guarantees.pbg_schedule:
+      type: long_text
+    core.guarantees.processing_fee_inr:
+      type: money_inr
+      unit: INR
+    core.guarantees.success_charge_inr:
+      type: money_inr
+      unit: INR per MW
+    core.identity.issuing_agency:
+      type: text
+    core.identity.portal:
+      type: text
+    core.identity.procurement_mode:
+      enum:
+      - single_stage_two_envelope
+      - two_stage
+      - e_reverse_auction
+      - other
+      type: enum
+    core.identity.tender_number:
+      type: text
+    core.identity.tender_type_as_stated:
+      type: text
+    core.identity.title:
+      type: text
+    core.key_dates.bid_submission_deadline:
+      type: date
+    core.key_dates.bid_validity:
+      type: int
+    core.key_dates.bid_validity_unit:
+      enum:
+      - days
+      - months
+      type: enum
+    core.key_dates.dates_deferred_note:
+      type: long_text
+    core.key_dates.era_date:
+      type: date
+    core.key_dates.loa_timeline:
+      type: text
+    core.key_dates.nit_date:
+      type: date
+    core.key_dates.pre_bid_meeting_date:
+      type: date
+    core.key_dates.query_deadline:
+      type: date
+    core.key_dates.technical_opening_date:
+      type: date
+    core.penalties.delay_ld_per_mw_per_day_inr:
+      type: money_inr
+      unit: INR per MW per day
+    core.penalties.max_scod_extension_months:
+      type: duration_months
+      unit: months
+    core.penalties.pbg_encashment_triggers:
+      type: long_text
+    core.penalties.shortfall_penalty_basis:
+      type: long_text
+    core.penalties.termination_delay_months:
+      type: duration_months
+      unit: months
+    core.summary.plain_english_summary:
+      type: long_text
+    sector.power.common.almm_required:
+      type: bool
+    sector.power.common.clearances_responsibility:
+      type: text
+    sector.power.common.connectivity_responsibility:
+      enum:
+      - developer
+      - procurer
+      - shared
+      type: enum
+    sector.power.common.dcr_required:
+      type: bool
+    sector.power.common.deemed_generation_clause:
+      type: long_text
+    sector.power.common.delivery_point:
+      type: text
+    sector.power.common.financial_closure_months:
+      type: duration_months
+      unit: months
+    sector.power.common.financial_closure_reference:
+      enum:
+      - effective_date
+      - ppa_signing
+      - loa
+      - before_scod
+      type: enum
+    sector.power.common.gna_requirement:
+      type: long_text
+    sector.power.common.ists_waiver_cutoff_date:
+      type: date
+    sector.power.common.land_responsibility:
+      type: text
+    sector.power.common.line_to_pooling_station_responsibility:
+      type: text
+    sector.power.common.local_content_rule:
+      type: long_text
+    sector.power.common.location_constraint:
+      enum:
+      - ists_anywhere
+      - state_specific
+      - named_substation
+      - named_site
+      type: enum
+    sector.power.common.max_bid_mw:
+      type: mw
+      unit: MW
+    sector.power.common.max_projects_per_bidder:
+      type: int
+    sector.power.common.metering_point:
+      type: text
+    sector.power.common.min_bid_mw:
+      type: mw
+      unit: MW
+    sector.power.common.min_commissioned_mw:
+      type: mw
+      unit: MW
+    sector.power.common.named_states_or_sites:
+      type: list_text
+    sector.power.common.net_worth_per_mw_inr:
+      type: money_inr
+      unit: INR per MW
+    sector.power.common.ppa_signing_window_days:
+      type: int
+      unit: days
+    sector.power.common.ppa_tenure_years:
+      type: int
+      unit: years
+    sector.power.common.scod_months:
+      type: duration_months
+      unit: months
+    sector.power.common.scod_reference:
+      enum:
+      - effective_date
+      - ppa_signing
+      - loa
+      type: enum
+    sector.power.common.tariff_ceiling_inr_per_kwh:
+      type: decimal
+      unit: INR per kWh
+    sector.power.common.tariff_structure:
+      enum:
+      - fixed
+      - escalating
+      - two_part
+      - capacity_charge
+      type: enum
+    sector.power.common.total_capacity_mw:
+      type: mw
+      unit: MW
+    sector.power.common.total_capacity_mwh:
+      type: mwh
+      unit: MWh
+    sector.power.common.under_construction_counts:
+      type: bool
+    sector.power.transmission.bpc:
+      type: text
+    sector.power.transmission.ctu_role:
+      type: text
+    sector.power.transmission.element_wise_cod:
+      type: list_text
+    sector.power.transmission.elements:
+      item_keys:
+      - name
+      - kind
+      - kv
+      - route_km
+      type: record_list
+    sector.power.transmission.evaluation_basis:
+      enum:
+      - levelised_charge
+      - npv_annual_charges
+      type: enum
+    sector.power.transmission.forest_clearance_responsibility:
+      type: text
+    sector.power.transmission.process_stages:
+      enum:
+      - rfq_rfp
+      - single
+      type: enum
+    sector.power.transmission.row_responsibility:
+      type: text
+    sector.power.transmission.spv_acquisition_terms:
+      type: text
+    sector.power.transmission.tsa_tenure_years:
+      type: int
+      unit: years
+  wind:
+    core.commercial.change_in_law_clause:
+      type: long_text
+    core.commercial.late_payment_surcharge:
+      type: text
+    core.commercial.offtaker:
+      type: text
+    core.commercial.payment_security_mechanism:
+      type: long_text
+    core.commercial.termination_compensation:
+      type: long_text
+    core.documents.annexure_formats:
+      type: list_text
+    core.documents.draft_agreements_referenced:
+      type: list_text
+    core.documents.required_documents:
+      type: list_text
+    core.eligibility.consortium_allowed:
+      type: bool
+    core.eligibility.liquidity_basis:
+      enum:
+      - absolute
+      - per_mw
+      type: enum
+    core.eligibility.liquidity_requirement_inr:
+      type: money_inr
+      unit: INR
+    core.eligibility.max_consortium_members:
+      type: int
+    core.eligibility.parent_affiliate_credentials_allowed:
+      type: bool
+    core.eligibility.shareholding_lock_in:
+      type: long_text
+    core.eligibility.technical_experience_requirement:
+      type: long_text
+    core.eligibility.turnover_basis:
+      enum:
+      - absolute
+      - per_mw
+      type: enum
+    core.eligibility.turnover_requirement_inr:
+      type: money_inr
+      unit: INR
+    core.guarantees.bg_release_conditions:
+      type: long_text
+    core.guarantees.bg_validity_months:
+      type: duration_months
+      unit: months
+    core.guarantees.emd_form:
+      enum:
+      - bg
+      - insurance_surety
+      - cash
+      - other
+      type: enum
+    core.guarantees.emd_formula:
+      type: long_text
+    core.guarantees.emd_per_mw_inr:
+      type: money_inr
+      unit: INR per MW
+    core.guarantees.pbg_formula:
+      type: long_text
+    core.guarantees.pbg_per_mw_inr:
+      type: money_inr
+      unit: INR per MW
+    core.guarantees.pbg_schedule:
+      type: long_text
+    core.guarantees.processing_fee_inr:
+      type: money_inr
+      unit: INR
+    core.guarantees.success_charge_inr:
+      type: money_inr
+      unit: INR per MW
+    core.identity.issuing_agency:
+      type: text
+    core.identity.portal:
+      type: text
+    core.identity.procurement_mode:
+      enum:
+      - single_stage_two_envelope
+      - two_stage
+      - e_reverse_auction
+      - other
+      type: enum
+    core.identity.tender_number:
+      type: text
+    core.identity.tender_type_as_stated:
+      type: text
+    core.identity.title:
+      type: text
+    core.key_dates.bid_submission_deadline:
+      type: date
+    core.key_dates.bid_validity:
+      type: int
+    core.key_dates.bid_validity_unit:
+      enum:
+      - days
+      - months
+      type: enum
+    core.key_dates.dates_deferred_note:
+      type: long_text
+    core.key_dates.era_date:
+      type: date
+    core.key_dates.loa_timeline:
+      type: text
+    core.key_dates.nit_date:
+      type: date
+    core.key_dates.pre_bid_meeting_date:
+      type: date
+    core.key_dates.query_deadline:
+      type: date
+    core.key_dates.technical_opening_date:
+      type: date
+    core.penalties.delay_ld_per_mw_per_day_inr:
+      type: money_inr
+      unit: INR per MW per day
+    core.penalties.max_scod_extension_months:
+      type: duration_months
+      unit: months
+    core.penalties.pbg_encashment_triggers:
+      type: long_text
+    core.penalties.shortfall_penalty_basis:
+      type: long_text
+    core.penalties.termination_delay_months:
+      type: duration_months
+      unit: months
+    core.summary.plain_english_summary:
+      type: long_text
+    sector.power.common.almm_required:
+      type: bool
+    sector.power.common.clearances_responsibility:
+      type: text
+    sector.power.common.connectivity_responsibility:
+      enum:
+      - developer
+      - procurer
+      - shared
+      type: enum
+    sector.power.common.dcr_required:
+      type: bool
+    sector.power.common.deemed_generation_clause:
+      type: long_text
+    sector.power.common.delivery_point:
+      type: text
+    sector.power.common.financial_closure_months:
+      type: duration_months
+      unit: months
+    sector.power.common.financial_closure_reference:
+      enum:
+      - effective_date
+      - ppa_signing
+      - loa
+      - before_scod
+      type: enum
+    sector.power.common.gna_requirement:
+      type: long_text
+    sector.power.common.ists_waiver_cutoff_date:
+      type: date
+    sector.power.common.land_responsibility:
+      type: text
+    sector.power.common.line_to_pooling_station_responsibility:
+      type: text
+    sector.power.common.local_content_rule:
+      type: long_text
+    sector.power.common.location_constraint:
+      enum:
+      - ists_anywhere
+      - state_specific
+      - named_substation
+      - named_site
+      type: enum
+    sector.power.common.max_bid_mw:
+      type: mw
+      unit: MW
+    sector.power.common.max_projects_per_bidder:
+      type: int
+    sector.power.common.metering_point:
+      type: text
+    sector.power.common.min_bid_mw:
+      type: mw
+      unit: MW
+    sector.power.common.min_commissioned_mw:
+      type: mw
+      unit: MW
+    sector.power.common.named_states_or_sites:
+      type: list_text
+    sector.power.common.net_worth_per_mw_inr:
+      type: money_inr
+      unit: INR per MW
+    sector.power.common.ppa_signing_window_days:
+      type: int
+      unit: days
+    sector.power.common.ppa_tenure_years:
+      type: int
+      unit: years
+    sector.power.common.scod_months:
+      type: duration_months
+      unit: months
+    sector.power.common.scod_reference:
+      enum:
+      - effective_date
+      - ppa_signing
+      - loa
+      type: enum
+    sector.power.common.tariff_ceiling_inr_per_kwh:
+      type: decimal
+      unit: INR per kWh
+    sector.power.common.tariff_structure:
+      enum:
+      - fixed
+      - escalating
+      - two_part
+      - capacity_charge
+      type: enum
+    sector.power.common.total_capacity_mw:
+      type: mw
+      unit: MW
+    sector.power.common.total_capacity_mwh:
+      type: mwh
+      unit: MWh
+    sector.power.common.under_construction_counts:
+      type: bool
+    sector.power.wind.hub_height_or_tech_restrictions:
+      type: text
+    sector.power.wind.min_cuf_percent:
+      type: percent
+      unit: percent
+    sector.power.wind.resource_data_obligation:
+      type: text
+    sector.power.wind.rlmm_requirement:
+      type: text
+    sector.power.wind.site_transmission_constraints:
+      type: text
+version: v1

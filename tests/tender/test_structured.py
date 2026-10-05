@@ -26,6 +26,7 @@ EMD, EMD_S = "core.guarantees.emd_per_mw_inr", "core.guarantees.emd_structured"
         ("Rs. 6.43 crore and 5 lakh", {6.43, 64300000, 5, 500000}),
         ("PSM charges of 2 paisa per unit", {2, 0.02}),
         ("one and a half times the tariff", {1, 1.5, 0.5}),
+        ("calculated @ one and half times of the PPA tariff", {1, 1.5, 0.5}),
         ("for twenty-four months, twice the tariff", {20, 24, 4, 2}),
         ("beyond 175 hours in a year at 0.5%", {175, 0.5}),
         ("within 05:00-10:00 Hrs", {5, 0, 10}),

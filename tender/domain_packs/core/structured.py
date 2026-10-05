@@ -64,7 +64,10 @@ def numbers_in(text: str) -> set[float]:
         if value is None:
             continue
         found.add(float(value))
-        if words[position + 1 : position + 4] == ["and", "a", "half"]:
+        # "one and a half times", and as some documents write it, "one and half times".
+        if words[position + 1 : position + 4] == ["and", "a", "half"] or words[
+            position + 1 : position + 3
+        ] == ["and", "half"]:
             found.add(value + 0.5)
     return found
 

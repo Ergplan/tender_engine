@@ -4,6 +4,11 @@
 pack: power
 version: v2
 reads_versions: [v1]
+# Fields that v2 defines differently than v1. Their sections were read again under v2, and
+# their candidates from v1 runs are not read. The loader checks this list against
+# released/v1.yaml: a changed field that is not listed here, or a removed one, fails the load.
+read_again:
+  v1: [sector.power.transmission.elements]
 sector: power
 subdomains: [common, solar, wind, hybrid, fdre, bess, transmission, generation, epc, ipp]
 
@@ -168,11 +173,12 @@ fields:
     section: commercial
     label: Deemed generation, structured
     type: record
-    help: "Compensation for grid unavailability and backdown, as numbers."
+    help: "Compensation for grid unavailability and backdown, as numbers. How it is computed is a fixed choice; a percentage is given only where the document prints one."
     keys:
       grid_threshold_hours_per_year: {label: Grid unavailability beyond, type: decimal, unit: hours per year, min: 0, max: 8760}
       backdown_threshold_hours_per_year: {label: Backdown beyond, type: decimal, unit: hours per year, min: 0, max: 8760}
-      compensation_pct_of_tariff: {label: Compensation, type: percent, unit: percent of tariff}
+      compensation_basis: {label: Compensation computed at, type: enum, enum: [full_tariff, percent_of_tariff, fixed_rate, other]}
+      compensation_pct_of_tariff: {label: Compensation percentage, type: percent, unit: percent of tariff}
       exchange_sale_share_adjusted_pct: {label: Share of exchange sale adjusted, type: percent, unit: percent}
       payer: {label: Paid by, type: text}
 

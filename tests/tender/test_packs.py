@@ -315,7 +315,10 @@ def test_every_type_has_its_structured_fields_beside_the_prose(catalog: Catalog)
         groups = {group.name: group for group in compiled.schema.groups}
         for field in compiled.fields:
             if field.keys:
-                assert groups[field.section].prompt_version == "v2", field.path
+                # Commercial and penalties were tightened once more (v3): a number must
+                # be printed in the field's own quotes and is never computed.
+                expected = "v3" if field.section in ("commercial", "penalties") else "v2"
+                assert groups[field.section].prompt_version == expected, field.path
 
 
 def test_schema_v2_also_reads_the_runs_of_v1(catalog: Catalog) -> None:

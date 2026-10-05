@@ -46,14 +46,14 @@ sections:
   commercial:
     label: Commercial
     prompt: extract/commercial
-    prompt_version: v2
+    prompt_version: v3
     roles: [rfs, contractual, nit, ppa, cfda]
     section_kinds: [commercial_terms]
     keywords: [ceiling tariff, tariff, payment security, letter of credit, change in law, late payment surcharge, termination compensation, deemed generation, generation compensation, buying entity, terms of payment, bid information sheet]
   penalties:
     label: Penalties
     prompt: extract/penalties
-    prompt_version: v2
+    prompt_version: v3
     roles: [rfs, contractual, nit, ppa, cfda]
     section_kinds: [penalties_and_remedies]
     keywords: [liquidated damages, delay in commissioning, delay in commencement, encash, shortfall, extension of scsd, extension of scd, termination, penalty]

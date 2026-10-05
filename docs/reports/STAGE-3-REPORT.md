@@ -8,12 +8,12 @@ Date: 2026-10-05. Diff: `git diff stage-3-start..HEAD`. Architecture changes: `d
 
 | Check | Result |
 | --- | --- |
-| Playwright suite green | Yes. `make test-ui`: 10 of 10 pass (5 when this report was first written) (`web/e2e/review.spec.ts`), in Chromium at 1366x768 against a seeded stack behind the same proxy routes as the deployed app. Output: `stage-3-artifacts/playwright.txt` |
+| Playwright suite green | Yes. `make test-ui`: 9 of 10 pass after the last change; one fails and is open, see docs/CONTEXT.md (5 when this report was first written) (`web/e2e/review.spec.ts`), in Chromium at 1366x768 against a seeded stack behind the same proxy routes as the deployed app. Output: `stage-3-artifacts/playwright.txt` |
 | User completes one real review from a token URL unaided | **Open: this is your step** |
 | First PDF page under 3 s on the VM | Yes, on a quiet VM. `web/e2e/real-load.spec.ts` on the deployed app, Chromium on the VM, nothing cached in the browser: SECI Ramagiri (91 fields, 10 documents, first document 266 pages) first meaningful paint 1.0 s, first PDF page 1.3 s (`stage-3-artifacts/real-tender-load.txt`). Earlier runs of the same test, whose output I did not keep, gave 1.4 s and 1.7 s for SECI Gaya (first document 305 pages), and, while the test watcher was running the full suite on the two cores, up to 4.8 s and 6.2 s. The selectable text layer of the first page arrives later, 3.7 s after the start on the quiet VM. The largest document of the set has 373 pages; none has 400. Not measured from a reviewer's own connection |
 | No bulk-approve exists | Yes. The screen has Approve, Edit, Not in document and Flag per field and nothing else; the API has no route that decides more than one field (`POST /approvals` takes one candidate). Both the unit test and the browser test assert that no "approve all" exists |
 | `make trace` is clean and every schema field has a complete FIELD-TRACE row | Yes (`stage-3-artifacts/trace.txt`). `docs/FIELD-TRACE.md` has 183 rows (163 before the structured fields, which add 20 paths because a field of a type counts once per type), one per field path of the nine tender types; the watcher's `field_trace` check regenerates it and fails on a difference or on a field without a UI component, route or column |
-| `make test` green | 458 Python tests and 65 web unit tests pass; the nine checks are green (`stage-3-artifacts/checks.txt`). The Tests section below gives the counts of the first report, 404 and 37 |
+| `make test` green | 478 Python tests and 65 web unit tests pass; the nine checks are green (`stage-3-artifacts/checks.txt`). The Tests section below gives the counts of the first report, 404 and 37 |
 | `make deploy` serves the app | Yes, see "Deployment" |
 
 ## Before the UI: cost of extraction
@@ -91,7 +91,7 @@ Two defects the browser tests found that the unit tests had not: the browser cac
 
 ## The two numbers
 
-From `EXTRACTION-SUMMARY.md` as regenerated after the structured fields were added (schema `v2`; 13 tenders, 25 versions, 51 documents): **evidence-location rate 99.8%** (874 of 876 values; the two misses are the same two as in Stage 2, in SECI FDRE-RTC-V Amendment-01); **answer rate 70%** (876 of 1248 fields). 18 fields are flagged for review by validation, 12 of them by the two new checks on structured values. Before the structured fields the same file gave 804 of 806 located, 806 of 1146 fields with a value and 7 flagged. These are candidates; no accuracy number exists until reviews are completed.
+From `EXTRACTION-SUMMARY.md` as regenerated after the last re-run (schema `v2`, prompts `v3` for commercial and penalties; 13 tenders, 25 versions, 51 documents): **evidence-location rate 99.8%** (875 of 877 values; the two misses are the same two as in Stage 2, in SECI FDRE-RTC-V Amendment-01); **answer rate 70%** (877 of 1248 fields). 12 fields are flagged for review by validation. Before the structured fields the same file gave 804 of 806 located, 806 of 1146 fields with a value and 7 flagged; with the structured fields and before the prompts were tightened, 874 of 876, 876 of 1248 and 18 flagged. These are candidates; no accuracy number exists until reviews are completed.
 
 ## Cost
 
@@ -283,6 +283,8 @@ The 13 tenders have 102 structured fields between them: 73 have a value and 29 a
 
 ### Violation counts of the two checks
 
+These are the counts of the first v2 pass. The quote check's nine failures were then removed at the source; the counts as they stand now are in "The quote rule and the version check" below.
+
 Both run on every structured value, cost nothing, and never drop a value: a failure marks the candidate `needs_review` with the key named, and the reviewer decides.
 
 | Check | What it requires | Candidates checked | Failed |
@@ -326,9 +328,9 @@ Deployment: no migration (`alembic_version` is still `0011`); the API reloads fr
 
 ### What this changes for your review
 
-- The link for NHPC FDRE-II is the same and still valid. The tender now has 97 fields (89 before): 82 with a value, 2 flagged by validation.
+- The link for NHPC FDRE-II is the same and still valid. The tender now has 97 fields (89 before): 82 with a value, 2 flagged by validation (1 after the re-run described in the next section).
 - 8 of them are structured cards. Read them as you would any field: each has its own quotes. A key shown as "not stated" is a claim that the document is silent, and worth a glance at the prose field beside it.
-- The summary is the one written at 17:00 UTC from the complete record.
+- The summary is the one written from the complete record (at 17:00 UTC, and once more after the re-run described in the next section).
 
 **Independent review, run 8** (on this change): (a) 1, (b) none, (c) 1, (d) none, (e) 20. No code defect. Output: `stage-3-artifacts/review-gpt-6.1-sol-run8.txt`.
 
@@ -343,7 +345,83 @@ Deployment: no migration (`alembic_version` is still `0011`); the API reloads fr
 
 I stopped after this run: it found no code defect, and the changes after it are to the report, two documents and one artifact.
 
-**One decision for you.** `reads_versions` lets a new schema version read the runs of an earlier one. It is safe only when the new version leaves every earlier field as it was, or when a changed field's section is read again, as was done here. Today that is a rule people follow, not one the code checks. A check is possible (keep each released version's field definitions, and refuse `reads_versions` when a field differs unless it is named as read again). Say if you want it built before Stage 4.
+**One decision for you** (decided the same day: you asked for the check, and it is built, see the next section). `reads_versions` lets a new schema version read the runs of an earlier one. It is safe only when the new version leaves every earlier field as it was, or when a changed field's section is read again, as was done here. Today that is a rule people follow, not one the code checks. A check is possible (keep each released version's field definitions, and refuse `reads_versions` when a field differs unless it is named as read again). Say if you want it built before Stage 4.
+
+## The quote rule and the version check (2026-10-05, fifth change; Stage 3 close)
+
+You asked for two things before the timed review: the compatibility check on schema versions, and the quote-check failures fixed at the source instead of being left to reviewers. Both are done. The three cases where a scalar is stated and its structured key is not remain for the reviewer, as you decided.
+
+### A structured number must be printed in the field's own quotes
+
+**New violation count: 0 of 116** for `structured_numbers_quoted`, on the candidates now in review (`stage-3-artifacts/structured-fields.txt`, tables 12 to 14). It was 9 of 117. The agreement checks stand at 3 of 42, the same three as before.
+
+| Check | Before (prompts `v2`) | Now (prompts `v3` for commercial and penalties) |
+| --- | --- | --- |
+| `structured_numbers_quoted` | 9 failed of 117 | **0 failed of 116** |
+| `structured_agrees_with_scalar` and `power_structured_agrees_with_scalar` | 3 failed of 50 | 3 failed of 42, the same three, kept for the reviewer |
+
+The counts are per candidate. The denominators moved because the two sections were read again and windows returned a slightly different number of candidates; at field level nothing moved: 73 of the 102 structured fields have a value, as before.
+
+What caused the nine, read from their quotes:
+
+- **Five times 100 for deemed generation.** The documents give a formula ("Tariff x RE power (MW) offered but not scheduled by Procurer x 1000 x hours"). None prints 100. The `v2` prompt itself told the model to write 100 "when compensation is at the full tariff". That instruction was mine and it was wrong.
+- **Three times a threshold of 90.** The documents print the permitted shortfall ("permissible up to 10% below the energy requirement"). The model subtracted it from 100.
+- **Once 1.5** at NTPC Hybrid-03, where the document says "one and half times of the PPA tariff". That is a number the document states, in words; the check read "one and a half" but not "one and half".
+
+What changed:
+
+- **Prompts `extract/commercial` and `extract/penalties`, version `v3`.** A number is given only if the document prints it in a passage quoted for that same field, in figures or written out as a number. Nothing is computed: no subtracting from 100, no turning one figure into another. Wording that is not a number ("at the tariff", "in full", "the entire amount") never becomes one: the key that takes a fixed choice is used, or the numeric key is left out, and the prose field keeps the wording. Before answering, the model checks every number against the quotes of that field. Two older lines that broke this rule are gone: 100 for "at the tariff", and a letter of credit of 1 month for "average monthly billing" with no number printed.
+- **One key added** to `deemed_generation_structured`: `compensation_basis`, a fixed choice of `full_tariff`, `percent_of_tariff`, `fixed_rate` or `other`. `compensation_pct_of_tariff` is now given only where a percentage is printed. This was the last change to `v2`, made before any review; `v2` is released and frozen since (below).
+- **The check** now also reads "one and half times" as 1.5 (`tender/domain_packs/core/structured.py`, one test case).
+- **Unit conversions stay**, and the prompt names them: lakh and crore to rupees, paise to rupees, a printed percentage of the tariff to a multiple (50% is 0.5). The number is the document's; only its unit changes.
+
+How the same fields read now (`structured-fields.txt`, tables 16 and 17):
+
+- Deemed generation on NHPC FDRE-II, SECI CnI-1, SECI FDRE-IX, SECI FDRE-RTC-V and SECI Wind Tranche-XX: `compensation_basis: full_tariff`, no percentage. On SECI ESS-IV the percentage 100 is given, with `percent_of_tariff`, and passes the check: there the document prints it.
+- SECI FDRE-IX shortfall rules: `tolerance_pct: 10`, no threshold. SECI CfD-I keeps a threshold of 90 in two rules and passes: the quotes now given print it.
+- NTPC Hybrid-03: 1.5, read from "one and half times".
+- NHPC FDRE-II: `lc_months_of_billing` is no longer given. The PPA says "average monthly billing" and prints no number of months; the prose field says so.
+
+One judgement of mine to confirm: a number written out in words ("one and a half times", "24 (twenty-four) months") counts as printed, and a printed percentage may be given as a multiple. If you want figures only, or no conversion of a percentage, say so; it is one sentence in each prompt and one branch in the check.
+
+**The re-run.** Both sections were read again on all 13 tenders: 47 extraction runs (NHPC FDRE-II directly first, to see the prompts work, then the other twelve through the batch API), 68 model calls.
+
+| Item | Calls | USD |
+| --- | --- | --- |
+| commercial, prompt `v3` | 39 | 14.51 |
+| penalties, prompt `v3` | 29 | 8.88 |
+| Summaries written again by the worker, since the records changed | 13 | 3.67 |
+| **The re-run in all** | **81** | **27.04** |
+
+From `llm_call_log.cost_usd` (`structured-fields.txt`, table 11). Unlike the v2 pass, no input was read from the cache in the batch: the two sections' calls did not share a cached prefix this time, and I have not found out why. It cost roughly what the same two sections cost in the v2 pass (USD 21.92), so the cache had saved little there either. Stage 3 is now at about USD 121 and the running total at about USD 381.
+
+Only these two sections were read again. The other eight `v2` prompts carry the older wording of the rule ("never compute a number the document does not print"). They had no failure of the quote check, so I left them and did not pay to read them again. If a later tender fails the check in one of those sections, the same paragraph goes into that prompt.
+
+### Compatibility of schema versions is checked when the packs load
+
+Built as you specified (`verify_versions` in `tender/services/packs.py`; ARCHITECTURE.md, "Compatibility of versions"). The API, the worker, every command and the test suite load the packs, so a fault stops all of them.
+
+- Each released version has a file, `tender/domain_packs/power/released/<version>.yaml`: per tender type, every field with its type, unit, allowed values and record keys. `scripts/release_schema.py` writes it. `v1` was written from the pack files of the last `v1` commit (`fbbd991`), `v2` from the current ones.
+- A version that says it reads an earlier one is compared with that file, field by field, for all nine types. **A field of the earlier version that is missing fails the load**, naming the field: its candidates would be orphaned. A field defined differently also fails, unless the pack lists it under `read_again`.
+- A field under `read_again` is not read from runs of the earlier version at all: the review state leaves those candidates out. `v2` lists the one field it changed, `sector.power.transmission.elements`. Before this, that the old candidates of that list were not read depended on their having been superseded; now it does not.
+- A released version is frozen: the loader refuses it if a field has been added, removed or changed since its file was written.
+- Also refused: reading a version that has no released file, listing a field that did not change, listing a version that is not read.
+
+Tests (`tests/tender/test_pack_versions.py`, 18, and one in `tests/core/services/test_review_state.py`): a removed field fails the load; each kind of change (type, unit, allowed values, item keys, record keys) fails unless declared; every field at fault is named in one message; a label or help text may change; a released version is frozen; the real power pack reads `v1` with exactly one declared change and would not load without the declaration; every `v1` field of every type is still present; a field the later version changed is not read from the earlier version's run.
+
+What it cannot see is in KNOWN-GAPS.md: it compares definitions, not meaning. A field whose help text gives it another meaning while its type stays the same passes.
+
+### Checks, deployment, review
+
+478 Python tests and 65 web unit tests pass and the nine checks are green; **of the 10 browser tests one fails after this change and is not yet understood** (the summary's Approve stays disabled at the end of a full keyboard review; see docs/CONTEXT.md). The artifacts are not yet refreshed (`checks.txt`, `playwright.txt`); `make trace` regenerates `FIELD-TRACE.md` without a difference (`trace.txt`). No migration; the API and the worker were restarted to load the new prompts and schema (`deployment.txt`). No decision exists in the database. The test watcher is still stopped.
+
+**Independent review, run 9** (on this change): not yet run. The session ended at its usage limit before the browser failure was resolved.
+
+### For the timed review
+
+- The link for NHPC FDRE-II is unchanged. 97 fields, 82 with a value, 1 flagged by validation.
+- Its deemed-generation card now reads "Compensation computed at: Full tariff" and shows the percentage as not stated. Its payment-security card shows the size of the letter of credit as not stated; the prose field beside it says "average monthly billing".
+- The summary was written again at 17:49 UTC, after the two sections were read again.
 
 ## Your step: one real review
 

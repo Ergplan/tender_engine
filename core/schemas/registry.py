@@ -54,6 +54,7 @@ class SchemaRegistry:
     def __init__(self) -> None:
         self.value_types = ValueTypeRegistry()
         self._schemas: dict[tuple[str, str], ExtractionSchema] = {}
+        self._excluded: dict[tuple[str, str], frozenset[str]] = {}
         self._rules: dict[str, CrossFieldRule] = {}
         self._run_rules: dict[str, RunRule] = {}
 
@@ -107,6 +108,15 @@ class SchemaRegistry:
             for (other_name, other_version), schema in self._schemas.items()
             if other_name == name and schema.model_dump(exclude={"version"}) == content
         }
+
+    def exclude_fields(self, name: str, version: str, paths: tuple[str, ...]) -> None:
+        """Fields of a registered version that are not read from its runs: a later version
+        changed them and reads their sections again."""
+        self.get(name, version)
+        self._excluded[(name, version)] = frozenset(paths)
+
+    def excluded_fields(self, name: str, version: str) -> frozenset[str]:
+        return self._excluded.get((name, version), frozenset())
 
     def names(self) -> list[tuple[str, str]]:
         return sorted(self._schemas)

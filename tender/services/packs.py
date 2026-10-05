@@ -102,8 +102,12 @@ class RawField(_Strict):
 class RawFile(_Strict):
     pack: str
     version: str | None = None
-    # Earlier versions whose runs are read under this one: it only adds to them.
+    # Earlier versions whose runs are read under this one. Checked field by field against
+    # released/<version>.yaml when the pack is loaded (see verify_reads).
     reads_versions: list[str] = Field(default_factory=list)
+    # Per earlier version: fields this version changes, whose sections are read again.
+    # Their candidates from runs of the earlier version are not read.
+    read_again: dict[str, list[str]] = Field(default_factory=dict)
     sector: str | None = None
     subdomains: list[str] = Field(default_factory=list)
     type: str | None = None
@@ -155,6 +159,9 @@ class CompiledType:
     fields: list[TenderField]
     # Earlier schema versions whose runs are read under this schema.
     reads_versions: tuple[str, ...] = ()
+    # Per earlier version, the fields of this type that it does not hand on: this version
+    # changed them, so their candidates from runs of the earlier version are not read.
+    not_read_from: tuple[tuple[str, tuple[str, ...]], ...] = ()
 
     def section(self, name: str) -> CompiledSection:
         return next(section for section in self.sections if section.name == name)
@@ -190,6 +197,8 @@ class Catalog:
             registry.register(compiled.schema)
             for earlier in compiled.reads_versions:
                 registry.register(compiled.schema.model_copy(update={"version": earlier}))
+            for earlier, paths in compiled.not_read_from:
+                registry.exclude_fields(compiled.schema.name, earlier, paths)
 
 
 def schema_name(tender_type: str) -> str:
@@ -392,6 +401,10 @@ def compile_type(pack_dir: Path, tender_type: str, core_dir: Path | None = None)
         )
     except ValueError as exc:
         raise PackError(f"{pack_dir}: type {tender_type!r}: {exc}") from exc
+    reads_versions = tuple(v for v in pack.reads_versions if v != (pack.version or "v1"))
+    not_read_from = verify_versions(
+        pack_dir, tender_type, pack.version or "v1", reads_versions, pack.read_again, fields
+    )
     return CompiledType(
         tender_type=tender_type,
         pack=pack.pack,
@@ -408,8 +421,130 @@ def compile_type(pack_dir: Path, tender_type: str, core_dir: Path | None = None)
             for order, name in enumerate(included, start=1)
         ],
         fields=fields,
-        reads_versions=tuple(v for v in pack.reads_versions if v != (pack.version or "v1")),
+        reads_versions=reads_versions,
+        not_read_from=not_read_from,
     )
+
+
+RELEASED = "released"
+Signature = dict[str, Any]
+
+
+def _key_signature(key: KeyDef) -> Signature:
+    signature: Signature = {"type": key.value_type}
+    if key.unit:
+        signature["unit"] = key.unit
+    if key.enum_values:
+        signature["enum"] = list(key.enum_values)
+    if key.keys:
+        signature["keys"] = {sub.name: _key_signature(sub) for sub in key.keys}
+    return signature
+
+
+def field_signature(field: TenderField) -> Signature:
+    """What a stored value of the field depends on: its type, unit, allowed values and the
+    keys of a record. Labels, help text, bounds, the section and whether it is required
+    may change without making a stored candidate mean something else."""
+    signature: Signature = {"type": field.value_type}
+    if field.unit:
+        signature["unit"] = field.unit
+    if field.enum_values:
+        signature["enum"] = list(field.enum_values)
+    if field.item_keys:
+        signature["item_keys"] = list(field.item_keys)
+    if field.keys:
+        signature["keys"] = {key.name: _key_signature(key) for key in field.keys}
+    return signature
+
+
+def type_signature(fields: list[TenderField]) -> dict[str, Signature]:
+    return {field.path: field_signature(field) for field in sorted(fields, key=lambda f: f.path)}
+
+
+def released_file(pack_dir: Path, version: str) -> Path:
+    return pack_dir / RELEASED / f"{version}.yaml"
+
+
+def read_released(pack_dir: Path, version: str) -> dict[str, dict[str, Signature]] | None:
+    """The field definitions of a released version, per tender type, or None if the pack
+    has no such file."""
+    path = released_file(pack_dir, version)
+    if not path.is_file():
+        return None
+    data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    types = data.get("types")
+    if not isinstance(types, dict):
+        raise PackError(f"{path}: expected a mapping `types`")
+    return types
+
+
+def verify_versions(
+    pack_dir: Path,
+    tender_type: str,
+    version: str,
+    reads_versions: tuple[str, ...],
+    read_again: dict[str, list[str]],
+    fields: list[TenderField],
+) -> tuple[tuple[str, tuple[str, ...]], ...]:
+    """Check this type against the released versions of its pack. Raises PackError, naming
+    every field at fault, when:
+
+    - the version is released (released/<version>.yaml exists) and a field of it has been
+      added, removed or changed since: a released version is frozen, make a new one;
+    - the version says it reads an earlier one but that one has no released file;
+    - a field of the earlier version is missing here: its candidates would be orphaned;
+    - a field of the earlier version is defined differently here and the pack does not
+      list it under `read_again` for that version.
+
+    Returns, per earlier version, the changed fields listed under `read_again`: their
+    sections are read again, and their candidates from earlier runs are not read."""
+    current = type_signature(fields)
+    where = f"{pack_dir}: type {tender_type!r}"
+    frozen = (read_released(pack_dir, version) or {}).get(tender_type)
+    if frozen is not None and frozen != current:
+        differing = sorted(
+            path for path in set(frozen) | set(current) if frozen.get(path) != current.get(path)
+        )
+        raise PackError(
+            f"{where}: version {version} is released and frozen, but these fields differ from "
+            f"{released_file(pack_dir, version).name}: {differing}. Make a new version."
+        )
+    unknown = sorted(set(read_again) - set(reads_versions))
+    if unknown:
+        raise PackError(f"{where}: read_again names version(s) {unknown} that are not read")
+    not_read: list[tuple[str, tuple[str, ...]]] = []
+    for earlier in reads_versions:
+        released = read_released(pack_dir, earlier)
+        if released is None:
+            raise PackError(
+                f"{where}: version {version} reads {earlier}, but "
+                f"{RELEASED}/{earlier}.yaml does not exist; without it the two cannot be compared"
+            )
+        before = released.get(tender_type, {})
+        declared = set(read_again.get(earlier, []))
+        orphaned = sorted(path for path in before if path not in current)
+        changed = sorted(
+            path for path in before if path in current and before[path] != current[path]
+        )
+        undeclared = [path for path in changed if path not in declared]
+        stale = sorted(path for path in declared if path in before and path not in changed)
+        problems = []
+        if orphaned:
+            problems.append(f"removed, so their {earlier} candidates would be orphaned: {orphaned}")
+        if undeclared:
+            problems.append(
+                f"defined differently than in {earlier} and not listed under read_again: "
+                f"{undeclared}"
+            )
+        if stale:
+            problems.append(f"listed under read_again but unchanged since {earlier}: {stale}")
+        if problems:
+            raise PackError(
+                f"{where}: version {version} cannot read {earlier}. Fields " + "; ".join(problems)
+            )
+        if changed:
+            not_read.append((earlier, tuple(changed)))
+    return tuple(not_read)
 
 
 def load_catalog(packs_root: Path = PACKS_ROOT) -> Catalog:

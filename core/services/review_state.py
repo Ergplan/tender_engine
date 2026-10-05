@@ -181,15 +181,21 @@ class ReviewStateService:
             r for r in all_runs if r.schema_name == run.schema_name and r.schema_version in versions
         ]
         document_of = {r.id: r.document_id for r in runs}
-        candidates = list(
-            session.scalars(
+        # A field that the newer version changed is not read from an earlier version's run.
+        excluded = {
+            r.id: self._schemas.excluded_fields(r.schema_name, r.schema_version) for r in runs
+        }
+        candidates = [
+            candidate
+            for candidate in session.scalars(
                 select(Candidate).where(
                     Candidate.tenant_id == self._tenant_id,
                     Candidate.extraction_run_id.in_(list(document_of)),
                     Candidate.status.in_((*REVIEWABLE_STATUSES, "not_found")),
                 )
             )
-        )
+            if candidate.field_path not in excluded[candidate.extraction_run_id]
+        ]
         return self._state(session, run, runs, schema, candidates, document_of)
 
     def _state(

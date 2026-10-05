@@ -190,3 +190,28 @@ def test_runs_of_a_schema_version_with_other_fields_are_not_mixed_in(
         "security.tenure_years",
     }
     assert "identity.issuer" not in {f.field_path for f in state.fields}
+
+
+def test_a_field_the_later_version_changed_is_not_read_from_the_earlier_versions_run(
+    pipeline: Pipeline, db: Session
+) -> None:
+    """The later version reads the earlier one except for a field it redefined: that field's
+    earlier candidate is left out even though it is still live."""
+    first = pipeline.extracted_run(db)
+    schema = pipeline.schemas.get(SCHEMA_NAME, SCHEMA_VERSION)
+    pipeline.schemas.register(schema.model_copy(update={"version": "v2"}))
+    pipeline.schemas.exclude_fields(SCHEMA_NAME, SCHEMA_VERSION, ("identity.issuer",))
+    assert pipeline.schemas.excluded_fields(SCHEMA_NAME, "v2") == frozenset()
+    _run_security_under(pipeline, db, first.document_id, "v2")
+
+    state = pipeline.review_state.for_object(db, "document", first.document_id)
+    by_path = {field.field_path: field for field in state.fields}
+    assert by_path["identity.issuer"].candidate is None
+    assert by_path["identity.agreement_number"].candidate is not None
+    assert by_path["dates.bid_deadline"].candidate is not None
+    live = db.scalar(
+        select(Candidate.status).where(
+            Candidate.extraction_run_id == first.id, Candidate.field_path == "identity.issuer"
+        )
+    )
+    assert live == "validated", "the earlier candidate is kept; it is only not read"
