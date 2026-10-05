@@ -19,8 +19,9 @@ Read this first, then `CLAUDE.md`, then the last two sections of `docs/reports/S
 
 - A browser test failed after the schema version check went in. Cause one: the check parsed the released schema files once per tender type, which tripled the pack load time (fixed, parsed once). Cause two, exposed by the delay: the summary was reported as current while its new text was stored but not yet validated, so the screen stopped looking for it (fixed in `SummaryWriter.state`).
 - In that same moment a review could have been completed without a decided summary (found by independent review run 10; fixed, completion is refused while a summary is being written).
+- A request refused to a valid review link was audited under "api" instead of the reviewer (run 11; fixed).
 - FIELD-TRACE did not name run rules (review run 9; fixed).
-- Independent reviews 8 to 11 are recorded in the Stage 3 report; outputs in `docs/reports/stage-3-artifacts/`.
+- Independent reviews 8 to 12 are recorded in the Stage 3 report (four code defects found and fixed, run 12 found none); outputs in `docs/reports/stage-3-artifacts/`.
 
 ## Decisions made today (details in `docs/DECISIONS.md` and `docs/ARCHITECTURE.md`)
 

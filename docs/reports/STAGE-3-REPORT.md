@@ -256,7 +256,7 @@ The record is to feed a financial model, and a model computes with numbers. Pros
 
 ### Cost of the v2 pass
 
-Only the ten sections that gained a field were read again, on all 13 tenders: 44 extraction runs (NHPC FDRE-II directly, the other 43 through the batch API), 133 model calls, 6.02 million input tokens (0.44 million of them read from the cache) and 0.54 million output tokens.
+Only the ten sections that gained a field were read again, on all 13 tenders: 44 extraction runs (NHPC FDRE-II directly, the other 43 through the batch API), 133 model calls, 6.02 million uncached input tokens plus 0.44 million read from the cache, and 0.54 million output tokens.
 
 | Section read again (prompt `v2`) | Calls | USD |
 | --- | --- | --- |
@@ -458,7 +458,9 @@ I found the second one only because the first slowed things down. It is the reas
 | e19 | I wrote that the summary of 17:49 was written with your edit in the record; the summary does not read structured fields | Report corrected |
 | e1 to e18 | Earlier statements of this report, and by-design behaviour already answered in run 10 | As in earlier runs |
 
-{REVIEW12}
+**Run 12** (after that fix): (a) 1, (b) none, (c) 1, (d) none, (e) 20. No code defect. Output: `stage-3-artifacts/review-gpt-6.1-sol-run12.txt`. Two points were new: the token total of the v2 pass had counted cached input as part of the uncached figure (report corrected); and an edit that keeps a field's value and changes only its evidence does not have the summary written again, because the summary's input is the record's values, so the summary keeps the model's passage for that field (a limit, now in KNOWN-GAPS.md; the value the summary states is still right). The rest are as in earlier runs.
+
+I stopped after run 12: it found no code defect. Runs 8 to 12 found four, all fixed: the trace generator's missing run rules, completion across the summary's rewrite gap, the summary counted as current before it was validated, and the request audit of a refused request.
 
 **An open question from this review.** On NHPC FDRE-II, 17 fields have two reviewable answers, one from each of two page windows of the same section (`structured-fields.txt`, table 22). The card draws the better-evidenced one and gives no sign of the other. For 16 of them I have not compared the two answers. For the seventeenth, excess energy, they differ, and you have already decided it. Options: leave it; show "1 other answer" on the card; or show both values side by side. I have not changed the screen before your timed review.
 
