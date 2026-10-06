@@ -149,6 +149,14 @@ def test_a_date_of_another_day_is_wrong_and_an_unreadable_one_is_a_matter_of_for
         ("decimal", 1.5, 1.6, "wrong_value"),
         ("percent", 10, 10.04, "correct"),
         ("mw", 600, 600.0, "correct"),
+        ("mw", 600, 602.9, "correct"),
+        ("mw", 600, 603.1, "wrong_value"),
+        ("mwh", 4800, 4823, "correct"),
+        ("mwh", 4800, 4825, "wrong_value"),
+        ("kv", 400, 401.9, "correct"),
+        ("kv", 400, 402.1, "wrong_value"),
+        ("km", 12.5, 12.56, "correct"),
+        ("km", 12.5, 12.57, "wrong_value"),
         ("money_inr", 0, 0, "correct"),
         ("money_inr", 0, 1, "wrong_value"),
     ],
@@ -265,9 +273,12 @@ def test_summary_buckets_and_results_file(registry: SchemaRegistry, tmp_path: Pa
     table = markdown_table(summary)
     assert "| solar | `core.x.y` | 50% | 2 | 100% |" in table
     assert "| acme-solar | `core.x.y` | wrong_value | 1 | 928000 |" in table
-    path, written = write_results(scores, label="unit", root=tmp_path, prompt="commercial/v3")
+    path, written = write_results(
+        scores, label="unit", tenant_id="ergplan", root=tmp_path, prompt="commercial/v3"
+    )
     data = json.loads(path.read_text())
     assert data["prompt"] == "commercial/v3" and len(data["scores"]) == 3
+    assert data["tenant_id"] == "ergplan"
     assert written.value_accuracy == 0.5 and path.name.endswith("-unit.json")
 
 

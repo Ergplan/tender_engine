@@ -488,7 +488,12 @@ def _cell(value: Any) -> str:
 
 
 def write_results(
-    scores: list[FieldScore], *, label: str, root: Path | None = None, prompt: str | None = None
+    scores: list[FieldScore],
+    *,
+    label: str,
+    tenant_id: str,
+    root: Path | None = None,
+    prompt: str | None = None,
 ) -> tuple[Path, Summary]:
     root = root or RESULTS_ROOT
     root.mkdir(parents=True, exist_ok=True)
@@ -499,6 +504,7 @@ def write_results(
         json.dumps(
             {
                 "made_at": datetime.now(UTC).isoformat(timespec="seconds"),
+                "tenant_id": tenant_id,
                 "label": label,
                 "prompt": prompt,
                 "summary": summary.model_dump(),
@@ -572,7 +578,9 @@ def main(argv: list[str]) -> int:
     label = (args.prompt.replace("/", "-") if args.prompt else "latest") + (
         "-" + "-".join(sorted(only)) if only else ""
     )
-    path, summary = write_results(scores, label=label, prompt=args.prompt or None)
+    path, summary = write_results(
+        scores, label=label, tenant_id=settings.tenant_id, prompt=args.prompt or None
+    )
     print(f"wrote {path.relative_to(Path.cwd()) if path.is_relative_to(Path.cwd()) else path}")
     print(
         f"value accuracy {summary.value_accuracy} on {summary.scored} fields; evidence "

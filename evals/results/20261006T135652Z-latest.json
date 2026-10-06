@@ -1,5 +1,6 @@
 {
- "made_at": "2026-10-06T13:14:06+00:00",
+ "made_at": "2026-10-06T13:56:52+00:00",
+ "tenant_id": "ergplan",
  "label": "latest",
  "prompt": null,
  "summary": {
@@ -1675,6 +1676,7 @@
     260
    ],
    "key_outcomes": null,
+   "prompt_name": "summary_record",
    "prompt_version": "v1"
   },
   {
@@ -1697,6 +1699,7 @@
     1
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/identity_and_scope",
    "prompt_version": "v1"
   },
   {
@@ -1721,6 +1724,7 @@
     8
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/identity_and_scope",
    "prompt_version": "v1"
   },
   {
@@ -1743,6 +1747,7 @@
     1
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/identity_and_scope",
    "prompt_version": "v1"
   },
   {
@@ -1767,6 +1772,7 @@
     10
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/identity_and_scope",
    "prompt_version": "v1"
   },
   {
@@ -1791,6 +1797,7 @@
     20
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/identity_and_scope",
    "prompt_version": "v1"
   },
   {
@@ -1815,6 +1822,7 @@
     8
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/identity_and_scope",
    "prompt_version": "v1"
   },
   {
@@ -1837,6 +1845,7 @@
     20
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/identity_and_scope",
    "prompt_version": "v1"
   },
   {
@@ -1855,6 +1864,7 @@
    "gold_pages": [],
    "candidate_pages": [],
    "key_outcomes": null,
+   "prompt_name": "extract/identity_and_scope",
    "prompt_version": "v1"
   },
   {
@@ -1879,6 +1889,7 @@
     20
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/identity_and_scope",
    "prompt_version": "v1"
   },
   {
@@ -1903,6 +1914,7 @@
     20
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/identity_and_scope",
    "prompt_version": "v1"
   },
   {
@@ -1921,6 +1933,7 @@
    "gold_pages": [],
    "candidate_pages": [],
    "key_outcomes": null,
+   "prompt_name": "extract/identity_and_scope",
    "prompt_version": "v1"
   },
   {
@@ -1945,6 +1958,7 @@
     59
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/identity_and_scope",
    "prompt_version": "v1"
   },
   {
@@ -1963,6 +1977,7 @@
    "gold_pages": [],
    "candidate_pages": [],
    "key_outcomes": null,
+   "prompt_name": "extract/identity_and_scope",
    "prompt_version": "v1"
   },
   {
@@ -1985,6 +2000,7 @@
     162
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/identity_and_scope",
    "prompt_version": "v1"
   },
   {
@@ -2009,6 +2025,7 @@
     59
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/identity_and_scope",
    "prompt_version": "v1"
   },
   {
@@ -2033,6 +2050,7 @@
     22
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/key_dates",
    "prompt_version": "v1"
   },
   {
@@ -2055,6 +2073,7 @@
     22
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/key_dates",
    "prompt_version": "v1"
   },
   {
@@ -2077,6 +2096,7 @@
     22
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/key_dates",
    "prompt_version": "v1"
   },
   {
@@ -2099,6 +2119,7 @@
     22
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/key_dates",
    "prompt_version": "v1"
   },
   {
@@ -2121,6 +2142,7 @@
     22
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/key_dates",
    "prompt_version": "v1"
   },
   {
@@ -2139,6 +2161,7 @@
    "gold_pages": [],
    "candidate_pages": [],
    "key_outcomes": null,
+   "prompt_name": "extract/key_dates",
    "prompt_version": "v1"
   },
   {
@@ -2163,6 +2186,7 @@
     260
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/key_dates",
    "prompt_version": "v1"
   },
   {
@@ -2187,6 +2211,7 @@
     39
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/key_dates",
    "prompt_version": "v1"
   },
   {
@@ -2209,6 +2234,7 @@
     21
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/key_dates",
    "prompt_version": "v1"
   },
   {
@@ -2227,6 +2253,7 @@
    "gold_pages": [],
    "candidate_pages": [],
    "key_outcomes": null,
+   "prompt_name": "extract/key_dates",
    "prompt_version": "v1"
   },
   {
@@ -2249,6 +2276,7 @@
     34
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/key_dates",
    "prompt_version": "v1"
   },
   {
@@ -2273,6 +2301,7 @@
     143
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/key_dates",
    "prompt_version": "v1"
   },
   {
@@ -2295,6 +2324,7 @@
     45
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/key_dates",
    "prompt_version": "v1"
   },
   {
@@ -2317,6 +2347,7 @@
     48
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/key_dates",
    "prompt_version": "v1"
   },
   {
@@ -2339,6 +2370,7 @@
     48
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/key_dates",
    "prompt_version": "v1"
   },
   {
@@ -2363,6 +2395,7 @@
     47
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/key_dates",
    "prompt_version": "v1"
   },
   {
@@ -2387,6 +2420,7 @@
     26
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/eligibility",
    "prompt_version": "v1"
   },
   {
@@ -2409,6 +2443,7 @@
     24
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/eligibility",
    "prompt_version": "v1"
   },
   {
@@ -2431,6 +2466,7 @@
     24
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/eligibility",
    "prompt_version": "v1"
   },
   {
@@ -2453,6 +2489,7 @@
     24
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/eligibility",
    "prompt_version": "v1"
   },
   {
@@ -2475,6 +2512,7 @@
     24
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/eligibility",
    "prompt_version": "v1"
   },
   {
@@ -2497,6 +2535,7 @@
     23
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/eligibility",
    "prompt_version": "v1"
   },
   {
@@ -2515,6 +2554,7 @@
    "gold_pages": [],
    "candidate_pages": [],
    "key_outcomes": null,
+   "prompt_name": "extract/eligibility",
    "prompt_version": "v1"
   },
   {
@@ -2537,6 +2577,7 @@
     24
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/eligibility",
    "prompt_version": "v1"
   },
   {
@@ -2563,6 +2604,7 @@
     100
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/eligibility",
    "prompt_version": "v1"
   },
   {
@@ -2581,6 +2623,7 @@
    "gold_pages": [],
    "candidate_pages": [],
    "key_outcomes": null,
+   "prompt_name": "extract/eligibility",
    "prompt_version": "v1"
   },
   {
@@ -2599,6 +2642,7 @@
    "gold_pages": [],
    "candidate_pages": [],
    "key_outcomes": null,
+   "prompt_name": "extract/eligibility",
    "prompt_version": "v1"
   },
   {
@@ -2621,6 +2665,7 @@
     23
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/eligibility",
    "prompt_version": "v1"
   },
   {
@@ -2639,6 +2684,7 @@
    "gold_pages": [],
    "candidate_pages": [],
    "key_outcomes": null,
+   "prompt_name": "extract/guarantees",
    "prompt_version": "v2"
   },
   {
@@ -2661,6 +2707,7 @@
     40
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/guarantees",
    "prompt_version": "v2"
   },
   {
@@ -2720,6 +2767,7 @@
     "cap_inr": "correct",
     "cap_per": "correct"
    },
+   "prompt_name": "extract/guarantees",
    "prompt_version": "v2"
   },
   {
@@ -2744,6 +2792,7 @@
     40
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/guarantees",
    "prompt_version": "v2"
   },
   {
@@ -2762,6 +2811,7 @@
    "gold_pages": [],
    "candidate_pages": [],
    "key_outcomes": null,
+   "prompt_name": "extract/guarantees",
    "prompt_version": "v2"
   },
   {
@@ -2784,6 +2834,7 @@
     41
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/guarantees",
    "prompt_version": "v2"
   },
   {
@@ -2806,6 +2857,7 @@
     41
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/guarantees",
    "prompt_version": "v2"
   },
   {
@@ -2867,6 +2919,7 @@
     "valid_months_after_scod": "correct",
     "submitted_before": "correct"
    },
+   "prompt_name": "extract/guarantees",
    "prompt_version": "v2"
   },
   {
@@ -2889,6 +2942,7 @@
     34
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/guarantees",
    "prompt_version": "v2"
   },
   {
@@ -2913,6 +2967,7 @@
     21
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/guarantees",
    "prompt_version": "v2"
   },
   {
@@ -2937,6 +2992,7 @@
     84
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/guarantees",
    "prompt_version": "v2"
   },
   {
@@ -2965,6 +3021,7 @@
     175
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/guarantees",
    "prompt_version": "v2"
   },
   {
@@ -2993,6 +3050,7 @@
     237
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/commercial",
    "prompt_version": "v3"
   },
   {
@@ -3036,6 +3094,7 @@
     "psf_available": "correct",
     "psf_charge_inr_per_kwh": "correct"
    },
+   "prompt_name": "extract/commercial",
    "prompt_version": "v3"
   },
   {
@@ -3062,6 +3121,7 @@
     206
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/commercial",
    "prompt_version": "v3"
   },
   {
@@ -3084,6 +3144,7 @@
     197
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/commercial",
    "prompt_version": "v3"
   },
   {
@@ -3110,6 +3171,7 @@
     211
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/commercial",
    "prompt_version": "v3"
   },
   {
@@ -3134,6 +3196,7 @@
     190
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/commercial",
    "prompt_version": "v3"
   },
   {
@@ -3152,6 +3215,7 @@
    "gold_pages": [],
    "candidate_pages": [],
    "key_outcomes": null,
+   "prompt_name": "extract/commercial",
    "prompt_version": "v3"
   },
   {
@@ -3176,6 +3240,7 @@
     193
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/commercial",
    "prompt_version": "v3"
   },
   {
@@ -3200,6 +3265,7 @@
     236
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/commercial",
    "prompt_version": "v3"
   },
   {
@@ -3241,6 +3307,7 @@
     "exchange_sale_share_adjusted_pct": "correct",
     "payer": "correct"
    },
+   "prompt_name": "extract/commercial",
    "prompt_version": "v3"
   },
   {
@@ -3259,6 +3326,7 @@
    "gold_pages": [],
    "candidate_pages": [],
    "key_outcomes": null,
+   "prompt_name": "extract/penalties",
    "prompt_version": "v3"
   },
   {
@@ -3295,6 +3363,7 @@
     "basis": "correct",
     "pbg_encashed_over_months": "correct"
    },
+   "prompt_name": "extract/penalties",
    "prompt_version": "v3"
   },
   {
@@ -3319,6 +3388,7 @@
     185
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/penalties",
    "prompt_version": "v3"
   },
   {
@@ -3345,6 +3415,7 @@
     209
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/penalties",
    "prompt_version": "v3"
   },
   {
@@ -3411,6 +3482,7 @@
     "2.penalty_multiple_of_tariff": "correct",
     "2.default_damages_months_of_tariff": "correct"
    },
+   "prompt_name": "extract/penalties",
    "prompt_version": "v3"
   },
   {
@@ -3439,6 +3511,7 @@
     209
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/penalties",
    "prompt_version": "v3"
   },
   {
@@ -3463,6 +3536,7 @@
     207
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/penalties",
    "prompt_version": "v3"
   },
   {
@@ -3487,6 +3561,7 @@
     59
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/connectivity_and_compliance",
    "prompt_version": "v1"
   },
   {
@@ -3513,6 +3588,7 @@
     60
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/connectivity_and_compliance",
    "prompt_version": "v1"
   },
   {
@@ -3535,6 +3611,7 @@
     50
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/connectivity_and_compliance",
    "prompt_version": "v1"
   },
   {
@@ -3561,6 +3638,7 @@
     59
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/connectivity_and_compliance",
    "prompt_version": "v1"
   },
   {
@@ -3583,6 +3661,7 @@
     27
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/connectivity_and_compliance",
    "prompt_version": "v1"
   },
   {
@@ -3601,6 +3680,7 @@
    "gold_pages": [],
    "candidate_pages": [],
    "key_outcomes": null,
+   "prompt_name": "extract/connectivity_and_compliance",
    "prompt_version": "v1"
   },
   {
@@ -3619,6 +3699,7 @@
    "gold_pages": [],
    "candidate_pages": [],
    "key_outcomes": null,
+   "prompt_name": "extract/connectivity_and_compliance",
    "prompt_version": "v1"
   },
   {
@@ -3641,6 +3722,7 @@
     176
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/connectivity_and_compliance",
    "prompt_version": "v1"
   },
   {
@@ -3665,6 +3747,7 @@
     75
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/connectivity_and_compliance",
    "prompt_version": "v1"
   },
   {
@@ -3725,6 +3808,7 @@
     37
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/documents",
    "prompt_version": "v1"
   },
   {
@@ -3809,6 +3893,7 @@
     77
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/documents",
    "prompt_version": "v1"
   },
   {
@@ -3847,6 +3932,7 @@
     77
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/documents",
    "prompt_version": "v1"
   },
   {
@@ -3873,6 +3959,7 @@
     62
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/fdre_profile",
    "prompt_version": "v2"
   },
   {
@@ -3895,6 +3982,7 @@
     62
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/fdre_profile",
    "prompt_version": "v2"
   },
   {
@@ -3919,6 +4007,7 @@
     62
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/fdre_profile",
    "prompt_version": "v2"
   },
   {
@@ -3945,6 +4034,7 @@
     57
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/fdre_profile",
    "prompt_version": "v2"
   },
   {
@@ -3969,6 +4059,7 @@
     64
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/fdre_profile",
    "prompt_version": "v2"
   },
   {
@@ -3991,6 +4082,7 @@
     56
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/fdre_profile",
    "prompt_version": "v2"
   },
   {
@@ -4009,6 +4101,7 @@
    "gold_pages": [],
    "candidate_pages": [],
    "key_outcomes": null,
+   "prompt_name": "extract/fdre_profile",
    "prompt_version": "v2"
   },
   {
@@ -4033,6 +4126,7 @@
     118
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/fdre_profile",
    "prompt_version": "v2"
   },
   {
@@ -4055,6 +4149,7 @@
     63
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/fdre_profile",
    "prompt_version": "v2"
   },
   {
@@ -4081,6 +4176,7 @@
     65
    ],
    "key_outcomes": null,
+   "prompt_name": "extract/fdre_profile",
    "prompt_version": "v2"
   },
   {
@@ -4117,6 +4213,7 @@
     "price_basis": "correct",
     "procurer_first_right": "correct"
    },
+   "prompt_name": "extract/fdre_profile",
    "prompt_version": "v2"
   },
   {
@@ -4189,6 +4286,7 @@
     "re_share_min_pct": "correct",
     "external_sourcing_max_pct": "correct"
    },
+   "prompt_name": "extract/fdre_profile",
    "prompt_version": "v2"
   }
  ]

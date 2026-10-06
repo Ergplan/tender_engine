@@ -1,0 +1,15 @@
+ calls | usd  
+-------+------
+     1 | 0.32
+(1 row)
+
+ total_usd | calls 
+-----------+-------
+    356.69 |   806
+(1 row)
+
+  prompt_name   | count 
+----------------+-------
+ summary_record |     1
+(1 row)
+

@@ -150,8 +150,22 @@ def timing(session: Session, tenant_id: str, record: GoldRecord) -> Sitting | No
     )
 
 
+def evaluated_scores(tenant_id: str, results_root: Path | None = None) -> list[FieldScore]:
+    """The scores of earlier prompt evaluations (results files made with a prompt), so the
+    bar can judge a version that a later run has since superseded in review."""
+    found = []
+    for data in _results(tenant_id, results_root):
+        if data.get("prompt"):
+            found += [FieldScore.model_validate(s) for s in data.get("scores", [])]
+    return found
+
+
 def stability(
-    records: list[GoldRecord], summary: Summary, scores: list[FieldScore], set_types: Counter[str]
+    records: list[GoldRecord],
+    summary: Summary,
+    scores: list[FieldScore],
+    set_types: Counter[str],
+    history: list[FieldScore] | None = None,
 ) -> Stability:
     reviewed_per_type = Counter(r.tender_type for r in records)
     eligible = sorted(t for t, n in set_types.items() if n >= MIN_PER_TYPE)
@@ -168,7 +182,7 @@ def stability(
         for path, own in by_required_field.items()
         if sum(1 for s in own if s.correct) / len(own) < FLOOR_ACCURACY
     )
-    by_prompt = accuracy_by_prompt_version(scores)
+    by_prompt = accuracy_by_prompt_version(scores + (history or []))
     versions = [f"{p} {v}" for p, vs in by_prompt.items() for v in vs]
     below_bar = [
         f"{p} {v} ({_pct(acc)})"
@@ -233,14 +247,25 @@ def recommendation(bucket: dict[str, Any], misses: list[dict[str, Any]]) -> str:
     return "needs schema change"
 
 
-def prompt_comparison(results_root: Path | None = None) -> list[dict[str, Any]]:
-    """What the results folder holds for runs made with a named prompt version."""
+def _results(tenant_id: str, results_root: Path | None = None) -> list[dict[str, Any]]:
+    """The tenant's results files, oldest first."""
     found = []
     for path in sorted((results_root or RESULTS_ROOT).glob("*.json")):
         try:
             data = json.loads(path.read_text(encoding="utf-8"))
         except (OSError, ValueError):
             continue
+        if data.get("tenant_id") == tenant_id:
+            data["file"] = path.name
+            found.append(data)
+    return found
+
+
+def prompt_comparison(tenant_id: str, results_root: Path | None = None) -> list[dict[str, Any]]:
+    """What the tenant's results files hold, per evaluation."""
+    found = []
+    for data in _results(tenant_id, results_root):
+        path = Path(data["file"])
         summary = data.get("summary", {})
         found.append(
             {
@@ -267,10 +292,11 @@ def render_report(
     timings: dict[str, Sitting],
     comparisons: list[dict[str, Any]],
     made_at: datetime | None = None,
+    history: list[FieldScore] | None = None,
 ) -> str:
     made = (made_at or datetime.now(UTC)).strftime("%Y-%m-%d %H:%M UTC")
     summary = summarise(scores)
-    bar = stability(records, summary, scores, set_types)
+    bar = stability(records, summary, scores, set_types, history)
     lines = [
         "# Reliability report",
         "",
@@ -455,7 +481,14 @@ def write_reports(
         sitting = timing(session, tenant_id, record)
         if sitting:
             timings[record.slug] = sitting
-    text = render_report(records, scores, set_types, timings, prompt_comparison())
+    text = render_report(
+        records,
+        scores,
+        set_types,
+        timings,
+        prompt_comparison(tenant_id),
+        history=evaluated_scores(tenant_id),
+    )
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(text, encoding="utf-8")
     log.write_text(render_log(tender_lines(records, scores, timings)), encoding="utf-8")

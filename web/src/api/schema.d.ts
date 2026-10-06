@@ -88,6 +88,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/reports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Write Report Files
+         * @description Write RELIABILITY-REPORT.md, REVIEW-LOG.md and FEEDBACK-REPORT.md again (what
+         *     `make report` and `make feedback-report` do).
+         */
+        post: operations["write_report_files_api_v1_admin_reports_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/approvals": {
         parameters: {
             query?: never;
@@ -1065,7 +1086,10 @@ export interface components {
         };
         /** GoldRequest */
         GoldRequest: {
-            /** Tender Id */
+            /**
+             * Tender Id
+             * @description tender id or slug
+             */
             tender_id: string;
         };
         /** HTTPValidationError */
@@ -1151,6 +1175,17 @@ export interface components {
             tenders_in_set: {
                 [key: string]: number;
             };
+        };
+        /** ReportsOut */
+        ReportsOut: {
+            /** Corrections */
+            corrections: number;
+            /** Files */
+            files: string[];
+            /** Gold Records */
+            gold_records: number;
+            /** Scored */
+            scored: number;
         };
         /** ReviewDocument */
         ReviewDocument: {
@@ -1838,6 +1873,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ReliabilityOut"];
+                };
+            };
+        };
+    };
+    write_report_files_api_v1_admin_reports_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportsOut"];
                 };
             };
         };

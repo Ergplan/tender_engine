@@ -171,14 +171,15 @@ def main(argv: list[str]) -> int:
     from core.db import make_engine, make_session_factory
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--out", type=Path, default=DEFAULT_OUT)
+    parser.add_argument("--out", type=Path, default=None)
     args = parser.parse_args(argv[1:])
     settings = Settings()
     with make_session_factory(make_engine(settings))() as session:
         rows = load_feedback(session, settings.tenant_id)
-    args.out.parent.mkdir(parents=True, exist_ok=True)
-    args.out.write_text(render(rows), encoding="utf-8")
-    print(f"wrote {args.out} ({len(rows)} corrections)")
+    out: Path = args.out or DEFAULT_OUT
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(render(rows), encoding="utf-8")
+    print(f"wrote {out} ({len(rows)} corrections)")
     return 0
 
 

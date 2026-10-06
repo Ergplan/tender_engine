@@ -1289,6 +1289,7 @@
       "GoldRequest": {
         "properties": {
           "tender_id": {
+            "description": "tender id or slug",
             "title": "Tender Id",
             "type": "string"
           }
@@ -1513,6 +1514,37 @@
           "prompt_comparison"
         ],
         "title": "ReliabilityOut",
+        "type": "object"
+      },
+      "ReportsOut": {
+        "properties": {
+          "corrections": {
+            "title": "Corrections",
+            "type": "integer"
+          },
+          "files": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Files",
+            "type": "array"
+          },
+          "gold_records": {
+            "title": "Gold Records",
+            "type": "integer"
+          },
+          "scored": {
+            "title": "Scored",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "gold_records",
+          "scored",
+          "corrections",
+          "files"
+        ],
+        "title": "ReportsOut",
         "type": "object"
       },
       "ReviewDocument": {
@@ -3322,6 +3354,28 @@
           }
         },
         "summary": "Get Reliability",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/reports": {
+      "post": {
+        "description": "Write RELIABILITY-REPORT.md, REVIEW-LOG.md and FEEDBACK-REPORT.md again (what\n`make report` and `make feedback-report` do).",
+        "operationId": "write_report_files_api_v1_admin_reports_post",
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportsOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Write Report Files",
         "tags": [
           "admin"
         ]

@@ -18,6 +18,7 @@ ERROR_STATUS: dict[str, tuple[int, str]] = {
     "not_found": (404, "The requested record does not exist."),
     "review_link_required": (401, "This page needs a review link. Open the link you were sent."),
     "admin_token_required": (401, "An admin token is required for this page."),
+    "runs_not_finished": (409, "The runs are still queued or running. Ask again later."),
     "review_link_invalid": (
         401,
         "This review link is not valid. Check that you opened the full link you were sent.",

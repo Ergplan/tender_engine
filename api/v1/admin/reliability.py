@@ -18,10 +18,12 @@ from core.llm.registry import UnregisteredPromptError
 from core.models import ExtractionRun
 from core.services.extract import ExtractionError
 from evals import feedback_report
+from evals import report as report_module
 from evals.gold import GoldRecord, NoCompletedReview, build_gold, load_all, write_gold
 from evals.report import (
     Stability,
     TenderLine,
+    evaluated_scores,
     prompt_comparison,
     stability,
     tender_lines,
@@ -30,9 +32,11 @@ from evals.report import (
 )
 from evals.runner import (
     FieldScore,
+    PromptRunsFailed,
     Summary,
     candidates_in_review,
     candidates_of_runs,
+    finished_runs,
     queue_prompt_runs,
     score_record,
     summarise,
@@ -54,7 +58,7 @@ class ReliabilityOut(BaseModel):
 
 
 class GoldRequest(BaseModel):
-    tender_id: str
+    tender_id: str = Field(description="tender id or slug")
 
 
 class GoldOut(BaseModel):
@@ -114,8 +118,8 @@ def get_reliability(
         gold_records=len(records),
         tenders=tender_lines(records, scores, timings),
         summary=summary,
-        stability=stability(records, summary, scores, set_types),
-        prompt_comparison=prompt_comparison(),
+        stability=stability(records, summary, scores, set_types, evaluated_scores(tenant_id)),
+        prompt_comparison=prompt_comparison(tenant_id),
     )
 
 
@@ -130,7 +134,10 @@ def make_gold(
     """A completed review becomes a gold record (the caller confirms it is trustworthy by
     calling this); the reliability report and the review log are written again."""
     tender = session.scalar(
-        select(Tender).where(Tender.id == body.tender_id, Tender.tenant_id == tenant_id)
+        select(Tender).where(
+            (Tender.id == body.tender_id) | (Tender.slug == body.tender_id),
+            Tender.tenant_id == tenant_id,
+        )
     )
     if tender is None:
         raise AppError("not_found", "no such tender")
@@ -181,6 +188,11 @@ def run_eval(
     sections: set[str] | None = None
     label = "latest"
     if body.run_ids:
+        try:
+            if not finished_runs(session, tenant_id, body.run_ids):
+                raise AppError("runs_not_finished", "the runs are still queued or running")
+        except PromptRunsFailed as exc:
+            raise AppError("validation_failed", str(exc)) from exc
         sections = {
             c.prompt_name.rsplit("/", 1)[-1]
             for c in candidates_of_runs(session, tenant_id, body.run_ids).values()
@@ -196,8 +208,34 @@ def run_eval(
             else candidates_in_review(session, review_state, record)
         )
         scores += score_record(record, found, catalog, review_state.schemas, sections)
-    path, summary = write_results(scores, label=label)
+    path, summary = write_results(scores, label=label, tenant_id=tenant_id)
     return EvalOut(status="scored", queued={}, results_file=str(path), summary=summary)
+
+
+class ReportsOut(BaseModel):
+    gold_records: int
+    scored: int
+    corrections: int
+    files: list[str]
+
+
+@router.post("/reports", response_model=ReportsOut, status_code=201)
+def write_report_files(
+    session: SessionDep, review_state: ReviewStateDep, catalog: CatalogDep, tenant_id: TenantDep
+) -> ReportsOut:
+    """Write RELIABILITY-REPORT.md, REVIEW-LOG.md and FEEDBACK-REPORT.md again (what
+    `make report` and `make feedback-report` do)."""
+    records, scored = write_reports(session, tenant_id, review_state.schemas, catalog, review_state)
+    rows = feedback_report.load_feedback(session, tenant_id)
+    out = feedback_report.DEFAULT_OUT
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(feedback_report.render(rows), encoding="utf-8")
+    return ReportsOut(
+        gold_records=records,
+        scored=scored,
+        corrections=len(rows),
+        files=[str(report_module.DEFAULT_OUT), str(report_module.DEFAULT_LOG), str(out)],
+    )
 
 
 def _runs_of(

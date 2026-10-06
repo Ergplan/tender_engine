@@ -8,6 +8,7 @@ from evals.gold import GoldField, GoldRecord
 from evals.report import (
     Sitting,
     accuracy_by_prompt_version,
+    evaluated_scores,
     prompt_comparison,
     recommendation,
     render_log,
@@ -136,16 +137,28 @@ def test_the_report_and_the_log_on_two_fixture_records(tmp_path: Path) -> None:
         ),
     }
     (tmp_path / "20261006T100000Z-latest.json").write_text(json.dumps({
-        "made_at": "2026-10-06T10:00:00+00:00", "label": "latest", "prompt": None,
-        "summary": {"value_accuracy": 0.9, "evidence_accuracy": 1.0, "scored": 6},
+        "made_at": "2026-10-06T10:00:00+00:00", "tenant_id": "ergplan", "label": "latest",
+        "prompt": None, "summary": {"value_accuracy": 0.9, "evidence_accuracy": 1.0, "scored": 6},
     }))  # fmt: skip
     (tmp_path / "20261006T110000Z-commercial-v3.json").write_text(json.dumps({
-        "made_at": "2026-10-06T11:00:00+00:00", "label": "commercial-v3", "prompt": "commercial/v3",
+        "made_at": "2026-10-06T11:00:00+00:00", "tenant_id": "ergplan", "label": "commercial-v3",
+        "prompt": "commercial/v3",
         "summary": {"value_accuracy": 0.95, "evidence_accuracy": 1.0, "scored": 6},
+        "scores": [score("x", RATE, "guarantees", "wrong_value", "v3").model_dump()],
+    }))  # fmt: skip
+    (tmp_path / "20261006T120000Z-other.json").write_text(json.dumps({
+        "made_at": "2026-10-06T12:00:00+00:00", "tenant_id": "someone-else", "label": "latest",
+        "prompt": None, "summary": {"value_accuracy": 0.1, "evidence_accuracy": 0.1, "scored": 1},
     }))  # fmt: skip
     (tmp_path / "broken.json").write_text("{")
-    comparisons = prompt_comparison(tmp_path)
+    comparisons = prompt_comparison("ergplan", tmp_path)
     assert [c["prompt"] for c in comparisons] == [None, "commercial/v3"]
+    # An earlier prompt evaluation counts for the bar even once superseded in review.
+    history = evaluated_scores("ergplan", tmp_path)
+    assert [h.prompt_version for h in history] == ["v3"]
+    bar = stability(records, summarise(scores), scores, Counter({"solar": 3}), history)
+    assert not bar.met and bar.prompt_versions_below_bar == ["extract/guarantees v3 (0%)"]
+    assert evaluated_scores("someone-else", tmp_path) == []
 
     report = render_report(records, scores, Counter({"solar": 3, "bess": 1}), timings, comparisons)
     assert "| solar | 3 | 2 | seci-solar-1, seci-solar-2 |" in report

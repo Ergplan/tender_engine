@@ -7,6 +7,7 @@ from typing import Any
 import pytest
 from fastapi.testclient import TestClient
 
+import evals.feedback_report
 import evals.gold
 import evals.report
 import evals.runner
@@ -28,6 +29,7 @@ def eval_roots(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> Path:
     monkeypatch.setattr(evals.report, "RESULTS_ROOT", tmp_path / "results")
     monkeypatch.setattr(evals.report, "DEFAULT_OUT", tmp_path / "RELIABILITY-REPORT.md")
     monkeypatch.setattr(evals.report, "DEFAULT_LOG", tmp_path / "REVIEW-LOG.md")
+    monkeypatch.setattr(evals.feedback_report, "DEFAULT_OUT", tmp_path / "FEEDBACK-REPORT.md")
     return tmp_path
 
 
@@ -104,6 +106,13 @@ def test_gold_eval_and_feedback_are_api_operations(
 
     completed_review(client, pipeline, tender)
     made = client.post("/api/v1/admin/gold", json={"tender_id": tid}, headers=ADMIN)
+    # A slug names the tender as well as its id; a tender without one is named by its id.
+    assert (
+        client.post(
+            "/api/v1/admin/gold", json={"tender_id": "no-such-slug"}, headers=ADMIN
+        ).status_code
+        == 404
+    )
     assert made.status_code == 201, made.text
     body = made.json()
     assert body["tender_type"] == "solar" and body["decided"] == body["total"] > 0
@@ -128,6 +137,9 @@ def test_gold_eval_and_feedback_are_api_operations(
     assert queued.status_code == 201, queued.text
     run_ids = sum(queued.json()["queued"].values(), [])
     assert queued.json()["status"] == "queued" and len(run_ids) == 1
+    # Not before the runs have finished.
+    early_score = client.post("/api/v1/admin/evals", json={"run_ids": run_ids}, headers=ADMIN)
+    assert early_score.status_code == 409 and "still queued" in early_score.json()["detail"]
     pipeline.runner.run_until_idle()
     rescored = client.post("/api/v1/admin/evals", json={"run_ids": run_ids}, headers=ADMIN)
     assert rescored.status_code == 201, rescored.text
@@ -138,3 +150,14 @@ def test_gold_eval_and_feedback_are_api_operations(
     assert feedback.status_code == 200
     assert feedback.json()["corrections"] == 1 and feedback.json()["rows"][0]["field_path"] == EMD
     assert "# Feedback report" in feedback.json()["markdown"]
+
+    # The three report files, written again on request; results carry the tenant.
+    written = client.post("/api/v1/admin/reports", headers=ADMIN)
+    assert written.status_code == 201, written.text
+    assert written.json()["gold_records"] == 1 and written.json()["corrections"] == 1
+    assert (eval_roots / "FEEDBACK-REPORT.md").read_text().startswith("# Feedback report")
+    import json as _json
+
+    results = [_json.loads(p.read_text()) for p in (eval_roots / "results").glob("*.json")]
+    assert results and all(r["tenant_id"] == pipeline.settings.tenant_id for r in results)
+    assert client.post("/api/v1/admin/reports").status_code == 401

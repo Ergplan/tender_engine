@@ -24,12 +24,12 @@ No new upgrade operations detected.
 $ /opt/venv/bin/python -m pytest -p no:cacheprovider
 ........................................................................ [ 13%]
 ........................................................................ [ 26%]
-........................................................................ [ 40%]
-........................................................................ [ 53%]
-........................................................................ [ 67%]
-........................................................................ [ 80%]
-........................................................................ [ 93%]
-.................................                                        [100%]
+........................................................................ [ 39%]
+........................................................................ [ 52%]
+........................................................................ [ 66%]
+........................................................................ [ 79%]
+........................................................................ [ 92%]
+.........................................                                [100%]
 =============================== warnings summary ===============================
 tests/api/test_review_tokens.py::test_expired_and_unknown_tokens_are_refused_in_plain_words
 tests/api/test_review_tokens.py::test_pages_search_and_file_authorisation_for_the_viewer
@@ -37,7 +37,7 @@ tests/api/test_review_tokens.py::test_pages_search_and_file_authorisation_for_th
     return super().request(
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-537 passed, 5 deselected, 2 warnings in 452.79s (0:07:32)
+545 passed, 5 deselected, 2 warnings in 473.70s (0:07:53)
 
 
 ===== openapi_drift: pass =====
@@ -59,21 +59,24 @@ $ node /app/web/node_modules/vitest/vitest.mjs run
 
  RUN  v3.2.7 /app/web
 
- ✓ src/review/ReviewScreen.test.tsx (33 tests) 5194ms
-   ✓ what the reviewer sees > shows the tender, the reviewer, progress and a disabled Complete button  471ms
- ✓ src/review/RecordView.test.tsx (5 tests) 295ms
- ✓ src/admin/ReliabilityPage.test.tsx (3 tests) 490ms
- ✓ src/App.test.tsx (3 tests) 241ms
- ✓ src/review/guide.test.tsx (3 tests) 203ms
- ✓ src/review/SummaryPage.test.tsx (2 tests) 235ms
- ✓ src/lib/format.test.ts (14 tests) 154ms
- ✓ src/lib/keyboard.test.ts (5 tests) 8ms
- ✓ src/lib/pace.test.ts (3 tests) 3ms
+ ✓ src/review/ReviewScreen.test.tsx (33 tests) 6449ms
+   ✓ what the reviewer sees > shows the tender, the reviewer, progress and a disabled Complete button  663ms
+   ✓ deciding > approves the focused field with Enter, saves at once and moves to the next undecided  420ms
+   ✓ deciding > clears a decision with U or the button; the field is undecided again  302ms
+   ✓ deciding > shows a retryable failure when the save did not reach the server  424ms
+ ✓ src/lib/format.test.ts (14 tests) 27ms
+ ✓ src/review/RecordView.test.tsx (5 tests) 300ms
+ ✓ src/admin/ReliabilityPage.test.tsx (3 tests) 450ms
+ ✓ src/review/SummaryPage.test.tsx (2 tests) 422ms
+ ✓ src/lib/keyboard.test.ts (5 tests) 6ms
+ ✓ src/review/guide.test.tsx (3 tests) 207ms
+ ✓ src/App.test.tsx (3 tests) 462ms
+ ✓ src/lib/pace.test.ts (3 tests) 4ms
 
  Test Files  9 passed (9)
       Tests  71 passed (71)
-   Start at  13:48:47
-   Duration  27.41s (transform 1.31s, setup 1.36s, collect 3.64s, tests 6.83s, environment 9.34s, prepare 2.04s)
+   Start at  14:08:15
+   Duration  29.52s (transform 981ms, setup 1.84s, collect 3.25s, tests 8.33s, environment 9.57s, prepare 2.68s)
 
 stderr | src/review/ReviewScreen.test.tsx > deciding > moves focus with J and K and tells why Enter cannot approve
 Warning: An update to PdfPane inside a test was not wrapped in act(...).
