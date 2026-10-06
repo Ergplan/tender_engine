@@ -249,6 +249,7 @@ class ExtractService:
         groups: list[str] | None = None,
         is_fixture: bool = False,
         mode: str = "sync",
+        prompt_overrides: dict[str, str] | None = None,
     ) -> ExtractionRun:
         """Create the run and enqueue it. Refuses unknown schemas and unregistered prompts.
         `groups` limits the run to those field groups of the schema. `mode` is "sync" (the
@@ -276,8 +277,15 @@ class ExtractService:
             unknown = sorted(set(groups) - {group.name for group in schema.groups})
             if unknown or not groups:
                 raise ExtractionError(f"schema {schema.name} has no group(s) {unknown}")
+        overrides = {k: v for k, v in (prompt_overrides or {}).items() if v}
+        unknown_overrides = sorted(set(overrides) - {group.name for group in schema.groups})
+        if unknown_overrides:
+            raise ExtractionError(f"schema {schema.name} has no group(s) {unknown_overrides}")
         for group in _run_groups(schema, groups):
-            self._llm.prompt(group.prompt_name, group.prompt_version or prompt_version)
+            self._llm.prompt(
+                group.prompt_name,
+                overrides.get(group.name) or group.prompt_version or prompt_version,
+            )
         run = ExtractionRun(
             tenant_id=tenant_id,
             created_by=created_by,
@@ -289,6 +297,7 @@ class ExtractService:
             schema_version=schema.version,
             prompt_version=prompt_version,
             groups=sorted(set(groups)) if groups is not None else None,
+            prompt_overrides=overrides or None,
             model=self._llm.model,
             status="queued",
             is_fixture=is_fixture,
@@ -526,7 +535,7 @@ class ExtractService:
         fields = schema.fields_in(group.name)
         return LLMRequest[BaseModel](
             prompt_name=group.prompt_name,
-            prompt_version=group.prompt_version or run.prompt_version,
+            prompt_version=_prompt_version(run, group),
             content=[
                 part,
                 TextPart(text=_instructions(document, schema, group, fields, chunk, shared)),
@@ -790,7 +799,7 @@ class ExtractService:
             rationale=rationale,
             status=status,
             prompt_name=prompt[0] if prompt else group.prompt_name,
-            prompt_version=prompt[1] if prompt else group.prompt_version or run.prompt_version,
+            prompt_version=prompt[1] if prompt else _prompt_version(run, group),
             llm_call_log_id=call_log_id,
             window_pages=window,
         )
@@ -1054,6 +1063,12 @@ def _keys_text(field: FieldDef) -> str:
         "words; yes or no for a yes/no key. Quote the passages that state these numbers. "
         "Keys: " + "; ".join(parts)
     )
+
+
+def _prompt_version(run: ExtractionRun, group: FieldGroup) -> str:
+    """An override set on the run, else the section's pinned version, else the run's."""
+    override = (run.prompt_overrides or {}).get(group.name)
+    return override or group.prompt_version or run.prompt_version
 
 
 def _instructions(

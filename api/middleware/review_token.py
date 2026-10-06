@@ -13,6 +13,7 @@ not limited. There is no other identity mechanism in phase 1.
 """
 
 import re
+import secrets
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 
@@ -28,7 +29,9 @@ from tender.services.tokens import TokenError, TokenService
 TOKEN_HEADER = "x-review-token"
 TOKEN_COOKIE = "review_token"
 PUBLIC_HEADER = "x-public-request"
+ADMIN_HEADER = "x-admin-token"
 API = "/api/v1"
+ADMIN = f"{API}/admin/"
 ID = r"[0-9a-f]{32}"
 # What a review token may call. {tender} must be the token's tender, {document} one of
 # that tender's documents.
@@ -74,6 +77,15 @@ def install(app: FastAPI) -> None:
         request.state.review_identity = None
         path = request.url.path
         if not path.startswith(API + "/"):
+            return await call_next(request)
+        if path.startswith(ADMIN):
+            # The reliability dashboard: no login in phase 1, an admin token in the header
+            # (settings.admin_token; empty means the routes are closed). A review link
+            # never admits here.
+            expected = request.app.state.settings.admin_token
+            given = request.headers.get(ADMIN_HEADER, "")
+            if not expected or not given or not secrets.compare_digest(given, expected):
+                return _refuse(request, "admin_token_required")
             return await call_next(request)
         token = request.headers.get(TOKEN_HEADER) or request.cookies.get(TOKEN_COOKIE)
         public = PUBLIC_HEADER in request.headers

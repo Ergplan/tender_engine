@@ -1233,6 +1233,58 @@
         "title": "PageOut",
         "type": "object"
       },
+      "ReliabilityOut": {
+        "properties": {
+          "generated_at": {
+            "format": "date-time",
+            "title": "Generated At",
+            "type": "string"
+          },
+          "gold_records": {
+            "title": "Gold Records",
+            "type": "integer"
+          },
+          "prompt_comparison": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Prompt Comparison",
+            "type": "array"
+          },
+          "stability": {
+            "$ref": "#/components/schemas/Stability"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/Summary"
+          },
+          "tenders": {
+            "items": {
+              "$ref": "#/components/schemas/TenderLine"
+            },
+            "title": "Tenders",
+            "type": "array"
+          },
+          "tenders_in_set": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Tenders In Set",
+            "type": "object"
+          }
+        },
+        "required": [
+          "generated_at",
+          "tenders_in_set",
+          "gold_records",
+          "tenders",
+          "summary",
+          "stability",
+          "prompt_comparison"
+        ],
+        "title": "ReliabilityOut",
+        "type": "object"
+      },
       "ReviewDocument": {
         "properties": {
           "document_id": {
@@ -1769,6 +1821,46 @@
         "title": "SectionOut",
         "type": "object"
       },
+      "Sitting": {
+        "properties": {
+          "completed": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed"
+          },
+          "deciding_minutes": {
+            "title": "Deciding Minutes",
+            "type": "integer"
+          },
+          "decisions": {
+            "title": "Decisions",
+            "type": "integer"
+          },
+          "sittings": {
+            "title": "Sittings",
+            "type": "integer"
+          },
+          "started": {
+            "title": "Started",
+            "type": "string"
+          }
+        },
+        "required": [
+          "started",
+          "completed",
+          "deciding_minutes",
+          "sittings",
+          "decisions"
+        ],
+        "title": "Sitting",
+        "type": "object"
+      },
       "SnapshotOut": {
         "properties": {
           "created_at": {
@@ -1802,6 +1894,177 @@
           "snapshot"
         ],
         "title": "SnapshotOut",
+        "type": "object"
+      },
+      "Stability": {
+        "properties": {
+          "met": {
+            "title": "Met",
+            "type": "boolean"
+          },
+          "prompt_versions_seen": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Prompt Versions Seen",
+            "type": "array"
+          },
+          "reasons": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Reasons",
+            "type": "array"
+          },
+          "required_accuracy": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Required Accuracy"
+          },
+          "required_fields_below_floor": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Required Fields Below Floor",
+            "type": "array"
+          },
+          "types_short_of_two_reviews": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Types Short Of Two Reviews",
+            "type": "array"
+          },
+          "types_with_two_or_more_in_set": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Types With Two Or More In Set",
+            "type": "array"
+          }
+        },
+        "required": [
+          "met",
+          "types_with_two_or_more_in_set",
+          "types_short_of_two_reviews",
+          "required_accuracy",
+          "required_fields_below_floor",
+          "prompt_versions_seen",
+          "reasons"
+        ],
+        "title": "Stability",
+        "type": "object"
+      },
+      "Summary": {
+        "description": "Accuracy per field path, per tender type, per section, and the misses.",
+        "properties": {
+          "by_field": {
+            "additionalProperties": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "By Field",
+            "type": "object"
+          },
+          "by_section": {
+            "additionalProperties": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "By Section",
+            "type": "object"
+          },
+          "by_type": {
+            "additionalProperties": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "By Type",
+            "type": "object"
+          },
+          "by_type_field": {
+            "additionalProperties": {
+              "additionalProperties": {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              "type": "object"
+            },
+            "title": "By Type Field",
+            "type": "object"
+          },
+          "evidence_accuracy": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidence Accuracy"
+          },
+          "evidence_correct": {
+            "title": "Evidence Correct",
+            "type": "integer"
+          },
+          "evidence_scored": {
+            "title": "Evidence Scored",
+            "type": "integer"
+          },
+          "misses": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Misses",
+            "type": "array"
+          },
+          "needs_judgement": {
+            "title": "Needs Judgement",
+            "type": "integer"
+          },
+          "scored": {
+            "title": "Scored",
+            "type": "integer"
+          },
+          "value_accuracy": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value Accuracy"
+          },
+          "value_correct": {
+            "title": "Value Correct",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "scored",
+          "value_correct",
+          "value_accuracy",
+          "evidence_scored",
+          "evidence_correct",
+          "evidence_accuracy",
+          "needs_judgement",
+          "by_field",
+          "by_type",
+          "by_section",
+          "by_type_field",
+          "misses"
+        ],
+        "title": "Summary",
         "type": "object"
       },
       "SummaryQueued": {
@@ -2014,6 +2277,86 @@
           "review_order"
         ],
         "title": "TenderField",
+        "type": "object"
+      },
+      "TenderLine": {
+        "properties": {
+          "completed_at": {
+            "title": "Completed At",
+            "type": "string"
+          },
+          "decided": {
+            "title": "Decided",
+            "type": "integer"
+          },
+          "edited": {
+            "title": "Edited",
+            "type": "integer"
+          },
+          "edited_fields": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Edited Fields",
+            "type": "array"
+          },
+          "issuing_agency": {
+            "title": "Issuing Agency",
+            "type": "string"
+          },
+          "not_in_document": {
+            "title": "Not In Document",
+            "type": "integer"
+          },
+          "notable_misses": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Notable Misses",
+            "type": "array"
+          },
+          "reviewed_version": {
+            "title": "Reviewed Version",
+            "type": "integer"
+          },
+          "reviewer": {
+            "title": "Reviewer",
+            "type": "string"
+          },
+          "slug": {
+            "title": "Slug",
+            "type": "string"
+          },
+          "tender_type": {
+            "title": "Tender Type",
+            "type": "string"
+          },
+          "time": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Sitting"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "slug",
+          "tender_type",
+          "issuing_agency",
+          "reviewer",
+          "completed_at",
+          "reviewed_version",
+          "decided",
+          "edited",
+          "not_in_document",
+          "edited_fields",
+          "time",
+          "notable_misses"
+        ],
+        "title": "TenderLine",
         "type": "object"
       },
       "TenderOut": {
@@ -2618,6 +2961,28 @@
   },
   "openapi": "3.1.0",
   "paths": {
+    "/api/v1/admin/reliability": {
+      "get": {
+        "description": "Accuracy per tender type and field, the reviewed tenders, and the stability bar.",
+        "operationId": "get_reliability_api_v1_admin_reliability_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReliabilityOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Reliability",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
     "/api/v1/approvals": {
       "post": {
         "description": "Record a reviewer's decision. This is the only route that produces a canonical fact.\nAn identical repeat returns the existing approval with 200 and writes nothing. When\nthe request names `previous_approval_id` (null: the field was undecided) and the field\nhas been decided again since, the write is refused with 409. With a review token, only\ncandidates of the token's tender can be decided.",

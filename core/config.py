@@ -42,6 +42,8 @@ class Settings(BaseSettings):
     worker_poll_seconds: float = 2.0
 
     openai_api_key: str = ""
+    # Guards /api/v1/admin/* (the reliability dashboard). Empty: the routes are refused.
+    admin_token: str = ""
 
     # Where reviewers reach the app; review links are built from it.
     public_base_url: str = "https://34.131.65.108"

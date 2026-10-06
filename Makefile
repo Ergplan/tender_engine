@@ -3,7 +3,7 @@ COMPOSE := docker compose
 STATIC_IP := $(shell cat infra/STATIC-IP.txt)
 RUN_TESTS := $(COMPOSE) run --rm --no-deps -T tests
 
-.PHONY: up down test test-e2e test-ui check watch migrate deploy logs smoke client hooks evidence-corpus trace
+.PHONY: up down test test-e2e test-ui check watch migrate deploy logs smoke client hooks evidence-corpus trace gold eval feedback-report report
 
 up: hooks ## start the app and the test watcher
 	$(COMPOSE) up -d --build
@@ -63,3 +63,16 @@ client: ## regenerate the OpenAPI document and the TypeScript client types
 
 hooks: ## enable the pre-commit hook that blocks commits over a red watcher
 	@git config core.hooksPath infra/hooks
+
+gold: ## a completed review becomes a gold record: make gold TENDER=<slug>
+	$(COMPOSE) exec -T api python -m scripts.make_gold --tender $(TENDER)
+
+eval: ## score every gold record against the candidates in review; PROMPT=section/vN reads that section again first
+	$(COMPOSE) exec -T api python -m evals.runner $(if $(PROMPT),--prompt $(PROMPT),)
+
+feedback-report: ## FEEDBACK-REPORT.md from the feedback table
+	$(COMPOSE) exec -T api python -m evals.feedback_report
+
+report: ## RELIABILITY-REPORT.md and REVIEW-LOG.md from the gold records
+	$(COMPOSE) exec -T api python -m evals.report
+

@@ -45,7 +45,7 @@ select = ["E", "F", "I", "UP", "B", "SIM"]
 python_version = "3.12"
 strict = true
 plugins = ["pydantic.mypy"]
-files = ["core", "tender", "api", "worker"]
+files = ["core", "tender", "api", "worker", "evals"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests", "tender/domain_packs"]

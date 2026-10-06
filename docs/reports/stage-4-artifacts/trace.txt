@@ -1,0 +1,2 @@
+docker compose run --rm --no-deps -T tests python -m scripts.gen_field_trace
+wrote docs/FIELD-TRACE.md

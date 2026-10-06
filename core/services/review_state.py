@@ -130,6 +130,10 @@ class ReviewStateService:
         self._schemas = schemas
         self._tenant_id = tenant_id
 
+    @property
+    def schemas(self) -> SchemaRegistry:
+        return self._schemas
+
     def for_object(
         self, session: Session, object_type: str, object_id: str, version: int | None = None
     ) -> ReviewState:

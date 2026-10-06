@@ -1,20 +1,28 @@
-# Context for a new session (written 2026-10-05, last updated about 22:30 UTC)
+# Context for a new session (written 2026-10-05, last updated 2026-10-06 about 13:30 UTC)
 
-Read this first, then `CLAUDE.md`, then the last two sections of `docs/reports/STAGE-3-REPORT.md`.
+Read this first, then `CLAUDE.md`, then `docs/reports/STAGE-4-REPORT.md`.
 
 ## Where the build stands
 
-- **Stage 3 (reviewer UI) is built, deployed and checked; it closes when the owner has done one timed review.** Stages 0, 1, 2 are closed. Tags: `stage-0-start` to `stage-3-start`.
-- App: `https://34.131.65.108/` (static IP, never changed). One GCE VM, 2 vCPU, 3.9 GB RAM, 200 GB disk. Six compose services; the test watcher is stopped on the owner's instruction, so run `make check` before every commit (the pre-commit hook needs a fresh `.ci/status.json`).
-- 13 tenders are ingested and extracted under schema `v2`. The owner has started deciding fields of NHPC FDRE-II; no other tender has a decision.
+- **Stage 4 (human reliability program) is built, checked, reviewed and deployed; it stays open as reviews complete.** Stages 0 to 3 are closed; the owner's timed review of NHPC FDRE-II (Stage 3's last check) was completed on 2026-10-06 12:48 UTC and is the first gold record. Tags: `stage-0-start` … `stage-4-start` (04751a6).
+- App: `https://34.131.65.108/` (static IP, never changed); the reliability dashboard at `https://34.131.65.108/admin/reliability` behind `ADMIN_TOKEN` (in `.env`, gitignored). One GCE VM, 2 vCPU, 3.9 GB RAM, 200 GB disk. Six compose services; the test watcher is stopped on the owner's request, so run `make check` before every commit (the pre-commit hook refuses a stale or red status).
+- 13 tenders ingested and extracted under schema `v2`. NHPC FDRE-II is `reviewed` (97 of 97 decided). Review links exist for the other 12 (reviewer `venture@aayuda.energy`, created 2026-10-06; `python -m scripts.review_token list` prints them; never commit or paste them into the repo).
 - GCP changes (firewall, addresses) cannot be made by the agent; the owner runs them with the `!` prefix.
 
-## What is open right now (2026-10-06, about 04:30 UTC)
+## What is open right now (2026-10-06, about 13:30 UTC)
 
-1. **The owner's timed review of NHPC FDRE-II.** The build side of Stage 3 is complete, checked and pushed; this review is the last check of the definition of done. When it is done: add the time taken and the edited fields to `docs/reports/STAGE-3-REPORT.md` (list them from the `approval` table, active rows), then Stage 3 is closed and Stage 4 can start.
-2. **Do not disturb the owner's decisions.** NHPC FDRE-II holds one active approval of kind `cleared` (the owner's mis-click of 2026-10-05, cleared at their request) and will hold their real decisions. Never truncate, re-seed or force a re-extraction of a tender that has decisions without asking.
-3. **One judgement for the owner to confirm** (Stage 3 report, review run 14): the summary written from the approved record sends reviewer-edited values to the model as the facts to summarise; recorded as by design, not as feedback fed back.
-4. Nothing else is in progress. The tree is clean and pushed.
+1. **The review phase is the owner's.** As each review is completed and the owner confirms it is trustworthy: `make gold TENDER=<slug>` (writes `evals/gold/<type>/<slug>.yaml`, regenerates `RELIABILITY-REPORT.md` and `REVIEW-LOG.md`), `make eval`, `make feedback-report`, commit. The stability bar for Stage 5 needs two reviewed tenders for each of `epc`, `fdre`, `wind` and 90% on required fields across two prompt versions; it is not met with one record.
+2. **Stage 5 waits for the bar.** Do not start it.
+3. **Corpus gaps found 2026-10-06 (owner's audit request, see the Stage 4 report "Corpus audit")**: SECI Ramagiri 70 MW BESS is missing Amendment-01 and Clarification-01 (xlsx, 28/07/2026, on the SECI page); SECI CnI-1's bid deadline moved on the portal with no document; SECI CfD-I lacks four pre-bid notices. Ingesting any of these changes a tender that holds candidates: wait for the owner's word.
+4. **Owner's feedback from the NHPC review, not built** (KNOWN-GAPS): GST captured separately wherever a value carries it; Annexure-1A worked examples captured or linked for penalties; a note on an approved value; multi-valued fields.
+5. A judgement for the owner to confirm (Stage 3 report, review run 14): the summary written from the approved record sends reviewer-edited values to the model.
+
+## Stage 4, what exists (2026-10-06)
+
+- `evals/gold.py` (gold record from the latest completed-review snapshot plus the active approvals and the candidates they judged), `evals/runner.py` (match rules by value type; `--prompt <section>/vN` reads that section again on every gold tender through `extraction_run.prompt_overrides`, migration 0012), `evals/feedback_report.py` (only corrections of standing decisions), `evals/report.py` (reliability report, review log, stability bar), `scripts/make_gold.py`; Makefile `gold`, `eval`, `feedback-report`, `report`.
+- `GET /api/v1/admin/reliability` behind `X-Admin-Token` (middleware `api/middleware/review_token.py`; empty `ADMIN_TOKEN` closes it); `web/src/admin/ReliabilityPage.tsx` at `/admin/reliability`.
+- First results: value accuracy 98.7% on 79 scored fields of NHPC FDRE-II, evidence accuracy 100% on 64, 18 long-text fields unscored, one miss (`sector.power.common.metering_point`, a wording edit).
+- An incident to remember: a model column saved while the API was up broke the live API until `make migrate` ran (the owner's "Complete review" click got a 500). Migrate the app database before saving a model change.
 
 ## Built on 2026-10-06 before the timed review (owner's request)
 
@@ -42,7 +50,8 @@ Read this first, then `CLAUDE.md`, then the last two sections of `docs/reports/S
 
 ## What the owner owes
 
-- **The timed review of NHPC FDRE-II**, unaided, from the review link (97 fields, 82 with a value, 8 structured cards). The link is not in the repository: `docker compose exec -T api python -m scripts.review_token list`. Wanted back: the time taken, and anything that made them stop. This closes Stage 3. The build side is ready for it.
+- Reviews of the other twelve tenders from their links, one at a time, pressing "Complete review" at the end; then say which completed reviews are trustworthy so `make gold` can be run.
+- A word on the corpus gaps (Ramagiri Amendment-01 and Clarification-01 above all).
 
 ## Open questions for the owner
 

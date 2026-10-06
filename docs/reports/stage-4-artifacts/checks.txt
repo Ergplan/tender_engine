@@ -1,0 +1,187 @@
+===== ruff_check: pass =====
+$ /opt/venv/bin/python -m ruff check .
+All checks passed!
+
+
+===== ruff_format: pass =====
+$ /opt/venv/bin/python -m ruff format --check .
+236 files already formatted
+
+
+===== mypy: pass =====
+$ /opt/venv/bin/python -m mypy
+Success: no issues found in 95 source files
+
+
+===== alembic_check: pass =====
+$ /opt/venv/bin/python -m alembic upgrade head
+
+$ /opt/venv/bin/python -m alembic check
+No new upgrade operations detected.
+
+
+===== pytest: pass =====
+$ /opt/venv/bin/python -m pytest -p no:cacheprovider
+........................................................................ [ 13%]
+........................................................................ [ 26%]
+........................................................................ [ 40%]
+........................................................................ [ 53%]
+........................................................................ [ 67%]
+........................................................................ [ 80%]
+........................................................................ [ 94%]
+...............................                                          [100%]
+=============================== warnings summary ===============================
+tests/api/test_review_tokens.py::test_expired_and_unknown_tokens_are_refused_in_plain_words
+tests/api/test_review_tokens.py::test_pages_search_and_file_authorisation_for_the_viewer
+  /opt/venv/lib/python3.12/site-packages/starlette/testclient.py:463: DeprecationWarning: Setting per-request cookies=<...> is being deprecated, because the expected behaviour on cookie persistence is ambiguous. Set cookies directly on the client instance instead.
+    return super().request(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+535 passed, 5 deselected, 2 warnings in 461.06s (0:07:41)
+
+
+===== openapi_drift: pass =====
+$ /opt/venv/bin/python -m scripts.export_openapi --check
+OpenAPI client is up to date
+
+
+===== field_trace: pass =====
+$ /opt/venv/bin/python -m scripts.gen_field_trace --check
+docs/FIELD-TRACE.md is current (183 fields)
+
+
+===== tsc: pass =====
+$ node /app/web/node_modules/typescript/bin/tsc --noEmit
+
+
+===== vitest: pass =====
+$ node /app/web/node_modules/vitest/vitest.mjs run
+
+ RUN  v3.2.7 /app/web
+
+ ✓ src/review/ReviewScreen.test.tsx (33 tests) 6042ms
+   ✓ what the reviewer sees > shows the tender, the reviewer, progress and a disabled Complete button  494ms
+   ✓ deciding > clears a decision with U or the button; the field is undecided again  432ms
+   ✓ orientation and reading aids > counts what is left, and estimates the time once it knows the pace  710ms
+ ✓ src/review/RecordView.test.tsx (5 tests) 431ms
+ ✓ src/admin/ReliabilityPage.test.tsx (3 tests) 272ms
+ ✓ src/App.test.tsx (3 tests) 255ms
+ ✓ src/review/guide.test.tsx (3 tests) 239ms
+ ✓ src/review/SummaryPage.test.tsx (2 tests) 106ms
+ ✓ src/lib/format.test.ts (14 tests) 26ms
+ ✓ src/lib/keyboard.test.ts (5 tests) 6ms
+ ✓ src/lib/pace.test.ts (3 tests) 3ms
+
+ Test Files  9 passed (9)
+      Tests  71 passed (71)
+   Start at  13:23:46
+   Duration  27.52s (transform 1.34s, setup 1.22s, collect 3.51s, tests 7.38s, environment 9.53s, prepare 1.98s)
+
+stderr | src/review/ReviewScreen.test.tsx > deciding > moves focus with J and K and tells why Enter cannot approve
+Warning: An update to PdfPane inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at PdfPane (/app/web/src/review/PdfPane.tsx:30:3)
+    at div
+    at div
+    at div
+    at ReviewScreen (/app/web/src/review/ReviewScreen.tsx:23:3)
+Warning: An update to PdfPane inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at PdfPane (/app/web/src/review/PdfPane.tsx:30:3)
+    at div
+    at div
+    at div
+    at ReviewScreen (/app/web/src/review/ReviewScreen.tsx:23:3)
+Warning: An update to PdfPane inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at PdfPane (/app/web/src/review/PdfPane.tsx:30:3)
+    at div
+    at div
+    at div
+    at ReviewScreen (/app/web/src/review/ReviewScreen.tsx:23:3)
+Warning: An update to PdfPane inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at PdfPane (/app/web/src/review/PdfPane.tsx:30:3)
+    at div
+    at div
+    at div
+    at ReviewScreen (/app/web/src/review/ReviewScreen.tsx:23:3)
+Warning: An update to PdfPane inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at PdfPane (/app/web/src/review/PdfPane.tsx:30:3)
+    at div
+    at div
+    at div
+    at ReviewScreen (/app/web/src/review/ReviewScreen.tsx:23:3)
+Warning: An update to PdfPane inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at PdfPane (/app/web/src/review/PdfPane.tsx:30:3)
+    at div
+    at div
+    at div
+    at ReviewScreen (/app/web/src/review/ReviewScreen.tsx:23:3)
+Warning: An update to PdfPane inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at PdfPane (/app/web/src/review/PdfPane.tsx:30:3)
+    at div
+    at div
+    at div
+    at ReviewScreen (/app/web/src/review/ReviewScreen.tsx:23:3)
+
+

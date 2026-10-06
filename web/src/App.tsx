@@ -1,3 +1,4 @@
+import { ReliabilityPage } from "./admin/ReliabilityPage";
 import { MessagePage } from "./review/MessagePage";
 import { ReviewApp } from "./review/ReviewApp";
 
@@ -7,6 +8,7 @@ const REVIEW = /^\/review\/([A-Za-z0-9_-]{16,64})(\/summary)?\/?$/;
 export function App({ path = window.location.pathname }: { path?: string }) {
   const match = REVIEW.exec(path);
   if (match) return <ReviewApp token={match[1]} summary={match[2] !== undefined} />;
+  if (/^\/admin\/reliability\/?$/.test(path)) return <ReliabilityPage />;
   return (
     <MessagePage
       title="Tender Intelligence Engine"

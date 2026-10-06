@@ -37,6 +37,11 @@ class ExtractionRun(IdMixin, TenantAuditMixin, Base):
     schema_version: Mapped[str] = mapped_column(String(20), nullable=False)
     prompt_version: Mapped[str] = mapped_column(String(20), nullable=False)
     groups: Mapped[list[str] | None] = mapped_column(JSONB(none_as_null=True), nullable=True)
+    # Per group, a prompt version to use instead of the section's pinned one (evaluation
+    # of a prompt change before it becomes the default).
+    prompt_overrides: Mapped[dict[str, str] | None] = mapped_column(
+        JSONB(none_as_null=True), nullable=True
+    )
     model: Mapped[str] = mapped_column(String(100), nullable=False)
     status: Mapped[str] = mapped_column(String(20), nullable=False, default="queued")
     started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)

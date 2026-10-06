@@ -34,8 +34,14 @@ export class ApiError extends Error {
   }
 }
 
-async function request<T>(method: string, path: string, token?: string, body?: unknown): Promise<T> {
-  const headers: Record<string, string> = { Accept: "application/json" };
+async function request<T>(
+  method: string,
+  path: string,
+  token?: string,
+  body?: unknown,
+  extraHeaders: Record<string, string> = {},
+): Promise<T> {
+  const headers: Record<string, string> = { Accept: "application/json", ...extraHeaders };
   if (token) headers["X-Review-Token"] = token;
   if (body !== undefined) headers["Content-Type"] = "application/json";
   const response = await fetch(`/api/v1${path}`, {
@@ -61,8 +67,13 @@ async function request<T>(method: string, path: string, token?: string, body?: u
   return (await response.json()) as T;
 }
 
+export type Reliability = Schemas["ReliabilityOut"];
+
 export const api = {
   health: () => request<Health>("GET", "/health"),
+  /** The reliability dashboard's data; the admin token goes in a header, never in the URL. */
+  reliability: (adminToken: string) =>
+    request<Reliability>("GET", "/admin/reliability", undefined, undefined, { "X-Admin-Token": adminToken }),
 };
 
 /** The calls of one review link. Every one carries the token. */

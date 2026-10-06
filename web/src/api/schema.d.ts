@@ -4,6 +4,26 @@
  */
 
 export interface paths {
+    "/api/v1/admin/reliability": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Reliability
+         * @description Accuracy per tender type and field, the reviewed tenders, and the stability bar.
+         */
+        get: operations["get_reliability_api_v1_admin_reliability_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/approvals": {
         parameters: {
             query?: never;
@@ -960,6 +980,28 @@ export interface components {
             /** Width */
             width: number;
         };
+        /** ReliabilityOut */
+        ReliabilityOut: {
+            /**
+             * Generated At
+             * Format: date-time
+             */
+            generated_at: string;
+            /** Gold Records */
+            gold_records: number;
+            /** Prompt Comparison */
+            prompt_comparison: {
+                [key: string]: unknown;
+            }[];
+            stability: components["schemas"]["Stability"];
+            summary: components["schemas"]["Summary"];
+            /** Tenders */
+            tenders: components["schemas"]["TenderLine"][];
+            /** Tenders In Set */
+            tenders_in_set: {
+                [key: string]: number;
+            };
+        };
         /** ReviewDocument */
         ReviewDocument: {
             /** Document Id */
@@ -1143,6 +1185,19 @@ export interface components {
             /** Start Page */
             start_page: number;
         };
+        /** Sitting */
+        Sitting: {
+            /** Completed */
+            completed: string | null;
+            /** Deciding Minutes */
+            deciding_minutes: number;
+            /** Decisions */
+            decisions: number;
+            /** Sittings */
+            sittings: number;
+            /** Started */
+            started: string;
+        };
         /** SnapshotOut */
         SnapshotOut: {
             /**
@@ -1160,6 +1215,73 @@ export interface components {
             };
             /** Tender Id */
             tender_id: string;
+        };
+        /** Stability */
+        Stability: {
+            /** Met */
+            met: boolean;
+            /** Prompt Versions Seen */
+            prompt_versions_seen: string[];
+            /** Reasons */
+            reasons: string[];
+            /** Required Accuracy */
+            required_accuracy: number | null;
+            /** Required Fields Below Floor */
+            required_fields_below_floor: string[];
+            /** Types Short Of Two Reviews */
+            types_short_of_two_reviews: string[];
+            /** Types With Two Or More In Set */
+            types_with_two_or_more_in_set: string[];
+        };
+        /**
+         * Summary
+         * @description Accuracy per field path, per tender type, per section, and the misses.
+         */
+        Summary: {
+            /** By Field */
+            by_field: {
+                [key: string]: {
+                    [key: string]: unknown;
+                };
+            };
+            /** By Section */
+            by_section: {
+                [key: string]: {
+                    [key: string]: unknown;
+                };
+            };
+            /** By Type */
+            by_type: {
+                [key: string]: {
+                    [key: string]: unknown;
+                };
+            };
+            /** By Type Field */
+            by_type_field: {
+                [key: string]: {
+                    [key: string]: {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** Evidence Accuracy */
+            evidence_accuracy: number | null;
+            /** Evidence Correct */
+            evidence_correct: number;
+            /** Evidence Scored */
+            evidence_scored: number;
+            /** Misses */
+            misses: {
+                [key: string]: unknown;
+            }[];
+            /** Needs Judgement */
+            needs_judgement: number;
+            /** Scored */
+            scored: number;
+            /** Value Accuracy */
+            value_accuracy: number | null;
+            /** Value Correct */
+            value_correct: number;
         };
         /** SummaryQueued */
         SummaryQueued: {
@@ -1228,6 +1350,32 @@ export interface components {
             unit: string | null;
             /** Value Type */
             value_type: string;
+        };
+        /** TenderLine */
+        TenderLine: {
+            /** Completed At */
+            completed_at: string;
+            /** Decided */
+            decided: number;
+            /** Edited */
+            edited: number;
+            /** Edited Fields */
+            edited_fields: string[];
+            /** Issuing Agency */
+            issuing_agency: string;
+            /** Not In Document */
+            not_in_document: number;
+            /** Notable Misses */
+            notable_misses: string[];
+            /** Reviewed Version */
+            reviewed_version: number;
+            /** Reviewer */
+            reviewer: string;
+            /** Slug */
+            slug: string;
+            /** Tender Type */
+            tender_type: string;
+            time: components["schemas"]["Sitting"] | null;
         };
         /** TenderOut */
         TenderOut: {
@@ -1436,6 +1584,26 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    get_reliability_api_v1_admin_reliability_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReliabilityOut"];
+                };
+            };
+        };
+    };
     post_approval_api_v1_approvals_post: {
         parameters: {
             query?: never;

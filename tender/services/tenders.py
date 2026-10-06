@@ -254,6 +254,7 @@ class TenderService:
         groups: list[str] | None = None,
         is_fixture: bool = False,
         mode: str = "sync",
+        prompt_overrides: dict[str, str] | None = None,
     ) -> list[ExtractionRun]:
         """Queue the extraction of one version (the latest by default): one run per document
         that has groups to read. A later version is read only where it touches the tender.
@@ -331,6 +332,7 @@ class TenderService:
                 groups=run_groups,
                 is_fixture=is_fixture,
                 mode=mode,
+                prompt_overrides=prompt_overrides,
             )
             for document, run_groups in plan
         ]

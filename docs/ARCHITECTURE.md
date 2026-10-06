@@ -62,6 +62,11 @@ The layout in `CLAUDE.md` is authoritative. Additions made under operating rule 
 | `tests/e2e/seed_review.py` | seeds the browser-test database | Stage 3 |
 | `infra/Caddyfile.routes`, `infra/Caddyfile.e2e` | the proxy routes shared by the deployed site and the browser-test stack | Stage 3 |
 | `scripts/review_token.py`, `scripts/gen_field_trace.py` | review links; `docs/FIELD-TRACE.md` | Stage 3 |
+| `evals/` | `gold.py` (a completed review as a YAML record under `evals/gold/<type>/<slug>.yaml`), `runner.py` (scores candidates against gold records; `evals/results/`), `feedback_report.py`, `report.py` (`RELIABILITY-REPORT.md`, `REVIEW-LOG.md`); imports core and tender, is imported only by the admin router and the scripts | Stage 4 |
+| `scripts/make_gold.py` | `make gold TENDER=<slug>`: the gold record of a completed review, then the report | Stage 4 |
+| `api/v1/admin/` | the reliability router, behind the admin token (`api/middleware/review_token.py`) | Stage 4 |
+| `web/src/admin/` | `ReliabilityPage` at `/admin/reliability` | Stage 4 |
+| `tests/evals/` | the runner's match rules, a gold record from a completed test review, the feedback report, the report on two fixture records | Stage 4 |
 
 ## Data model
 
@@ -135,6 +140,7 @@ Native PDF pages cost about 2,800 input tokens each, and in Stage 2 every field 
 | `api/v1/core/review.py` | `GET /api/v1/review-state`, `POST /api/v1/approvals`, `GET /api/v1/canonical` | 1 |
 | `api/v1/core/documents.py` | `GET /api/v1/documents/{id}/pages` (size of every page and where its image is served), `GET /api/v1/documents/{id}/search?q=` (page, box and snippet of each occurrence) | 3 |
 | `api/v1/tenders/review.py` | `POST /api/v1/review-tokens`, `GET /api/v1/review-session`, `GET /api/v1/tenders/{id}/review` (the tender as the reviewer sees it), `POST /api/v1/tenders/{id}/complete-review`, `GET /api/v1/tenders/{id}/snapshot`, `GET /api/v1/files-auth` (asked by the proxy before it serves a stored file) | 3 |
+| `api/v1/admin/reliability.py` | `GET /api/v1/admin/reliability` (every gold record scored against the candidates in review, the reviewed tenders with their time, the stability bar, the prompt versions tried); refused without `X-Admin-Token` equal to `ADMIN_TOKEN`, and always when that setting is empty; a review link does not open it | 4 |
 | `api/v1/tenders/tenders.py` | `POST /api/v1/tenders`, `GET /api/v1/tenders`, `GET /api/v1/tenders/{id}`, `POST /api/v1/tenders/{id}/versions` (multipart: file, kind, issued_on, role, summary_of_change; with version_no the document joins an existing version), `GET /api/v1/tenders/{id}/versions`, `GET /api/v1/tenders/{id}/view`, `POST /api/v1/tenders/{id}/extract`, `POST /api/v1/tenders/{id}/summarize`, `GET /api/v1/tenders/{id}/review-state` (core's review state for one version, plus the fields that version changes), `GET /api/v1/schemas/tender/{type}`, `GET /api/v1/reports/extraction-summary` | 2 |
 
 Tenant resolution is the request dependency `api.deps.get_tenant_id`, which returns the configured single tenant in phase 1. Errors go through `api/middleware/errors.py`: a request id on every response and a typed error payload. The API never calls the model: it queues jobs and reads state.
@@ -378,3 +384,11 @@ One GCE VM (`instance-20261004-081207`, asia-south2-b), static IP `34.131.65.108
 - The summary is written from the record in a second pass (`tender/services/summary.py`, prompt `summary_record/v1`, job `tender_summary`, run mode `record`, `tender/services/worker_jobs.py`); its sentences inherit the evidence of the fields they draw on.
 - Migration 0011: `evidence_span.source`. Decision guards on `ApprovalService`; the summary is decided after the fields, written again from the reviewer's decisions, and its approval withdrawn by a later change (`SummaryGuard`). The browser-test stack has a worker with a scripted model (`tests/e2e/scripted_worker.py`).
 - Schema `v2` (2026-10-05): typed records (`KeyDef`, value type `record`, typed `record_list`), 15 structured fields, two checks on them, the record card and key-by-key edit, `revalidate`. The model input profile is designed and not built.
+
+**Stage 4 (2026-10-06)**
+
+- Migration 0012: `extraction_run.prompt_overrides`, a section-to-version map a run reads with instead of the pinned versions (`ExtractService.start_run(prompt_overrides=)`, `TenderService.start_extraction`); every candidate carries the version it was read with.
+- `evals/`: gold records from completed reviews (`make gold TENDER=`), the runner (`make eval`, `make eval PROMPT=<section>/vN` reads that section again on every gold tender first), the feedback report (`make feedback-report`, only corrections of decisions that stand), the reliability report and the review log (`make report`, also written by `make gold`).
+- `GET /api/v1/admin/reliability` behind `ADMIN_TOKEN`; `web/src/admin/ReliabilityPage` at `/admin/reliability`.
+- The first gold record: `evals/gold/fdre/nhpc-fdre-ii.yaml`, from the owner's completed review.
+
