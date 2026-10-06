@@ -528,6 +528,39 @@ The browser test of a whole review failed once in five runs since yesterday's fi
 
 I stopped after run 14: it found no code defect. Runs 13 and 14 were on the clear decision and the second readings; the two defects run 13 found are fixed above.
 
+## Your review of NHPC FDRE-II (2026-10-06)
+
+You reviewed all 97 fields through the link, unaided, and said the results are really good. What the database records (queries in `stage-3-artifacts/owner-review.txt`):
+
+**Time.** Decisions were made in six sittings between 03:50 and 12:33 UTC: a first look of two minutes at 03:50, then 08:24 to 08:33, 09:34 to 09:53, two short returns at 10:14 and 11:11, and 12:09 to 12:33, the summary last. Counting only the spans between decisions less than fifteen minutes apart, **about 54 minutes of deciding** for 97 fields, 113 decisions in all. The record cannot see the reading you did before a first decision or after a last one, so your own figure, if you kept one, is the better number.
+
+**Decisions.** 77 fields approved as they stood, 15 marked not in document, 5 edited; 7 flags raised and later decided; "Clear decision" used once in earnest (`under_construction_counts`, decided again a minute later); "Use this reading" not used: on the 12 fields with a second reading you kept the one shown every time.
+
+**The one correction of a value:** `metering_point`, where you restructured the text into two numbered cases ("1) Low voltage side of the CTU/STU substation (2) In case of RE parks, ..."). The other four active edits keep the model's value and add a note: "per MW" on the turnover requirement, "effective date of the PPA" on the financial-closure reference and on SCOD months, and the liquidity basis unchanged. Four earlier edits of the same kind (a note asking for the time to be shown with the bid deadline and the technical opening date, and for "from the date of issue of the Letter of Award" beside the PPA signing window) you later replaced with plain approvals. So the edit action was used mostly to attach a remark to a value you accepted, which the feedback table rightly does not count as a correction. That is a wish for a note on an approved value, listed below.
+
+**Not in document (15):** EMD and PBG per MW (NHPC states a formula per component, which the structured fields hold), the e-RA date, the LoA timeline, delay LD per MW per day, DCR, local content, maximum projects per bidder, minimum commissioned MW, named states or sites, the tariff ceiling, total MWh, under-construction counts, the maximum consortium members, and the excess-energy price. Each is a statement that the document does not say it, which is the answer the gold set needs.
+
+**What you wrote in flags and notes** (your words, kept in the approvals):
+
+- `emd_form`: "Four instruments are accepted (DD, BG, POI, Insurance Surety Bond); the field needs to allow several."
+- `success_charge_inr` and `processing_fee_inr`: the amounts are plus 18% GST; GST should be its own field, linked to the fee, "so if GST changes anytime we can modify the field and also financial model knows the exact amount".
+- `deemed_generation_structured`: "The compensation should also be captured in a data table so in case later asks in a chat bot with specific hours the agent can calculate. The data reference is fine."
+- `shortfall_rules`: you pasted the two rules back with the damages wording, "equivalent to 24 (twenty-four) months, or balance PPA period whichever is less".
+- After the review: GST has to be captured separately everywhere it applies, so that a user building a financial model knows the whole value; and the illustrative examples in Annexure-1A are often what a bidder actually needs for penalties, where the record captures the rule: a referenced illustration should be captured or at least linked.
+
+**Completion.** "Complete review" was not pressed: the link is still open, the tender is `in_review`, and there is no snapshot. The API confirms the review can be completed (97 of 97 decided, nothing waiting). The snapshot is what `make gold` reads in Stage 4, so please press Complete review once; it confirms, locks the link to reading, and stores the snapshot. I have not done it for you: completing is the reviewer's act.
+
+### What this review asks for (for the schema's next version and Stage 4)
+
+None of these changes a `v2` field; each is a `v3` item or a screen item, and nothing is built yet.
+
+1. **GST as its own field wherever a fee or charge is stated with it** (success charges, processing fee, and any other), with the rate and whether the printed amount includes it, so the model gets the whole amount and a rate change is one field.
+2. **Illustrative examples from annexures.** Where a penalty or compensation clause refers to a worked example (NHPC's Annexure-1A), capture the example as a structured record of its inputs and result, or at least a link to its page, beside the rule. The rule is right; the example is what a bidder uses.
+3. **Fields that take several values**: `emd_form` must hold all instruments the tender accepts, not one.
+4. **A note on an approved value**, without an edit: four of your five active edits were approvals with a remark. The decision "approved" should take a note, and the screen should offer it.
+5. **Dates with their time**, where the document gives one (bid deadline, technical opening).
+6. **A qualifier beside a number** ("from the date of issue of the Letter of Award" with the PPA signing window; "from the effective date of the PPA" with SCOD): either the prose sibling of every dated or counted field, or the note of item 4.
+
 ## Your step: one real review
 
 A link for NHPC FDRE-II is live. It is not written in this file: a review link is the only key to its review, and this file is in the repository. It is in my message to you, and `docker compose exec -T api python -m scripts.review_token list` prints it on the VM.

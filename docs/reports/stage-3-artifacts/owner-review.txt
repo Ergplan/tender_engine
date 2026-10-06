@@ -1,0 +1,100 @@
+The owner's review of NHPC FDRE-II, as the app database records it (2026-10-06 12:37 UTC).
+
+1. Decisions by kind and status (rows of the approval table for the tender, 2026-10-06):
+    decision     |   status   | count 
+-----------------+------------+-------
+ approved        | active     |    77
+ approved        | superseded |     3
+ cleared         | superseded |     1
+ edited          | active     |     5
+ edited          | superseded |     4
+ flagged         | superseded |     7
+ not_in_document | active     |    15
+ not_in_document | superseded |     1
+(8 rows)
+
+2. Timing: decisions per hour, and the gaps longer than fifteen minutes:
+ hour_utc | decisions |  first   |   last   
+----------+-----------+----------+----------
+ 03:00    |         4 | 03:50:58 | 03:52:16
+ 08:00    |        21 | 08:24:35 | 08:32:56
+ 09:00    |        29 | 09:34:55 | 09:52:59
+ 10:00    |         7 | 10:14:13 | 10:15:14
+ 11:00    |         5 | 11:11:35 | 11:13:16
+ 12:00    |        47 | 12:09:10 | 12:33:03
+(6 rows)
+
+ from_utc |  to_utc  | gap_min 
+----------+----------+---------
+ 03:52:16 | 08:24:35 |     272
+ 08:32:56 | 09:34:55 |      62
+ 09:52:59 | 10:14:13 |      21
+ 10:15:14 | 11:11:35 |      56
+ 11:13:16 | 12:09:10 |      56
+(5 rows)
+
+ deciding_minutes_between_decisions_less_than_15_min_apart 
+-----------------------------------------------------------
+                                                        54
+(1 row)
+
+3. Active edits (candidate value, final value, feedback kind, note):
+                   field_path                    |                                    candidate                                     |                                      final                                       | delta_kind  |                   note                   
+-------------------------------------------------+----------------------------------------------------------------------------------+----------------------------------------------------------------------------------+-------------+------------------------------------------
+ sector.power.common.metering_point              | "Low voltage side of the CTU/STU substation (for RE parks, the ISTS/In-STS pooli | "1) Low voltage side of the CTU/STU substation (2) In case of RE parks, the ISTS | wrong_value | 
+ sector.power.common.financial_closure_reference | "effective_date"                                                                 | "effective_date"                                                                 |             | effective date of the ppa
+ sector.power.common.scod_months                 | 24                                                                               | 24                                                                               |             | 24 months from the effective date of ppa
+ core.eligibility.turnover_requirement_inr       | 6380000.0                                                                        | 6380000                                                                          |             | per MW
+ core.eligibility.liquidity_basis                | "per_mw"                                                                         | "per_mw"                                                                         |             | 
+(5 rows)
+
+4. Every note and flag:
+  at_utc  | decision |   status   |                    field_path                    |                                                                                                                                                                                                                       note                                                                                                                                                                                                                        
+----------+----------+------------+--------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ 08:30:02 | edited   | superseded | core.key_dates.bid_submission_deadline           | Add time also in the data field captured
+ 08:30:35 | edited   | superseded | core.key_dates.technical_opening_date            | Add time also
+ 08:32:29 | edited   | superseded | sector.power.common.ppa_signing_window_days      | add note from the date of issue of Letter of Award as prose next to the value
+ 09:34:55 | edited   | active     | sector.power.common.financial_closure_reference  | effective date of the ppa
+ 09:35:27 | edited   | active     | sector.power.common.scod_months                  | 24 months from the effective date of ppa
+ 09:37:54 | edited   | active     | core.eligibility.turnover_requirement_inr        | per MW
+ 09:44:04 | flagged  | superseded | core.guarantees.emd_form                         | Four instruments are accepted (DD, BG, POI, Insurance Surety Bond); the field needs to allow several."
+ 09:46:46 | flagged  | superseded | core.guarantees.success_charge_inr               | ₹ 1 lakh/MW plus 18% GST we should mention or have to section success charges and GST on success charges so if GST changes anytime we can modify the field
+ 09:47:38 | flagged  | superseded | core.guarantees.processing_fee_inr               | Applicable GST@18% should be also linked to this bid processing fee so that user knows the exact value and also the financial model
+ 09:47:53 | flagged  | superseded | core.guarantees.success_charge_inr               | ₹ 1 lakh/MW plus 18% GST we should mention or have to section success charges and GST on success charges so if GST changes anytime we can modify the field and also financial model knows the exact amount
+ 12:18:06 | flagged  | superseded | sector.power.common.deemed_generation_structured | The compensation should also be captured in a data table so incase later asks in a chat bot with specific hours the agent can calcuate
+ 12:18:21 | flagged  | superseded | sector.power.common.deemed_generation_structured | The compensation should also be captured in a data table so incase later asks in a chat bot with specific hours the agent can calcuate. The data refernce is fine.
+ 12:23:07 | flagged  | superseded | core.penalties.shortfall_rules                   | metric: peak_availability | measured: monthly | threshold_of: contracted_capacity | threshold_pct: 90 | penalty_multiple_of_tariff: 1.5 | default_damages_months_of_tariff: 24 metric: annual_cuf | measured: annual | threshold_of: declared_cuf | threshold_pct: 85 | tolerance_pct: 15 | penalty_multiple_of_tariff: 1.5 | default_damages_months_of_tariff: 24 equivalent to 24 (twenty-four) months, or balance PPA period whichever is less
+(13 rows)
+
+5. Fields marked not in document:
+                    field_path                     
+---------------------------------------------------
+ core.eligibility.max_consortium_members
+ core.guarantees.emd_per_mw_inr
+ core.guarantees.pbg_per_mw_inr
+ core.key_dates.era_date
+ core.key_dates.loa_timeline
+ core.penalties.delay_ld_per_mw_per_day_inr
+ sector.power.common.dcr_required
+ sector.power.common.local_content_rule
+ sector.power.common.max_projects_per_bidder
+ sector.power.common.min_commissioned_mw
+ sector.power.common.named_states_or_sites
+ sector.power.common.tariff_ceiling_inr_per_kwh
+ sector.power.common.total_capacity_mwh
+ sector.power.common.under_construction_counts
+ sector.power.fdre.excess_energy_price_inr_per_kwh
+(15 rows)
+
+6. Completion: the review link and the tender:
+     reviewer_name     | completed_at |  status   | snapshots 
+-----------------------+--------------+-----------+-----------
+ venture@aayuda.energy |              | in_review |         0
+(1 row)
+
+7. Second readings chosen over the shown one: approved candidates with a lower confidence than another live reading of the field with a different value:
+ count 
+-------
+     0
+(1 row)
+
