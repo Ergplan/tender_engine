@@ -497,17 +497,28 @@ By tender: NHPC FDRE-II 12 of 82, SECI Gaya 12 of 63, SECI FDRE-IX 11 of 84, SEC
 
 By field: the three lists of the documents section lead (required documents 9, annexure formats 8, draft agreements referenced 7), then the deferred-dates note (4), and six fields at 3 (offtaker, payment security in prose and structured, PBG encashment triggers, shortfall penalty basis and shortfall rules). Lists and long prose differ most often; the two windows see different parts of a long enumeration. A date differs twice (bid submission deadline), an agency once.
 
-Counted in SQL on the same entries, by raw text rather than typed value: 114 fields have two or more live readings; 79 differ in their text and 35 are identical. So when a section is read twice and both passes give a value, they agree in about a third of the cases, and the card shows the other two thirds.
+Counted in SQL rather than through the review state, by raw text rather than typed value, and taking for each field the latest version with a live valued reading (a close but not identical choice of entries: 869 fields with a value against the review's 877): 114 fields have two or more live readings; 79 differ in their text and 35 are identical. So where a field was read more than once and both readings gave a value, they agreed in roughly one case in three; the card shows the others.
 
 ### The screen while a summary is on its way
 
-The browser test of a whole review failed once in five runs since yesterday's fix, each time the same way: the summary's Approve stayed disabled after the rewrite had finished. The server's state was right each time (the kept database shows the new text validated seconds after it was queued); the screen had stopped reading the review. I could not make it fail on demand. Two changes so that a reviewer is never left waiting on a timer: the screen now reads the review again every four seconds for as long as the server reports a text being written, not only while the summary is not current; and the summary card's lock message carries a "Check again" link that reads the review at once (one screen test). Since then the browser suite has passed three times in three runs (`playwright.txt` holds the last).
+The browser test of a whole review failed once in five runs since yesterday's fix, each time the same way: the summary's Approve stayed disabled after the rewrite had finished. The server's state was right each time (the kept database shows the new text validated seconds after it was queued); the screen had stopped reading the review. I could not make it fail on demand. Two changes so that a reviewer is never left waiting on a timer: the screen now reads the review again every four seconds for as long as the server reports a text being written, not only while the summary is not current; and the summary card's lock message carries a "Check again" link that reads the review at once (one screen test). Since then the browser suite has passed four times in four runs (`playwright.txt` holds the last).
 
 ### Checks and review
 
 487 Python tests, 68 web unit tests and 10 browser tests pass; the nine checks are green (`checks.txt`, `playwright.txt`); `make trace` regenerates `FIELD-TRACE.md` without a difference (`trace.txt`). No migration: `cleared` is a value of an existing column. The API reloads from the mounted source; the worker needs nothing of this. The test watcher is still stopped.
 
-{REVIEW13}
+**Independent review, run 13** (on this change): (a) 1, (b) none, (c) 1, (d) none, (e) 23. Two code points, both fixed. Output: `stage-3-artifacts/review-gpt-6.1-sol-run13.txt`.
+
+| # | Finding | Outcome |
+| --- | --- | --- |
+| a1, c1 | The unchanged write paths | As in every run |
+| e20 | After the summary is approved, clearing an optional field that had been approved as it stood leaves the record unchanged, so the summary stays approved, and completion checked only the required fields: the review could be completed with that field undecided, against what this report says of completion | Fixed in code: completion is refused while the summary's count of undecided fields is above zero, and the screen is told it cannot complete (`complete_review(..., summary_waiting_for=...)`); the completion test now clears an optional field after the summary was approved and is refused until it is decided again |
+| e21 | A chip of a second reading scrolled and pulsed but did not draw the lasting highlight, which was built from the shown reading's passages only | Fixed: the highlights include the second readings' passages |
+| e22 | The SQL count was described as being on the same entries as the review's count; the populations differ slightly (869 and 877) | Report corrected |
+| e23 | The failure history of the browser test and the runs since the polling change are not retained | Statements of this report; `playwright.txt` holds one run |
+| e19, e1 to e18 | As in earlier runs | Statements of this report, by-design behaviour, or limits in KNOWN-GAPS.md |
+
+{REVIEW14}
 
 ## Your step: one real review
 

@@ -108,7 +108,7 @@ def get_tender_review(
     review.summary = state.model_dump()
     # While a summary is being written the summary field may have no entry to decide for
     # a moment; the review cannot be completed across that gap.
-    review.can_complete = review.can_complete and not state.being_written
+    review.can_complete = review.can_complete and not state.being_written and not state.waiting_for
     return review
 
 
@@ -133,6 +133,7 @@ def complete_review(
     except LookupError as exc:
         raise AppError("not_found", f"tender {tender_id} does not exist") from exc
     token = _token(session, tenant_id, review.token_id)
+    state = writer.state(session, tender)
     try:
         row = reviews.complete_review(
             session,
@@ -141,7 +142,8 @@ def complete_review(
             review_state,
             tender,
             token,
-            summary_being_written=writer.state(session, tender).being_written,
+            summary_being_written=state.being_written,
+            summary_waiting_for=state.waiting_for,
         )
     except TenderError as exc:
         raise AppError("validation_failed", str(exc)) from exc

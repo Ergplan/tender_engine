@@ -209,6 +209,7 @@ def complete_review(
     token: ReviewToken,
     *,
     summary_being_written: bool = False,
+    summary_waiting_for: int = 0,
 ) -> TenderReviewSnapshot:
     """Close the review: refuse while a required field is undecided or the summary is
     being written again; then mark the token completed and the tender reviewed, and store
@@ -230,6 +231,13 @@ def complete_review(
             f"{review.required_undecided} required field(s) have no decision yet"
             if review.required_undecided
             else "no field has been decided yet"
+        )
+    if summary_waiting_for:
+        # The summary is written from every field: a review is complete only when every
+        # field that has a candidate is decided, optional ones too (a decision cleared after
+        # the summary was approved reopens the field without changing the record).
+        raise TenderError(
+            f"{summary_waiting_for} field(s) the summary is written from have no decision yet"
         )
     now = datetime.now(UTC)
     view = current_view(session, catalog, tender)

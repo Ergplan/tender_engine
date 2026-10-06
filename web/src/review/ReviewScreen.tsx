@@ -183,7 +183,10 @@ export function ReviewScreen({
 
   const highlights = useMemo<Highlight[]>(() => {
     const field = focused ? byPath.get(focused) : undefined;
-    return (currentEntry(field ?? ({ current: null, entries: [] } as unknown as ReviewField))?.state.candidate?.evidence ?? [])
+    const state = currentEntry(field ?? ({ current: null, entries: [] } as unknown as ReviewField))?.state;
+    // The shown reading's passages and, where the model read the field differently, the
+    // other readings' passages: a chip of either kind highlights like any other.
+    return [...(state?.candidate?.evidence ?? []), ...(state?.alternatives ?? []).flatMap((other) => other.evidence)]
       .filter((evidence) => evidence.document_id === documentId)
       .map((evidence) => ({
         pageNo: evidence.page_no,

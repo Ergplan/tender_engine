@@ -320,6 +320,30 @@ def test_complete_review_needs_every_required_field_then_snapshots_and_locks(
     body = review(client, tid, token)
     assert body["required_undecided"] == 0 and body["can_complete"] is True
 
+    # Clearing an optional field after the summary was approved does not change the record
+    # (it was approved as it stood), so the summary stays approved; the review still cannot
+    # be completed until that field is decided again: the summary is written from it.
+    optional = next(
+        f
+        for f in body["fields"]
+        if not f["required"]
+        and f["decided"]
+        and f["field_path"] != SUMMARY
+        and f["entries"][f["current"]]["state"]["approval"]["decision"] == "approved"
+    )
+    entry = optional["entries"][optional["current"]]
+    assert decide(client, token, entry, "cleared").status_code == 201
+    body = review(client, tid, token)
+    assert field(body, SUMMARY)["decided"] is True and body["summary"]["waiting_for"] == 1
+    assert body["required_undecided"] == 0 and body["can_complete"] is False
+    held = client.post(f"/api/v1/tenders/{tid}/complete-review", headers=headers)
+    assert held.status_code == 422 and "have no decision yet" in held.json()["detail"]
+    assert (
+        decide(client, token, current(body, optional["field_path"]), "approved").status_code == 201
+    )
+    body = review(client, tid, token)
+    assert body["can_complete"] is True
+
     done = client.post(f"/api/v1/tenders/{tid}/complete-review", headers=headers)
     assert done.status_code == 201, done.text
     snapshot = done.json()["snapshot"]
