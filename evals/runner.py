@@ -360,6 +360,9 @@ def finished_runs(session: Session, tenant_id: str, run_ids: list[str]) -> bool:
             )
         ).all()
     )
+    unknown = sorted(set(run_ids) - set(statuses))
+    if unknown:
+        raise LookupError(f"no such run(s) in this tenant: {', '.join(unknown)}")
     failed = sorted(run_id for run_id, status in statuses.items() if status == "failed")
     if failed:
         raise PromptRunsFailed(f"run(s) failed: {', '.join(failed)}")

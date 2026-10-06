@@ -90,20 +90,32 @@ def build_gold(session: Session, catalog: Catalog, tender: Tender) -> GoldRecord
     compiled = catalog.get(tender.tender_type)
     view = snapshot.snapshot["view"]
     reviewed_version = int(view.get("current_version_no") or 1)
-    # The decisions that stand on the version the review was completed at; a decision
-    # made later on a newer version is not part of this record.
-    approvals = {
-        a.field_path: a
+    # The decisions that stand up to the version the review was completed at: per field the
+    # decision of the version the snapshot shows it from (a field an amendment did not touch
+    # keeps the decision made on the earlier version). A decision on a later version is not
+    # part of this record.
+    view_by_path = {f["field_path"]: f for f in view["fields"]}
+    standing: dict[tuple[str, int], Approval] = {
+        (a.field_path, a.object_version): a
         for a in session.scalars(
             select(Approval).where(
                 Approval.tenant_id == tender.tenant_id,
                 Approval.object_type == "tender",
                 Approval.object_id == tender.id,
-                Approval.object_version == reviewed_version,
+                Approval.object_version <= reviewed_version,
                 Approval.status == "active",
             )
         )
     }
+    approvals: dict[str, Approval] = {}
+    for path, version in standing:
+        shown_version = (view_by_path.get(path) or {}).get("version_no")
+        wanted = shown_version if shown_version is not None else reviewed_version
+        if version == wanted:
+            approvals[path] = standing[(path, version)]
+    for path, version in standing:  # a field the view does not date: its latest decision
+        if path not in approvals and all(v <= version for p, v in standing if p == path):
+            approvals[path] = standing[(path, version)]
     candidate_ids = [a.candidate_id for a in approvals.values()]
     candidates = {
         c.id: c
@@ -123,7 +135,6 @@ def build_gold(session: Session, catalog: Catalog, tender: Tender) -> GoldRecord
         pages[span.candidate_id].add(span.page_no)
 
     fields: list[GoldField] = []
-    view_by_path = {f["field_path"]: f for f in view["fields"]}
     for field in compiled.fields:
         shown = view_by_path.get(field.path, {})
         approval = approvals.get(field.path)

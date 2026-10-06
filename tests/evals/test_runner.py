@@ -143,11 +143,14 @@ def test_a_date_of_another_day_is_wrong_and_an_unreadable_one_is_a_matter_of_for
     [
         ("money_inr", 928000, 928000, "correct"),
         ("money_inr", 928000, 932000, "correct"),  # 0.43%: within the half-percent band
+        ("money_inr", 928000, 932640, "correct"),  # 0.50% of the larger: the edge, in
+        ("money_inr", 928000, 932700, "wrong_value"),  # just past it
         ("money_inr", 928000, 933000, "wrong_value"),  # 0.54%
         ("money_inr", 928000, "9,28,000", "correct"),
         ("decimal", 1.5, 1.504, "correct"),
         ("decimal", 1.5, 1.6, "wrong_value"),
         ("percent", 10, 10.04, "correct"),
+        ("percent", 10, 10.06, "wrong_value"),
         ("mw", 600, 600.0, "correct"),
         ("mw", 600, 602.9, "correct"),
         ("mw", 600, 603.1, "wrong_value"),
@@ -193,6 +196,8 @@ def test_long_text_needs_human_judgement_and_is_not_counted(registry: SchemaRegi
 def test_a_list_of_text_matches_as_a_set(registry: SchemaRegistry) -> None:
     assert score(registry, "list_text", ["Solar", "Wind"], ["wind", "solar"]).outcome == "correct"
     assert score(registry, "list_text", ["Solar", "Wind"], ["solar"]).outcome == "wrong_value"
+    # Not a set: a repeated item must be repeated.
+    assert score(registry, "list_text", ["Solar", "Solar"], ["solar"]).outcome == "wrong_value"
 
 
 def test_a_record_is_scored_key_by_key(registry: SchemaRegistry) -> None:
@@ -215,6 +220,32 @@ def test_a_record_is_scored_key_by_key(registry: SchemaRegistry) -> None:
     assert listed == "correct" and keyed == {
         "1.basis": "correct", "1.rate_inr": "correct", "2.basis": "correct", "2.rate_inr": "correct"
     }  # fmt: skip
+
+
+def test_a_nested_record_is_scored_through_its_sub_keys(registry: SchemaRegistry) -> None:
+    keys = [
+        KeyDef(name="basis", value_type="text"),
+        KeyDef(
+            name="parts",
+            value_type="list",
+            keys=[
+                KeyDef(name="name", value_type="text"),
+                KeyDef(name="rate", value_type="money_inr"),
+            ],
+        ),
+    ]
+    gold_value = {"basis": "per MW", "parts": [{"name": "solar", "rate": 928000}]}
+    same, keyed = match_record(
+        keys,
+        registry,
+        gold_value,
+        {"basis": "per mw", "parts": [{"name": "Solar", "rate": 930000}]},
+    )
+    assert same == "correct" and keyed == {"basis": "correct", "parts": "correct"}
+    differ, keyed = match_record(
+        keys, registry, gold_value, {"basis": "per mw", "parts": [{"name": "wind", "rate": 928000}]}
+    )
+    assert differ == "wrong_value" and keyed["parts"] == "wrong_value"
 
 
 def test_a_record_field_goes_through_the_keys(registry: SchemaRegistry) -> None:

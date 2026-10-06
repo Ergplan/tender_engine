@@ -20,6 +20,7 @@ from tests.api.test_review_tokens import (
     decide_others,
     link,
     review,
+    with_amendment,
 )
 from tests.api.test_tenders import extracted
 from tests.conftest import Pipeline
@@ -116,3 +117,31 @@ def test_the_gold_record_keeps_decisions_evidence_pages_and_the_candidate_judged
     assert f"`{EMD}`" in report and "fewer than 2 reviewed tenders for: wind" in report
     log = render_log(lines)
     assert f"| {record.slug} | solar | Asha Rao |" in log and f"1: `{EMD}`" in log
+
+
+def test_a_field_decided_on_an_earlier_version_keeps_its_decision_in_the_gold_record(
+    client: TestClient,
+    pipeline: Pipeline,
+    db,  # type: ignore[no-untyped-def]
+) -> None:
+    """An amendment moves the deadline; the other fields are shown, and decided, from the
+    original version. The record of the review completed at version 2 holds them all."""
+    tender = with_amendment(client, pipeline)
+    tid = tender["id"]
+    token = link(client, tid)["token"]
+    body = review(client, tid, token)
+    decide_others(client, token, body)
+    pipeline.runner.run_until_idle()
+    body = review(client, tid, token)
+    assert decide(client, token, current(body, SUMMARY), "approved").status_code == 201
+    done = client.post(f"/api/v1/tenders/{tid}/complete-review", headers=as_reviewer(token))
+    assert done.status_code == 201, done.text
+    row = db.scalars(select(Tender).where(Tender.id == tid)).one()
+    record = build_gold(db, pipeline.catalog, row)
+    assert record.reviewed_version == 2
+    deadline = record.field(DEADLINE)
+    assert deadline is not None and deadline.version_no == 2 and deadline.decision == "approved"
+    assert deadline.final_value == "2026-04-15"
+    inherited = [f for f in record.fields if f.version_no == 1 and f.decision]
+    assert inherited and all(f.candidate is not None for f in inherited)
+    assert sum(1 for f in record.fields if f.decision) == done.json()["snapshot"]["decided"]

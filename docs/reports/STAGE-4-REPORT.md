@@ -74,7 +74,7 @@ Your click returned a 500 (API log: `column extraction_run.prompt_overrides does
 - `tests/api/test_admin.py`: the routes refuse without the token, with a wrong token, with a review link, and always when no token is configured; the token opens the dashboard and nothing else; through the API a completed review becomes a gold record (refused before completion, 404 for an unknown tender), the dashboard then shows it, an evaluation writes a results file, a prompt evaluation queues runs whose readings are then scored by their ids and nothing else, and the feedback route returns the one correction.
 - `tests/tender/test_prompt_overrides.py`: an override reads one section with another version, is stored on the run and on every candidate, must name a group and a registered version; `candidates_of_runs` returns that run's readings within the tenant.
 - `web/src/admin/ReliabilityPage.test.tsx`: the token form, the header sent, the bar, the banded table, the tender list, the refusal.
-- `make check`: 545 Python tests and 71 web unit tests pass; nine checks green (`stage-4-artifacts/checks.txt`). `make test-ui`: 10 of 10 pass, 1 skipped (the real-load timing case, run on the deployed app in Stage 3) (`stage-4-artifacts/playwright.txt`). `make trace`: clean, 183 field rows as before, no change this stage (`stage-4-artifacts/trace.txt`).
+- `make check`: 550 Python tests and 71 web unit tests pass; nine checks green (`stage-4-artifacts/checks.txt`). `make test-ui`: 10 of 10 pass, 1 skipped (the real-load timing case, run on the deployed app in Stage 3) (`stage-4-artifacts/playwright.txt`). `make trace`: clean, 183 field rows as before, no change this stage (`stage-4-artifacts/trace.txt`).
 
 ## Deployment
 
@@ -127,7 +127,18 @@ Listed with a rationale, not resolved by code:
 - Deployment, links, the corpus audit (e1, e2, e9): statements a diff cannot prove; `deployment.txt` now holds the deploy log and the live responses (401 without the token, the dashboard's data with it, the page at 200, migration 0012 applied).
 - Candidate-write audit coverage outside the diff (c1): unchanged code.
 
-**Run 3**: not run; the session reached its usage limit after run 2 was fixed and committed. The next session runs it (`scripts.independent_review --stage 4`) before the stage is closed.
+**Run 3** (on commit 5789cbe): no invariant finding, every endpoint tested, eleven report claims.
+
+Code defects found and fixed:
+
+- A field decided on an earlier version and shown from it after an amendment lost its decision in the gold record, since only approvals of the reviewed version were taken (e3). Fixed: per field, the standing decision of the version the snapshot shows it from; test with an amended tender.
+- Run ids the tenant does not hold were passed over in silence, and an empty scoring could be written (e5). Fixed: unknown runs are refused (404), runs without a reading are refused.
+- Scoring named runs through the API wrote the results file without the prompt, so it did not count as a prompt evaluation for the comparison or the bar (e4). Fixed: the file names the section and version read; the dashboard's comparison and the bar's history read it.
+- Tests added at the band's edge (0.50% in, just past it out), a percentage out of band, a repeated list item, a nested record, a failed run refused, an unknown run refused (e6, e7).
+
+Listed with a rationale: the lock of a completed review that makes the active approvals the snapshot's decisions is Stage 3 code outside the diff (e2); the admin token (e8), as before; links, the corpus audit, incident details and the Stage 3 cost outside the database (e1, e9, e10, e11) are statements a diff cannot prove, with the artifacts named above (`incident.txt` now also shows the last decision time against the completion time; `costs.txt` shows its queries); candidate-write audit coverage outside the diff (c1).
+
+RUN4_SECTION
 
 ## Open questions
 

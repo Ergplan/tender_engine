@@ -26,10 +26,10 @@ $ /opt/venv/bin/python -m pytest -p no:cacheprovider
 ........................................................................ [ 26%]
 ........................................................................ [ 39%]
 ........................................................................ [ 52%]
-........................................................................ [ 66%]
-........................................................................ [ 79%]
-........................................................................ [ 92%]
-.........................................                                [100%]
+........................................................................ [ 65%]
+........................................................................ [ 78%]
+........................................................................ [ 91%]
+..............................................                           [100%]
 =============================== warnings summary ===============================
 tests/api/test_review_tokens.py::test_expired_and_unknown_tokens_are_refused_in_plain_words
 tests/api/test_review_tokens.py::test_pages_search_and_file_authorisation_for_the_viewer
@@ -37,7 +37,7 @@ tests/api/test_review_tokens.py::test_pages_search_and_file_authorisation_for_th
     return super().request(
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-545 passed, 5 deselected, 2 warnings in 473.70s (0:07:53)
+550 passed, 5 deselected, 2 warnings in 464.17s (0:07:44)
 
 
 ===== openapi_drift: pass =====
@@ -59,24 +59,25 @@ $ node /app/web/node_modules/vitest/vitest.mjs run
 
  RUN  v3.2.7 /app/web
 
- ✓ src/review/ReviewScreen.test.tsx (33 tests) 6449ms
-   ✓ what the reviewer sees > shows the tender, the reviewer, progress and a disabled Complete button  663ms
-   ✓ deciding > approves the focused field with Enter, saves at once and moves to the next undecided  420ms
-   ✓ deciding > clears a decision with U or the button; the field is undecided again  302ms
-   ✓ deciding > shows a retryable failure when the save did not reach the server  424ms
+ ✓ src/review/ReviewScreen.test.tsx (33 tests) 5803ms
+   ✓ what the reviewer sees > shows the tender, the reviewer, progress and a disabled Complete button  519ms
+   ✓ deciding > approves the focused field with Enter, saves at once and moves to the next undecided  418ms
+   ✓ deciding > edits a date in a date input and sends the typed value with the decision it replaces  339ms
+   ✓ deciding > asks for the page and the words when the field has no located evidence  410ms
+   ✓ orientation and reading aids > counts what is left, and estimates the time once it knows the pace  300ms
+ ✓ src/App.test.tsx (3 tests) 249ms
+ ✓ src/admin/ReliabilityPage.test.tsx (3 tests) 271ms
+ ✓ src/review/SummaryPage.test.tsx (2 tests) 247ms
+ ✓ src/review/RecordView.test.tsx (5 tests) 297ms
+ ✓ src/review/guide.test.tsx (3 tests) 253ms
  ✓ src/lib/format.test.ts (14 tests) 27ms
- ✓ src/review/RecordView.test.tsx (5 tests) 300ms
- ✓ src/admin/ReliabilityPage.test.tsx (3 tests) 450ms
- ✓ src/review/SummaryPage.test.tsx (2 tests) 422ms
  ✓ src/lib/keyboard.test.ts (5 tests) 6ms
- ✓ src/review/guide.test.tsx (3 tests) 207ms
- ✓ src/App.test.tsx (3 tests) 462ms
  ✓ src/lib/pace.test.ts (3 tests) 4ms
 
  Test Files  9 passed (9)
       Tests  71 passed (71)
-   Start at  14:08:15
-   Duration  29.52s (transform 981ms, setup 1.84s, collect 3.25s, tests 8.33s, environment 9.57s, prepare 2.68s)
+   Start at  17:24:17
+   Duration  29.70s (transform 1.20s, setup 1.33s, collect 3.72s, tests 7.16s, environment 10.16s, prepare 2.67s)
 
 stderr | src/review/ReviewScreen.test.tsx > deciding > moves focus with J and K and tells why Enter cannot approve
 Warning: An update to PdfPane inside a test was not wrapped in act(...).

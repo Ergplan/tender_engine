@@ -1,15 +1,21 @@
- calls | usd  
--------+------
-     1 | 0.32
+-- llm_call_log on 2026-10-06 from 12:00 UTC
+select count(*) calls, round(sum(cost_usd)::numeric,2) usd, min(created_at)::timestamp(0) first_call, max(created_at)::timestamp(0) last_call from llm_call_log where created_at >= '2026-10-06 12:00'
+ calls | usd  |     first_call      |      last_call      
+-------+------+---------------------+---------------------
+     1 | 0.32 | 2026-10-06 12:31:47 | 2026-10-06 12:31:47
 (1 row)
 
- total_usd | calls 
------------+-------
-    356.69 |   806
+select prompt_name, prompt_version, mode, count(*) from llm_call_log where created_at >= '2026-10-06 12:00' group by 1,2,3
+  prompt_name   | prompt_version | mode | count 
+----------------+----------------+------+-------
+ summary_record | v1             | sync |     1
 (1 row)
 
-  prompt_name   | count 
-----------------+-------
- summary_record |     1
+-- every call
+select round(sum(cost_usd)::numeric,2) total_usd, count(*) calls, min(created_at)::date first_day from llm_call_log
+ total_usd | calls | first_day  
+-----------+-------+------------
+    356.69 |   806 | 2026-10-04
 (1 row)
 
+-- the Stage 3 v2 pass outside this database: docs/reports/STAGE-3-REPORT.md, section 'Cost of extraction'

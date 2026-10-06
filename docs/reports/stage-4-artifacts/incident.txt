@@ -22,3 +22,8 @@
 2026-10-06T12:47:06.322521077Z INFO:     172.18.0.5:38972 - "GET /api/v1/tenders/78f3a575cbf147d5b31acfa283831cee/review HTTP/1.1" 500 Internal Server Error
 2026-10-06T12:48:03.054826654Z INFO:     127.0.0.1:55920 - "GET /api/v1/tenders/78f3a575cbf147d5b31acfa283831cee/review HTTP/1.1" 200 OK
 2026-10-06T12:48:16.697981294Z INFO:     127.0.0.1:41248 - "POST /api/v1/tenders/78f3a575cbf147d5b31acfa283831cee/complete-review HTTP/1.1" 201 Created
+    last_decision    |      completed      
+---------------------+---------------------
+ 2026-10-06 12:33:03 | 2026-10-06 12:48:17
+(1 row)
+

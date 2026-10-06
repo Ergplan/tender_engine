@@ -187,18 +187,24 @@ def run_eval(
     scores: list[FieldScore] = []
     sections: set[str] | None = None
     label = "latest"
+    prompt: str | None = None
     if body.run_ids:
         try:
             if not finished_runs(session, tenant_id, body.run_ids):
                 raise AppError("runs_not_finished", "the runs are still queued or running")
         except PromptRunsFailed as exc:
             raise AppError("validation_failed", str(exc)) from exc
-        sections = {
-            c.prompt_name.rsplit("/", 1)[-1]
-            for c in candidates_of_runs(session, tenant_id, body.run_ids).values()
-            if c.prompt_name
+        except LookupError as exc:
+            raise AppError("not_found", str(exc)) from exc
+        readings = candidates_of_runs(session, tenant_id, body.run_ids).values()
+        read_with = {
+            (c.prompt_name.rsplit("/", 1)[-1], c.prompt_version) for c in readings if c.prompt_name
         }
-        label = "runs"
+        if not read_with:
+            raise AppError("validation_failed", "the runs produced no reading to score")
+        sections = {section for section, _ in read_with}
+        prompt = ", ".join(f"{s}/{v}" for s, v in sorted(read_with))
+        label = "runs-" + "-".join(f"{s}-{v}" for s, v in sorted(read_with))
     for record in records:
         found = (
             candidates_of_runs(
@@ -208,7 +214,7 @@ def run_eval(
             else candidates_in_review(session, review_state, record)
         )
         scores += score_record(record, found, catalog, review_state.schemas, sections)
-    path, summary = write_results(scores, label=label, tenant_id=tenant_id)
+    path, summary = write_results(scores, label=label, tenant_id=tenant_id, prompt=prompt)
     return EvalOut(status="scored", queued={}, results_file=str(path), summary=summary)
 
 
