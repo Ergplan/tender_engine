@@ -518,7 +518,15 @@ The browser test of a whole review failed once in five runs since yesterday's fi
 | e23 | The failure history of the browser test and the runs since the polling change are not retained | Statements of this report; `playwright.txt` holds one run |
 | e19, e1 to e18 | As in earlier runs | Statements of this report, by-design behaviour, or limits in KNOWN-GAPS.md |
 
-{REVIEW14}
+**Run 14** (after those fixes): (a) 2, (b) none, (c) 1, (d) none, (e) 20. No code defect. Output: `stage-3-artifacts/review-gpt-6.1-sol-run14.txt`.
+
+| # | Finding | Outcome |
+| --- | --- | --- |
+| a1 | The summary pass sends a reviewer's edited value to the model (`_field_value` takes an edited approval's final value into the record the model summarises), which the reviewer reads against the invariant that corrections are kept for prompt work rather than fed back into the model | By design, from your second Stage 3 change: the summary is written from the approved record, and after your decisions from them. The model receives the record as the facts to summarise, not as feedback; its output is a candidate that you decide; no code path reads the `feedback` table, and no prompt, threshold or model changes at run time. I read the invariant as being about the feedback loop, not about summarising approved facts. **If you read it the other way, say so**: the alternative is a summary written only from the model's own candidates, which is what you had before and asked to replace |
+| a2, c1 | The unchanged write paths | As in every run |
+| e19, e20, e1 to e18 | The evidence-only edit limit (KNOWN-GAPS.md) and statements of this report | As in earlier runs |
+
+I stopped after run 14: it found no code defect. Runs 13 and 14 were on the clear decision and the second readings; the two defects run 13 found are fixed above.
 
 ## Your step: one real review
 
