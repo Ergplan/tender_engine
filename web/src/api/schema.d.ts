@@ -4,6 +4,70 @@
  */
 
 export interface paths {
+    "/api/v1/admin/evals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Run Eval
+         * @description Without a prompt: score every gold record against the readings in review and write a
+         *     results file. With a prompt (section/vN): queue a reading of that section on every gold
+         *     tender with that version and return the run ids; score those readings, and nothing
+         *     else, by sending the run ids back once the runs have finished.
+         */
+        post: operations["run_eval_api_v1_admin_evals_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/feedback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Feedback
+         * @description The corrections of standing decisions, grouped, with the rendered report.
+         */
+        get: operations["get_feedback_api_v1_admin_feedback_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/gold": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Make Gold
+         * @description A completed review becomes a gold record (the caller confirms it is trustworthy by
+         *     calling this); the reliability report and the review log are written again.
+         */
+        post: operations["make_gold_api_v1_admin_gold_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/reliability": {
         parameters: {
             query?: never;
@@ -764,6 +828,36 @@ export interface components {
             /** Status */
             status: string;
         };
+        /** EvalOut */
+        EvalOut: {
+            /** Queued */
+            queued: {
+                [key: string]: string[];
+            };
+            /** Results File */
+            results_file: string | null;
+            /** Status */
+            status: string;
+            summary: components["schemas"]["Summary"] | null;
+        };
+        /** EvalRequest */
+        EvalRequest: {
+            /**
+             * Only
+             * @description tender slugs; empty means all
+             */
+            only?: string[];
+            /**
+             * Prompt
+             * @description section/vN: read that section again
+             */
+            prompt?: string | null;
+            /**
+             * Run Ids
+             * @description score the readings of these runs (from an earlier prompt evaluation)
+             */
+            run_ids?: string[];
+        };
         /** EvidenceView */
         EvidenceView: {
             /** Bbox */
@@ -860,6 +954,40 @@ export interface components {
             /** Total Cost Usd */
             total_cost_usd: number;
         };
+        /** FeedbackOut */
+        FeedbackOut: {
+            /** Corrections */
+            corrections: number;
+            /** Fields */
+            fields: number;
+            /** Markdown */
+            markdown: string;
+            /** Rows */
+            rows: components["schemas"]["FeedbackRow"][];
+        };
+        /** FeedbackRow */
+        FeedbackRow: {
+            /** Candidate Value */
+            candidate_value: unknown;
+            /** Delta Kind */
+            delta_kind: string;
+            /** Field Path */
+            field_path: string;
+            /** Final Value */
+            final_value: unknown;
+            /** Issuing Agency */
+            issuing_agency: string;
+            /** Note */
+            note?: string | null;
+            /** Prompt Version */
+            prompt_version: string;
+            /** Reviewer */
+            reviewer: string;
+            /** Tender Slug */
+            tender_slug: string;
+            /** Tender Type */
+            tender_type: string;
+        };
         /** FieldState */
         FieldState: {
             /** Alternative Candidates */
@@ -917,6 +1045,28 @@ export interface components {
             version_kind: string | null;
             /** Version No */
             version_no: number | null;
+        };
+        /** GoldOut */
+        GoldOut: {
+            /** Decided */
+            decided: number;
+            /** Path */
+            path: string;
+            /** Reviewed Version */
+            reviewed_version: number;
+            /** Slug */
+            slug: string;
+            /** Tender Id */
+            tender_id: string;
+            /** Tender Type */
+            tender_type: string;
+            /** Total */
+            total: number;
+        };
+        /** GoldRequest */
+        GoldRequest: {
+            /** Tender Id */
+            tender_id: string;
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -1220,6 +1370,8 @@ export interface components {
         Stability: {
             /** Met */
             met: boolean;
+            /** Prompt Versions Below Bar */
+            prompt_versions_below_bar: string[];
             /** Prompt Versions Seen */
             prompt_versions_seen: string[];
             /** Reasons */
@@ -1584,6 +1736,92 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    run_eval_api_v1_admin_evals_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EvalRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EvalOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_feedback_api_v1_admin_feedback_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FeedbackOut"];
+                };
+            };
+        };
+    };
+    make_gold_api_v1_admin_gold_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GoldRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GoldOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     get_reliability_api_v1_admin_reliability_get: {
         parameters: {
             query?: never;

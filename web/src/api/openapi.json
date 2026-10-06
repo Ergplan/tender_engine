@@ -539,6 +539,87 @@
         "title": "DocumentOut",
         "type": "object"
       },
+      "EvalOut": {
+        "properties": {
+          "queued": {
+            "additionalProperties": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "title": "Queued",
+            "type": "object"
+          },
+          "results_file": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Results File"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Summary"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "status",
+          "queued",
+          "results_file",
+          "summary"
+        ],
+        "title": "EvalOut",
+        "type": "object"
+      },
+      "EvalRequest": {
+        "properties": {
+          "only": {
+            "description": "tender slugs; empty means all",
+            "items": {
+              "type": "string"
+            },
+            "title": "Only",
+            "type": "array"
+          },
+          "prompt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "section/vN: read that section again",
+            "title": "Prompt"
+          },
+          "run_ids": {
+            "description": "score the readings of these runs (from an earlier prompt evaluation)",
+            "items": {
+              "type": "string"
+            },
+            "title": "Run Ids",
+            "type": "array"
+          }
+        },
+        "title": "EvalRequest",
+        "type": "object"
+      },
       "EvidenceView": {
         "properties": {
           "bbox": {
@@ -845,6 +926,99 @@
         "title": "ExtractionSummary",
         "type": "object"
       },
+      "FeedbackOut": {
+        "properties": {
+          "corrections": {
+            "title": "Corrections",
+            "type": "integer"
+          },
+          "fields": {
+            "title": "Fields",
+            "type": "integer"
+          },
+          "markdown": {
+            "title": "Markdown",
+            "type": "string"
+          },
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/FeedbackRow"
+            },
+            "title": "Rows",
+            "type": "array"
+          }
+        },
+        "required": [
+          "corrections",
+          "fields",
+          "rows",
+          "markdown"
+        ],
+        "title": "FeedbackOut",
+        "type": "object"
+      },
+      "FeedbackRow": {
+        "properties": {
+          "candidate_value": {
+            "title": "Candidate Value"
+          },
+          "delta_kind": {
+            "title": "Delta Kind",
+            "type": "string"
+          },
+          "field_path": {
+            "title": "Field Path",
+            "type": "string"
+          },
+          "final_value": {
+            "title": "Final Value"
+          },
+          "issuing_agency": {
+            "title": "Issuing Agency",
+            "type": "string"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "prompt_version": {
+            "title": "Prompt Version",
+            "type": "string"
+          },
+          "reviewer": {
+            "title": "Reviewer",
+            "type": "string"
+          },
+          "tender_slug": {
+            "title": "Tender Slug",
+            "type": "string"
+          },
+          "tender_type": {
+            "title": "Tender Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "field_path",
+          "delta_kind",
+          "tender_slug",
+          "tender_type",
+          "issuing_agency",
+          "prompt_version",
+          "reviewer",
+          "candidate_value",
+          "final_value"
+        ],
+        "title": "FeedbackRow",
+        "type": "object"
+      },
       "FieldState": {
         "properties": {
           "alternative_candidates": {
@@ -1067,6 +1241,62 @@
           "evidence"
         ],
         "title": "FieldView",
+        "type": "object"
+      },
+      "GoldOut": {
+        "properties": {
+          "decided": {
+            "title": "Decided",
+            "type": "integer"
+          },
+          "path": {
+            "title": "Path",
+            "type": "string"
+          },
+          "reviewed_version": {
+            "title": "Reviewed Version",
+            "type": "integer"
+          },
+          "slug": {
+            "title": "Slug",
+            "type": "string"
+          },
+          "tender_id": {
+            "title": "Tender Id",
+            "type": "string"
+          },
+          "tender_type": {
+            "title": "Tender Type",
+            "type": "string"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "tender_id",
+          "slug",
+          "tender_type",
+          "reviewed_version",
+          "decided",
+          "total",
+          "path"
+        ],
+        "title": "GoldOut",
+        "type": "object"
+      },
+      "GoldRequest": {
+        "properties": {
+          "tender_id": {
+            "title": "Tender Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tender_id"
+        ],
+        "title": "GoldRequest",
         "type": "object"
       },
       "HTTPValidationError": {
@@ -1902,6 +2132,13 @@
             "title": "Met",
             "type": "boolean"
           },
+          "prompt_versions_below_bar": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Prompt Versions Below Bar",
+            "type": "array"
+          },
           "prompt_versions_seen": {
             "items": {
               "type": "string"
@@ -1956,6 +2193,7 @@
           "required_accuracy",
           "required_fields_below_floor",
           "prompt_versions_seen",
+          "prompt_versions_below_bar",
           "reasons"
         ],
         "title": "Stability",
@@ -2961,6 +3199,112 @@
   },
   "openapi": "3.1.0",
   "paths": {
+    "/api/v1/admin/evals": {
+      "post": {
+        "description": "Without a prompt: score every gold record against the readings in review and write a\nresults file. With a prompt (section/vN): queue a reading of that section on every gold\ntender with that version and return the run ids; score those readings, and nothing\nelse, by sending the run ids back once the runs have finished.",
+        "operationId": "run_eval_api_v1_admin_evals_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EvalRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvalOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Run Eval",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/feedback": {
+      "get": {
+        "description": "The corrections of standing decisions, grouped, with the rendered report.",
+        "operationId": "get_feedback_api_v1_admin_feedback_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeedbackOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Feedback",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/gold": {
+      "post": {
+        "description": "A completed review becomes a gold record (the caller confirms it is trustworthy by\ncalling this); the reliability report and the review log are written again.",
+        "operationId": "make_gold_api_v1_admin_gold_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoldRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoldOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Make Gold",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
     "/api/v1/admin/reliability": {
       "get": {
         "description": "Accuracy per tender type and field, the reviewed tenders, and the stability bar.",

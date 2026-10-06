@@ -29,6 +29,7 @@ def registry() -> SchemaRegistry:
 
 def record() -> GoldRecord:
     return GoldRecord(
+        tenant_id="ergplan",
         tender_id="t1",
         slug="acme-solar",
         tender_type="solar",

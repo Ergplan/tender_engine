@@ -1,6 +1,6 @@
 # Reliability report
 
-Generated 2026-10-06 12:48 UTC by `python -m evals.report` (also `make report`). Every gold record scored against the candidates now in review at the version it was reviewed at. Accuracy is value accuracy: the candidate the reviewer saw against what they decided. Evidence accuracy asks whether the candidate cited a page the reviewer accepted. Long text is not scored by rule.
+Generated 2026-10-06 13:35 UTC by `python -m evals.report` (also `make report`). Every gold record scored against the candidates now in review at the version it was reviewed at. Accuracy is value accuracy: the candidate the reviewer saw against what they decided. Evidence accuracy asks whether the candidate cited a page the reviewer accepted. Long text is not scored by rule.
 
 ## Tenders reviewed
 
@@ -46,7 +46,9 @@ Generated 2026-10-06 12:48 UTC by `python -m evals.report` (also `make report`).
 
 ## Prompt versions tried
 
-No scored run in `evals/results/` yet.
+| Result | Prompt | Value accuracy | Evidence accuracy | n |
+| --- | --- | --- | --- | --- |
+| 20261006T131406Z-latest.json | as pinned | 99% | 100% | 79 |
 
 ## Reviewer time per tender
 
@@ -56,10 +58,10 @@ No scored run in `evals/results/` yet.
 
 ## Stability bar for Stage 5
 
-**Not met.**
+**Not met.** Required-field value accuracy 100%.
 
 At least 2 reviewed tenders for every type with 2 or more in the set (epc, fdre, wind); required-field value accuracy at least 90% across the last two prompt versions; no required field below 75%.
 
 - fewer than 2 reviewed tenders for: epc, fdre, wind
-- scored across prompt versions v1, v2, v3
+- required-field accuracy by section prompt, last two versions seen: extract/identity_and_scope v1 100%; extract/key_dates v1 100%
 

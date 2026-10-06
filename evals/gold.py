@@ -47,6 +47,7 @@ class GoldField(BaseModel):
 
 
 class GoldRecord(BaseModel):
+    tenant_id: str
     tender_id: str
     slug: str
     tender_type: str
@@ -88,6 +89,9 @@ def build_gold(session: Session, catalog: Catalog, tender: Tender) -> GoldRecord
         raise NoCompletedReview(f"{tender_key(tender)}: no completed review; complete it first")
     compiled = catalog.get(tender.tender_type)
     view = snapshot.snapshot["view"]
+    reviewed_version = int(view.get("current_version_no") or 1)
+    # The decisions that stand on the version the review was completed at; a decision
+    # made later on a newer version is not part of this record.
     approvals = {
         a.field_path: a
         for a in session.scalars(
@@ -95,17 +99,26 @@ def build_gold(session: Session, catalog: Catalog, tender: Tender) -> GoldRecord
                 Approval.tenant_id == tender.tenant_id,
                 Approval.object_type == "tender",
                 Approval.object_id == tender.id,
+                Approval.object_version == reviewed_version,
                 Approval.status == "active",
             )
         )
     }
     candidate_ids = [a.candidate_id for a in approvals.values()]
     candidates = {
-        c.id: c for c in session.scalars(select(Candidate).where(Candidate.id.in_(candidate_ids)))
+        c.id: c
+        for c in session.scalars(
+            select(Candidate).where(
+                Candidate.tenant_id == tender.tenant_id, Candidate.id.in_(candidate_ids)
+            )
+        )
     }
     pages: dict[str, set[int]] = {cid: set() for cid in candidate_ids}
     for span in session.scalars(
-        select(EvidenceSpan).where(EvidenceSpan.candidate_id.in_(candidate_ids))
+        select(EvidenceSpan).where(
+            EvidenceSpan.tenant_id == tender.tenant_id,
+            EvidenceSpan.candidate_id.in_(candidate_ids),
+        )
     ):
         pages[span.candidate_id].add(span.page_no)
 
@@ -145,13 +158,14 @@ def build_gold(session: Session, catalog: Catalog, tender: Tender) -> GoldRecord
             )
         )
     return GoldRecord(
+        tenant_id=tender.tenant_id,
         tender_id=tender.id,
         slug=tender_key(tender),
         tender_type=tender.tender_type,
         issuing_agency=tender.issuing_agency,
         title=tender.title,
         schema_version=compiled.schema.version,
-        reviewed_version=int(view.get("current_version_no") or 1),
+        reviewed_version=reviewed_version,
         reviewer=snapshot.reviewer,
         completed_at=snapshot.snapshot["completed_at"],
         snapshot_id=snapshot.id,
@@ -160,11 +174,11 @@ def build_gold(session: Session, catalog: Catalog, tender: Tender) -> GoldRecord
     )
 
 
-def gold_path(record: GoldRecord, root: Path = GOLD_ROOT) -> Path:
-    return root / record.tender_type / f"{record.slug}.yaml"
+def gold_path(record: GoldRecord, root: Path | None = None) -> Path:
+    return (root or GOLD_ROOT) / record.tender_type / f"{record.slug}.yaml"
 
 
-def write_gold(record: GoldRecord, root: Path = GOLD_ROOT) -> Path:
+def write_gold(record: GoldRecord, root: Path | None = None) -> Path:
     path = gold_path(record, root)
     path.parent.mkdir(parents=True, exist_ok=True)
     header = (
@@ -183,5 +197,7 @@ def load_gold(path: Path) -> GoldRecord:
     return GoldRecord.model_validate(yaml.safe_load(path.read_text(encoding="utf-8")))
 
 
-def load_all(root: Path = GOLD_ROOT) -> list[GoldRecord]:
-    return [load_gold(path) for path in sorted(root.glob("*/*.yaml"))]
+def load_all(tenant_id: str | None = None, root: Path | None = None) -> list[GoldRecord]:
+    """Every gold record, or those of one tenant."""
+    records = [load_gold(path) for path in sorted((root or GOLD_ROOT).glob("*/*.yaml"))]
+    return [r for r in records if tenant_id is None or r.tenant_id == tenant_id]

@@ -1,0 +1,21 @@
+docker compose --profile e2e up -d --force-recreate api-e2e caddy-e2e
+docker compose --profile e2e run --rm -T playwright; code=$?; \
+  docker compose --profile e2e rm -sf api-e2e caddy-e2e >/dev/null 2>&1; exit $code
+
+Running 11 tests using 1 worker
+
+  -   1 [chromium] › e2e/real-load.spec.ts:9:1 › a real tender: first paint under 2 s, first PDF page under 3 s
+  ✓   2 [chromium] › e2e/review.spec.ts:19:1 › a link that was replaced, or is not a link, says so in plain words (4.0s)
+first meaningful paint 6233 ms, first PDF page 6515 ms
+  ✓   3 [chromium] › e2e/review.spec.ts:29:1 › the link opens straight into the tender, laid out for a 1366x768 laptop (12.0s)
+  ✓   4 [chromium] › e2e/review.spec.ts:67:1 › an evidence chip scrolls the PDF to its page and highlights the quoted text (14.8s)
+  ✓   5 [chromium] › e2e/review.spec.ts:130:3 › what is typed can be read in a light system theme (11.8s)
+  ✓   6 [chromium] › e2e/review.spec.ts:130:3 › what is typed can be read in a dark system theme (11.3s)
+  ✓   7 [chromium] › e2e/review.spec.ts:155:1 › the guide is open on the first visit and stays as the reviewer leaves it (7.0s)
+  ✓   8 [chromium] › e2e/review.spec.ts:172:1 › the summary: note on top, numbers that name their field, and no decision before the fields (11.1s)
+  ✓   9 [chromium] › e2e/review.spec.ts:227:1 › approve with Enter, edit a date, mark not in document, flag (23.8s)
+  ✓  10 [chromium] › e2e/review.spec.ts:282:1 › a structured field shows every key, says what is not stated, and is edited key by key (12.0s)
+  ✓  11 [chromium] › e2e/review.spec.ts:316:1 › complete the review by keyboard; the snapshot holds the final values (1.6m)
+
+  1 skipped
+  10 passed (3.5m)

@@ -50,6 +50,7 @@ class CandidateUnderTest(BaseModel):
     value: Any
     confidence: float = 0.0
     pages: list[int] = []
+    prompt_name: str | None = None
     prompt_version: str | None = None
 
 
@@ -69,6 +70,7 @@ class FieldScore(BaseModel):
     gold_pages: list[int] = []
     candidate_pages: list[int] = []
     key_outcomes: dict[str, str] | None = None
+    prompt_name: str | None = None
     prompt_version: str | None = None
 
     @property
@@ -107,6 +109,7 @@ def match_scalar(
         except (TypeError, ValueError):
             ok = False
         return ("correct" if ok else "wrong_value"), None
+    # A list of text is compared without regard to order; a repeated item must be repeated.
     if kind == "string_list" or isinstance(gold, list) or isinstance(candidate, list):
         g = sorted(normalise_text(x) for x in (gold if isinstance(gold, list) else [gold]))
         c = sorted(
@@ -183,6 +186,7 @@ def score_field(
         "candidate_value": candidate.value if candidate else None,
         "gold_pages": field.evidence_pages,
         "candidate_pages": candidate.pages if candidate else [],
+        "prompt_name": candidate.prompt_name if candidate else None,
         "prompt_version": candidate.prompt_version if candidate else None,
     }
     has_candidate = candidate is not None and candidate.value is not None
@@ -269,9 +273,97 @@ def candidates_in_review(
             value=field.candidate.value,
             confidence=field.candidate.confidence,
             pages=sorted({e.page_no for e in field.candidate.evidence}),
+            prompt_name=field.candidate.prompt_name,
             prompt_version=field.candidate.prompt_version,
         )
     return found
+
+
+def candidates_of_runs(
+    session: Session, tenant_id: str, run_ids: list[str]
+) -> dict[str, CandidateUnderTest]:
+    """The reviewable readings the named runs produced, one per field (the most confident
+    of a field read in several windows): what a prompt evaluation scores."""
+    from core.models import Candidate, EvidenceSpan
+    from core.models.extraction import REVIEWABLE_STATUSES
+
+    rows = list(
+        session.scalars(
+            select(Candidate).where(
+                Candidate.tenant_id == tenant_id,
+                Candidate.extraction_run_id.in_(run_ids),
+                Candidate.status.in_((*REVIEWABLE_STATUSES, "not_found")),
+            )
+        )
+    )
+    pages: dict[str, set[int]] = {c.id: set() for c in rows}
+    for span in session.scalars(
+        select(EvidenceSpan).where(
+            EvidenceSpan.tenant_id == tenant_id, EvidenceSpan.candidate_id.in_(list(pages))
+        )
+    ):
+        pages[span.candidate_id].add(span.page_no)
+    found: dict[str, CandidateUnderTest] = {}
+    for c in sorted(rows, key=lambda c: (c.value is not None, c.confidence, c.id)):
+        found[c.field_path] = CandidateUnderTest(
+            id=c.id,
+            value=c.value,
+            confidence=c.confidence,
+            pages=sorted(pages[c.id]),
+            prompt_name=c.prompt_name,
+            prompt_version=c.prompt_version,
+        )
+    return found
+
+
+class PromptRunsFailed(RuntimeError):
+    pass
+
+
+def queue_prompt_runs(
+    session: Session, tenders: Any, records: list[GoldRecord], section: str, version: str
+) -> dict[str, list[str]]:
+    """Read one section again on every gold tender with the named prompt version. Returns
+    the run ids queued per tender slug."""
+    queued: dict[str, list[str]] = {}
+    for record in records:
+        tender = session.scalar(
+            select(Tender).where(
+                Tender.id == record.tender_id, Tender.tenant_id == record.tenant_id
+            )
+        )
+        if tender is None:
+            raise LookupError(f"{record.slug}: tender {record.tender_id} not found")
+        runs = tenders.start_extraction(
+            session,
+            tender,
+            version_no=record.reviewed_version,
+            created_by="evals",
+            groups=[section],
+            mode="batch",
+            prompt_overrides={section: version},
+        )
+        queued[record.slug] = [run.id for run in runs]
+    if not any(queued.values()):
+        raise LookupError(f"no run queued: no gold tender has a section {section!r}")
+    return queued
+
+
+def finished_runs(session: Session, tenant_id: str, run_ids: list[str]) -> bool:
+    """True once none of the runs is queued or running; raises if one failed."""
+    from core.models import ExtractionRun
+
+    statuses = dict(
+        session.execute(
+            select(ExtractionRun.id, ExtractionRun.status).where(
+                ExtractionRun.tenant_id == tenant_id, ExtractionRun.id.in_(run_ids)
+            )
+        ).all()
+    )
+    failed = sorted(run_id for run_id, status in statuses.items() if status == "failed")
+    if failed:
+        raise PromptRunsFailed(f"run(s) failed: {', '.join(failed)}")
+    return not any(status in ("queued", "running") for status in statuses.values())
 
 
 class Summary(BaseModel):
@@ -396,8 +488,9 @@ def _cell(value: Any) -> str:
 
 
 def write_results(
-    scores: list[FieldScore], *, label: str, root: Path = RESULTS_ROOT, prompt: str | None = None
+    scores: list[FieldScore], *, label: str, root: Path | None = None, prompt: str | None = None
 ) -> tuple[Path, Summary]:
+    root = root or RESULTS_ROOT
     root.mkdir(parents=True, exist_ok=True)
     summary = summarise(scores)
     stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
@@ -450,32 +543,31 @@ def main(argv: list[str]) -> int:
     settings, session_factory, (registry, catalog), tenders = _services()
     review_state = ReviewStateService(registry, settings.tenant_id)
     only = {s for s in args.only.split(",") if s}
-    records = [r for r in load_all() if not only or r.slug in only]
+    records = [r for r in load_all(settings.tenant_id) if not only or r.slug in only]
     if not records:
         print("no gold records; run make gold first")
         return 1
     sections: set[str] | None = None
+    queued: dict[str, list[str]] = {}
     if args.prompt:
         section, version = args.prompt.split("/", 1)
         sections = {section}
         with session_factory() as session:
-            for record in records:
-                tender = session.get_one(Tender, record.tender_id)
-                runs = tenders.start_extraction(
-                    session,
-                    tender,
-                    version_no=record.reviewed_version,
-                    created_by="evals",
-                    groups=[section],
-                    mode="batch",
-                    prompt_overrides={section: version},
-                )
-                print(f"{record.slug}: {len(runs)} run(s) queued with {args.prompt}")
-        _wait(session_factory, args.timeout)
+            queued = queue_prompt_runs(session, tenders, records, section, version)
+            session.commit()
+        for slug, run_ids in queued.items():
+            print(f"{slug}: {len(run_ids)} run(s) queued with {args.prompt}")
+        _wait(session_factory, settings.tenant_id, sum(queued.values(), []), args.timeout)
     scores: list[FieldScore] = []
     with session_factory() as session:
         for record in records:
-            found = candidates_in_review(session, review_state, record)
+            # A prompt evaluation scores what the queued runs read, nothing else; a plain
+            # evaluation scores the reading now in review at the reviewed version.
+            found = (
+                candidates_of_runs(session, settings.tenant_id, queued[record.slug])
+                if args.prompt
+                else candidates_in_review(session, review_state, record)
+            )
             scores += score_record(record, found, catalog, registry, sections)
     label = (args.prompt.replace("/", "-") if args.prompt else "latest") + (
         "-" + "-".join(sorted(only)) if only else ""
@@ -491,19 +583,14 @@ def main(argv: list[str]) -> int:
     return 0
 
 
-def _wait(session_factory: Any, timeout: int) -> None:
-    from core.models import Job
-
+def _wait(session_factory: Any, tenant_id: str, run_ids: list[str], timeout: int) -> None:
     deadline = time.time() + timeout
     while time.time() < deadline:
         with session_factory() as session:
-            open_jobs = session.scalar(
-                select(Job.id).where(Job.status.in_(("queued", "running"))).limit(1)
-            )
-        if open_jobs is None:
-            return
+            if finished_runs(session, tenant_id, run_ids):
+                return
         time.sleep(10)
-    raise SystemExit("the queue did not drain in time")
+    raise SystemExit("the runs did not finish in time")
 
 
 if __name__ == "__main__":

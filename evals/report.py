@@ -25,6 +25,7 @@ from sqlalchemy.orm import Session
 from core.models import Approval
 from evals.gold import GoldRecord, load_all
 from evals.runner import RESULTS_ROOT, FieldScore, Summary, summarise
+from tender.models import Tender
 
 DEFAULT_OUT = Path("docs/reports/RELIABILITY-REPORT.md")
 DEFAULT_LOG = Path("docs/reports/REVIEW-LOG.md")
@@ -63,8 +64,29 @@ class Stability(BaseModel):
     types_short_of_two_reviews: list[str]
     required_accuracy: float | None
     required_fields_below_floor: list[str]
+    # Per section prompt, required-field accuracy under each of its last two versions seen.
     prompt_versions_seen: list[str]
+    prompt_versions_below_bar: list[str]
     reasons: list[str]
+
+
+def accuracy_by_prompt_version(scores: list[FieldScore]) -> dict[str, dict[str, float]]:
+    """prompt name -> version -> required-field accuracy, for the last two versions of each
+    prompt that scored candidates carry (the last two by version number)."""
+    counts: dict[str, dict[str, list[int]]] = defaultdict(lambda: defaultdict(list))
+    for s in scores:
+        if s.counted and s.required and s.prompt_name and s.prompt_version:
+            counts[s.prompt_name][s.prompt_version].append(int(s.correct))
+    found: dict[str, dict[str, float]] = {}
+    for prompt, versions in sorted(counts.items()):
+        last_two = sorted(versions, key=_version_number)[-2:]
+        found[prompt] = {v: round(sum(versions[v]) / len(versions[v]), 4) for v in last_two}
+    return found
+
+
+def _version_number(version: str) -> int:
+    digits = "".join(ch for ch in version if ch.isdigit())
+    return int(digits) if digits else 0
 
 
 def tender_lines(
@@ -146,7 +168,14 @@ def stability(
         for path, own in by_required_field.items()
         if sum(1 for s in own if s.correct) / len(own) < FLOOR_ACCURACY
     )
-    versions = sorted({s.prompt_version for s in scores if s.prompt_version})
+    by_prompt = accuracy_by_prompt_version(scores)
+    versions = [f"{p} {v}" for p, vs in by_prompt.items() for v in vs]
+    below_bar = [
+        f"{p} {v} ({_pct(acc)})"
+        for p, vs in by_prompt.items()
+        for v, acc in vs.items()
+        if acc < STABLE_ACCURACY
+    ]
     reasons = []
     if not records:
         reasons.append("no gold record yet")
@@ -158,19 +187,23 @@ def stability(
         )
     if below_floor:
         reasons.append(f"required fields below {_pct(FLOOR_ACCURACY)}: {len(below_floor)}")
-    reasons.append(
-        "the bar asks for the accuracy to hold across the last two prompt versions; "
-        f"{len(versions)} version(s) have scored candidates"
-        if len(versions) < 2
-        else "scored across prompt versions " + ", ".join(versions)
-    )
+    if below_bar:
+        reasons.append("below 90% on required fields under: " + ", ".join(below_bar))
+    if by_prompt:
+        reasons.append(
+            "required-field accuracy by section prompt, last two versions seen: "
+            + "; ".join(
+                f"{p} " + ", ".join(f"{v} {_pct(acc)}" for v, acc in vs.items())
+                for p, vs in by_prompt.items()
+            )
+        )
     met = (
         bool(records)
         and not short
         and required_accuracy is not None
         and required_accuracy >= STABLE_ACCURACY
         and not below_floor
-        and len(versions) >= 2
+        and not below_bar
     )
     return Stability(
         met=met,
@@ -179,6 +212,7 @@ def stability(
         required_accuracy=required_accuracy,
         required_fields_below_floor=below_floor,
         prompt_versions_seen=versions,
+        prompt_versions_below_bar=below_bar,
         reasons=reasons,
     )
 
@@ -199,10 +233,10 @@ def recommendation(bucket: dict[str, Any], misses: list[dict[str, Any]]) -> str:
     return "needs schema change"
 
 
-def prompt_comparison(results_root: Path = RESULTS_ROOT) -> list[dict[str, Any]]:
+def prompt_comparison(results_root: Path | None = None) -> list[dict[str, Any]]:
     """What the results folder holds for runs made with a named prompt version."""
     found = []
-    for path in sorted(results_root.glob("*.json")):
+    for path in sorted((results_root or RESULTS_ROOT).glob("*.json")):
         try:
             data = json.loads(path.read_text(encoding="utf-8"))
         except (OSError, ValueError):
@@ -353,7 +387,10 @@ def render_report(
             f"{t.decisions if t else '-'} | {r.completed_at[:16].replace('T', ' ')} |"
         )
     lines += ["", "## Stability bar for Stage 5", ""]
-    lines.append(f"**{'Met' if bar.met else 'Not met'}.**")
+    lines.append(
+        f"**{'Met' if bar.met else 'Not met'}.** Required-field value accuracy "
+        f"{_pct(bar.required_accuracy)}."
+    )
     lines.append("")
     lines.append(
         f"At least {MIN_PER_TYPE} reviewed tenders for every type with {MIN_PER_TYPE} or more in "
@@ -391,40 +428,60 @@ def render_log(lines: list[TenderLine], made_at: datetime | None = None) -> str:
     return "\n".join(out) + "\n"
 
 
+def write_reports(
+    session: Session,
+    tenant_id: str,
+    registry: Any,
+    catalog: Any,
+    review_state: Any,
+    out: Path | None = None,
+    log: Path | None = None,
+) -> tuple[int, int]:
+    """Score the tenant's gold records and write the reliability report and the review
+    log. Returns the counts of gold records and scored fields."""
+    from evals.runner import candidates_in_review, score_record
+
+    out = out or DEFAULT_OUT
+    log = log or DEFAULT_LOG
+    records = load_all(tenant_id)
+    scores: list[FieldScore] = []
+    timings: dict[str, Sitting] = {}
+    set_types = Counter(
+        session.scalars(select(Tender.tender_type).where(Tender.tenant_id == tenant_id))
+    )
+    for record in records:
+        found = candidates_in_review(session, review_state, record)
+        scores += score_record(record, found, catalog, registry)
+        sitting = timing(session, tenant_id, record)
+        if sitting:
+            timings[record.slug] = sitting
+    text = render_report(records, scores, set_types, timings, prompt_comparison())
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(text, encoding="utf-8")
+    log.write_text(render_log(tender_lines(records, scores, timings)), encoding="utf-8")
+    return len(records), len(scores)
+
+
 def main(argv: list[str]) -> int:
     from core.config import Settings
     from core.db import make_engine, make_session_factory
     from core.services.review_state import ReviewStateService
-    from evals.runner import candidates_in_review, score_record
-    from tender.models import Tender
     from tender.services.packs import build_registry
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--out", type=Path, default=DEFAULT_OUT)
-    parser.add_argument("--log", type=Path, default=DEFAULT_LOG)
+    parser.add_argument("--out", type=Path, default=None)
+    parser.add_argument("--log", type=Path, default=None)
     args = parser.parse_args(argv[1:])
     settings = Settings()
     registry, catalog = build_registry()
     review_state = ReviewStateService(registry, settings.tenant_id)
-    records = load_all()
-    scores: list[FieldScore] = []
-    timings: dict[str, Sitting] = {}
     with make_session_factory(make_engine(settings))() as session:
-        set_types = Counter(session.scalars(select(Tender.tender_type)))
-        for record in records:
-            scores += score_record(
-                record, candidates_in_review(session, review_state, record), catalog, registry
-            )
-            found = timing(session, settings.tenant_id, record)
-            if found:
-                timings[record.slug] = found
-    report = render_report(records, scores, set_types, timings, prompt_comparison())
-    args.out.parent.mkdir(parents=True, exist_ok=True)
-    args.out.write_text(report, encoding="utf-8")
-    args.log.write_text(render_log(tender_lines(records, scores, timings)), encoding="utf-8")
+        records, scored = write_reports(
+            session, settings.tenant_id, registry, catalog, review_state, args.out, args.log
+        )
     print(
-        f"wrote {args.out} and {args.log}: {len(records)} gold record(s), "
-        f"{len(scores)} scored fields"
+        f"wrote {args.out or DEFAULT_OUT} and {args.log or DEFAULT_LOG}: {records} gold "
+        f"record(s), {scored} scored fields"
     )
     return 0
 

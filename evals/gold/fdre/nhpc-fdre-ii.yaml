@@ -1,4 +1,5 @@
-# Gold record of nhpc-fdre-ii (fdre), reviewed by venture@aayuda.energy, completed 2026-10-06T12:48:16.649900+00:00; written by make gold on 2026-10-06T12:48:20+00:00. Never edited by hand.
+# Gold record of nhpc-fdre-ii (fdre), reviewed by venture@aayuda.energy, completed 2026-10-06T12:48:16.649900+00:00; written by make gold on 2026-10-06T13:35:25+00:00. Never edited by hand.
+tenant_id: ergplan
 tender_id: 78f3a575cbf147d5b31acfa283831cee
 slug: nhpc-fdre-ii
 tender_type: fdre
@@ -10,7 +11,7 @@ reviewed_version: 1
 reviewer: venture@aayuda.energy
 completed_at: '2026-10-06T12:48:16.649900+00:00'
 snapshot_id: c534575b8f6d4bf1bcf11eb2fae8a318
-made_at: '2026-10-06T12:48:20+00:00'
+made_at: '2026-10-06T13:35:25+00:00'
 fields:
 - field_path: core.summary.plain_english_summary
   section: summary

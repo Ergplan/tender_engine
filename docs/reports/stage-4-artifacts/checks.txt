@@ -5,7 +5,7 @@ All checks passed!
 
 ===== ruff_format: pass =====
 $ /opt/venv/bin/python -m ruff format --check .
-236 files already formatted
+237 files already formatted
 
 
 ===== mypy: pass =====
@@ -28,8 +28,8 @@ $ /opt/venv/bin/python -m pytest -p no:cacheprovider
 ........................................................................ [ 53%]
 ........................................................................ [ 67%]
 ........................................................................ [ 80%]
-........................................................................ [ 94%]
-...............................                                          [100%]
+........................................................................ [ 93%]
+.................................                                        [100%]
 =============================== warnings summary ===============================
 tests/api/test_review_tokens.py::test_expired_and_unknown_tokens_are_refused_in_plain_words
 tests/api/test_review_tokens.py::test_pages_search_and_file_authorisation_for_the_viewer
@@ -37,7 +37,7 @@ tests/api/test_review_tokens.py::test_pages_search_and_file_authorisation_for_th
     return super().request(
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-535 passed, 5 deselected, 2 warnings in 461.06s (0:07:41)
+537 passed, 5 deselected, 2 warnings in 452.79s (0:07:32)
 
 
 ===== openapi_drift: pass =====
@@ -59,23 +59,21 @@ $ node /app/web/node_modules/vitest/vitest.mjs run
 
  RUN  v3.2.7 /app/web
 
- ✓ src/review/ReviewScreen.test.tsx (33 tests) 6042ms
-   ✓ what the reviewer sees > shows the tender, the reviewer, progress and a disabled Complete button  494ms
-   ✓ deciding > clears a decision with U or the button; the field is undecided again  432ms
-   ✓ orientation and reading aids > counts what is left, and estimates the time once it knows the pace  710ms
- ✓ src/review/RecordView.test.tsx (5 tests) 431ms
- ✓ src/admin/ReliabilityPage.test.tsx (3 tests) 272ms
- ✓ src/App.test.tsx (3 tests) 255ms
- ✓ src/review/guide.test.tsx (3 tests) 239ms
- ✓ src/review/SummaryPage.test.tsx (2 tests) 106ms
- ✓ src/lib/format.test.ts (14 tests) 26ms
- ✓ src/lib/keyboard.test.ts (5 tests) 6ms
+ ✓ src/review/ReviewScreen.test.tsx (33 tests) 5194ms
+   ✓ what the reviewer sees > shows the tender, the reviewer, progress and a disabled Complete button  471ms
+ ✓ src/review/RecordView.test.tsx (5 tests) 295ms
+ ✓ src/admin/ReliabilityPage.test.tsx (3 tests) 490ms
+ ✓ src/App.test.tsx (3 tests) 241ms
+ ✓ src/review/guide.test.tsx (3 tests) 203ms
+ ✓ src/review/SummaryPage.test.tsx (2 tests) 235ms
+ ✓ src/lib/format.test.ts (14 tests) 154ms
+ ✓ src/lib/keyboard.test.ts (5 tests) 8ms
  ✓ src/lib/pace.test.ts (3 tests) 3ms
 
  Test Files  9 passed (9)
       Tests  71 passed (71)
-   Start at  13:23:46
-   Duration  27.52s (transform 1.34s, setup 1.22s, collect 3.51s, tests 7.38s, environment 9.53s, prepare 1.98s)
+   Start at  13:48:47
+   Duration  27.41s (transform 1.31s, setup 1.36s, collect 3.64s, tests 6.83s, environment 9.34s, prepare 2.04s)
 
 stderr | src/review/ReviewScreen.test.tsx > deciding > moves focus with J and K and tells why Enter cannot approve
 Warning: An update to PdfPane inside a test was not wrapped in act(...).

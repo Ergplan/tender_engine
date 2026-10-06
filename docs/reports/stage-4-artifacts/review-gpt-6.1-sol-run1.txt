@@ -1,0 +1,61 @@
+reviewer: gpt-6.1-sol  input chars: 440628  tokens in/out: 132211/2506
+
+### (a) Non-negotiable invariants
+
+| Invariant | Assessment from the supplied diff |
+|---|---|
+| **The LLM never writes truth** | No new canonical-fact writer is shown. Extraction still constructs an `LLMRequest` and records candidate prompt provenance (`core/services/extract.py:535–538, 799–802`). The existing approval-only canonical writer is outside the supplied hunks, so its exclusivity cannot be verified. |
+| **Every value carries its evidence** | No evidence-validation or approval-guard changes are shown. Existing enforcement cannot be verified from this diff. Gold evidence pages are retained (`evals/gold.py:129–131`), but this does not establish located-evidence validation. |
+| **The tender is a versioned object** | Gold records retain `reviewed_version`, and scoring requests that version (`evals/gold.py:158`, `evals/runner.py:274`). Amendment creation and canonical version attachment are outside the supplied hunks. No new in-place tender-version edit is shown. |
+| **Candidates are immutable** | No candidate update is shown. Gold construction reads candidates separately from approvals (`evals/gold.py:94–108, 127–147`). Existing approval-writing behavior is outside the diff. |
+| **Validation is deterministic** | The new evaluation matching is plain Python (`evals/runner.py:97–167`). Production validation and failed-validation visibility are not shown. No LLM validation step is added. |
+| **Everything is audited and tenant-scoped** | **Violated:** several new queries lack tenant filters; file-backed gold/results also lack tenant attribution and filtering. Audit coverage is addressed in (c). |
+| **Feedback is stored, never auto-applied** | The new feedback reader produces a human-readable report with suggestions, without changing prompts, thresholds or models (`evals/feedback_report.py:54–80, 159–160, 167–180`). |
+| **API first** | **Violated:** new evaluation and feedback-report operations are exposed only as management commands, not versioned API operations. The dashboard itself uses the versioned API (`web/src/api/client.ts:73–74`). |
+
+FINDINGS: 2
+1. **Missing tenant scoping:** candidate and evidence queries (`evals/gold.py:107–112`); the joined Tender lacks an explicit tenant filter (`evals/feedback_report.py:55–66`); tender-set query (`evals/report.py:410`); tender lookup and job polling (`evals/runner.py:461, 498–500`). Gold records have no tenant field and are loaded globally (`evals/gold.py:50–63, 186–187`), including by the dashboard (`api/v1/admin/reliability.py:38`). Results are likewise loaded globally (`evals/report.py:203–225`).
+2. **CLI-only intelligence operations:** evaluation, prompt-evaluation and feedback-report generation are wired through commands (`Makefile:71–75`, `evals/runner.py:439–487`, `evals/feedback_report.py:167–180`). The only added API operation serves dashboard data (`api/v1/admin/reliability.py:33–59`); it does not expose these operations.
+
+### (b) Tests for added API endpoints
+
+- `GET /api/v1/admin/reliability` — tested by:
+  - `test_the_route_needs_the_admin_token_and_a_review_link_does_not_open_it` (`tests/api/test_admin.py:24–56`), including a successful response.
+  - `test_the_route_is_closed_when_no_admin_token_is_configured` (`tests/api/test_admin.py:59–67`).
+
+No other API endpoint is added in the supplied diff.
+
+FINDINGS: none
+
+### (c) Audit coverage of writes
+
+- **candidate:** changed candidate-construction arguments are visible at `core/services/extract.py:799–802`. The surrounding persistence and audit calls are not included, so audit coverage cannot be established.
+- **approval, canonical_fact, tender_version, feedback:** no direct writes to these tables are shown in the added production code. Tests invoke existing API/service paths, whose write-and-audit implementations are outside the supplied diff.
+
+FINDINGS: 1
+1. **Candidate-write audit coverage is unverifiable:** the changed candidate construction at `core/services/extract.py:799–802` has no corresponding persistence or audit call in the supplied hunks. This is an evidence limitation, not a demonstrated unaudited write.
+
+### (d) FIELD-TRACE regeneration
+
+The supplied artifacts support that FIELD-TRACE is current: the regeneration command wrote it (`docs/reports/stage-4-artifacts/trace.txt:1–2`), and the supplied check output reports `scripts.gen_field_trace --check` passing with 183 fields (`docs/reports/stage-4-artifacts/checks.txt:46–49`). No FIELD-TRACE change appears in the stage diff.
+
+This was not independently executed in this review.
+
+FINDINGS: none
+
+### (e) Draft stage-report claims unsupported by the supplied code
+
+FINDINGS: 13
+1. **Live deployment and serving claims:** `docs/reports/STAGE-4-REPORT.md:5, 15, 81` assert deployment, applied migration and a responding dashboard. Migration and route code exist, but no deployment output or live-response evidence is supplied; the referenced `deployment.txt` is absent.
+2. **URL delivery and token creation:** `docs/reports/STAGE-4-REPORT.md:5, 13, 57` assert that twelve links were created and delivered. Neither the delivery message nor creation output is supplied.
+3. **Gold is faithfully tied to the completed snapshot:** `docs/reports/STAGE-4-REPORT.md:19` describes a completed-review gold record. `evals/gold.py:94–108, 127–134` instead obtains final decisions and values from currently active approvals, without restricting them to the snapshot or reviewed version. Later decisions can therefore be mixed with older snapshot evidence.
+4. **Absent fields necessarily preserve a null model reading:** `docs/reports/STAGE-4-REPORT.md:19` makes this claim. `evals/gold.py:119–147` preserves the judged candidate regardless of its value; a human `not_in_document` decision can reject a non-null candidate.
+5. **Scoring uses “the same reading the reviewer saw”:** `docs/reports/STAGE-4-REPORT.md:25` is not guaranteed. `evals/runner.py:270–286` reads current review-state candidates rather than the candidate IDs captured in gold.
+6. **Prompt evaluation scores the fresh extraction it queued:** `docs/reports/STAGE-4-REPORT.md:25` is not established. `evals/runner.py:462–479` does not retain queued run IDs for scoring or verify that the selected candidates belong to those runs; `_wait` checks only whether the queue drained, not extraction success.
+7. **Lists match “as a set”:** `docs/reports/STAGE-4-REPORT.md:26` conflicts with `evals/runner.py:115–120`, which compares sorted lists and retains duplicate multiplicity.
+8. **Dashboard displays edited field paths:** `docs/reports/STAGE-4-REPORT.md:38` claims “fields edited.” The API includes `edited_fields`, but `web/src/admin/ReliabilityPage.tsx:158–178` renders only the edit count, not the field paths.
+9. **“No login” under operating rule 11:** `docs/reports/STAGE-4-REPORT.md:39` claims compliance. The added page presents a credential-entry form (`web/src/admin/ReliabilityPage.tsx:53–82`) and middleware authenticates a separate admin credential (`api/middleware/review_token.py:81–88`). Calling it a token does not remove the added authentication mechanism.
+10. **Required-field accuracy is 98.7%:** `docs/reports/STAGE-4-REPORT.md:53` repeats overall accuracy as required-field accuracy. `evals/report.py:139–142` calculates only counted required fields; the supplied gold/results mark the sole miss, `metering_point`, optional. The scored required fields shown are all correct, yielding 100%.
+11. **The last-two-prompt-versions condition is satisfied “in form”:** `docs/reports/STAGE-4-REPORT.md:53` is unsupported. `evals/report.py:152–178` merely counts distinct version strings across different section prompts; it neither identifies the last two revisions of a prompt nor evaluates required-field accuracy separately across them.
+12. **Corpus audit and incident history:** `docs/reports/STAGE-4-REPORT.md:62, 66` assert database/manifest counts, external-site findings, migration timing, a replayed completion and an audit actor. No audit records, database queries, external-source evidence or incident logs are supplied.
+13. **Test, trace, independent-review and cost assertions remain unsupported or incomplete:** `docs/reports/STAGE-4-REPORT.md:77` retains `PYTEST_COUNT` and `PLAYWRIGHT_RESULT`, references an absent Playwright artifact, and claims 192 trace rows without supplied row-count evidence. `docs/reports/STAGE-4-REPORT.md:92` remains `REVIEW_SECTION`. `docs/reports/STAGE-4-REPORT.md:102` supplies model-call and spending totals without corresponding call-log evidence.

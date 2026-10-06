@@ -58,6 +58,7 @@ def load_feedback(session: Session, tenant_id: str) -> list[FeedbackRow]:
         .where(
             Feedback.tenant_id == tenant_id,
             Approval.tenant_id == tenant_id,
+            Tender.tenant_id == tenant_id,
             Approval.status == "active",
             Approval.object_type == "tender",
         )

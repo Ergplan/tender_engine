@@ -2,6 +2,7 @@
 from; the report and the log are written from it."""
 
 from pathlib import Path
+from typing import Any
 
 import pytest
 from fastapi.testclient import TestClient
@@ -27,8 +28,10 @@ EMD = "core.guarantees.emd_per_mw_inr"
 DEADLINE = "core.key_dates.bid_submission_deadline"
 
 
-def completed_review(client: TestClient, pipeline: Pipeline) -> tuple[dict, str]:  # type: ignore[type-arg]
-    tender = extracted(client, pipeline)
+def completed_review(
+    client: TestClient, pipeline: Pipeline, tender: dict[str, Any] | None = None
+) -> tuple[dict[str, Any], str]:
+    tender = tender or extracted(client, pipeline)
     tid = tender["id"]
     token = link(client, tid)["token"]
     body = review(client, tid, token)

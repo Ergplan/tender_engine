@@ -170,7 +170,12 @@ export function ReliabilityPage() {
               <td className="border-b px-2 py-1">{t.completed_at.replace("T", " ").slice(0, 16)}</td>
               <td className="border-b px-2 py-1">{t.time?.sittings ?? "–"}</td>
               <td className="border-b px-2 py-1">{t.time?.deciding_minutes ?? "–"}</td>
-              <td className="border-b px-2 py-1">{t.edited}</td>
+              <td className="border-b px-2 py-1" title={t.edited_fields.join(", ")}>
+                {t.edited}
+                {t.edited_fields.length > 0 && (
+                  <span className="ml-1 font-mono text-[10px] text-slate-600">{t.edited_fields.join(", ")}</span>
+                )}
+              </td>
               <td className="border-b px-2 py-1">{t.not_in_document}</td>
               <td className="border-b px-2 py-1">{t.notable_misses.join(", ") || "–"}</td>
             </tr>

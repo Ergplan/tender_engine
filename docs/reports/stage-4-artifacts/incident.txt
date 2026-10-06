@@ -1,0 +1,24 @@
+         at          |         actor         |     action      | table_name |  status  
+---------------------+-----------------------+-----------------+------------+----------
+ 2026-10-06 12:48:17 | venture@aayuda.energy | complete_review | tender     | reviewed
+(1 row)
+
+2026-10-06T11:12:46.309377608Z INFO:     172.18.0.5:39778 - "GET /api/v1/tenders/78f3a575cbf147d5b31acfa283831cee/review HTTP/1.1" 200 OK
+2026-10-06T12:46:06.265463108Z INFO:     172.18.0.5:43376 - "POST /api/v1/tenders/78f3a575cbf147d5b31acfa283831cee/complete-review HTTP/1.1" 500 Internal Server Error
+2026-10-06T12:46:06.265473148Z unhandled error on /api/v1/tenders/78f3a575cbf147d5b31acfa283831cee/complete-review
+2026-10-06T12:46:06.265549827Z psycopg.errors.UndefinedColumn: column extraction_run.prompt_overrides does not exist
+2026-10-06T12:46:06.266010968Z sqlalchemy.exc.ProgrammingError: (psycopg.errors.UndefinedColumn) column extraction_run.prompt_overrides does not exist
+2026-10-06T12:46:06.308808618Z psycopg.errors.UndefinedColumn: column extraction_run.prompt_overrides does not exist
+2026-10-06T12:46:06.309420108Z sqlalchemy.exc.ProgrammingError: (psycopg.errors.UndefinedColumn) column extraction_run.prompt_overrides does not exist
+2026-10-06T12:46:06.309062608Z INFO:     172.18.0.5:43376 - "GET /api/v1/tenders/78f3a575cbf147d5b31acfa283831cee/review HTTP/1.1" 500 Internal Server Error
+2026-10-06T12:46:18.620264043Z psycopg.errors.UndefinedColumn: column extraction_run.prompt_overrides does not exist
+2026-10-06T12:46:18.620692582Z sqlalchemy.exc.ProgrammingError: (psycopg.errors.UndefinedColumn) column extraction_run.prompt_overrides does not exist
+2026-10-06T12:46:18.620821772Z INFO:     172.18.0.5:45318 - "GET /api/v1/tenders/78f3a575cbf147d5b31acfa283831cee/review HTTP/1.1" 500 Internal Server Error
+2026-10-06T12:46:18.626353383Z psycopg.errors.UndefinedColumn: column extraction_run.prompt_overrides does not exist
+2026-10-06T12:46:18.626801823Z sqlalchemy.exc.ProgrammingError: (psycopg.errors.UndefinedColumn) column extraction_run.prompt_overrides does not exist
+2026-10-06T12:46:18.626977573Z INFO:     172.18.0.5:45322 - "GET /api/v1/tenders/78f3a575cbf147d5b31acfa283831cee/review HTTP/1.1" 500 Internal Server Error
+2026-10-06T12:47:06.321602987Z psycopg.errors.UndefinedColumn: column extraction_run.prompt_overrides does not exist
+2026-10-06T12:47:06.322008897Z sqlalchemy.exc.ProgrammingError: (psycopg.errors.UndefinedColumn) column extraction_run.prompt_overrides does not exist
+2026-10-06T12:47:06.322521077Z INFO:     172.18.0.5:38972 - "GET /api/v1/tenders/78f3a575cbf147d5b31acfa283831cee/review HTTP/1.1" 500 Internal Server Error
+2026-10-06T12:48:03.054826654Z INFO:     127.0.0.1:55920 - "GET /api/v1/tenders/78f3a575cbf147d5b31acfa283831cee/review HTTP/1.1" 200 OK
+2026-10-06T12:48:16.697981294Z INFO:     127.0.0.1:41248 - "POST /api/v1/tenders/78f3a575cbf147d5b31acfa283831cee/complete-review HTTP/1.1" 201 Created

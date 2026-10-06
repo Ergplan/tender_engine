@@ -7,6 +7,7 @@ from pathlib import Path
 from evals.gold import GoldField, GoldRecord
 from evals.report import (
     Sitting,
+    accuracy_by_prompt_version,
     prompt_comparison,
     recommendation,
     render_log,
@@ -32,6 +33,7 @@ def gold(slug: str, tender_type: str = "solar") -> GoldRecord:
         )  # fmt: skip
 
     return GoldRecord(
+        tenant_id="ergplan",
         tender_id=slug, slug=slug, tender_type=tender_type, issuing_agency="SECI",
         title=slug, schema_version="v2", reviewed_version=1, reviewer="Asha Rao",
         completed_at="2026-10-06T10:00:00+00:00", snapshot_id="s",
@@ -58,6 +60,7 @@ def score(
         value_type="money_inr", required=required, outcome=outcome, gold_value=1,  # type: ignore[arg-type]
         candidate_value=1 if outcome == "correct" else 2, evidence_ok=outcome == "correct",
         gold_pages=[1], candidate_pages=[1], prompt_version=version,
+        prompt_name=f"extract/{section}",
     )  # fmt: skip
 
 
@@ -78,8 +81,10 @@ def test_the_bar_is_met_with_two_reviews_per_type_and_required_fields_at_ninety_
     records, scores = two_records()
     bar = stability(records, summarise(scores), scores, Counter({"solar": 3, "bess": 1}))
     assert bar.met and bar.types_with_two_or_more_in_set == ["solar"]
-    assert bar.required_accuracy == 1.0 and bar.prompt_versions_seen == ["v1", "v2"]
-    assert bar.reasons == ["scored across prompt versions v1, v2"]
+    assert bar.required_accuracy == 1.0
+    assert bar.prompt_versions_seen == ["extract/guarantees v1", "extract/key_dates v2"]
+    assert bar.prompt_versions_below_bar == [] and len(bar.reasons) == 1
+    assert bar.reasons[0].startswith("required-field accuracy by section prompt")
 
 
 def test_the_bar_names_each_shortfall() -> None:
@@ -94,9 +99,8 @@ def test_the_bar_names_each_shortfall() -> None:
     assert "fewer than 2 reviewed tenders for: solar, wind" in bar.reasons
     assert "required-field accuracy 75% is below 90%" in bar.reasons
     assert "required fields below 75%: 1" in bar.reasons
-    one_version = [s for s in scores if s.prompt_version == "v1"]
-    bar = stability(records, summarise(one_version), one_version, Counter({"solar": 2}))
-    assert not bar.met and "1 version(s) have scored candidates" in bar.reasons[-1]
+    assert bar.prompt_versions_below_bar == ["extract/guarantees v1 (50%)"]
+    assert "below 90% on required fields under: extract/guarantees v1 (50%)" in bar.reasons
     empty = stability([], summarise([]), [], Counter())
     assert empty.reasons[0] == "no gold record yet" and not empty.met
 
@@ -167,3 +171,17 @@ def test_the_report_and_the_log_on_two_fixture_records(tmp_path: Path) -> None:
         "| seci-solar-2 | solar | Asha Rao | - | 2026-10-06 10:00 | 3 | 0: - | 0 "
         f"| {AGENCY} (wrong_value) |"
     )
+
+
+def test_the_last_two_versions_of_each_prompt_are_judged_apart() -> None:
+    scores = [
+        score("a", RATE, "guarantees", "correct", "v1"),
+        score("b", RATE, "guarantees", "wrong_value", "v2"),
+        score("c", RATE, "guarantees", "correct", "v3"),
+        score("d", RATE, "guarantees", "correct", "v10"),
+        score("a", DEADLINE, "key_dates", "correct", "v1"),
+    ]
+    assert accuracy_by_prompt_version(scores) == {
+        "extract/guarantees": {"v3": 1.0, "v10": 1.0},
+        "extract/key_dates": {"v1": 1.0},
+    }
