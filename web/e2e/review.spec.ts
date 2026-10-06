@@ -258,6 +258,17 @@ test("approve with Enter, edit a date, mark not in document, flag", async ({ pag
   await expect(card(page, EMD).getByTestId("decision")).toContainText("Flagged: check against the BIS");
   await expect(card(page, EMD)).toHaveAttribute("data-decided", "no");
 
+  // A mis-click is undone with U: the field is undecided again, and the count drops.
+  await expect(page.getByTestId("progress")).toContainText("3 of");
+  await card(page, PREBID).click();
+  await page.keyboard.press("u");
+  await expect(card(page, PREBID)).toHaveAttribute("data-decided", "no");
+  await expect(card(page, PREBID).getByTestId("decision")).toHaveCount(0);
+  await expect(page.getByTestId("progress")).toContainText("2 of");
+  await card(page, PREBID).click();
+  await page.keyboard.press("n");
+  await expect(card(page, PREBID)).toHaveAttribute("data-decided", "yes");
+
   // Nothing is held in the browser: a reload shows the same decisions.
   await page.reload();
   await expect(card(page, DEADLINE).getByTestId("decision")).toContainText("Edited to 16 Apr 2026");

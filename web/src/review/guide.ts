@@ -35,7 +35,7 @@ export const GUIDE = {
       ["Enter", "approve and go to the next undecided field"],
       ["E", "edit"],
       ["N", "not in document"],
-      ["F", "flag"],
+      ["F / U", "flag / clear the decision"],
       ["J / K", "next / previous field"],
       ["Esc", "cancel"],
     ] as [string, string][],

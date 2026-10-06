@@ -20,9 +20,11 @@ import {
 export type SaveState = { kind: "saving" } | { kind: "saved" } | { kind: "failed"; message: string };
 export type CardMode = "view" | "edit" | "flag";
 export type Decision =
-  | { decision: "approved" }
+  // candidate_id names another reading of the field than the one shown ("Use this reading").
+  | { decision: "approved"; candidate_id?: string }
   | { decision: "not_in_document" }
   | { decision: "flagged"; note: string }
+  | { decision: "cleared" }
   | ({ decision: "edited" } & EditResult);
 
 const PILL = {
@@ -125,6 +127,8 @@ function decisionLine(entry: ReviewEntry, field: ReviewField): { text: string; t
     return { text: `Not in document${by}`, tone: "text-green-700" };
   if (approval.decision === "flagged")
     return { text: `Flagged: ${approval.note ?? "come back"}${by}`, tone: "text-amber-700" };
+  // A cleared decision is no decision: the card reads as undecided.
+  if (approval.decision === "cleared") return null;
   return { text: `${approval.decision}${by}`, tone: "text-slate-600" };
 }
 
@@ -142,6 +146,7 @@ export function FieldCard({
   onMode,
   onDecide,
   onShowEvidence,
+  onRefresh,
 }: {
   field: ReviewField;
   focused: boolean;
@@ -157,6 +162,8 @@ export function FieldCard({
   onMode: (mode: CardMode) => void;
   onDecide: (decision: Decision) => void;
   onShowEvidence: (evidence: Evidence) => void;
+  /** Asks the screen to read the review again now (the summary card while a text is on its way). */
+  onRefresh?: () => void;
 }) {
   const entry = currentEntry(field);
   const candidate = entry?.state.candidate ?? null;
@@ -372,6 +379,43 @@ export function FieldCard({
         </p>
       )}
 
+      {(entry?.state.alternatives ?? []).map((other) => (
+        // Another page window of the section, or another pass over it, read a different
+        // value: the reviewer sees both and picks. Where the readings agree nothing is listed.
+        <div key={other.id} data-testid="alternative" className="mt-1.5 rounded border border-amber-300 bg-amber-50 px-2 py-1">
+          <p className="text-xs font-semibold text-amber-900">
+            The model also read this field differently
+            <span
+              className="ml-2 font-normal text-slate-600"
+              title={`Model confidence ${Math.round(other.confidence * 100)}%. ${CONFIDENCE_HINT}`}
+            >
+              model confidence {Math.round(other.confidence * 100)}%
+            </span>
+          </p>
+          <div data-testid="alternative-value" className="mt-0.5 text-sm text-slate-900">
+            <Value value={other.value} field={field} active={null} hint={() => ""} onMarker={() => undefined} />
+          </div>
+          <p className="mt-0.5 line-clamp-2 text-xs text-slate-600">{other.rationale}</p>
+          <div className="mt-1 flex flex-wrap items-center gap-1" onClick={(event) => event.stopPropagation()}>
+            {other.evidence.map((item) => (
+              <EvidenceChip key={item.id} evidence={item} active={focused && item.id === activeEvidence} onShow={onShowEvidence} />
+            ))}
+            {!readOnly && (
+              <button
+                type="button"
+                data-testid="use-reading"
+                disabled={lock !== null}
+                title={lock ?? "Approve this reading instead of the one above"}
+                className={BUTTON + " ml-auto border-amber-700 bg-white text-amber-900 hover:bg-amber-100"}
+                onClick={() => onDecide({ decision: "approved", candidate_id: other.id })}
+              >
+                Use this reading
+              </button>
+            )}
+          </div>
+        </div>
+      ))}
+
       {entry && !readOnly && mode === "view" && (
         <div className="mt-1.5 flex flex-wrap items-center gap-1.5" onClick={(event) => event.stopPropagation()}>
           <button
@@ -413,6 +457,17 @@ export function FieldCard({
           >
             Flag
           </button>
+          {(field.decided || field.flagged) && (
+            <button
+              type="button"
+              data-testid="clear-decision"
+              title="Undo this decision; the field is undecided again (U)"
+              className="px-1 text-xs text-slate-600 underline"
+              onClick={() => onDecide({ decision: "cleared" })}
+            >
+              Clear decision
+            </button>
+          )}
           <span data-testid="save-state" className="ml-auto text-xs">
             {save?.kind === "saving" && <span className="text-slate-500">Saving…</span>}
             {save?.kind === "saved" && <span className="text-green-700">✓ Saved</span>}
@@ -427,6 +482,19 @@ export function FieldCard({
       {entry && !readOnly && mode === "view" && blocker && (focused || summary) && !field.decided && (
         <p data-testid="blocker" className={"mt-0.5 text-xs " + (summary ? "font-medium text-amber-800" : "text-slate-500")}>
           {blocker}
+          {summary && !summary.current && summary.waiting_for === 0 && onRefresh && (
+            <button
+              type="button"
+              data-testid="check-again"
+              className="ml-2 underline"
+              onClick={(event) => {
+                event.stopPropagation();
+                onRefresh();
+              }}
+            >
+              Check again
+            </button>
+          )}
         </p>
       )}
       {!entry && <p className="mt-1 text-xs text-slate-500">Nothing was extracted for this field.</p>}

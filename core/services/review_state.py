@@ -20,7 +20,7 @@ from core.models import (
     ValidationResult,
 )
 from core.models.extraction import REVIEWABLE_STATUSES
-from core.schemas import ExtractionSchema, SchemaRegistry
+from core.schemas import ExtractionSchema, FieldDef, SchemaRegistry
 
 DECIDED = ("approved", "edited", "not_in_document")
 
@@ -81,6 +81,9 @@ class FieldState(BaseModel):
     enum_values: list[str] | None
     review_order: int
     candidate: CandidateView | None
+    # Other readings of the field from the same run (another page window of the section)
+    # whose value differs from the one shown. Where readings agree nothing is listed.
+    alternatives: list[CandidateView]
     alternative_candidates: int
     approval: ApprovalView | None
 
@@ -246,12 +249,33 @@ class ReviewStateService:
         for field in sorted(schema.fields, key=lambda f: (f.review_order, f.path)):
             own = [c for c in candidates if c.field_path == field.path]
             reviewable = [c for c in own if c.status in REVIEWABLE_STATUSES]
-            best = _best(reviewable, evidence) or min(
-                (c for c in own if c.status == "not_found"),
-                key=lambda c: (c.extraction_run_id != run.id, c.id),
-                default=None,
-            )
             approval = approvals.get(field.path)
+            # A reading the reviewer decided on is the field's reading, whichever window
+            # it came from; otherwise the best-evidenced one.
+            decided_on = (
+                next((c for c in reviewable if c.id == approval.candidate_id), None)
+                if approval is not None and approval.decision in DECIDED
+                else None
+            )
+            best = (
+                decided_on
+                or _best(reviewable, evidence)
+                or min(
+                    (c for c in own if c.status == "not_found"),
+                    key=lambda c: (c.extraction_run_id != run.id, c.id),
+                    default=None,
+                )
+            )
+            shown_value = _comparable(self._schemas, field, best) if best is not None else None
+            differing = (
+                [
+                    c
+                    for c in reviewable
+                    if c.id != best.id and _comparable(self._schemas, field, c) != shown_value
+                ]
+                if best is not None and best.status in REVIEWABLE_STATUSES
+                else []
+            )
             fields.append(
                 FieldState(
                     field_path=field.path,
@@ -265,19 +289,12 @@ class ReviewStateService:
                     review_order=field.review_order,
                     candidate=None
                     if best is None
-                    else CandidateView(
-                        id=best.id,
-                        document_id=document_of[best.extraction_run_id],
-                        value=best.value,
-                        confidence=best.confidence,
-                        rationale=best.rationale,
-                        status=best.status,
-                        prompt_name=best.prompt_name,
-                        prompt_version=best.prompt_version,
-                        evidence=evidence[best.id],
-                        validation=validation[best.id],
-                    ),
-                    alternative_candidates=max(len(reviewable) - 1, 0),
+                    else self._view(best, document_of, evidence, validation),
+                    alternatives=[
+                        self._view(c, document_of, evidence, validation)
+                        for c in sorted(differing, key=lambda c: (-c.confidence, c.id))
+                    ],
+                    alternative_candidates=len(differing),
                     approval=None
                     if approval is None
                     else ApprovalView.model_validate(approval, from_attributes=True),
@@ -300,6 +317,26 @@ class ReviewStateService:
             ),
         )
 
+    @staticmethod
+    def _view(
+        candidate: Candidate,
+        document_of: dict[str, str],
+        evidence: dict[str, list[EvidenceView]],
+        validation: dict[str, list[ValidationView]],
+    ) -> CandidateView:
+        return CandidateView(
+            id=candidate.id,
+            document_id=document_of[candidate.extraction_run_id],
+            value=candidate.value,
+            confidence=candidate.confidence,
+            rationale=candidate.rationale,
+            status=candidate.status,
+            prompt_name=candidate.prompt_name,
+            prompt_version=candidate.prompt_version,
+            evidence=evidence[candidate.id],
+            validation=validation[candidate.id],
+        )
+
     def canonical(
         self, session: Session, object_type: str, object_id: str, version: int | None = None
     ) -> list[CanonicalFactView]:
@@ -318,6 +355,14 @@ class ReviewStateService:
                 query.order_by(CanonicalFact.object_version, CanonicalFact.field_path)
             )
         ]
+
+
+def _comparable(schemas: SchemaRegistry, field: FieldDef, candidate: Candidate) -> Any:
+    """The value as it would be stored, so that "12.03.2026" and "2026-03-12" agree."""
+    try:
+        return schemas.value_types.coerce(candidate.value, field)
+    except ValueError:
+        return candidate.value
 
 
 def _best(candidates: list[Candidate], evidence: dict[str, list[EvidenceView]]) -> Candidate | None:

@@ -1,0 +1,74 @@
+Second readings across the 13 tenders. Queries of 2026-10-05 23:45 UTC on the app database.
+
+1. Per tender, from the review state (tender_review): fields, fields with a value in the entry shown for review, and of those the fields with a second reading whose typed value differs (what the card shows):
+tender                         type          fields with_value differing
+nhpc-fdre-ii                   fdre              97         82        12
+ntpc-hybrid-03                 hybrid            93         73         3
+ntpc-phes-2000mw               generation        92         32         4
+ntpc-rel-600mw-anantapur-wtg   wind              92         33         3
+recpdcl-beed-tbcb              transmission      97         54         5
+seci-cfd-i                     fdre              97         85         2
+seci-cni-1-700mw               solar             95         76         9
+seci-ess-iv                    bess             101         73         4
+seci-fdre-ix                   fdre              97         84        11
+seci-fdre-rtc-v                fdre              97         83         4
+seci-gaya-60mw                 epc               99         63        12
+seci-ramagiri-70mw-bess        epc               99         65         4
+seci-wind-tranche-xx           wind              92         74         7
+all 13                                         1248        877        80
+
+2. The same, by field path (fields with a differing second reading, count of tenders):
+  9  core.documents.required_documents
+  8  core.documents.annexure_formats
+  7  core.documents.draft_agreements_referenced
+  4  core.key_dates.dates_deferred_note
+  3  core.commercial.offtaker
+  3  core.commercial.payment_security_mechanism
+  3  core.commercial.payment_security_structured
+  3  core.penalties.pbg_encashment_triggers
+  3  core.penalties.shortfall_penalty_basis
+  3  core.penalties.shortfall_rules
+  2  core.commercial.change_in_law_clause
+  2  core.commercial.termination_compensation
+  2  core.key_dates.bid_submission_deadline
+  2  sector.power.epc.defect_liability_months
+  2  sector.power.fdre.demand_profile
+  2  sector.power.fdre.demand_profile_structured
+  1  core.identity.issuing_agency
+  1  core.identity.tender_type_as_stated
+  1  core.key_dates.nit_date
+  1  sector.power.common.clearances_responsibility
+  1  sector.power.common.land_responsibility
+  1  sector.power.common.line_to_pooling_station_responsibility
+  1  sector.power.epc.ld_performance
+  1  sector.power.epc.ld_performance_structured
+  1  sector.power.epc.price_schedule_structure
+  1  sector.power.epc.scope_matrix
+  1  sector.power.epc.taxes_duties_treatment
+  1  sector.power.epc.warranty_terms
+  1  sector.power.fdre.availability_shortfall_penalty
+  1  sector.power.fdre.excess_energy_structured
+  1  sector.power.fdre.firmness_definition
+  1  sector.power.fdre.peak_window_definition
+  1  sector.power.generation.fuel_type
+  1  sector.power.transmission.bpc
+  1  sector.power.transmission.elements
+  1  sector.power.wind.hub_height_or_tech_restrictions
+  1  sector.power.wind.rlmm_requirement
+  1  sector.power.wind.site_transmission_constraints
+
+3. In SQL, on the version shown for each field (the latest version with a live valued candidate), by raw text:
+ fields_with_a_value | with_two_or_more_readings | readings_differ_in_text | readings_identical 
+---------------------+---------------------------+-------------------------+--------------------
+                 869 |                       114 |                      79 |                 35
+(1 row)
+
+4. The owner's decisions on NHPC FDRE-II after the clearing:
+                 field_path                 |    decision     |   status   |       reviewer        |   decided_at_utc    |                                                           note                                                           
+--------------------------------------------+-----------------+------------+-----------------------+---------------------+--------------------------------------------------------------------------------------------------------------------------
+ sector.power.fdre.excess_energy_structured | not_in_document | superseded | venture@aayuda.energy | 2026-10-05 17:33:44 | 
+ sector.power.fdre.excess_energy_structured | edited          | superseded | venture@aayuda.energy | 2026-10-05 17:35:50 | 
+ sector.power.fdre.excess_energy_structured | cleared         | active     | venture@aayuda.energy | 2026-10-05 23:36:06 | cleared at the owner's request before the timed review: the decisions of 17:33 and 17:35 UTC were a mis-click and the ed
+(3 rows)
+
+canonical facts current: 0

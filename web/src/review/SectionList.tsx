@@ -17,6 +17,7 @@ export function SectionList({
   onMode,
   onDecide,
   onShowEvidence,
+  onRefresh,
 }: {
   review: TenderReview;
   focused: string | null;
@@ -29,6 +30,7 @@ export function SectionList({
   onMode: (path: string, mode: CardMode) => void;
   onDecide: (field: ReviewField, decision: Decision) => void;
   onShowEvidence: (path: string, evidence: Evidence) => void;
+  onRefresh: () => void;
 }) {
   const [closed, setClosed] = useState<Record<string, boolean>>({});
   return (
@@ -82,6 +84,7 @@ export function SectionList({
                     onMode={(next) => onMode(field.field_path, next)}
                     onDecide={(decision) => onDecide(field, decision)}
                     onShowEvidence={(evidence) => onShowEvidence(field.field_path, evidence)}
+                    onRefresh={onRefresh}
                   />
                 ))}
               </div>

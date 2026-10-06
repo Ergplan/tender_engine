@@ -34,7 +34,7 @@ function fakeApi(review: TenderReview) {
           note: null,
           decided_at: "2026-10-05T10:00:00Z",
         };
-        field.decided = body.decision !== "flagged";
+        field.decided = body.decision !== "flagged" && body.decision !== "cleared";
         field.flagged = body.decision === "flagged";
       }
       next.decided = next.fields.filter((field) => field.decided).length;
@@ -242,6 +242,55 @@ describe("deciding", () => {
     await waitFor(() => expect(card(EMD)).toHaveTextContent("Flagged"));
     expect(card(EMD).dataset.decided).toBe("no");
     expect(screen.getByTestId("progress")).toHaveTextContent("0 of 4");
+  });
+
+  it("clears a decision with U or the button; the field is undecided again", async () => {
+    const { calls } = await open();
+    fireEvent.click(card(EMD));
+    fireEvent.keyDown(window, { key: "n" });
+    await waitFor(() => expect(card(EMD).dataset.decided).toBe("yes"));
+    expect(screen.getByTestId("progress")).toHaveTextContent("1 of 4");
+    fireEvent.click(card(EMD));
+    fireEvent.keyDown(window, { key: "u" });
+    await waitFor(() => expect(card(EMD).dataset.decided).toBe("no"));
+    expect(calls.decide).toHaveBeenLastCalledWith(
+      expect.objectContaining({ candidate_id: "c-emd", decision: "cleared", previous_approval_id: "a-c-emd" }),
+    );
+    expect(within(card(EMD)).queryByTestId("decision")).toBeNull();
+    expect(screen.getByTestId("progress")).toHaveTextContent("0 of 4");
+    // An undecided card has no Clear button; a decided one has.
+    expect(within(card(EMD)).queryByTestId("clear-decision")).toBeNull();
+    fireEvent.keyDown(window, { key: "u" });
+    expect(calls.decide).toHaveBeenCalledTimes(2);
+    fireEvent.click(within(card(EMD)).getByTestId("approve"));
+    await waitFor(() => expect(card(EMD).dataset.decided).toBe("yes"));
+    fireEvent.click(within(card(EMD)).getByTestId("clear-decision"));
+    await waitFor(() => expect(card(EMD).dataset.decided).toBe("no"));
+  });
+
+  it("shows a differing second reading with its evidence, and lets the reviewer use it", async () => {
+    const review = makeReview();
+    const emd = review.fields.find((f) => f.field_path === EMD)!;
+    const other = candidate(930000, {
+      id: "c-emd-other",
+      confidence: 0.6,
+      rationale: "A later clause gives a different figure.",
+      evidence: [evidence({ id: "e-other", page_no: 2, quote: "EMD of INR 930000 per MW" })],
+    });
+    emd.entries[0].state.alternatives = [other];
+    emd.entries[0].state.alternative_candidates = 1;
+    const { calls } = await open(review);
+    const panel = within(card(EMD)).getByTestId("alternative");
+    expect(panel).toHaveTextContent("The model also read this field differently");
+    expect(panel).toHaveTextContent("model confidence 60%");
+    expect(within(panel).getByTestId("alternative-value")).toHaveTextContent("9.3 lakh");
+    expect(within(panel).getAllByTestId("evidence-chip")).toHaveLength(1);
+    expect(within(card(DEADLINE)).queryByTestId("alternative")).toBeNull();
+    fireEvent.click(within(panel).getByTestId("use-reading"));
+    await waitFor(() => expect(calls.decide).toHaveBeenCalled());
+    expect(calls.decide).toHaveBeenCalledWith(
+      expect.objectContaining({ candidate_id: "c-emd-other", decision: "approved" }),
+    );
   });
 
   it("moves focus with J and K and tells why Enter cannot approve", async () => {
@@ -458,6 +507,19 @@ describe("the summary card", () => {
     expect(within(card(SUMMARY)).getByTestId("save-state")).toHaveTextContent("Decide the other fields first");
   });
 
+  it("offers Check again while the summary is on its way, which reads the review at once", async () => {
+    const review = withSummary();
+    review.summary = { waiting_for: 0, current: false, being_written: true };
+    const { calls, state } = await open(review);
+    const ready = structuredClone(review);
+    ready.summary = { waiting_for: 0, current: true, being_written: false };
+    state.review = ready;
+    const before = calls.review.mock.calls.length;
+    fireEvent.click(within(card(SUMMARY)).getByTestId("check-again"));
+    await waitFor(() => expect(calls.review.mock.calls.length).toBeGreaterThan(before));
+    await waitFor(() => expect(within(card(SUMMARY)).getByTestId("approve")).toBeEnabled());
+  });
+
   it("waits for the summary to be written again from the decisions, and looks for it", async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
     try {
@@ -476,6 +538,7 @@ describe("the summary card", () => {
       expect(calls.review).toHaveBeenCalled();
       await waitFor(() => expect(within(card(SUMMARY)).getByTestId("approve")).toBeEnabled());
       expect(within(card(SUMMARY)).queryByTestId("blocker")).toBeNull();
+      expect(within(card(SUMMARY)).queryByTestId("check-again")).toBeNull();
     } finally {
       vi.useRealTimers();
     }

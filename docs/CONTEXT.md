@@ -9,11 +9,16 @@ Read this first, then `CLAUDE.md`, then the last two sections of `docs/reports/S
 - 13 tenders are ingested and extracted under schema `v2`. The owner has started deciding fields of NHPC FDRE-II; no other tender has a decision.
 - GCP changes (firewall, addresses) cannot be made by the agent; the owner runs them with the `!` prefix.
 
-## What is open right now
+## What is open right now (session cut off at its usage limit on 2026-10-05, about 23:50 UTC)
 
-1. **The owner's timed review of NHPC FDRE-II.** Everything on the build side of Stage 3 is done; this is the last check of the definition of done. When it is complete: add the time taken and the edited fields to `docs/reports/STAGE-3-REPORT.md` (the fields can be listed from the `approval` table), then Stage 3 is closed.
-2. **Do not disturb the owner's decisions.** The app database holds decisions made through the review link (the first on 2026-10-05 17:33 UTC, on `sector.power.fdre.excess_energy_structured`). Never truncate, re-seed or force a re-extraction of NHPC FDRE-II without asking. A re-extraction of a section supersedes its candidates; a field already decided keeps its approval.
-3. Nothing else is in progress. The working tree is clean and pushed.
+**Uncommitted work in the tree, built at the owner's request before the timed review. Finish it first:**
+
+1. **Clear decision** (`cleared`): a decision kind that supersedes the active approval and leaves the field undecided; audited; no canonical fact, no feedback row. Built in `core/services/approve.py`, `core/services/review_state.py`, `api/v1/schemas/core.py`, the screen (`FieldCard.tsx` button "Clear decision", key `U`, `ReviewScreen.tsx`, `lib/keyboard.ts`, guide text in `guide.ts` and `docs/REVIEWER-GUIDE.md`). Tests written and passing: core, API (`test_a_decision_can_be_cleared_through_the_link...`), web unit (67 pass), and the browser test `approve with Enter, edit a date...` extended (not yet run).
+2. **Second readings shown.** `FieldState.alternatives` lists the other reviewable candidates of a field whose coerced value differs from the shown one; the reading a reviewer decided on becomes the field's reading. The card shows each with value, confidence, evidence chips and "Use this reading" (`data-testid` `alternative`, `use-reading`). Tests: `tests/core/services/test_review_state.py` (three new), web unit. The API client was regenerated (`make client`).
+3. **The owner's two mis-click decisions on NHPC FDRE-II are cleared** (one `cleared` approval at about 23:40 UTC through their link; review stands at 0 of 97; no canonical fact current). Do not touch the `approval` table.
+4. **Not yet done:** `make check` and `make test-ui` on this code (tsc and vitest pass; the Python suite was not run in full); commit; independent review (rule 15, run 13); report section "Clear decision and second readings" with these numbers; `docs/DECISIONS.md`, `docs/ARCHITECTURE.md` (review state: alternatives, decided reading), `docs/KNOWN-GAPS.md` (remove the "second answer not shown" row; add: feedback rows of superseded approvals must be ignored by the Stage 4 feedback report); push. Then tell the owner the timed review can start.
+
+**Numbers for the report (app database, 2026-10-05 23:45 UTC):** of 877 fields with a value, 80 (9.1%) have a second reading that differs after typing; by tender: NHPC FDRE-II 12, SECI Gaya 12, SECI FDRE-IX 11, SECI CnI-1 9, Wind Tranche-XX 7, RECPDCL Beed 5, PHES 4, RTC-V 4, ESS-IV 4, Ramagiri 4, Hybrid-03 3, Anantapur 3, CfD-I 2. By field, the three `core.documents` lists lead (9, 8, 7), then `dates_deferred_note` 4 and six fields at 3. In SQL on the versions shown: 869 fields with a value, 114 with two or more live readings, 79 differ in raw text, 35 are identical. A second reading can come from another page window of the section or from another pass over it.
 
 ## What was fixed late on 2026-10-05 (so you do not look for it again)
 

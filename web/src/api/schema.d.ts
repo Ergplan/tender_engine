@@ -600,7 +600,7 @@ export interface components {
              * Decision
              * @enum {string}
              */
-            decision: "approved" | "edited" | "not_in_document" | "rejected" | "flagged";
+            decision: "approved" | "edited" | "not_in_document" | "rejected" | "flagged" | "cleared";
             /** Evidence */
             evidence?: components["schemas"]["ReviewerEvidence"][] | null;
             /** Final Value */
@@ -844,6 +844,8 @@ export interface components {
         FieldState: {
             /** Alternative Candidates */
             alternative_candidates: number;
+            /** Alternatives */
+            alternatives: components["schemas"]["CandidateView"][];
             approval: components["schemas"]["ApprovalView"] | null;
             candidate: components["schemas"]["CandidateView"] | null;
             /** Enum Values */

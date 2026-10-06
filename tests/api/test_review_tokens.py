@@ -743,3 +743,40 @@ def test_a_structured_number_must_be_quoted_and_agree_with_its_scalar(
         "not printed in this field's quotes: rate_inr_per_mw 982000, cap_inr 1e+08"
     )
     assert "982000 but emd_per_mw_inr is 928000" in failed["structured_agrees_with_scalar"]
+
+
+def test_a_decision_can_be_cleared_through_the_link_and_the_field_is_undecided_again(
+    client: TestClient, pipeline: Pipeline, db: Session
+) -> None:
+    tender = extracted(client, pipeline)
+    token = link(client, tender["id"])["token"]
+    body = review(client, tender["id"], token)
+    decided_before = body["decided"]
+    first = decide(client, token, current(body, EMD), "not_in_document")
+    assert first.status_code == 201
+    body = review(client, tender["id"], token)
+    assert field(body, EMD)["decided"] is True and body["decided"] == decided_before + 1
+
+    cleared = decide(client, token, current(body, EMD), "cleared", note="mis-click")
+    assert cleared.status_code == 201, cleared.text
+    assert cleared.json()["decision"] == "cleared" and cleared.json()["canonical_fact_id"] is None
+    body = review(client, tender["id"], token)
+    emd = field(body, EMD)
+    assert emd["decided"] is False and emd["flagged"] is False
+    assert body["decided"] == decided_before
+    assert current(body, EMD)["state"]["approval"]["decision"] == "cleared"
+    assert current(body, EMD)["state"]["candidate"]["value"] == 928000, "the reading is kept"
+    rows = db.scalars(select(AuditLog).where(AuditLog.table_name == "approval")).all()
+    assert sorted(row.action for row in rows) == ["insert", "insert", "supersede"]
+    assert all(row.actor == "Asha Rao" for row in rows)
+    # A stale clear (the field was decided again meanwhile) is refused like any other write.
+    stale = client.post(
+        "/api/v1/approvals",
+        json={
+            "candidate_id": current(body, EMD)["state"]["candidate"]["id"],
+            "decision": "cleared",
+            "previous_approval_id": first.json()["id"],
+        },
+        headers=as_reviewer(token),
+    )
+    assert stale.status_code == 409

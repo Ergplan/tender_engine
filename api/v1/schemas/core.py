@@ -88,7 +88,7 @@ class ReviewerEvidence(BaseModel):
 
 class ApprovalRequest(BaseModel):
     candidate_id: str
-    decision: Literal["approved", "edited", "not_in_document", "rejected", "flagged"]
+    decision: Literal["approved", "edited", "not_in_document", "rejected", "flagged", "cleared"]
     final_value: Any = None
     note: str | None = None
     evidence: list[ReviewerEvidence] | None = None

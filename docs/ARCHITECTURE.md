@@ -158,6 +158,10 @@ Tenant resolution is the request dependency `api.deps.get_tenant_id`, which retu
 
 A decision carries the active decision the reviewer last saw (`previous_approval_id`, null for none); when the field has been decided again since, `ApprovalService.approve` raises `StaleDecisionError` and the API answers 409.
 
+**Clearing a decision** (2026-10-06). The decision `cleared` supersedes the active decision on a field and leaves the field undecided: an approval row like any other, audited, with no canonical fact and no feedback row (the earlier decision's feedback row stays as history; a feedback report must count only feedback of active approvals). A cleared field reads as undecided and can be decided again. On the screen: "Clear decision" on a decided or flagged card, key `U`. There is no delete: nothing a reviewer did disappears.
+
+**Second readings** (2026-10-06). A field can have more than one reviewable candidate: a section read in two page windows, or read again in a later pass. `ReviewStateService.for_object` returns, per field, the reading it shows and `alternatives`: every other reviewable candidate whose value, typed as it would be stored, differs from it. Readings that agree are not listed. The reading a reviewer has decided on is the one shown, whichever it came from; otherwise the best-evidenced one. The card draws each alternative with its value, confidence and evidence chips and offers "Use this reading", which approves that candidate; the field's active decision is superseded as with any other decision. That two readings differ is kept as a signal: it marks a field the document states ambiguously.
+
 ## Tender domain layer (Stage 2)
 
 `tender/` sits on top of `core/` and core does not import it (a test enforces this). What the tender layer adds is data (schemas, prompts), deterministic rules, and the tender, version and document tables.

@@ -15,6 +15,8 @@ You open the review from the link you were sent. The link is yours: your name is
 3. Edit if the value is wrong or incomplete, and give the page and the words that state it.
 4. Not in document if the tender genuinely does not state it. That is a correct answer, not a gap.
 5. Flag if you are unsure, and move on. A flagged field is not counted as decided.
+6. Clear decision undoes a decision you made by mistake; the field is undecided again and nothing is recorded as a correction.
+7. Where the model also read the field differently (from other pages, or in another pass), the card shows that reading below the value with its own quotes: pick the one the document supports.
 
 The summary at the top is written from the fields below it, not read from the document a second time. Each of its sentences carries the evidence of the fields it draws on, so a number after a sentence opens the same passage as the chip of that field. If a value in the summary is wrong, the field it comes from is wrong: correct the field. Point at a number to see which field it comes from and the words it quotes; click it to see the passage.
 
@@ -53,7 +55,7 @@ A section header says how many of its undecided fields need a closer look: field
 | Enter | approve and go to the next undecided field |
 | E | edit |
 | N | not in document |
-| F | flag |
+| F / U | flag / clear the decision |
 | J / K | next / previous field |
 | Esc | cancel |
 

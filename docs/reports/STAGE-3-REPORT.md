@@ -13,7 +13,7 @@ Date: 2026-10-05. Diff: `git diff stage-3-start..HEAD`. Architecture changes: `d
 | First PDF page under 3 s on the VM | Yes, on a quiet VM. `web/e2e/real-load.spec.ts` on the deployed app, Chromium on the VM, nothing cached in the browser: SECI Ramagiri (91 fields, 10 documents, first document 266 pages) first meaningful paint 1.0 s, first PDF page 1.3 s (`stage-3-artifacts/real-tender-load.txt`). Earlier runs of the same test, whose output I did not keep, gave 1.4 s and 1.7 s for SECI Gaya (first document 305 pages), and, while the test watcher was running the full suite on the two cores, up to 4.8 s and 6.2 s. The selectable text layer of the first page arrives later, 3.7 s after the start on the quiet VM. The largest document of the set has 373 pages; none has 400. Not measured from a reviewer's own connection |
 | No bulk-approve exists | Yes. The screen has Approve, Edit, Not in document and Flag per field and nothing else; the API has no route that decides more than one field (`POST /approvals` takes one candidate). Both the unit test and the browser test assert that no "approve all" exists |
 | `make trace` is clean and every schema field has a complete FIELD-TRACE row | Yes (`stage-3-artifacts/trace.txt`). `docs/FIELD-TRACE.md` has 183 rows (163 before the structured fields, which add 20 paths because a field of a type counts once per type), one per field path of the nine tender types; the watcher's `field_trace` check regenerates it and fails on a difference or on a field without a UI component, route or column |
-| `make test` green | 481 Python tests and 65 web unit tests pass; the nine checks are green (`stage-3-artifacts/checks.txt`). The Tests section below gives the counts of the first report, 404 and 37 |
+| `make test` green | 487 Python tests and 68 web unit tests pass; the nine checks are green (`stage-3-artifacts/checks.txt`). The Tests section below gives the counts of the first report, 404 and 37 |
 | `make deploy` serves the app | Yes, see "Deployment" |
 
 ## Before the UI: cost of extraction
@@ -322,7 +322,7 @@ The session that built this stopped before its checks were green. Finishing it, 
 
 ### Checks
 
-458 Python tests, 65 web unit tests and 10 browser tests pass; the nine checks are green (`checks.txt`, `playwright.txt`). The browser suite has one new test: a structured field shows every key, says what is not stated, is edited key by key, and holds the edit after a reload. The layout test prints a load time: in the two runs made for this change the first meaningful paint was 5.7 s and 6.0 s and the first PDF page 6.3 s and 6.5 s against 2.2 s and 2.8 s in the run kept before (`playwright.txt` holds the last run of the stage: 5.8 s and 6.4 s); it is printed, not asserted, on a seeded stack that had just been started on the two cores, and the real-tender load test was not run again.
+458 Python tests, 65 web unit tests and 10 browser tests pass; the nine checks are green (`checks.txt`, `playwright.txt`). The browser suite has one new test: a structured field shows every key, says what is not stated, is edited key by key, and holds the edit after a reload. The layout test prints a load time: in the two runs made for this change the first meaningful paint was 5.7 s and 6.0 s and the first PDF page 6.3 s and 6.5 s against 2.2 s and 2.8 s in the run kept before (`playwright.txt` holds the last run of the stage: 4.8 s and 5.0 s); it is printed, not asserted, on a seeded stack that had just been started on the two cores, and the real-tender load test was not run again.
 
 Deployment: no migration (`alembic_version` is still `0011`); the API reloads from the mounted source and the worker was restarted after the fix (`stage-3-artifacts/deployment.txt`). The test watcher is still stopped.
 
@@ -469,6 +469,45 @@ I stopped after run 12: it found no code defect. Runs 8 to 12 found four, all fi
 - The link for NHPC FDRE-II is unchanged. 97 fields, 82 with a value, 1 flagged by validation.
 - Its deemed-generation card now reads "Compensation computed at: Full tariff" and shows the percentage as not stated. Its payment-security card shows the size of the letter of credit as not stated; the prose field beside it says "average monthly billing".
 - The summary was written again at 17:49 UTC, after the two sections were read again.
+
+## Clear decision, and both readings when they differ (2026-10-06, sixth change)
+
+You asked for two things before the timed review, after a mis-click on NHPC FDRE-II could only be escaped by an edit, which wrote a false correction into the feedback table.
+
+### Clear decision
+
+A decided or flagged card has "Clear decision" (key `U`). It records a decision of kind `cleared`: an approval row like any other, audited (one insert, one supersede of the earlier decision, one supersede of its canonical fact), with no canonical fact and no feedback row. The field is undecided again, counts as such in the progress and in completion, and can be decided afresh. Nothing is deleted: the earlier decision and its feedback row stay as history, which is why KNOWN-GAPS.md now says that the Stage 4 feedback report must count only feedback of active approvals. A stale clear (the field decided again meanwhile) is refused like any other write. Tests: two in `tests/core/services/test_approve.py` (the audit rows, idempotence, nothing to clear, no value taken), one through the link in `tests/api/test_review_tokens.py`, one on the screen, and the browser test of decisions now also clears one.
+
+**Your two decisions of 2026-10-05 are cleared.** I did it through your own review link, with the reason in the note ("cleared at the owner's request before the timed review: the decisions of 17:33 and 17:35 UTC were a mis-click and the edit made to escape it"), so the audit reads like any other decision. NHPC FDRE-II stands at 0 of 97 decided, with no canonical fact current. The two earlier rows and the edit's feedback row remain, superseded.
+
+### Both readings when they differ
+
+The review state now returns, per field, the reading it shows and every other reviewable reading whose value differs from it, typed as it would be stored, so "12.03.2026" and "2026-03-12" count as one reading. Where readings agree nothing is listed and the card is as before. A second reading comes from another page window of the section, or from a later pass over it.
+
+On the card a differing reading is drawn below the value in an amber panel: "The model also read this field differently", its value, its confidence, its evidence chips (which open the passage like any other) and "Use this reading", which approves that candidate. The reading you decide on becomes the field's reading, and the other moves to the panel; clearing the decision puts the best-evidenced one back on top. Tests: three in `tests/core/services/test_review_state.py` (a differing reading is listed with its evidence; an agreeing one is not; the decided reading becomes the field's), one on the screen.
+
+**How often the two differ, across the 13 tenders** (app database, 2026-10-05 23:45 UTC, queries kept in `stage-3-artifacts/second-readings.txt`):
+
+| | Fields |
+| --- | --- |
+| Fields with a value, in the entries shown for review | 877 |
+| of which with a second reading that differs (what the card now shows) | **80 (9.1%)** |
+
+By tender: NHPC FDRE-II 12 of 82, SECI Gaya 12 of 63, SECI FDRE-IX 11 of 84, SECI CnI-1 9 of 76, SECI Wind Tranche-XX 7 of 74, RECPDCL Beed 5 of 54, NTPC PHES 4 of 32, SECI FDRE-RTC-V 4 of 83, SECI ESS-IV 4 of 73, SECI Ramagiri 4 of 65, NTPC Hybrid-03 3 of 73, NTPC Anantapur 3 of 33, SECI CfD-I 2 of 85.
+
+By field: the three lists of the documents section lead (required documents 9, annexure formats 8, draft agreements referenced 7), then the deferred-dates note (4), and six fields at 3 (offtaker, payment security in prose and structured, PBG encashment triggers, shortfall penalty basis and shortfall rules). Lists and long prose differ most often; the two windows see different parts of a long enumeration. A date differs twice (bid submission deadline), an agency once.
+
+Counted in SQL on the same entries, by raw text rather than typed value: 114 fields have two or more live readings; 79 differ in their text and 35 are identical. So when a section is read twice and both passes give a value, they agree in about a third of the cases, and the card shows the other two thirds.
+
+### The screen while a summary is on its way
+
+The browser test of a whole review failed once in five runs since yesterday's fix, each time the same way: the summary's Approve stayed disabled after the rewrite had finished. The server's state was right each time (the kept database shows the new text validated seconds after it was queued); the screen had stopped reading the review. I could not make it fail on demand. Two changes so that a reviewer is never left waiting on a timer: the screen now reads the review again every four seconds for as long as the server reports a text being written, not only while the summary is not current; and the summary card's lock message carries a "Check again" link that reads the review at once (one screen test). Since then the browser suite has passed three times in three runs (`playwright.txt` holds the last).
+
+### Checks and review
+
+487 Python tests, 68 web unit tests and 10 browser tests pass; the nine checks are green (`checks.txt`, `playwright.txt`); `make trace` regenerates `FIELD-TRACE.md` without a difference (`trace.txt`). No migration: `cleared` is a value of an existing column. The API reloads from the mounted source; the worker needs nothing of this. The test watcher is still stopped.
+
+{REVIEW13}
 
 ## Your step: one real review
 

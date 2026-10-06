@@ -508,3 +508,67 @@ def test_a_decision_made_on_an_outdated_view_of_the_field_is_refused(
             reviewer="Asha",
             object_scope=("tender", "0" * 32),
         )
+
+
+def test_a_decision_can_be_cleared_which_leaves_the_field_undecided(
+    pipeline: Pipeline, db: Session
+) -> None:
+    run = pipeline.extracted_run(db)
+    target = candidate(db, run, "security.emd_per_mw")
+    first = pipeline.approvals.approve(
+        db, candidate_id=target.id, decision="edited", final_value=930000, reviewer="Asha"
+    )
+    cleared = pipeline.approvals.approve(
+        db, candidate_id=target.id, decision="cleared", reviewer="Asha", note="mis-click"
+    )
+    assert cleared.created is True
+    assert cleared.canonical_fact is None and cleared.feedback is None
+    assert (cleared.approval.decision, cleared.approval.final_value) == ("cleared", None)
+    assert cleared.approval.supersedes_approval_id == first.approval.id
+    db.expire_all()
+    assert db.get_one(Approval, first.approval.id).status == "superseded"
+    assert count(db, CanonicalFact, CanonicalFact.is_current.is_(True)) == 0
+    assert count(db, Feedback) == 1, "the earlier correction's feedback row is history, not deleted"
+    assert truth_audits(db) == [
+        ("approval", "insert"),
+        ("approval", "insert"),
+        ("approval", "supersede"),
+        ("canonical_fact", "insert"),
+        ("canonical_fact", "supersede"),
+        ("feedback", "insert"),
+    ]
+    state = pipeline.review_state.for_object(db, "document", run.document_id)
+    field = next(f for f in state.fields if f.field_path == "security.emd_per_mw")
+    assert field.approval is not None and field.approval.decision == "cleared"
+    assert (state.decided, state.required_undecided) == (0, 3)
+    assert pipeline.review_state.canonical(db, "document", run.document_id) == []
+    # The field can be decided again from scratch.
+    again = pipeline.approvals.approve(
+        db, candidate_id=target.id, decision="approved", reviewer="Asha"
+    )
+    assert (
+        again.created and again.canonical_fact is not None and again.canonical_fact.value == 928000
+    )
+
+
+def test_clearing_takes_nothing_else_and_is_idempotent(pipeline: Pipeline, db: Session) -> None:
+    run = pipeline.extracted_run(db)
+    target = candidate(db, run, "security.emd_per_mw")
+    with pytest.raises(ApprovalError, match="no decision on this field to clear"):
+        pipeline.approvals.approve(db, candidate_id=target.id, decision="cleared", reviewer="Asha")
+    db.rollback()
+    pipeline.approvals.approve(db, candidate_id=target.id, decision="approved", reviewer="Asha")
+    with pytest.raises(ApprovalError, match="does not take a value"):
+        pipeline.approvals.approve(
+            db, candidate_id=target.id, decision="cleared", final_value=1, reviewer="Asha"
+        )
+    db.rollback()
+    first = pipeline.approvals.approve(
+        db, candidate_id=target.id, decision="cleared", reviewer="Asha"
+    )
+    audits = count(db, AuditLog)
+    second = pipeline.approvals.approve(
+        db, candidate_id=target.id, decision="cleared", reviewer="Ravi"
+    )
+    assert second.created is False and second.approval.id == first.approval.id
+    assert count(db, AuditLog) == audits and count(db, Approval) == 2

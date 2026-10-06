@@ -1,12 +1,21 @@
 // The reviewer's keys. Pure: the screen decides what each action does.
 
-export type KeyAction = "approve" | "edit" | "not_in_document" | "flag" | "next" | "previous" | "cancel";
+export type KeyAction =
+  | "approve"
+  | "edit"
+  | "not_in_document"
+  | "flag"
+  | "clear"
+  | "next"
+  | "previous"
+  | "cancel";
 
 const KEYS: Record<string, KeyAction> = {
   Enter: "approve",
   e: "edit",
   n: "not_in_document",
   f: "flag",
+  u: "clear",
   j: "next",
   k: "previous",
   Escape: "cancel",

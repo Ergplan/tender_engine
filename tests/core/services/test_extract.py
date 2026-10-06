@@ -288,7 +288,8 @@ def test_a_window_over_the_cap_is_split_and_each_chunk_can_yield_a_candidate(
     state = pipeline.review_state.for_object(db, "document", run.document_id)
     emd = next(f for f in state.fields if f.field_path == "security.emd_per_mw")
     assert emd.candidate is not None and emd.candidate.evidence[0].resolution == "stated_page"
-    assert emd.alternative_candidates == 1
+    # Both windows read the same value: an agreeing reading is not listed as another one.
+    assert emd.alternative_candidates == 0 and emd.alternatives == []
 
 
 def test_run_totals_come_from_the_call_log_and_the_run_ends_validated(
@@ -486,7 +487,7 @@ def test_runs_on_two_documents_of_one_object_keep_both_documents_candidates(
     assert {c.status for c in candidates(db, run_b).values()} == {"validated"}
     state = pipeline.review_state.for_object(db, "thing", "a" * 32)
     emd = next(f for f in state.fields if f.field_path == "security.emd_per_mw")
-    assert emd.candidate is not None and emd.alternative_candidates == 1
+    assert emd.candidate is not None and emd.alternative_candidates == 0, "same value twice"
     assert emd.candidate.document_id in (first.id, second.id)
     assert {r.document_id for r in state.runs} == {first.id, second.id}
     issuer = next(f for f in state.fields if f.field_path == "identity.issuer")

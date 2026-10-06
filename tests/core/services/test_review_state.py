@@ -1,6 +1,6 @@
 from collections.abc import Callable
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from core.models import Candidate
@@ -215,3 +215,115 @@ def test_a_field_the_later_version_changed_is_not_read_from_the_earlier_versions
         )
     )
     assert live == "validated", "the earlier candidate is kept; it is only not read"
+
+
+def _two_windows(make_pipeline: MakePipeline, db: Session, second_emd: int | None) -> Pipeline:
+    """The security section read in two windows (one page each); the second window may
+    give another value for the EMD."""
+    answers = dict(GOOD_ANSWERS)
+    pipeline = make_pipeline(
+        ScriptedSDK(
+            answers,
+            sections=[
+                {
+                    "start_page": 1,
+                    "end_page": 1,
+                    "heading": "Cover",
+                    "kind": "cover_and_notice",
+                    "confidence": 1,
+                },
+                {
+                    "start_page": 2,
+                    "end_page": 3,
+                    "heading": "Dates and security",
+                    "kind": "financial_security",
+                    "confidence": 1,
+                },
+            ],
+        ),
+        extract_max_pages_per_call=1,
+    )
+    calls = 0
+
+    def vary(number: int, kwargs: object) -> None:
+        nonlocal calls
+        text = kwargs["messages"][0]["content"][-1]["text"] if isinstance(kwargs, dict) else ""  # type: ignore[index]
+        if "group `security`" in text:
+            calls += 1
+            if calls == 2 and second_emd is not None:
+                pipeline.sdk.answers["emd_per_mw"] = {
+                    **GOOD_ANSWERS["emd_per_mw"],
+                    "value": second_emd,
+                    "confidence": 0.6,
+                    "evidence": [
+                        {
+                            "page_no": 1,
+                            "quote": "The total contracted capacity under this agreement is 600 MW",
+                        }
+                    ],
+                }
+            else:
+                pipeline.sdk.answers["emd_per_mw"] = GOOD_ANSWERS["emd_per_mw"]
+
+    pipeline.sdk.before_call = vary
+    return pipeline
+
+
+def test_a_second_reading_with_another_value_is_listed_with_its_evidence(
+    make_pipeline: MakePipeline, db: Session
+) -> None:
+    pipeline = _two_windows(make_pipeline, db, second_emd=930000)
+    run = pipeline.extracted_run(db)
+    state = pipeline.review_state.for_object(db, "document", run.document_id)
+    emd = next(f for f in state.fields if f.field_path == "security.emd_per_mw")
+    assert emd.candidate is not None and emd.candidate.value == 928000
+    assert emd.alternative_candidates == 1
+    [other] = emd.alternatives
+    assert (other.value, other.confidence) == (930000, 0.6)
+    assert other.evidence and other.evidence[0].page_no == 3
+    assert other.id != emd.candidate.id
+    assert all(f.alternatives == [] for f in state.fields if f.field_path != "security.emd_per_mw")
+
+
+def test_a_second_reading_with_the_same_value_is_not_listed(
+    make_pipeline: MakePipeline, db: Session
+) -> None:
+    pipeline = _two_windows(make_pipeline, db, second_emd=None)
+    run = pipeline.extracted_run(db)
+    state = pipeline.review_state.for_object(db, "document", run.document_id)
+    emd = next(f for f in state.fields if f.field_path == "security.emd_per_mw")
+    assert emd.candidate is not None and emd.alternatives == [] and emd.alternative_candidates == 0
+    assert (
+        db.scalar(
+            select(func.count())
+            .select_from(Candidate)
+            .where(Candidate.field_path == "security.emd_per_mw")
+        )
+        == 2
+    )
+
+
+def test_the_reading_the_reviewer_decided_on_becomes_the_fields_reading(
+    make_pipeline: MakePipeline, db: Session
+) -> None:
+    pipeline = _two_windows(make_pipeline, db, second_emd=930000)
+    run = pipeline.extracted_run(db)
+    state = pipeline.review_state.for_object(db, "document", run.document_id)
+    emd = next(f for f in state.fields if f.field_path == "security.emd_per_mw")
+    [other] = emd.alternatives
+    pipeline.approvals.approve(db, candidate_id=other.id, decision="approved", reviewer="Asha")
+    state = pipeline.review_state.for_object(db, "document", run.document_id)
+    emd = next(f for f in state.fields if f.field_path == "security.emd_per_mw")
+    assert (
+        emd.candidate is not None and emd.candidate.id == other.id and emd.candidate.value == 930000
+    )
+    assert [c.value for c in emd.alternatives] == [928000]
+    assert emd.approval is not None and emd.approval.candidate_id == other.id
+    facts = pipeline.review_state.canonical(db, "document", run.document_id)
+    assert [(f.field_path, f.value) for f in facts] == [("security.emd_per_mw", 930000)]
+    # Cleared: the best-evidenced reading is shown again, the other listed.
+    pipeline.approvals.approve(db, candidate_id=other.id, decision="cleared", reviewer="Asha")
+    state = pipeline.review_state.for_object(db, "document", run.document_id)
+    emd = next(f for f in state.fields if f.field_path == "security.emd_per_mw")
+    assert emd.candidate is not None and emd.candidate.value == 928000
+    assert [c.value for c in emd.alternatives] == [930000]

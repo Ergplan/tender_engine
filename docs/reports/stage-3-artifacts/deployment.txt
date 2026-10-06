@@ -1,4 +1,4 @@
-Checked from the VM through the public address on 2026-10-05 22:14 UTC, after the last change of the stage (the request audit names the reviewer of a refused request):
+Checked from the VM through the public address on 2026-10-06 02:50 UTC, after clear decision and second readings:
 GET /health -> 200
 GET /api/v1/health -> 200
 GET /api/v1/tenders -> 401
@@ -8,7 +8,7 @@ GET /review/not-a-link -> 200
 POST /api/v1/review-tokens -> 401
 health body: {"status":"ok","tenant_id":"ergplan","database":"ok"}
 alembic_version: 0011
-decisions in the database (approval rows): 2
+decisions in the database (approval rows): 3 (two superseded, one active of kind cleared; no canonical fact current)
 located evidence spans without a box: 0 of 12770
 extraction runs by schema version: v1=131, v2=130
 prompt versions of the sections served: extract/commercial v3, extract/penalties v3

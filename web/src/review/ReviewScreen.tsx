@@ -101,7 +101,8 @@ export function ReviewScreen({
       setSaves((before) => ({ ...before, [path]: { kind: "saving" } }));
       try {
         await api.decide({
-          candidate_id: candidate.id,
+          candidate_id:
+            decision.decision === "approved" && decision.candidate_id ? decision.candidate_id : candidate.id,
           decision: decision.decision,
           previous_approval_id: entry.state.approval?.id ?? null,
           final_value: decision.decision === "edited" ? decision.value : null,
@@ -110,7 +111,8 @@ export function ReviewScreen({
         });
         const fresh = await reload();
         setSaves((before) => ({ ...before, [path]: { kind: "saved" } }));
-        if (decision.decision !== "flagged") setDecisionTimes((before) => [...before, Date.now()]);
+        if (decision.decision !== "flagged" && decision.decision !== "cleared")
+          setDecisionTimes((before) => [...before, Date.now()]);
         setMode("view");
         if (advance) {
           const undecided = new Set(fresh.fields.filter((f) => !f.decided).map((f) => f.field_path));
@@ -162,6 +164,8 @@ export function ReviewScreen({
       } else if (action === "not_in_document") void decide(field, { decision: "not_in_document" }, true);
       else if (action === "edit") setMode("edit");
       else if (action === "flag") setMode("flag");
+      else if (action === "clear" && (field.decided || field.flagged))
+        void decide(field, { decision: "cleared" }, false);
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -169,7 +173,8 @@ export function ReviewScreen({
 
   // While the summary is being written again from the reviewer's decisions, look for it.
   const summaryNow = summaryState(review);
-  const awaited = !!summaryNow && summaryNow.waiting_for === 0 && !summaryNow.current && !readOnly;
+  const awaited =
+    !!summaryNow && !readOnly && (summaryNow.being_written || (summaryNow.waiting_for === 0 && !summaryNow.current));
   useEffect(() => {
     if (!awaited) return;
     const timer = window.setInterval(() => void reload().catch(() => undefined), 4000);
@@ -284,6 +289,7 @@ export function ReviewScreen({
               else setMode(next);
             }}
             onDecide={(field, decision) => void decide(field, decision, false)}
+            onRefresh={() => void reload().catch(() => undefined)}
             onShowEvidence={(path, evidence) => {
               // The chip's field takes the focus, so its evidence stays marked.
               if (path !== focused) {

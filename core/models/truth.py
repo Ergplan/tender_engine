@@ -9,7 +9,8 @@ from core.models.base import Base, IdMixin, TenantAuditMixin
 
 # flagged: "unsure, come back". It records the reviewer's note, withdraws an earlier
 # decision on the field and decides nothing.
-DECISIONS = ("approved", "edited", "not_in_document", "rejected", "flagged")
+# cleared: the reviewer withdrew their decision; the field is undecided again.
+DECISIONS = ("approved", "edited", "not_in_document", "rejected", "flagged", "cleared")
 DELTA_KINDS = ("exact", "format", "wrong_value", "missing", "extra")
 
 

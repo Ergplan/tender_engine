@@ -51,6 +51,7 @@ function entry(field: Partial<ReviewField>, found: Candidate | null, version = 1
       enum_values: field.enum_values ?? null,
       review_order: field.review_order ?? 0,
       candidate: found,
+      alternatives: [],
       alternative_candidates: 0,
       approval: null,
     },

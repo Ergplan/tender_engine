@@ -201,6 +201,14 @@ class ApprovalService:
             raise StaleDecisionError(
                 "this field was decided again since it was loaded; it has been reloaded"
             )
+        if decision == "cleared":
+            if current is None:
+                session.rollback()
+                raise ApprovalError("there is no decision on this field to clear")
+            if current.decision == "cleared":
+                # Cleared already, by whoever: nothing to write.
+                session.rollback()
+                return ApprovalOutcome(current, None, None, created=False)
         if current is not None and (
             current.candidate_id,
             current.decision,
@@ -478,7 +486,7 @@ def classify_delta(decision: str, raw_candidate: Any, candidate: Any, final: Any
     extra: the model had a value and the reviewer says the document has none.
     format: same value, different form. wrong_value: a different value, or a rejection.
     """
-    if decision == "flagged":
+    if decision in ("flagged", "cleared"):
         return None
     if decision == "rejected":
         return "wrong_value"
