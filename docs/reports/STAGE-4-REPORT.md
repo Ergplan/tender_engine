@@ -74,7 +74,7 @@ Your click returned a 500 (API log: `column extraction_run.prompt_overrides does
 - `tests/api/test_admin.py`: the routes refuse without the token, with a wrong token, with a review link, and always when no token is configured; the token opens the dashboard and nothing else; through the API a completed review becomes a gold record (refused before completion, 404 for an unknown tender), the dashboard then shows it, an evaluation writes a results file, a prompt evaluation queues runs whose readings are then scored by their ids and nothing else, and the feedback route returns the one correction.
 - `tests/tender/test_prompt_overrides.py`: an override reads one section with another version, is stored on the run and on every candidate, must name a group and a registered version; `candidates_of_runs` returns that run's readings within the tenant.
 - `web/src/admin/ReliabilityPage.test.tsx`: the token form, the header sent, the bar, the banded table, the tender list, the refusal.
-- `make check`: 537 Python tests and 71 web unit tests pass; nine checks green (`stage-4-artifacts/checks.txt`). `make test-ui`: 10 of 10 pass, 1 skipped (the real-load timing case, run on the deployed app in Stage 3) (`stage-4-artifacts/playwright.txt`). `make trace`: clean, 183 field rows as before, no change this stage (`stage-4-artifacts/trace.txt`).
+- `make check`: 545 Python tests and 71 web unit tests pass; nine checks green (`stage-4-artifacts/checks.txt`). `make test-ui`: 10 of 10 pass, 1 skipped (the real-load timing case, run on the deployed app in Stage 3) (`stage-4-artifacts/playwright.txt`). `make trace`: clean, 183 field rows as before, no change this stage (`stage-4-artifacts/trace.txt`).
 
 ## Deployment
 
@@ -127,7 +127,7 @@ Listed with a rationale, not resolved by code:
 - Deployment, links, the corpus audit (e1, e2, e9): statements a diff cannot prove; `deployment.txt` now holds the deploy log and the live responses (401 without the token, the dashboard's data with it, the page at 200, migration 0012 applied).
 - Candidate-write audit coverage outside the diff (c1): unchanged code.
 
-RUN3_SECTION
+**Run 3**: not run; the session reached its usage limit after run 2 was fixed and committed. The next session runs it (`scripts.independent_review --stage 4`) before the stage is closed.
 
 ## Open questions
 

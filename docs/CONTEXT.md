@@ -4,7 +4,7 @@ Read this first, then `CLAUDE.md`, then `docs/reports/STAGE-4-REPORT.md`.
 
 ## Where the build stands
 
-- **Stage 4 (human reliability program) is built, checked, reviewed and deployed; it stays open as reviews complete.** Stages 0 to 3 are closed; the owner's timed review of NHPC FDRE-II (Stage 3's last check) was completed on 2026-10-06 12:48 UTC and is the first gold record. Tags: `stage-0-start` … `stage-4-start` (04751a6).
+- **Stage 4 (human reliability program) is built, checked and deployed; independent review runs 1 and 2 are fixed and committed, run 3 is still owed before the stage closes; it then stays open as reviews complete.** Stages 0 to 3 are closed; the owner's timed review of NHPC FDRE-II (Stage 3's last check) was completed on 2026-10-06 12:48 UTC and is the first gold record. Tags: `stage-0-start` … `stage-4-start` (04751a6).
 - App: `https://34.131.65.108/` (static IP, never changed); the reliability dashboard at `https://34.131.65.108/admin/reliability` behind `ADMIN_TOKEN` (in `.env`, gitignored). One GCE VM, 2 vCPU, 3.9 GB RAM, 200 GB disk. Six compose services; the test watcher is stopped on the owner's request, so run `make check` before every commit (the pre-commit hook refuses a stale or red status).
 - 13 tenders ingested and extracted under schema `v2`. NHPC FDRE-II is `reviewed` (97 of 97 decided). Review links exist for the other 12 (reviewer `venture@aayuda.energy`, created 2026-10-06; `python -m scripts.review_token list` prints them; never commit or paste them into the repo).
 - GCP changes (firewall, addresses) cannot be made by the agent; the owner runs them with the `!` prefix.
