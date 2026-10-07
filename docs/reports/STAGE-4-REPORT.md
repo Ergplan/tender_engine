@@ -153,7 +153,7 @@ Listed with a rationale: gold and report files are not laid out per tenant (a1):
 
 **Run 6** ran on commit a9b535a again: the commit of the run 5 fixes was refused by the pre-commit hook over a red check (the new two-tender test's own expectations, since corrected), so run 6 saw the code before those fixes and repeats run 5. One point of its own, fixed: scoring named runs could still write an empty evaluation when the runs belonged to no gold tender at its reviewed version (e4); now refused.
 
-RUN7_SECTION
+**Run 7** (on commit c8f6e11): no new code defect. The file-layout finding (a1) and the report claims repeat runs 3 to 6 and stand as listed there. One test gap noted, not closed: the named-run restriction is tested for another gold tender, not for a run of the same tender at another version (e7); recorded in KNOWN-GAPS. The loop ends here.
 
 ## Open questions
 

@@ -520,3 +520,6 @@ healthy: {"status":"ok","tenant_id":"ergplan","database":"ok"}
 gold 1 accuracy 0.9873 met False
 page 200
 0012
+docker compose up -d --force-recreate api worker web caddy tests
+healthy: {"status":"ok","tenant_id":"ergplan","database":"ok"}
+after run 7 deploy: gold 1 accuracy 0.9873 met False
