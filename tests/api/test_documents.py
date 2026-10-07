@@ -32,6 +32,36 @@ def test_upload_records_the_reviewer_when_given(client: TestClient) -> None:
     assert upload(client)["created_by"] == "Asha"
 
 
+def test_upload_records_where_the_file_came_from_and_when(client: TestClient) -> None:
+    data = make_pdf()
+    bare = client.post("/api/v1/documents", files={"file": ("a.pdf", data, "application/pdf")})
+    assert bare.status_code == 201
+    assert bare.json()["source_url"] is None and bare.json()["retrieved_on"] is None
+    sourced = client.post(
+        "/api/v1/documents",
+        files={"file": ("a.pdf", data, "application/pdf")},
+        data={
+            "source_url": "https://cercind.gov.in/2026/orders/31-AT-2026.pdf",
+            "retrieved_on": "2026-10-07",
+        },
+    )
+    assert sourced.status_code == 200, "the same file: the first document, now with its source"
+    body = sourced.json()
+    assert body["id"] == bare.json()["id"]
+    assert body["source_url"] == "https://cercind.gov.in/2026/orders/31-AT-2026.pdf"
+    assert body["retrieved_on"] == "2026-10-07"
+    assert client.get(f"/api/v1/documents/{body['id']}").json()["retrieved_on"] == "2026-10-07"
+
+
+def test_a_malformed_retrieval_date_is_422(client: TestClient) -> None:
+    response = client.post(
+        "/api/v1/documents",
+        files={"file": ("a.pdf", make_pdf(), "application/pdf")},
+        data={"retrieved_on": "7 October 2026"},
+    )
+    assert response.status_code == 422
+
+
 def test_upload_of_a_non_pdf_is_422_with_a_typed_error(client: TestClient) -> None:
     response = client.post("/api/v1/documents", files={"file": ("a.txt", b"hello", "text/plain")})
     assert response.status_code == 422

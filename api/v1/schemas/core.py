@@ -1,6 +1,6 @@
 """Pydantic I/O models for the core routers."""
 
-from datetime import datetime
+from datetime import date, datetime
 from decimal import Decimal
 from typing import Any, Literal
 
@@ -21,6 +21,9 @@ class DocumentOut(BaseModel):
     created_by: str
     # Where the proxy serves the PDF itself, with range requests.
     file_url: str
+    # Where the file was taken from and when; null when the upload did not say.
+    source_url: str | None
+    retrieved_on: date | None
 
 
 class PageOut(BaseModel):

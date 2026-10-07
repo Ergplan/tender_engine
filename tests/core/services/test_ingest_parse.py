@@ -1,3 +1,5 @@
+from datetime import date
+
 import pytest
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
@@ -32,6 +34,34 @@ def test_the_same_file_uploaded_twice_is_one_document_and_one_job(
     assert first.id == second.id and second.filename == "a.pdf"
     assert db.scalar(select(func.count()).select_from(Document)) == 1
     assert db.scalar(select(func.count()).select_from(Job)) == 1
+
+
+def test_provenance_is_stored_and_a_later_upload_fills_only_what_is_missing(
+    pipeline: Pipeline, db: Session
+) -> None:
+    data = make_pdf()
+    first, _ = pipeline.ingest.upload(
+        db,
+        filename="a.pdf",
+        data=data,
+        created_by="x",
+        source_url="https://www.seci.co.in/tender-details/Ymd_",
+    )
+    assert first.source_url == "https://www.seci.co.in/tender-details/Ymd_"
+    assert first.retrieved_on is None
+    again, created = pipeline.ingest.upload(
+        db,
+        filename="a.pdf",
+        data=data,
+        created_by="y",
+        source_url="https://elsewhere.example/a.pdf",
+        retrieved_on=date(2026, 10, 4),
+    )
+    assert created is False and again.id == first.id
+    assert again.source_url == "https://www.seci.co.in/tender-details/Ymd_", "never overwritten"
+    assert again.retrieved_on == date(2026, 10, 4), "filled where it was blank"
+    db.expire_all()
+    assert db.get(Document, first.id).retrieved_on == date(2026, 10, 4), "committed"
 
 
 def test_a_file_that_is_not_a_pdf_is_refused(pipeline: Pipeline, db: Session) -> None:

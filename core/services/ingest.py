@@ -1,6 +1,7 @@
 """IngestService: accept an upload, deduplicate on sha256, store it, enqueue parsing."""
 
 import hashlib
+from datetime import date
 
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
@@ -21,9 +22,17 @@ class IngestService:
         self._tenant_id = tenant_id
 
     def upload(
-        self, session: Session, *, filename: str, data: bytes, created_by: str
+        self,
+        session: Session,
+        *,
+        filename: str,
+        data: bytes,
+        created_by: str,
+        source_url: str | None = None,
+        retrieved_on: date | None = None,
     ) -> tuple[Document, bool]:
-        """Returns (document, created). An identical file returns the existing document."""
+        """Returns (document, created). An identical file returns the existing document;
+        provenance given for it fills what the existing document lacks, never overwrites."""
         if not data.startswith(b"%PDF-"):
             raise IngestError("the file is not a PDF")
         sha256 = hashlib.sha256(data).hexdigest()
@@ -32,6 +41,8 @@ class IngestService:
         )
         existing = session.scalar(by_hash)
         if existing is not None:
+            if fill_provenance(existing, source_url, retrieved_on):
+                session.commit()
             return existing, False
         key = self._storage.put(f"documents/{sha256}.pdf", data)
         document = Document(
@@ -42,6 +53,8 @@ class IngestService:
             mime="application/pdf",
             storage_path=key,
             status="uploaded",
+            source_url=source_url,
+            retrieved_on=retrieved_on,
         )
         session.add(document)
         try:
@@ -59,3 +72,15 @@ class IngestService:
         )
         session.commit()
         return document, True
+
+
+def fill_provenance(document: Document, source_url: str | None, retrieved_on: date | None) -> bool:
+    """Set the provenance the document lacks. Returns whether anything changed."""
+    changed = False
+    if source_url and document.source_url is None:
+        document.source_url = source_url
+        changed = True
+    if retrieved_on and document.retrieved_on is None:
+        document.retrieved_on = retrieved_on
+        changed = True
+    return changed

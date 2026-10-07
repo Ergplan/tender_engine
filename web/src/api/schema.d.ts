@@ -164,7 +164,9 @@ export interface paths {
         put?: never;
         /**
          * Upload Document
-         * @description Upload a PDF. The same file uploaded twice returns the first document with 200.
+         * @description Upload a PDF with, where known, the URL it was taken from and the day it was fetched.
+         *     The same file uploaded twice returns the first document with 200; provenance given
+         *     then fills what the first upload left blank.
          */
         post: operations["upload_document_api_v1_documents_post"];
         delete?: never;
@@ -754,6 +756,10 @@ export interface components {
         Body_upload_document_api_v1_documents_post: {
             /** File */
             file: string;
+            /** Retrieved On */
+            retrieved_on?: string | null;
+            /** Source Url */
+            source_url?: string | null;
         };
         /** CandidateView */
         CandidateView: {
@@ -844,8 +850,12 @@ export interface components {
             mime: string;
             /** Page Count */
             page_count: number | null;
+            /** Retrieved On */
+            retrieved_on: string | null;
             /** Sha256 */
             sha256: string;
+            /** Source Url */
+            source_url: string | null;
             /** Status */
             status: string;
         };

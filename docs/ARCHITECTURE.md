@@ -75,7 +75,7 @@ The layout in `CLAUDE.md` is authoritative. Additions made under operating rule 
 | `tenant` | one row per tenant; `ergplan` seeded by migration 0001 | migration only | 0B |
 | `llm_call_log` | one row per LLM call: prompt name and version, model, input hash, output, tokens (`tokens_in` is the uncached input; `cache_write_tokens` and `cache_read_tokens` are the rest of it), `mode` (`sync` or `batch`), `batch_id`, `cost_usd` with the cache and batch factors applied, latency, status, request id, `extraction_run_id` | `core.llm.client.LLMClient` only (`call`, and `collect_batch` for calls read from a batch) | 0B, 1, 3 |
 | `llm_batch` | a batch handed to the provider's batch API: provider batch id, run, wave (1 writes shared windows to the cache, 2 reads them), status `submitted/collected`, the custom id and input hash of each call | `LLMClient.submit_batch`; status by `collect_batch` | 3 |
-| `document` | an uploaded PDF: sha256 (unique per tenant), filename, mime, page_count, storage_path, status `uploaded/parsed/failed`, error | `IngestService.upload`; status and page_count by `ParseService.parse` | 1 |
+| `document` | an uploaded PDF: sha256 (unique per tenant), filename, mime, page_count, storage_path, status `uploaded/parsed/failed`, error; provenance `source_url` and `retrieved_on` (migration 0013, nullable; a later upload of the same file fills them where blank, never overwrites) | `IngestService.upload`; status and page_count by `ParseService.parse` | 1 |
 | `page` | per page: text, width and height in PDF points, `render_path` (PNG at 150 dpi), `char_boxes` (one `[x0, top, x1, bottom]` per character of `text`, null for layout whitespace), `has_text_layer` | `ParseService.parse` | 1 |
 | `section` | contiguous page range with heading, free-text `kind`, confidence, prompt version | `SectionMapper.map` | 1 |
 | `extraction_run` | one extraction of one document with one schema and prompt version, for one object (`object_type`, `object_id`, `object_version`); status `queued/running/extracted/validated/failed`, `mode` (`sync`, `batch`, or `record` for a run whose candidate was written from the object's record and read no page), tokens (`token_in` is the whole input, `token_cached` the part read from the prompt cache), cost | `ExtractService.start_run` and `.extract`; `ValidationService.validate` sets `validated` | 1 |
@@ -104,7 +104,7 @@ A candidate, approval and canonical fact belong to an **object** (`object_type`,
 
 | Step | Function | Writes |
 | --- | --- | --- |
-| upload | `core.services.ingest.IngestService.upload` | `document`, file in storage, `job(parse)`. Same sha256 returns the existing document |
+| upload | `core.services.ingest.IngestService.upload` | `document` with its `source_url` and `retrieved_on` when the caller knows them (`POST /api/v1/documents` form fields; the manifest's per-file `source`/`retrieved_on`, else the tender page), file in storage, `job(parse)`. Same sha256 returns the existing document and fills the provenance it lacks |
 | parse | `core.services.parse.ParseService.parse` | `page` rows (pdfplumber text and character boxes, pymupdf render), `document.status = parsed`, `job(section_map)` |
 | section map | `core.services.section_map.SectionMapper.map` | `section` rows from one model call over a digest of every page (first 400 characters plus heading-like lines) |
 | start run | `core.services.extract.ExtractService.start_run` | `extraction_run`, `job(extract)`. Refuses an unknown schema or an unregistered prompt version |
@@ -392,4 +392,5 @@ One GCE VM (`instance-20261004-081207`, asia-south2-b), static IP `34.131.65.108
 - `GET /api/v1/admin/reliability`, `POST /api/v1/admin/gold`, `POST /api/v1/admin/evals`, `GET /api/v1/admin/feedback` behind `ADMIN_TOKEN` (the evaluation operations are API operations first, the Makefile targets second); `web/src/admin/ReliabilityPage` at `/admin/reliability`.
 - Gold records carry `tenant_id` and are loaded per tenant; every query of the evaluation code filters by tenant; a gold record takes the decisions of the version the review was completed at.
 - The first gold record: `evals/gold/fdre/nhpc-fdre-ii.yaml`, from the owner's completed review.
+- Migration 0013 (2026-10-07, after the stage closed): `document.source_url` and `document.retrieved_on`. `POST /api/v1/documents` takes them as form fields; `scripts.ingest_tenders ingest` stores them from the manifests and `provenance` backfills documents ingested earlier by sha256. Asked for by the owner ahead of the results import planned as Stage 6 (`docs/STAGE-6-RESULTS-IMPORT.md`, assessment in `docs/reports/RE-TENDER-RESULTS-ASSESSMENT.md`).
 

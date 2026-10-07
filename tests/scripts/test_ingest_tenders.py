@@ -55,13 +55,115 @@ def write_folder(root: Path) -> None:
         "agency": "Acme Renewables Agency",
         "external_ref": "ACME/RE/2026/007",
         "title": "Selection of solar power developers for 600 MW solar PV projects",
+        "source": TENDER_PAGE,
         "files": [
             {"file": "rfs.pdf", "role": "rfs", "issued_on": "2026-03-01", "pages": 3},
             {"file": "amendment-01.pdf", "role": "amendment", "issued_on": "2026-03-20"},
-            {"file": "ppa.pdf", "role": "ppa", "issued_on": None, "pages": 1},
+            {
+                "file": "ppa.pdf",
+                "role": "ppa",
+                "issued_on": None,
+                "pages": 1,
+                "source": PPA_URL,
+                "retrieved_on": "2026-10-04",
+            },
         ],
     }
     (folder / "manifest.yaml").write_text(yaml.safe_dump(manifest))
+
+
+TENDER_PAGE = "https://acme.example/tender-details/600"
+PPA_URL = "https://acme.example/uploads/ppa.pdf"
+
+
+def test_a_file_takes_its_own_source_else_the_tender_page_and_a_local_path_is_no_source(
+    tmp_path: Path,
+) -> None:
+    root = tmp_path / "tenders"
+    write_folder(root)
+    copied = root / "wind" / "copied-wind"
+    copied.mkdir(parents=True)
+    (copied / "rfs.pdf").write_bytes(make_pdf(RFS_PAGES))
+    (copied / "manifest.yaml").write_text(
+        yaml.safe_dump(
+            {
+                "slug": "copied-wind",
+                "type": "wind",
+                "agency": "A",
+                "title": "T",
+                "source": "/work/ref/somewhere/RFS.pdf (copied from a reference repo)",
+                "files": [{"file": "rfs.pdf", "role": "rfs", "issued_on": "2026-03-01"}],
+            }
+        )
+    )
+    noticed = root / "wind" / "noticed-wind"
+    noticed.mkdir(parents=True)
+    (noticed / "nit.pdf").write_bytes(make_pdf(RFS_PAGES))
+    (noticed / "manifest.yaml").write_text(
+        yaml.safe_dump(
+            {
+                "slug": "noticed-wind",
+                "type": "wind",
+                "agency": "A",
+                "title": "T",
+                "notice_url": "https://acme.example/tender-details/7",
+                "files": [{"file": "nit.pdf", "role": "nit", "issued_on": None}],
+            }
+        )
+    )
+    by_slug = {m.slug: m for m in ingest_tenders.read_manifests(root)}
+    acme = {f.path.name: (f.source, f.retrieved_on) for f in by_slug["acme-solar-600"].files}
+    assert [f.source for f in by_slug["noticed-wind"].files] == [
+        "https://acme.example/tender-details/7"
+    ], "the notice page is where the files were taken from when nothing closer is recorded"
+    assert acme == {
+        "rfs.pdf": (TENDER_PAGE, None),
+        "amendment-01.pdf": (TENDER_PAGE, None),
+        "ppa.pdf": (PPA_URL, date(2026, 10, 4)),
+    }
+    assert [(f.source, f.retrieved_on) for f in by_slug["copied-wind"].files] == [(None, None)]
+
+
+def test_provenance_fills_documents_ingested_before_it_was_recorded(
+    pipeline: Pipeline, db: Session, tmp_path: Path
+) -> None:
+    root = tmp_path / "tenders"
+    write_folder(root)
+    services = services_of(pipeline)
+    # The RfS was uploaded before manifests carried a source; the PPA by hand with one.
+    earlier, _ = pipeline.ingest.upload(
+        db,
+        filename="rfs.pdf",
+        data=(root / "solar/acme-solar-600/rfs.pdf").read_bytes(),
+        created_by="x",
+    )
+    by_hand, _ = pipeline.ingest.upload(
+        db,
+        filename="ppa.pdf",
+        data=(root / "solar/acme-solar-600/ppa.pdf").read_bytes(),
+        created_by="x",
+        source_url="https://acme.example/by-hand.pdf",
+    )
+    assert earlier.source_url is None
+
+    assert ingest_tenders.provenance(services, root) == [
+        "solar/acme-solar-600: 2 filled, 0 without a source"
+    ]
+    db.expire_all()
+    assert (earlier.source_url, earlier.retrieved_on) == (TENDER_PAGE, None)
+    assert (by_hand.source_url, by_hand.retrieved_on) == (
+        "https://acme.example/by-hand.pdf",
+        date(2026, 10, 4),
+    ), "the source set by hand stands; the date it lacked is filled"
+    assert ingest_tenders.provenance(services, root) == [
+        "solar/acme-solar-600: 0 filled, 0 without a source"
+    ], "repeating the command changes nothing"
+    assert db.scalar(select(func.count()).select_from(Tender)) == 0, "no tender was created"
+
+    ingest_tenders.ingest(services, root)
+    db.expire_all()
+    amendment = db.scalars(select(Document).where(Document.filename == "amendment-01.pdf")).one()
+    assert amendment.source_url == TENDER_PAGE, "ingest records the source as it uploads"
 
 
 def files(*items: tuple[str, str, str | None]) -> Manifest:

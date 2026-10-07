@@ -281,6 +281,30 @@
             "contentMediaType": "application/octet-stream",
             "title": "File",
             "type": "string"
+          },
+          "retrieved_on": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Retrieved On"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "maxLength": 1000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
           }
         },
         "required": [
@@ -515,9 +539,32 @@
             ],
             "title": "Page Count"
           },
+          "retrieved_on": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Retrieved On"
+          },
           "sha256": {
             "title": "Sha256",
             "type": "string"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
           },
           "status": {
             "title": "Status",
@@ -534,7 +581,9 @@
           "error",
           "created_at",
           "created_by",
-          "file_url"
+          "file_url",
+          "source_url",
+          "retrieved_on"
         ],
         "title": "DocumentOut",
         "type": "object"
@@ -3515,7 +3564,7 @@
     },
     "/api/v1/documents": {
       "post": {
-        "description": "Upload a PDF. The same file uploaded twice returns the first document with 200.",
+        "description": "Upload a PDF with, where known, the URL it was taken from and the day it was fetched.\nThe same file uploaded twice returns the first document with 200; provenance given\nthen fills what the first upload left blank.",
         "operationId": "upload_document_api_v1_documents_post",
         "parameters": [
           {

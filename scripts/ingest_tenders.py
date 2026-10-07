@@ -1,6 +1,7 @@
 """Management command: ingest the tender set, extract it, and write the extraction summary.
 
   python -m scripts.ingest_tenders ingest  [--root /work/tenders] [--only slug,slug]
+  python -m scripts.ingest_tenders provenance [--root /work/tenders] [--only slug,slug]
   python -m scripts.ingest_tenders extract [--only slug,slug] [--force] [--groups a,b]
   python -m scripts.ingest_tenders revalidate [--only slug,slug]
   python -m scripts.ingest_tenders amendment-routing [--only slug,slug] [--mode none|missing|union]
@@ -12,16 +13,20 @@
   python -m scripts.ingest_tenders summarize [--only slug,slug] [--force]
 
 `ingest` reads <root>/<type>/<slug>/manifest.yaml, creates each tender, groups its files
-into versions and uploads them; the worker parses and section-maps them. `extract` queues
-the extraction of every version that has none yet; the worker runs it. Both are safe to
-repeat. `resume` puts failed runs back in the queue: a run continues at the first field
-group it has no candidates for, so nothing already extracted is paid for twice. `wait`
-blocks until the job queue is empty. `extract` goes through the batch API unless `--sync`
-is given. `cost-plan` prints, without calling the model, the pages each tender's sections
-ask for and the pages that are sent once sections share a window.
+into versions and uploads them; the worker parses and section-maps them. Each file's
+`source` and `retrieved_on` (the tender's page, `source` or `notice_url`, when the file has
+no URL of its own) are stored on the document; `provenance` fills them on documents
+ingested earlier, by sha256, and touches nothing else. `extract` queues the extraction of
+every version that has none yet; the worker runs it. All three are safe to repeat.
+`resume` puts failed runs back in the queue: a run continues at the first field group it
+has no candidates for, so nothing already extracted is paid for twice. `wait` blocks until
+the job queue is empty. `extract` goes through the batch API unless `--sync` is given.
+`cost-plan` prints, without calling the model, the pages each tender's sections ask for
+and the pages that are sent once sections share a window.
 """
 
 import argparse
+import hashlib
 import sys
 import time
 from dataclasses import dataclass
@@ -40,7 +45,7 @@ from core.models import Document, ExtractionRun, Job
 from core.models.extraction import RECORD_MODE
 from core.services import jobs
 from core.services.extract import ExtractService
-from core.services.ingest import IngestService
+from core.services.ingest import IngestService, fill_provenance
 from core.services.review_state import ReviewStateService
 from core.services.validate import ValidationService
 from core.storage import make_storage
@@ -65,6 +70,9 @@ class ManifestFile:
     # "latest": the file belongs to the tender's latest version, whatever its date (a
     # published notice shows the dates as they stand after every amendment).
     attach_to: str | None = None
+    # Where the file was taken from and when, from the manifest; None when it does not say.
+    source: str | None = None
+    retrieved_on: date | None = None
 
 
 @dataclass(frozen=True)
@@ -121,12 +129,23 @@ def read_manifests(root: Path, only: set[str] | None = None) -> list[Manifest]:
         raw: dict[str, Any] = yaml.safe_load(path.read_text(encoding="utf-8"))
         if only and raw["slug"] not in only:
             continue
+        # A file without a URL of its own was taken from the tender's page: the manifest's
+        # `source` when it is a URL (a local path says where a copy came from, not where
+        # the agency published it), else its `notice_url`.
+        tender_source = raw.get("source") or ""
+        shared_source = (
+            tender_source if tender_source.startswith("http") else raw.get("notice_url")
+        ) or None
         files = [
             ManifestFile(
                 path=path.parent / item["file"],
                 role=item["role"],
                 issued_on=date.fromisoformat(item["issued_on"]) if item.get("issued_on") else None,
                 attach_to=item.get("attach_to"),
+                source=item.get("source") or shared_source,
+                retrieved_on=date.fromisoformat(str(item["retrieved_on"]))
+                if item.get("retrieved_on")
+                else None,
             )
             for item in raw["files"]
         ]
@@ -203,6 +222,8 @@ def ingest(services: Services, root: Path, only: set[str] | None = None) -> list
                         filename=item.path.name,
                         data=item.path.read_bytes(),
                         created_by=ACTOR,
+                        source_url=item.source,
+                        retrieved_on=item.retrieved_on,
                     )
                     if number > existing and index == 0:
                         services.tenders.add_version(
@@ -222,6 +243,35 @@ def ingest(services: Services, root: Path, only: set[str] | None = None) -> list
             shape = ", ".join(f"v{n}:{len(v.files)}" for n, v in enumerate(planned, start=1))
             lines.append(
                 f"{manifest.tender_type}/{manifest.slug}: {len(planned)} version(s) [{shape}]"
+            )
+    return lines
+
+
+def provenance(services: Services, root: Path, only: set[str] | None = None) -> list[str]:
+    """Fill source_url and retrieved_on on documents ingested before they were recorded,
+    from the manifests, matched by sha256. Nothing already set is changed; no tender,
+    version or run is touched. Safe to repeat."""
+    lines = []
+    with services.session_factory() as session:
+        for manifest in read_manifests(root, only):
+            filled = unknown = 0
+            for item in manifest.files:
+                document = session.scalar(
+                    select(Document).where(
+                        Document.tenant_id == services.settings.tenant_id,
+                        Document.sha256 == hashlib.sha256(item.path.read_bytes()).hexdigest(),
+                    )
+                )
+                if document is None:
+                    continue
+                if fill_provenance(document, item.source, item.retrieved_on):
+                    filled += 1
+                if document.source_url is None:
+                    unknown += 1
+            session.commit()
+            lines.append(
+                f"{manifest.tender_type}/{manifest.slug}: {filled} filled, "
+                f"{unknown} without a source"
             )
     return lines
 
@@ -543,6 +593,7 @@ def main(argv: list[str]) -> int:
         "command",
         choices=(
             "ingest",
+            "provenance",
             "extract",
             "resume",
             "wait",
@@ -569,6 +620,8 @@ def main(argv: list[str]) -> int:
     services = build_services()
     if args.command == "ingest":
         print("\n".join(ingest(services, args.root, only)))
+    elif args.command == "provenance":
+        print("\n".join(provenance(services, args.root, only)))
     elif args.command == "extract":
         groups = [name.strip() for name in args.groups.split(",") if name.strip()] or None
         run_mode = "sync" if args.sync else "batch"

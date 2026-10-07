@@ -1,4 +1,7 @@
-from fastapi import APIRouter, Response, UploadFile
+from datetime import date
+from typing import Annotated
+
+from fastapi import APIRouter, Form, Response, UploadFile
 from sqlalchemy import select
 
 from api.deps import ActorDep, IngestDep, SessionDep, StorageDep, TenantDep
@@ -35,18 +38,33 @@ def _out(document: Document) -> DocumentOut:
         created_at=document.created_at,
         created_by=document.created_by,
         file_url=FILES + document.storage_path,
+        source_url=document.source_url,
+        retrieved_on=document.retrieved_on,
     )
 
 
 @router.post("/documents", response_model=DocumentOut, status_code=201)
 async def upload_document(
-    file: UploadFile, response: Response, session: SessionDep, ingest: IngestDep, actor: ActorDep
+    file: UploadFile,
+    response: Response,
+    session: SessionDep,
+    ingest: IngestDep,
+    actor: ActorDep,
+    source_url: Annotated[str | None, Form(max_length=1000)] = None,
+    retrieved_on: Annotated[date | None, Form()] = None,
 ) -> DocumentOut:
-    """Upload a PDF. The same file uploaded twice returns the first document with 200."""
+    """Upload a PDF with, where known, the URL it was taken from and the day it was fetched.
+    The same file uploaded twice returns the first document with 200; provenance given
+    then fills what the first upload left blank."""
     data = await file.read()
     try:
         document, created = ingest.upload(
-            session, filename=file.filename or "upload.pdf", data=data, created_by=actor
+            session,
+            filename=file.filename or "upload.pdf",
+            data=data,
+            created_by=actor,
+            source_url=source_url,
+            retrieved_on=retrieved_on,
         )
     except IngestError as exc:
         raise AppError("validation_failed", str(exc)) from exc

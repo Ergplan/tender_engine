@@ -1,6 +1,7 @@
+from datetime import date
 from typing import Any
 
-from sqlalchemy import Boolean, Float, ForeignKey, Integer, String, Text, UniqueConstraint
+from sqlalchemy import Boolean, Date, Float, ForeignKey, Integer, String, Text, UniqueConstraint
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -22,6 +23,10 @@ class Document(IdMixin, TenantAuditMixin, Base):
     storage_path: Mapped[str] = mapped_column(String(500), nullable=False)
     status: Mapped[str] = mapped_column(String(20), nullable=False, default="uploaded")
     error: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # Provenance: the URL the file was taken from and the day it was fetched. Null on
+    # documents ingested before 2026-10-07 whose manifest does not say.
+    source_url: Mapped[str | None] = mapped_column(String(1000), nullable=True)
+    retrieved_on: Mapped[date | None] = mapped_column(Date, nullable=True)
 
 
 class Page(IdMixin, TenantAuditMixin, Base):
