@@ -502,7 +502,7 @@ def write_results(
     root.mkdir(parents=True, exist_ok=True)
     summary = summarise(scores)
     stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
-    path = root / f"{stamp}-{label}.json"
+    path = root / f"{stamp}-{tenant_id}-{label}.json"
     path.write_text(
         json.dumps(
             {

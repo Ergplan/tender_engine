@@ -22,14 +22,14 @@ No new upgrade operations detected.
 
 ===== pytest: pass =====
 $ /opt/venv/bin/python -m pytest -p no:cacheprovider
-........................................................................ [ 13%]
-........................................................................ [ 26%]
-........................................................................ [ 39%]
-........................................................................ [ 52%]
-........................................................................ [ 65%]
-........................................................................ [ 78%]
-........................................................................ [ 91%]
-..............................................                           [100%]
+........................................................................ [ 12%]
+........................................................................ [ 25%]
+........................................................................ [ 38%]
+........................................................................ [ 51%]
+........................................................................ [ 64%]
+........................................................................ [ 77%]
+........................................................................ [ 90%]
+...................................................                      [100%]
 =============================== warnings summary ===============================
 tests/api/test_review_tokens.py::test_expired_and_unknown_tokens_are_refused_in_plain_words
 tests/api/test_review_tokens.py::test_pages_search_and_file_authorisation_for_the_viewer
@@ -37,7 +37,7 @@ tests/api/test_review_tokens.py::test_pages_search_and_file_authorisation_for_th
     return super().request(
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-550 passed, 5 deselected, 2 warnings in 464.17s (0:07:44)
+555 passed, 5 deselected, 2 warnings in 392.22s (0:06:32)
 
 
 ===== openapi_drift: pass =====
@@ -59,25 +59,22 @@ $ node /app/web/node_modules/vitest/vitest.mjs run
 
  RUN  v3.2.7 /app/web
 
- ✓ src/review/ReviewScreen.test.tsx (33 tests) 5803ms
-   ✓ what the reviewer sees > shows the tender, the reviewer, progress and a disabled Complete button  519ms
-   ✓ deciding > approves the focused field with Enter, saves at once and moves to the next undecided  418ms
-   ✓ deciding > edits a date in a date input and sends the typed value with the decision it replaces  339ms
-   ✓ deciding > asks for the page and the words when the field has no located evidence  410ms
-   ✓ orientation and reading aids > counts what is left, and estimates the time once it knows the pace  300ms
- ✓ src/App.test.tsx (3 tests) 249ms
- ✓ src/admin/ReliabilityPage.test.tsx (3 tests) 271ms
- ✓ src/review/SummaryPage.test.tsx (2 tests) 247ms
- ✓ src/review/RecordView.test.tsx (5 tests) 297ms
- ✓ src/review/guide.test.tsx (3 tests) 253ms
- ✓ src/lib/format.test.ts (14 tests) 27ms
- ✓ src/lib/keyboard.test.ts (5 tests) 6ms
+ ✓ src/review/ReviewScreen.test.tsx (33 tests) 5530ms
+   ✓ deciding > approves the focused field with Enter, saves at once and moves to the next undecided  430ms
+   ✓ orientation and reading aids > counts what is left, and estimates the time once it knows the pace  513ms
+ ✓ src/App.test.tsx (3 tests) 427ms
+ ✓ src/review/RecordView.test.tsx (5 tests) 304ms
+ ✓ src/admin/ReliabilityPage.test.tsx (3 tests) 390ms
+ ✓ src/review/SummaryPage.test.tsx (2 tests) 294ms
+ ✓ src/review/guide.test.tsx (3 tests) 77ms
+ ✓ src/lib/format.test.ts (14 tests) 25ms
+ ✓ src/lib/keyboard.test.ts (5 tests) 11ms
  ✓ src/lib/pace.test.ts (3 tests) 4ms
 
  Test Files  9 passed (9)
       Tests  71 passed (71)
-   Start at  17:24:17
-   Duration  29.70s (transform 1.20s, setup 1.33s, collect 3.72s, tests 7.16s, environment 10.16s, prepare 2.67s)
+   Start at  06:52:25
+   Duration  27.98s (transform 1.27s, setup 1.23s, collect 3.44s, tests 7.06s, environment 9.51s, prepare 1.92s)
 
 stderr | src/review/ReviewScreen.test.tsx > deciding > moves focus with J and K and tells why Enter cannot approve
 Warning: An update to PdfPane inside a test was not wrapped in act(...).

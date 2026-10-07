@@ -71,4 +71,5 @@ Kept current every stage. Each gap says what is missing, why, and what closes it
 | Reviewer time is counted between decisions in sittings of under fifteen minutes' gap, from the approval rows | The screen does not report time on page | Time on page from the browser, if a truer figure is wanted |
 | The gold record keeps the pages the reviewer accepted, not the quote or box; evidence accuracy is by page | Pages are what the snapshot holds | Add the accepted spans to the snapshot if box-level accuracy is wanted |
 | The admin dashboard is not in the browser suite | It needs `ADMIN_TOKEN` in the browser-test stack | A Playwright case with the token set in `infra/Caddyfile.e2e`'s stack |
+| Gold records, results and the three report files are laid out by tender type and slug, not by tenant; a second tenant with the same slug would overwrite the first's file | The master prompt fixes `evals/gold/<type>/<slug>.yaml`; phase 1 has one tenant; each file carries its tenant and loading filters by it | A tenant folder under `evals/gold/` and `evals/results/` when the second tenant arrives (Stage 5) |
 

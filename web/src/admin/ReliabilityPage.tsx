@@ -184,7 +184,7 @@ export function ReliabilityPage() {
       </table>
 
       <h2 className="mt-6 font-semibold">Prompt versions tried</h2>
-      {data.prompt_comparison.length < 2 ? (
+      {new Set(data.prompt_comparison.map((c) => String(c.prompt ?? "as pinned"))).size < 2 ? (
         <p className="mt-1 text-slate-600">A comparison appears once more than one prompt version has been scored.</p>
       ) : (
         <table data-testid="prompt-table" className="mt-2 min-w-full border-collapse text-xs">

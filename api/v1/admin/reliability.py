@@ -206,13 +206,14 @@ def run_eval(
         prompt = ", ".join(f"{s}/{v}" for s, v in sorted(read_with))
         label = "runs-" + "-".join(f"{s}-{v}" for s, v in sorted(read_with))
     for record in records:
-        found = (
-            candidates_of_runs(
-                session, tenant_id, _runs_of(session, tenant_id, record, body.run_ids)
-            )
-            if body.run_ids
-            else candidates_in_review(session, review_state, record)
-        )
+        if body.run_ids:
+            # Only the gold tenders the runs belong to, at the version they read.
+            own_runs = _runs_of(session, tenant_id, record, body.run_ids)
+            if not own_runs:
+                continue
+            found = candidates_of_runs(session, tenant_id, own_runs)
+        else:
+            found = candidates_in_review(session, review_state, record)
         scores += score_record(record, found, catalog, review_state.schemas, sections)
     path, summary = write_results(scores, label=label, tenant_id=tenant_id, prompt=prompt)
     return EvalOut(status="scored", queued={}, results_file=str(path), summary=summary)
@@ -254,6 +255,7 @@ def _runs_of(
                 ExtractionRun.id.in_(run_ids),
                 ExtractionRun.object_type == "tender",
                 ExtractionRun.object_id == record.tender_id,
+                ExtractionRun.object_version == record.reviewed_version,
             )
         )
     )

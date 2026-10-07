@@ -73,10 +73,15 @@ class Stability(BaseModel):
 def accuracy_by_prompt_version(scores: list[FieldScore]) -> dict[str, dict[str, float]]:
     """prompt name -> version -> required-field accuracy, for the last two versions of each
     prompt that scored candidates carry (the last two by version number)."""
-    counts: dict[str, dict[str, list[int]]] = defaultdict(lambda: defaultdict(list))
+    # One observation per tender, field and prompt version: a later score of the same
+    # reading replaces an earlier one, so repeating an evaluation changes nothing.
+    latest: dict[tuple[str, str, str, str], bool] = {}
     for s in scores:
         if s.counted and s.required and s.prompt_name and s.prompt_version:
-            counts[s.prompt_name][s.prompt_version].append(int(s.correct))
+            latest[(s.slug, s.field_path, s.prompt_name, s.prompt_version)] = s.correct
+    counts: dict[str, dict[str, list[int]]] = defaultdict(lambda: defaultdict(list))
+    for (_, _, prompt, version), correct in latest.items():
+        counts[prompt][version].append(int(correct))
     found: dict[str, dict[str, float]] = {}
     for prompt, versions in sorted(counts.items()):
         last_two = sorted(versions, key=_version_number)[-2:]
@@ -182,7 +187,7 @@ def stability(
         for path, own in by_required_field.items()
         if sum(1 for s in own if s.correct) / len(own) < FLOOR_ACCURACY
     )
-    by_prompt = accuracy_by_prompt_version(scores + (history or []))
+    by_prompt = accuracy_by_prompt_version((history or []) + scores)  # the current reading wins
     versions = [f"{p} {v}" for p, vs in by_prompt.items() for v in vs]
     below_bar = [
         f"{p} {v} ({_pct(acc)})"

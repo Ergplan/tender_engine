@@ -198,3 +198,7 @@ def test_the_last_two_versions_of_each_prompt_are_judged_apart() -> None:
         "extract/guarantees": {"v3": 1.0, "v10": 1.0},
         "extract/key_dates": {"v1": 1.0},
     }
+    # The same reading scored twice is one observation; the later score of it wins.
+    twice = scores + [score("c", RATE, "guarantees", "wrong_value", "v3")]
+    assert accuracy_by_prompt_version(twice)["extract/guarantees"] == {"v3": 0.0, "v10": 1.0}
+    assert accuracy_by_prompt_version(twice + [scores[2]])["extract/guarantees"]["v3"] == 1.0

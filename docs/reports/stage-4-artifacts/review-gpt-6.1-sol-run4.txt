@@ -1,0 +1,71 @@
+reviewer: gpt-6.1-sol  input chars: 548580  tokens in/out: 164682/3968
+
+### (a) Non-negotiable invariants
+
+| Invariant | Assessment from the supplied diff |
+|---|---|
+| **The LLM never writes truth** | No new canonical-fact writer or approval bypass is shown. Extraction uses `LLMRequest` and records candidate prompt provenance (`core/services/extract.py:535–538, 799–802`). Exclusivity of the unchanged canonical writer cannot be verified from these hunks. |
+| **Every value carries its evidence** | Evaluation reads candidate evidence and accepted snapshot pages (`evals/gold.py:131–138, 156–158`). Production evidence validation, confidence caps and approval guards are not supplied; their enforcement cannot be verified. No new bypass is shown. |
+| **The tender is a versioned object** | Gold retains the reviewed version and inherited field versions (`evals/gold.py:94–120, 182`); ordinary scoring requests the reviewed version (`evals/runner.py:274`). No in-place tender-version edit is added. Existing version creation and canonical attachment are outside the diff. |
+| **Candidates are immutable** | Gold and evaluation read candidates without updating them (`evals/gold.py:121–129`; `evals/runner.py:308–338`). The existing approval-writing implementation is not supplied. |
+| **Validation is deterministic** | Override validation and evaluation matching are plain Python (`core/services/extract.py:280–289`; `evals/runner.py:98–168`). No LLM validation is added. Existing production validation and failed-validation visibility cannot be verified. |
+| **Everything is audited and tenant-scoped** | New production database reads explicitly filter tenant (`evals/gold.py:81–138`; `evals/feedback_report.py:55–68`; `evals/report.py:129–133`; `evals/runner.py:308–325, 355–360, 387–389`). Result reads filter stored tenant attribution (`evals/report.py:254–267`). No new table is added. File-write isolation is not upheld, as detailed below; candidate audit coverage is addressed in (c). |
+| **Feedback is stored, never auto-applied** | Feedback is read to produce suggestions and report files, not to mutate prompts, thresholds or models (`evals/feedback_report.py:55–82, 103–161, 176–182`). Prompt overrides come from explicit evaluation requests (`evals/runner.py:345–375`). |
+| **API first** | Dashboard, gold, evaluation, report generation and feedback have versioned endpoints (`api/v1/admin/reliability.py:99, 127, 163, 238, 262`). The UI obtains dashboard data through the versioned API client (`web/src/admin/ReliabilityPage.tsx:38`; `web/src/api/client.ts:73–76`). |
+
+FINDINGS: 1
+1. **File-backed writes are not tenant-isolated.** Gold paths contain only tender type and slug (`evals/gold.py:190–191`), results paths contain only second-resolution timestamp and label (`evals/runner.py:516–517`), and report destinations are global (`evals/report.py:32–33, 478–479`; `evals/feedback_report.py:27, 180`). Different tenants can overwrite one another’s artifacts despite tenant-filtered loading.
+
+### (b) Tests for added API endpoints
+
+| Endpoint | Test coverage |
+|---|---|
+| `GET /api/v1/admin/reliability` (`api/v1/admin/reliability.py:99`) | Access/refusal and successful response: `tests/api/test_admin.py:45–87`; populated dashboard: `tests/api/test_admin.py:124–126`. |
+| `POST /api/v1/admin/gold` (`api/v1/admin/reliability.py:127`) | Completion prerequisite, unknown tender, access refusal and successful creation: `tests/api/test_admin.py:99–122`. |
+| `POST /api/v1/admin/evals` (`api/v1/admin/reliability.py:163`) | Stored scoring, prompt queuing, unfinished/unknown/failed-run refusal and named-run scoring: `tests/api/test_admin.py:102, 128–170`. |
+| `POST /api/v1/admin/reports` (`api/v1/admin/reliability.py:238`) | Successful regeneration, file contents and access refusal: `tests/api/test_admin.py:177–188`. |
+| `GET /api/v1/admin/feedback` (`api/v1/admin/reliability.py:262`) | Correction count, returned field and rendered report: `tests/api/test_admin.py:172–175`. |
+
+FINDINGS: none
+
+### (c) Audit coverage of writes
+
+- **candidate:** Candidate-construction arguments change at `core/services/extract.py:799–802`. The surrounding persistence and corresponding audit call are outside the supplied hunks.
+- **approval, canonical_fact, tender_version, feedback:** No direct production writes to these tables are shown. Tests invoke existing extraction and decision paths whose persistence and audit implementations are not supplied.
+- Gold, evaluation-result and report-file writes are not writes to the five named tables.
+
+FINDINGS: 1
+1. **Candidate-write audit coverage cannot be verified:** `core/services/extract.py:799–802` changes candidate construction, but neither its persistence nor its corresponding audit call is supplied. This is an evidence limitation, not a demonstrated unaudited write.
+
+### (d) FIELD-TRACE regeneration
+
+The supplied artifacts support regeneration without a FIELD-TRACE change: `docs/reports/stage-4-artifacts/trace.txt:1–2` records the generator running and writing the file; `docs/reports/stage-4-artifacts/checks.txt:46–49` records a passing freshness check with 183 fields. No `docs/FIELD-TRACE.md` change appears in the diff.
+
+This review did not independently execute `make trace`.
+
+FINDINGS: none
+
+### (e) Draft stage-report claims unsupported by the supplied code
+
+FINDINGS: 11
+1. **Review-link creation and delivery are unverified.** `docs/reports/STAGE-4-REPORT.md:5, 13, 57` claims twelve additional links were created and delivered. Neither token-creation output nor the delivery message is supplied.
+
+2. **Gold fidelity to the completed snapshot is not established, and its version-scope description is stale.** `docs/reports/STAGE-4-REPORT.md:19` says completed-review locking makes active approvals the snapshot’s decisions and describes approvals of the reviewed version. The lock implementation is outside the diff. The builder reads currently active approvals through the reviewed version, including inherited earlier-version decisions (`evals/gold.py:100–120`), and obtains final values from those approvals rather than the snapshot (`evals/gold.py:153–155`).
+
+3. **Named-run API scoring is not restricted to the gold records and versions those runs represent.** `docs/reports/STAGE-4-REPORT.md:25` claims prompt evaluation scores the named runs’ readings and nothing else. The API loops over every selected gold record even when none of the supplied runs belongs to it (`api/v1/admin/reliability.py:214–223`), causing unrelated records to be scored using missing candidates. Run association checks tender identity but not the reviewed version (`api/v1/admin/reliability.py:249–259`).
+
+4. **The advertised stability bar does not require two evaluated prompt versions.** `docs/reports/STAGE-4-REPORT.md:53` treats the condition as satisfied with one version per section. The stage prompt requires accuracy across the last two prompt versions. The code accepts whichever one or two versions exist and has no minimum-two condition (`evals/report.py:75–85, 217–225`); the fixture explicitly expects the bar to pass with one version per prompt (`tests/evals/test_report.py:81–88`).
+
+5. **Historical stability accuracy is weighted by evaluation repetitions, not independent tender-field observations.** `docs/reports/STAGE-4-REPORT.md:25, 53` presents historical evaluations as evidence for accuracy under each prompt version. Every historical score is appended (`evals/report.py:157–164`) and combined with current scores (`evals/report.py:190`), then averaged without deduplication (`evals/report.py:78–85`). Repeated evaluations—and duplication between current and historical scores—can change the bar without adding reviewed tenders.
+
+6. **The dashboard’s comparison condition is result-file count, not distinct prompt-version count.** `docs/reports/STAGE-4-REPORT.md:38` says comparison appears once more than one prompt version has been evaluated. The page checks only `prompt_comparison.length < 2` (`web/src/admin/ReliabilityPage.tsx:184–186`); comparison data contains one entry per results file (`evals/report.py:271–289`). Two evaluations of the same version therefore display a comparison.
+
+7. **“Not a login” does not establish compliance with the no-auth restriction.** `docs/reports/STAGE-4-REPORT.md:39` distinguishes the admin credential from prohibited authentication. Middleware authenticates that separate credential (`api/middleware/review_token.py:81–88`), and the page presents a password-style credential form and stores the credential in browser session storage (`web/src/admin/ReliabilityPage.tsx:40, 64–81`). The report acknowledges the conflict, but the implementation remains application authentication before Stage 5.
+
+8. **Corpus-audit assertions are unverified.** `docs/reports/STAGE-4-REPORT.md:62` claims manifest/database agreement, version/document counts and detailed external-site findings. The relevant manifests, query output and external-source evidence are not supplied.
+
+9. **Some incident assertions exceed the supplied artifact.** `docs/reports/STAGE-4-REPORT.md:66` claims migration execution between failure and recovery, replay through the owner’s review link, that only the completion route was called, and unchanged approval timestamps. `docs/reports/stage-4-artifacts/incident.txt:1–28` supports the missing-column failure, later successful completion, audit actor and last-decision time, but does not establish those additional details.
+
+10. **The boundary-test description exceeds the cases shown.** `docs/reports/STAGE-4-REPORT.md:70` describes decimals, percentages and each capacity type as tested at the 0.5% boundary. Decimal cases are `1.504` and `1.6` against `1.5`; percentage cases are `10.04` and `10.06` against `10`; capacity cases bracket rather than exercise the exact boundary (`tests/evals/test_runner.py:142–169`). Moreover, the money test’s “0.50% of the larger” comment is inaccurate for `928000` versus `932640` (`tests/evals/test_runner.py:147`).
+
+11. **Stage-wide model-call history and the expanded cost total are only partially supported.** `docs/reports/STAGE-4-REPORT.md:151` claims no stage model calls or prompt evaluation and approximately USD 381 including an out-of-database Stage 3 pass. `docs/reports/stage-4-artifacts/costs.txt:1–19` supports the supplied totals and one `summary_record` call after noon, but does not establish the entire stage’s call history or the additional Stage 3 expenditure; line 21 only references an unsupplied report section.

@@ -143,13 +143,18 @@ def test_a_date_of_another_day_is_wrong_and_an_unreadable_one_is_a_matter_of_for
     [
         ("money_inr", 928000, 928000, "correct"),
         ("money_inr", 928000, 932000, "correct"),  # 0.43%: within the half-percent band
-        ("money_inr", 928000, 932640, "correct"),  # 0.50% of the larger: the edge, in
-        ("money_inr", 928000, 932700, "wrong_value"),  # just past it
+        ("money_inr", 928000, 932640, "correct"),  # 0.4975% of the larger: just inside
+        ("money_inr", 928000, 932663, "correct"),  # 0.49998%: the edge
+        ("money_inr", 928000, 932664, "wrong_value"),  # 0.50009%: just past it
         ("money_inr", 928000, 933000, "wrong_value"),  # 0.54%
         ("money_inr", 928000, "9,28,000", "correct"),
         ("decimal", 1.5, 1.504, "correct"),
+        ("decimal", 1.5, 1.5075, "correct"),  # the edge: 0.0075 is 0.4975% of 1.5075
+        ("decimal", 1.5, 1.5076, "wrong_value"),
         ("decimal", 1.5, 1.6, "wrong_value"),
         ("percent", 10, 10.04, "correct"),
+        ("percent", 10, 10.05, "correct"),  # the edge
+        ("percent", 10, 10.0503, "wrong_value"),
         ("percent", 10, 10.06, "wrong_value"),
         ("mw", 600, 600.0, "correct"),
         ("mw", 600, 602.9, "correct"),

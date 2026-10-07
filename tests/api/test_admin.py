@@ -141,15 +141,19 @@ def test_gold_eval_and_feedback_are_api_operations(
     early_score = client.post("/api/v1/admin/evals", json={"run_ids": run_ids}, headers=ADMIN)
     assert early_score.status_code == 409 and "still queued" in early_score.json()["detail"]
     pipeline.runner.run_until_idle()
+    import json as _json
+
     unknown = client.post("/api/v1/admin/evals", json={"run_ids": ["x" * 32]}, headers=ADMIN)
     assert unknown.status_code == 404 and "no such run" in unknown.json()["detail"]
     rescored = client.post("/api/v1/admin/evals", json={"run_ids": run_ids}, headers=ADMIN)
     assert rescored.status_code == 201, rescored.text
     summary = rescored.json()["summary"]
     assert set(summary["by_section"]) == {"commercial"}
+    # Only the gold tender the runs belong to is scored: no "missing" for the others.
+    assert {
+        s["slug"] for s in _json.loads(Path(rescored.json()["results_file"]).read_text())["scores"]
+    } == {tid}
     # Written as a prompt evaluation, so it counts for the bar and the comparison.
-    import json as _json
-
     prompt_result = _json.loads(Path(rescored.json()["results_file"]).read_text())
     assert prompt_result["prompt"] == "commercial/v2"
     shown = client.get(RELIABILITY, headers=ADMIN).json()
@@ -180,9 +184,10 @@ def test_gold_eval_and_feedback_are_api_operations(
     assert written.status_code == 201, written.text
     assert written.json()["gold_records"] == 1 and written.json()["corrections"] == 1
     assert (eval_roots / "FEEDBACK-REPORT.md").read_text().startswith("# Feedback report")
-    import json as _json
-
     results = [_json.loads(p.read_text()) for p in (eval_roots / "results").glob("*.json")]
     assert len(results) == 2
+    assert all(
+        pipeline.settings.tenant_id in p.name for p in (eval_roots / "results").glob("*.json")
+    )
     assert results and all(r["tenant_id"] == pipeline.settings.tenant_id for r in results)
     assert client.post("/api/v1/admin/reports").status_code == 401
