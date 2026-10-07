@@ -1,0 +1,69 @@
+reviewer: gpt-6.1-sol  input chars: 563850  tokens in/out: 168457/2753
+
+### (a) Non-negotiable invariants
+
+| Invariant | Assessment from the supplied diff |
+|---|---|
+| **The LLM never writes truth** | No new canonical-fact writer or approval bypass is shown. Extraction retains a typed model request and candidate prompt provenance (`core/services/extract.py:535–538, 799–802`). Exclusivity of the existing canonical writer is outside the supplied hunks and cannot be verified. |
+| **Every value carries its evidence** | Gold construction reads candidate evidence and accepted snapshot pages (`evals/gold.py:131–138, 156–158`). Located-evidence validation, confidence caps and approval guards are outside the supplied hunks. No new bypass is demonstrated, but full enforcement cannot be verified. |
+| **The tender is a versioned object** | Gold retains reviewed and per-field versions (`evals/gold.py:94–120, 182`); named-run scoring matches the reviewed version (`api/v1/admin/reliability.py:248–258`). No in-place tender-version edit is added. Existing amendment creation and canonical version attachment are not supplied. |
+| **Candidates are immutable** | New gold and evaluation code reads candidates without updating them (`evals/gold.py:121–129`; `evals/runner.py:308–338`). Existing approval persistence is outside the diff. |
+| **Validation is deterministic** | Override checks and evaluation matching use Python (`core/services/extract.py:280–289`; `evals/runner.py:98–168`). No LLM validation is added. Existing production validation and failed-validation visibility cannot be verified. |
+| **Everything is audited and tenant-scoped** | New production database queries explicitly filter tenant (`evals/gold.py:81–138`; `evals/feedback_report.py:55–68`; `api/v1/admin/reliability.py:248–258`). The changed model retains `TenantAuditMixin` (`core/models/extraction.py:37`). Result loading filters tenant attribution (`evals/report.py:254–267`). File-write isolation remains deficient, as listed below; candidate audit coverage is addressed in (c). |
+| **Feedback is stored, never auto-applied** | Feedback is read to render human-facing suggestions, not to alter runtime prompts, thresholds or models (`evals/feedback_report.py:55–82, 103–161`). Prompt overrides originate from explicit evaluation requests (`evals/runner.py:345–375`). |
+| **API first** | Dashboard, gold, evaluation, report generation and feedback have versioned endpoints (`api/v1/admin/reliability.py:99, 127, 163, 230, 262`). The UI obtains dashboard data through the versioned API client (`web/src/admin/ReliabilityPage.tsx:38`; `web/src/api/client.ts:73–76`). |
+
+FINDINGS: 1
+1. **Gold and report writes are not tenant-isolated.** Gold paths contain only tender type and slug (`evals/gold.py:190–191, 205`); reliability/review-log destinations are global (`evals/report.py:32–33, 488–489`), as is the feedback-report destination (`evals/feedback_report.py:27, 180`). Different tenants can overwrite one another’s artifacts despite tenant-filtered loading. The phase-one rationale does not establish tenant isolation.
+
+### (b) Tests for added API endpoints
+
+| Endpoint | Test coverage |
+|---|---|
+| `GET /api/v1/admin/reliability` | `test_the_route_needs_the_admin_token_and_a_review_link_does_not_open_it`, `test_the_route_is_closed_when_no_admin_token_is_configured` (`tests/api/test_admin.py:45–87`); populated dashboard assertions (`tests/api/test_admin.py:124–126`). |
+| `POST /api/v1/admin/gold` | `test_gold_eval_and_feedback_are_api_operations`: completion prerequisite, unknown tender, access refusal and successful creation (`tests/api/test_admin.py:90–122`). |
+| `POST /api/v1/admin/evals` | Same test: stored scoring, prompt queuing, unfinished/unknown/failed-run refusal and named-run scoring (`tests/api/test_admin.py:102, 128–170`). |
+| `POST /api/v1/admin/reports` | Same test: successful regeneration, file contents and access refusal (`tests/api/test_admin.py:177–193`). |
+| `GET /api/v1/admin/feedback` | Same test: correction count, returned field and rendered report (`tests/api/test_admin.py:172–175`). |
+
+FINDINGS: none
+
+### (c) Audit coverage of writes
+
+- **candidate:** Candidate-construction arguments change at `core/services/extract.py:799–802`. The surrounding persistence and audit call are not supplied.
+- **approval, canonical_fact, tender_version, feedback:** No direct production writes to these tables are shown. Added tests invoke existing extraction and approval paths, whose write-and-audit implementations are outside the supplied diff.
+- Gold, results and report-file writes are not writes to the five named tables. The direct test update changes `extraction_run`, not a named table (`tests/api/test_admin.py:164–168`).
+
+FINDINGS: 1
+1. **Candidate-write audit coverage cannot be verified.** The changed construction at `core/services/extract.py:799–802` has no visible corresponding persistence or audit call in the supplied hunks. This is an evidence limitation, not a demonstrated unaudited write.
+
+### (d) FIELD-TRACE regeneration
+
+The supplied artifacts support regeneration without a FIELD-TRACE change: `docs/reports/stage-4-artifacts/trace.txt:1–2` records the generator running and writing the file; `docs/reports/stage-4-artifacts/checks.txt:46–49` records a passing freshness check with 183 fields. No `docs/FIELD-TRACE.md` change appears in the supplied diff.
+
+This review did not independently execute `make trace`.
+
+FINDINGS: none
+
+### (e) Draft stage-report claims unsupported by the supplied code
+
+FINDINGS: 10
+1. **Review-link creation, delivery and read-only status are unverified.** `docs/reports/STAGE-4-REPORT.md:5, 13, 57` claims twelve additional links were created and delivered, and that NHPC’s link is now read-only. Token-creation output, the delivery message and the completed-review lock implementation are not supplied.
+
+2. **Gold fidelity to the completed snapshot depends on an unshown lock.** `docs/reports/STAGE-4-REPORT.md:19, 125, 148` treats standing approvals as the snapshot’s decisions. The builder reads currently active approvals and takes final values from them, rather than frozen snapshot values (`evals/gold.py:100–120, 153–155`). The claimed completion lock is outside the diff, so this equivalence cannot be established.
+
+3. **The gold builder’s fallback can contradict the claimed field-version selection.** `docs/reports/STAGE-4-REPORT.md:19` says each decision comes from the version shown in the snapshot. If no standing approval matches that shown version, the fallback selects the latest standing approval regardless of the shown version (`evals/gold.py:112–120`). Its comment limits this to undated fields, but its condition does not.
+
+4. **The advertised stability bar is weaker than the stage prompt’s two-version condition.** `docs/reports/STAGE-4-REPORT.md:53, 148` treats one version per section as sufficient and describes five more reviews as the remaining distance. The code accepts one available version and imposes no minimum-two requirement (`evals/report.py:89–91, 217–225`); the fixture explicitly expects that to pass (`tests/evals/test_report.py:81–88`). The report acknowledges this interpretation, but it is not the stipulated bar.
+
+5. **“Not a login” does not establish compliance with the no-auth restriction.** `docs/reports/STAGE-4-REPORT.md:39` distinguishes the admin credential from prohibited authentication. Middleware authenticates a separate admin credential (`api/middleware/review_token.py:81–88`), and the page presents a password-style credential-entry form and stores the credential in session storage (`web/src/admin/ReliabilityPage.tsx:40, 64–81`). This is application authentication before Stage 5, notwithstanding the acknowledged rationale.
+
+6. **The dashboard does not actually identify distinct prompt revisions.** `docs/reports/STAGE-4-REPORT.md:38, 145` says comparison appears only for distinct prompt versions. The UI compares complete prompt labels, treating `"as pinned"` as another distinct label (`web/src/admin/ReliabilityPage.tsx:189`). Evaluations of different sections at the same revision—or a pinned evaluation and an explicit evaluation of that same revision—can therefore trigger the comparison.
+
+7. **Corpus-audit assertions are unverified.** `docs/reports/STAGE-4-REPORT.md:62` asserts manifest/database agreement, tender/version/document counts, external-site findings, missing documents, portal deadline changes and a date typo. The relevant manifests, query output and external-source evidence are not supplied.
+
+8. **Some incident assertions exceed the artifact.** `docs/reports/STAGE-4-REPORT.md:66` claims migration execution between failure and recovery and replay through the owner’s own review link. `docs/reports/stage-4-artifacts/incident.txt:1–28` supports the missing-column failure, later successful completion, audit actor and last-decision time, but does not establish those additional details.
+
+9. **The claimed test of named-run tender/version restriction is not demonstrated.** `docs/reports/STAGE-4-REPORT.md:143` says the restriction has a test. The API test creates only one gold tender and checks that its slug is the only scored slug (`tests/api/test_admin.py:95–122, 150–153`); it supplies neither an unrelated gold tender nor a mismatched-version run. The restriction exists in code, but the claimed regression coverage is unsupported.
+
+10. **Stage-wide call history and the expanded cost total are only partially supported.** `docs/reports/STAGE-4-REPORT.md:162` claims no stage model calls or prompt evaluation and approximately USD 381 including an out-of-database Stage 3 pass. `docs/reports/stage-4-artifacts/costs.txt:1–19` supports one `summary_record` call after noon and the database totals, not the entire stage’s call history or the additional Stage 3 expenditure; line 21 references an unsupplied report section.

@@ -113,8 +113,15 @@ def build_gold(session: Session, catalog: Catalog, tender: Tender) -> GoldRecord
         wanted = shown_version if shown_version is not None else reviewed_version
         if version == wanted:
             approvals[path] = standing[(path, version)]
-    for path, version in standing:  # a field the view does not date: its latest decision
-        if path not in approvals and all(v <= version for p, v in standing if p == path):
+    for path, version in standing:
+        # A field the view does not date (no value shown): its latest standing decision.
+        # A field the view dates with no decision at that version is left undecided.
+        undated = (view_by_path.get(path) or {}).get("version_no") is None
+        if (
+            path not in approvals
+            and undated
+            and all(v <= version for p, v in standing if p == path)
+        ):
             approvals[path] = standing[(path, version)]
     candidate_ids = [a.candidate_id for a in approvals.values()]
     candidates = {

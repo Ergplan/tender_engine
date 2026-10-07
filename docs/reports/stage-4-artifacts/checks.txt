@@ -37,7 +37,7 @@ tests/api/test_review_tokens.py::test_pages_search_and_file_authorisation_for_th
     return super().request(
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-555 passed, 5 deselected, 2 warnings in 392.22s (0:06:32)
+555 passed, 5 deselected, 2 warnings in 461.36s (0:07:41)
 
 
 ===== openapi_drift: pass =====
@@ -59,22 +59,22 @@ $ node /app/web/node_modules/vitest/vitest.mjs run
 
  RUN  v3.2.7 /app/web
 
- ✓ src/review/ReviewScreen.test.tsx (33 tests) 5530ms
-   ✓ deciding > approves the focused field with Enter, saves at once and moves to the next undecided  430ms
-   ✓ orientation and reading aids > counts what is left, and estimates the time once it knows the pace  513ms
- ✓ src/App.test.tsx (3 tests) 427ms
- ✓ src/review/RecordView.test.tsx (5 tests) 304ms
- ✓ src/admin/ReliabilityPage.test.tsx (3 tests) 390ms
- ✓ src/review/SummaryPage.test.tsx (2 tests) 294ms
- ✓ src/review/guide.test.tsx (3 tests) 77ms
- ✓ src/lib/format.test.ts (14 tests) 25ms
- ✓ src/lib/keyboard.test.ts (5 tests) 11ms
+ ✓ src/review/ReviewScreen.test.tsx (33 tests) 5508ms
+   ✓ deciding > approves the focused field with Enter, saves at once and moves to the next undecided  319ms
+   ✓ orientation and reading aids > counts what is left, and estimates the time once it knows the pace  657ms
+ ✓ src/review/RecordView.test.tsx (5 tests) 337ms
+ ✓ src/admin/ReliabilityPage.test.tsx (3 tests) 279ms
+ ✓ src/App.test.tsx (3 tests) 251ms
+ ✓ src/review/SummaryPage.test.tsx (2 tests) 523ms
+ ✓ src/review/guide.test.tsx (3 tests) 257ms
+ ✓ src/lib/format.test.ts (14 tests) 27ms
+ ✓ src/lib/keyboard.test.ts (5 tests) 5ms
  ✓ src/lib/pace.test.ts (3 tests) 4ms
 
  Test Files  9 passed (9)
       Tests  71 passed (71)
-   Start at  06:52:25
-   Duration  27.98s (transform 1.27s, setup 1.23s, collect 3.44s, tests 7.06s, environment 9.51s, prepare 1.92s)
+   Start at  07:20:02
+   Duration  27.51s (transform 826ms, setup 1.50s, collect 3.27s, tests 7.19s, environment 9.26s, prepare 1.80s)
 
 stderr | src/review/ReviewScreen.test.tsx > deciding > moves focus with J and K and tells why Enter cannot approve
 Warning: An update to PdfPane inside a test was not wrapped in act(...).

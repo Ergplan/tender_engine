@@ -215,6 +215,10 @@ def run_eval(
         else:
             found = candidates_in_review(session, review_state, record)
         scores += score_record(record, found, catalog, review_state.schemas, sections)
+    if body.run_ids and not scores:
+        raise AppError(
+            "validation_failed", "the runs belong to no gold tender at its reviewed version"
+        )
     path, summary = write_results(scores, label=label, tenant_id=tenant_id, prompt=prompt)
     return EvalOut(status="scored", queued={}, results_file=str(path), summary=summary)
 

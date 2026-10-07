@@ -149,15 +149,27 @@ def test_gold_eval_and_feedback_are_api_operations(
     assert rescored.status_code == 201, rescored.text
     summary = rescored.json()["summary"]
     assert set(summary["by_section"]) == {"commercial"}
-    # Only the gold tender the runs belong to is scored: no "missing" for the others.
-    assert {
-        s["slug"] for s in _json.loads(Path(rescored.json()["results_file"]).read_text())["scores"]
-    } == {tid}
+    # Only the gold tender the runs belong to is scored: a second gold tender, whose runs
+    # are not named, is left out rather than scored as all missing.
+    other = extracted(client, pipeline)
+    completed_review(client, pipeline, other)
+    made_other = client.post("/api/v1/admin/gold", json={"tender_id": other["id"]}, headers=ADMIN)
+    assert made_other.status_code == 201
+    assert client.get(RELIABILITY, headers=ADMIN).json()["gold_records"] == 2
+    rescored = client.post("/api/v1/admin/evals", json={"run_ids": run_ids}, headers=ADMIN)
+    assert rescored.status_code == 201, rescored.text
+    scored_rows = _json.loads(Path(rescored.json()["results_file"]).read_text())["scores"]
+    assert {row["slug"] for row in scored_rows} == {tid}
+    assert all(row["outcome"] != "missing" for row in scored_rows)
     # Written as a prompt evaluation, so it counts for the bar and the comparison.
     prompt_result = _json.loads(Path(rescored.json()["results_file"]).read_text())
     assert prompt_result["prompt"] == "commercial/v2"
     shown = client.get(RELIABILITY, headers=ADMIN).json()
-    assert [c["prompt"] for c in shown["prompt_comparison"]] == [None, "commercial/v2"]
+    assert [c["prompt"] for c in shown["prompt_comparison"]] == [
+        None,
+        "commercial/v2",
+        "commercial/v2",
+    ]
     assert "extract/commercial v2" in " ".join(shown["stability"]["reasons"]) or not any(
         s["required"] for s in prompt_result["scores"]
     )
@@ -176,16 +188,18 @@ def test_gold_eval_and_feedback_are_api_operations(
 
     feedback = client.get("/api/v1/admin/feedback", headers=ADMIN)
     assert feedback.status_code == 200
-    assert feedback.json()["corrections"] == 1 and feedback.json()["rows"][0]["field_path"] == EMD
+    # Two completed reviews, each with the EMD corrected.
+    assert feedback.json()["corrections"] == 2
+    assert {r["field_path"] for r in feedback.json()["rows"]} == {EMD}
     assert "# Feedback report" in feedback.json()["markdown"]
 
     # The three report files, written again on request; results carry the tenant.
     written = client.post("/api/v1/admin/reports", headers=ADMIN)
     assert written.status_code == 201, written.text
-    assert written.json()["gold_records"] == 1 and written.json()["corrections"] == 1
+    assert written.json()["gold_records"] == 2 and written.json()["corrections"] == 2
     assert (eval_roots / "FEEDBACK-REPORT.md").read_text().startswith("# Feedback report")
     results = [_json.loads(p.read_text()) for p in (eval_roots / "results").glob("*.json")]
-    assert len(results) == 2
+    assert len(results) == 3
     assert all(
         pipeline.settings.tenant_id in p.name for p in (eval_roots / "results").glob("*.json")
     )
