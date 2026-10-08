@@ -262,7 +262,7 @@ def test_ingest_extract_and_summary_on_a_tender_folder(
     pipeline.sdk.answers = {**RFS_ANSWERS, **AMENDMENT_ANSWERS}
     started = ingest_tenders.extract(services)
     assert started == [
-        "acme-solar-600 v1: 2 run(s), 12 group call(s)",
+        "acme-solar-600 v1: 2 run(s), 14 group call(s)",
         "acme-solar-600 v2: 0 run(s), 0 group call(s); mapped first",
     ]
     assert ingest_tenders.extract(services) == [], "versions with runs or a map queued are left"
@@ -273,7 +273,9 @@ def test_ingest_extract_and_summary_on_a_tender_folder(
     out = tmp_path / "EXTRACTION-SUMMARY.md"
     text = ingest_tenders.summary(services, out)
     assert out.read_text() == text
-    fields = len(pipeline.catalog.get("solar").fields)
+    # Extracted fields: the derived tables are written from decisions, not read, and are
+    # not rated.
+    fields = len([f for f in pipeline.catalog.get("solar").fields if f.section != "derived"])
     row = next(line for line in text.splitlines() if line.startswith("| solar | acme-solar-600"))
     cells = [cell.strip() for cell in row.strip("|").split("|")]
     # type, tender, versions, documents, pages, fields, with a value, located, rates...
@@ -329,8 +331,9 @@ def test_resume_continues_a_failed_run_without_repeating_finished_groups(
     db.expire_all()
     assert set(db.scalars(select(ExtractionRun.status))) == {"validated"}
     assert set(db.scalars(select(ExtractionRun.error))) == {None}
-    # 12 + 1 group calls in all; the four that succeeded before are not repeated.
-    assert len(pipeline.sdk.extract_calls()) - done_before == 13 - 4
+    # 12 + 1 group calls, plus supply_sources on both documents (v3); the four that
+    # succeeded before are not repeated.
+    assert len(pipeline.sdk.extract_calls()) - done_before == 15 - 4
 
 
 def test_groups_narrow_a_re_extraction_to_those_sections_of_each_document(

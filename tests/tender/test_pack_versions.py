@@ -186,7 +186,7 @@ def test_signature_holds_type_unit_values_and_record_keys_only() -> None:
 
 def test_the_power_pack_reads_v1_with_one_declared_change(catalog: Catalog) -> None:
     for name, compiled in catalog.types.items():
-        assert compiled.reads_versions == ("v1",), name
+        assert compiled.reads_versions == ("v1", "v2"), name
         expected = (
             (("v1", ("sector.power.transmission.elements",)),) if name == "transmission" else ()
         )
@@ -197,7 +197,7 @@ def test_the_power_pack_would_not_load_without_its_declaration(catalog: Catalog)
     transmission = catalog.types["transmission"]
     with pytest.raises(PackError, match=r"not listed under read_again.*transmission.elements"):
         verify_versions(
-            PACKS_ROOT / "power", "transmission", "v2", ("v1",), {}, transmission.fields
+            PACKS_ROOT / "power", "transmission", "v3", ("v1",), {}, transmission.fields
         )
 
 
@@ -205,8 +205,10 @@ def test_every_v1_field_of_every_type_is_still_present_in_the_current_version(
     catalog: Catalog,
 ) -> None:
     released = read_released(PACKS_ROOT / "power", "v1")
-    assert released is not None and set(released) == set(catalog.types)
-    for name, compiled in catalog.types.items():
+    # Types added since v1 (re_rtc, 2026-10-08) have nothing in v1 to keep.
+    assert released is not None and set(released) == set(catalog.types) - {"re_rtc"}
+    for name in released:
+        compiled = catalog.types[name]
         current = type_signature(compiled.fields)
         assert set(released[name]) <= set(current), name
         changed = [path for path, sig in released[name].items() if current[path] != sig]

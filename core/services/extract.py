@@ -38,7 +38,7 @@ from core.models import (
     Page,
     Section,
 )
-from core.models.extraction import RECORD_MODE, RUN_MODES
+from core.models.extraction import DERIVED_MODE, RECORD_MODES, RUN_MODES
 from core.schemas import (
     ExtractionSchema,
     FieldDef,
@@ -273,10 +273,13 @@ class ExtractService:
         if not has_sections:
             raise ExtractionError("document has no section map yet")
         schema = self._schemas.get(schema_name, schema_version)
+        readable = {group.name for group in schema.groups if not group.derived}
         if groups is not None:
-            unknown = sorted(set(groups) - {group.name for group in schema.groups})
+            unknown = sorted(set(groups) - readable)
             if unknown or not groups:
-                raise ExtractionError(f"schema {schema.name} has no group(s) {unknown}")
+                raise ExtractionError(
+                    f"schema {schema.name} has no group(s) {unknown} that read from pages"
+                )
         overrides = {k: v for k, v in (prompt_overrides or {}).items() if v}
         unknown_overrides = sorted(set(overrides) - {group.name for group in schema.groups})
         if unknown_overrides:
@@ -724,18 +727,21 @@ class ExtractService:
         confidence: float,
         rationale: str,
         spans: list[dict[str, Any]],
-        call_log_id: str,
+        call_log_id: str | None,
         prompt_name: str,
         prompt_version: str,
     ) -> Candidate:
         """Insert the candidate of a run that was written from the object's record rather
-        than read from pages (run.mode "record"). Its evidence spans are inherited: each
-        names its own document and is already located. The same insert, audit line and
-        refusal of a candidate without evidence as for any other candidate."""
-        if run.mode != RECORD_MODE:
+        than read from pages (run.mode "record", or "derived" when no model was called and
+        `call_log_id` is None). Its evidence spans are inherited: each names its own
+        document and is already located. The same insert, audit line and refusal of a
+        candidate without evidence as for any other candidate."""
+        if run.mode not in RECORD_MODES:
             raise ExtractionError("only a record run takes a candidate written from the record")
         if not spans or any(span.get("char_start") is None for span in spans):
             raise ExtractionError("a candidate written from the record needs located evidence")
+        if (call_log_id is None) != (run.mode == DERIVED_MODE):
+            raise ExtractionError("a derived candidate has no model call; a record one has")
         schema = self._schemas.get(run.schema_name, run.schema_version)
         field = schema.field(field_path)
         group = next(group for group in schema.groups if group.name == field.group)
@@ -751,6 +757,41 @@ class ExtractService:
             [],
             call_log_id,
             spans,
+            prompt=(prompt_name, prompt_version),
+        )
+
+    def unsupported_candidate(
+        self,
+        session: Session,
+        run: ExtractionRun,
+        field_path: str,
+        *,
+        value: Any,
+        rationale: str,
+        prompt_name: str,
+        prompt_version: str,
+    ) -> Candidate:
+        """Insert, in a derived run, a table that no decided clause supports: stored with
+        status `not_found`, confidence 0 and no evidence, so that it is shown with its
+        reason and cannot be approved. The value is kept (every row of it says
+        not_addressed) because that is what the derivation found."""
+        if run.mode != DERIVED_MODE:
+            raise ExtractionError("only a derived run takes an unsupported table")
+        schema = self._schemas.get(run.schema_name, run.schema_version)
+        field = schema.field(field_path)
+        group = next(group for group in schema.groups if group.name == field.group)
+        return self._add_candidate(
+            session,
+            run,
+            group,
+            field,
+            value,
+            0.0,
+            rationale,
+            "not_found",
+            [],
+            None,
+            [],
             prompt=(prompt_name, prompt_version),
         )
 
@@ -971,11 +1012,17 @@ class ExtractService:
 
 
 def _run_groups(schema: ExtractionSchema, groups: list[str] | None) -> list[FieldGroup]:
-    return [group for group in schema.groups if groups is None or group.name in groups]
+    """The groups a run reads from pages: never a derived one."""
+    return [
+        group
+        for group in schema.groups
+        if not group.derived and (groups is None or group.name in groups)
+    ]
 
 
 def _run_fields(schema: ExtractionSchema, groups: list[str] | None) -> set[str]:
-    return {field.path for field in schema.fields if groups is None or field.group in groups}
+    read = {group.name for group in _run_groups(schema, groups)}
+    return {field.path for field in schema.fields if field.group in read}
 
 
 class _PageCache:

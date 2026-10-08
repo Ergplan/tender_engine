@@ -2,15 +2,15 @@
 # Field paths are sector.power.<subdomain>.<field>; this file holds subdomain `common`,
 # the power fields every tender type shares. Each tender type has its own YAML.
 pack: power
-version: v2
-reads_versions: [v1]
+version: v3
+reads_versions: [v1, v2]
 # Fields that v2 defines differently than v1. Their sections were read again under v2, and
 # their candidates from v1 runs are not read. The loader checks this list against
 # released/v1.yaml: a changed field that is not listed here, or a removed one, fails the load.
 read_again:
   v1: [sector.power.transmission.elements]
 sector: power
-subdomains: [common, solar, wind, hybrid, fdre, bess, transmission, generation, epc, ipp]
+subdomains: [common, solar, wind, hybrid, fdre, bess, transmission, generation, epc, ipp, re_rtc]
 
 # Section groups this pack adds to the core ones.
 sections:
@@ -20,6 +20,18 @@ sections:
     roles: [rfs, contractual, nit]
     section_kinds: [connectivity_and_compliance, technical_requirements]
     keywords: [connectivity, general network access, gna, ists charges, waiver, pooling substation, transmission line, almm, domestic content, land, clearances, interconnection point]
+  supply_sources:
+    label: Supply sources
+    prompt: extract/supply_sources
+    roles: [rfs, contractual, nit, ppa]
+    section_kinds: [introduction_and_scope, technical_requirements, connectivity_and_compliance]
+    keywords: [source of supply, any source, renewable energy certificate, rec, non-re, thermal, conventional, storage, battery, pumped storage, hydro, biomass, co-located, charged, exchange, market, traceable]
+  # Written by the pack's derivation rules from the decided fields, never read from pages.
+  derived:
+    label: Derived
+    prompt: derivations
+    roles: [rfs, contractual, nit, ppa, amendment, clarification]
+    derived: true
 
 fields:
   sector.power.common.total_capacity_mw:
@@ -228,5 +240,71 @@ fields:
     label: Clearances responsibility
     type: text
     help: Who obtains statutory clearances and approvals.
+
+  # Supply sources, as the document states them: the basis the derived source table is
+  # computed from. One item per source the tender names a rule for; a tender that says
+  # nothing about sources has an empty list, not a guess.
+  sector.power.common.source_mix_rules:
+    section: supply_sources
+    label: Supply source rules
+    type: record_list
+    help: "One item per source the tender addresses: whether it may, must or must not supply the contracted power, and any limit. `any_non_re` is for a clause on non-RE supply in general that names no source. Each item needs its own quote."
+    keys:
+      source: {label: Source, type: enum, enum: [solar, wind, hydro, biomass, bess, pumped_storage, thermal, market_purchase, any_non_re, other]}
+      treatment: {label: Treatment, type: enum, enum: [allowed, allowed_with_limit, required, prohibited]}
+      limit_value: {label: Limit, type: decimal, min: 0, max: 100000}
+      limit_unit: {label: Limit unit, type: enum, enum: [percent_of_annual_energy, percent_of_contracted_capacity, mw, mwh]}
+      condition: {label: Condition, type: text}
+  sector.power.common.bess_charging_rule:
+    section: supply_sources
+    label: Storage charging rule
+    type: record
+    help: Conditions on a battery or storage system that supplies under the contract.
+    keys:
+      re_only: {label: Charged from RE only, type: bool}
+      co_located_required: {label: Must be co-located, type: bool}
+      regulation_reference: {label: Regulation cited, type: text}
+
+  # Derived tables: written by tender/domain_packs/power/derivations/ from the decided
+  # fields above, each row carrying the clause it rests on. Never read from pages.
+  sector.power.common.source_eligibility:
+    section: derived
+    label: Source eligibility
+    type: record_list
+    help: "For each possible source of supply, whether the tender allows, limits, requires or prohibits it, or does not address it. `basis` says whether the row rests on a clause naming the source (stated) or on a general clause (inherited); a row with no clause behind it is not_addressed."
+    keys:
+      source: {label: Source, type: enum, enum: [solar, wind, hydro, biomass, bess, pumped_storage, thermal, market_purchase, other]}
+      status: {label: Status, type: enum, enum: [allowed, allowed_with_limit, required, prohibited, not_addressed]}
+      basis: {label: Basis, type: enum, enum: [stated, inherited, none]}
+      limit_value: {label: Limit, type: decimal, min: 0, max: 100000}
+      limit_unit: {label: Limit unit, type: enum, enum: [percent_of_annual_energy, percent_of_contracted_capacity, mw, mwh]}
+      condition: {label: Condition, type: text}
+      clause: {label: Clause, type: text}
+      derived_from: {label: Derived from, type: text}
+  sector.power.common.optimizer_constraints:
+    section: derived
+    label: Optimiser constraints
+    type: record_list
+    help: "The constraints an optimisation engine must satisfy, typed: a quantity with a comparator and unit, a date or a period from an event (temporal), or an obligation that holds or not. Each names the field it comes from and carries its evidence."
+    keys:
+      id: {label: Id, type: text}
+      kind: {label: Kind, type: enum, enum: [quantity, temporal, obligation]}
+      subject: {label: Subject, type: enum, enum: [traceable_green_share, non_re_share, cuf_annual, cuf_monthly, cuf_peak, peak_window_hours, contracted_capacity, greenshoe_capacity, linked_capacity_multiple, linked_capacity, linked_land_per_mw, non_re_tariff_fixed_share, non_re_tariff_variable_share, contract_term, storage_capacity, supply_start, supply_start_greenshoe, greenshoe_offer_deadline, greenshoe_ppa_signing, linked_capacity_documents, financial_closure, scod, rec_for_non_re_supply, bess_re_charged_only, bess_co_located, linked_capacity_installation, peak_window_set_by_procurer, non_re_merit_order_despatch, storage_mandatory, source_prohibited]}
+      comparator: {label: Comparator, type: enum, enum: [">=", "<=", "==", between]}
+      value: {label: Value, type: decimal, min: -1000000000, max: 1000000000}
+      value_max: {label: Upper value, type: decimal, min: -1000000000, max: 1000000000}
+      unit: {label: Unit, type: enum, enum: [percent_of_annual_energy, percent_of_monthly_energy, percent_of_peak_energy, percent_of_tariff, mw, mwh, multiple_of_contracted_mw, acres_per_mw, hours_per_day, years, months, days]}
+      period: {label: Period, type: enum, enum: [annual, monthly, daily, peak_hours, contract_term]}
+      on_date: {label: Date (ISO), type: text}
+      relative_to: {label: Relative to, type: enum, enum: [loa, ppa_signing, scod, supply_start, effective_date, greenshoe_offer]}
+      offset_months: {label: Offset, type: decimal, unit: months, min: 0, max: 600}
+      offset_days: {label: Offset, type: decimal, unit: days, min: 0, max: 3660}
+      share_pct: {label: Share, type: percent, unit: percent, min: 0, max: 100}
+      holds: {label: Holds, type: bool}
+      condition: {label: Condition, type: text}
+      source: {label: Source, type: text}
+      basis: {label: Basis, type: enum, enum: [stated, inherited]}
+      clause: {label: Clause, type: text}
+      derived_from: {label: Derived from, type: text}
 
 cross_field_rules: [bid_capacity_order, power_structured_agrees_with_scalar]

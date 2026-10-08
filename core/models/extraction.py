@@ -14,6 +14,11 @@ RUN_MODES = ("sync", "batch")
 # (the record), and their evidence is inherited from those. Not a mode a caller can ask
 # ExtractService.start_run for.
 RECORD_MODE = "record"
+# A run that read no page and made no model call: its candidates were derived by
+# deterministic code from the object's decided fields, with their evidence inherited.
+DERIVED_MODE = "derived"
+# The modes whose candidates are written from the record rather than read from pages.
+RECORD_MODES = (RECORD_MODE, DERIVED_MODE)
 # raw: inserted, not yet validated. validated: every rule passed. needs_review: a rule failed.
 # superseded: a later run produced a candidate for the same field.
 # not_found: the model returned no value. rejected: a value came without evidence.

@@ -1,0 +1,146 @@
+type: re_rtc
+pack: power
+# Round-the-clock "RE" supply from a state discom: a minimum share of traceable green
+# power each year, the balance from any source (non-RE included) covered by RECs, CUF
+# floors by period, a greenshoe option, and a linked solar build obligation. First seen in
+# WBSEDCL/PT&P/RE-RTC/2026/01 (2026-09-23).
+includes: [summary, identity_and_scope, key_dates, eligibility, guarantees, commercial, penalties, connectivity_and_compliance, supply_sources, documents, derived]
+sections:
+  re_rtc_profile:
+    label: RE-RTC supply profile
+    prompt: extract/re_rtc_profile
+    roles: [rfs, contractual, nit, ppa]
+    section_kinds: [introduction_and_scope, technical_requirements, commercial_terms, penalties_and_remedies]
+    keywords: [traceable green, round-the-clock, rtc, cuf, peak hours, greenshoe, green shoe, supply start date, solar power capacity, acres, land documents, fixed charge, variable charge, merit order, renewable energy certificate, accounting year]
+fields:
+  sector.power.re_rtc.traceable_green_min_pct:
+    section: re_rtc_profile
+    label: Minimum traceable green share
+    type: percent
+    unit: percent of annual supply
+    required: true
+    min: 0
+    max: 100
+    help: The share of the round-the-clock supply that must be traceable green power in each accounting year.
+  sector.power.re_rtc.traceable_green_definition:
+    section: re_rtc_profile
+    label: Traceable green power, as defined
+    type: long_text
+    help: What the tender counts as traceable green power (which RE sources, whether supply through storage counts).
+  sector.power.re_rtc.rec_obligation:
+    section: re_rtc_profile
+    label: REC obligation
+    type: record
+    help: Renewable energy certificates the supplier must provide for power that is not traceable green.
+    keys:
+      applies_to: {label: Applies to, type: enum, enum: [all_non_re_energy, shortfall_below_minimum, none]}
+      rec_type: {label: Certificate type, type: text}
+      cost_borne_by: {label: Cost borne by, type: enum, enum: [supplier, procurer, not_stated]}
+  sector.power.re_rtc.cuf_annual_min_pct:
+    section: re_rtc_profile
+    label: Minimum annual CUF
+    type: percent
+    unit: percent
+    required: true
+    min: 0
+    max: 100
+    help: The minimum capacity utilisation factor over each accounting year, as a percentage.
+  sector.power.re_rtc.cuf_monthly_min_pct:
+    section: re_rtc_profile
+    label: Minimum monthly CUF
+    type: percent
+    unit: percent
+    required: true
+    min: 0
+    max: 100
+    help: The minimum capacity utilisation factor in any month, as a percentage.
+  sector.power.re_rtc.cuf_peak_min_pct:
+    section: re_rtc_profile
+    label: Minimum peak-hour CUF
+    type: percent
+    unit: percent
+    required: true
+    min: 0
+    max: 100
+    help: The minimum capacity utilisation factor during the peak hours, as a percentage.
+  sector.power.re_rtc.peak_window:
+    section: re_rtc_profile
+    label: Peak window
+    type: record
+    help: How the peak hours are set.
+    keys:
+      hours_per_day: {label: Hours per day, type: decimal, unit: hours, min: 0, max: 24}
+      stretches: {label: Stretches, type: enum, enum: [single, multiple, procurer_discretion]}
+      set_by: {label: Set by, type: enum, enum: [procurer, supplier, fixed_in_tender]}
+      notice: {label: Notice or timing, type: text}
+  sector.power.re_rtc.cuf_shortfall_penalty:
+    section: re_rtc_profile
+    label: CUF shortfall penalty
+    type: long_text
+    help: What is payable when an annual, monthly or peak-hour CUF floor is missed.
+  sector.power.re_rtc.supply_start_date:
+    section: re_rtc_profile
+    label: Supply start date
+    type: date
+    required: true
+    help: The calendar date the base supply must start, when the tender states one.
+  sector.power.re_rtc.greenshoe_capacity_mw:
+    section: re_rtc_profile
+    label: Greenshoe capacity
+    type: mw
+    unit: MW
+    min: 0
+    max: 20000
+    help: The additional capacity the procurer may take up under the greenshoe option.
+  sector.power.re_rtc.greenshoe_exercise_deadline:
+    section: re_rtc_profile
+    label: Greenshoe offered by
+    type: date
+    help: The latest date by which the procurer offers the greenshoe capacity to the selected bidder.
+  sector.power.re_rtc.greenshoe_ssd:
+    section: re_rtc_profile
+    label: Greenshoe supply start date
+    type: date
+    help: The calendar date the greenshoe supply must start.
+  sector.power.re_rtc.greenshoe_tariff_basis:
+    section: re_rtc_profile
+    label: Greenshoe tariff
+    type: enum
+    enum: [same_as_base, separate_bid, discovered_later, not_stated]
+    help: Whether the greenshoe capacity takes the base tariff and terms or is priced separately.
+  sector.power.re_rtc.greenshoe_ppa_signing_days:
+    section: re_rtc_profile
+    label: Greenshoe PPA signed within
+    type: int
+    unit: days of the offer
+    min: 0
+    max: 365
+    help: Days after the greenshoe offer within which its PPA is signed.
+  sector.power.re_rtc.linked_capacity_obligation:
+    section: re_rtc_profile
+    label: Linked generation build obligation
+    type: record
+    help: Generating capacity the supplier must install because of this contract, with its land and connectivity milestones.
+    keys:
+      technology: {label: Technology, type: enum, enum: [solar, wind, any_re]}
+      multiple_of_contracted: {label: Multiple of contracted capacity, type: decimal, min: 0, max: 10}
+      capacity_mw: {label: Capacity, type: decimal, unit: MW, min: 0, max: 50000}
+      acres_per_mw: {label: Land per MW, type: decimal, unit: acres per MW, min: 0, max: 20}
+      location: {label: Location, type: text}
+      stages:
+        label: Document milestones
+        keys:
+          share_pct: {label: Share of capacity, type: percent, unit: percent, min: 0, max: 100}
+          months_from_loa: {label: Months from LoA, type: decimal, unit: months, min: 0, max: 60}
+          documents: {label: Documents, type: enum, enum: [land, connectivity, both]}
+      consequence: {label: If missed, type: text}
+  sector.power.re_rtc.non_re_tariff_split:
+    section: re_rtc_profile
+    label: Non-RE tariff split
+    type: record
+    help: How the tariff is split into fixed and variable charges for power supplied from non-RE sources, and how it is despatched.
+    keys:
+      fixed_pct: {label: Fixed charge share, type: percent, unit: percent of tariff, min: 0, max: 100}
+      variable_pct: {label: Variable charge share, type: percent, unit: percent of tariff, min: 0, max: 100}
+      merit_order_treatment: {label: Despatch, type: enum, enum: [merit_order_on_variable_charge, merit_order_on_full_tariff, must_run, not_stated]}
+      fixed_charge_payable_when_not_scheduled: {label: Fixed charge payable when not scheduled, type: bool}

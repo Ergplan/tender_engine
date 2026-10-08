@@ -141,8 +141,13 @@ def build_gold(session: Session, catalog: Catalog, tender: Tender) -> GoldRecord
     ):
         pages[span.candidate_id].add(span.page_no)
 
+    # A derived table is written from decisions, not read from the document: it is no
+    # reading to score, so the gold record leaves it out.
+    derived = {section.name for section in compiled.sections if section.derived}
     fields: list[GoldField] = []
     for field in compiled.fields:
+        if field.section in derived:
+            continue
         shown = view_by_path.get(field.path, {})
         approval = approvals.get(field.path)
         decided = approval if approval is not None and approval.decision in DECIDED else None

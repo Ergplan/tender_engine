@@ -20,10 +20,12 @@ BASE_ROLES = ("rfs", "contractual")
 
 def groups_for_role(compiled: CompiledType, role: str) -> list[str]:
     """Groups a document of this role may be read for. An amendment or clarification can
-    change any section except the summary, which is written from the base document."""
+    change any section except the summary, which is written from the base document. A
+    derived section is never read from a document: it is written from the decided fields."""
+    sections = [section for section in compiled.sections if not section.derived]
     if role in CHANGE_ROLES:
-        return [s.name for s in compiled.sections if s.name != SUMMARY_SECTION]
-    return [section.name for section in compiled.sections if role in section.roles]
+        return [s.name for s in sections if s.name != SUMMARY_SECTION]
+    return [section.name for section in sections if role in section.roles]
 
 
 def touched_groups(schema: ExtractionSchema, groups: list[str], page_texts: list[str]) -> list[str]:

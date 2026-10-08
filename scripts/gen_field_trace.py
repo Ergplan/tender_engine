@@ -24,6 +24,7 @@ from core.models import Approval, Candidate, CanonicalFact, EvidenceSpan
 from core.schemas import SchemaRegistry
 from core.services.approve import ApprovalService
 from core.services.extract import ExtractService
+from tender.domain_packs.power import derivations
 from tender.services import summary
 from tender.services.packs import Catalog, TenderField, load_catalog
 
@@ -162,6 +163,7 @@ def build(catalog: Catalog | None = None) -> str:
                     "order": (sections[field.section].order, field.review_order),
                     "prompt": sections[field.section].prompt,
                     "prompt_version": sections[field.section].prompt_version or PROMPT_VERSION,
+                    "derived": sections[field.section].derived,
                 },
             )
             row["types"].append(tender_type)
@@ -181,7 +183,11 @@ def build(catalog: Catalog | None = None) -> str:
         "`core.services.validate.ValidationService.validate()` and decided by "
         "`core.services.approve.ApprovalService.approve()`, the only writer of "
         f"`canonical_fact`. Database path of every field: {database}. Evidence: "
-        f"{evidence}. The decision of a reviewer is the producer tagged HUMAN in every row.",
+        f"{evidence}. The decision of a reviewer is the producer tagged HUMAN in every row. "
+        "A field tagged DERIVED is written by `tender.services.derive.DerivedWriter.write()` "
+        "from the decided fields its rule names (deterministic code under "
+        "`tender/domain_packs/<pack>/derivations/`, no model call), with their evidence "
+        "inherited; it is validated and decided like any other.",
         "",
         f"{len(rows)} fields over {len(catalog.types)} tender types.",
         "",
@@ -193,7 +199,11 @@ def build(catalog: Catalog | None = None) -> str:
         field: TenderField = row["field"]
         if field.value_type not in components:
             raise TraceError(f"{path}: no UI component for value type {field.value_type!r}")
-        prompt = load_prompt(row["prompt"], row["prompt_version"], catalog.prompt_roots)
+        prompt = (
+            None
+            if row["derived"]
+            else load_prompt(row["prompt"], row["prompt_version"], catalog.prompt_roots)
+        )
         rules = ["type", "evidence_located"]
         definition = catalog.types[row["types"][0]].schema.field(path)
         if definition.required:
@@ -209,8 +219,15 @@ def build(catalog: Catalog | None = None) -> str:
             if concerns[run_rule](definition):
                 rules.append(run_rule)
         types = "all" if row["types"] == all_types else ", ".join(row["types"])
-        producer = f"LLM {prompt.name} {prompt.version}"
+        producer = f"LLM {prompt.name} {prompt.version}" if prompt else ""
         service = f"extract('{field.section}')"
+        if row["derived"]:
+            # Written by deterministic code from the decided fields it names; no model.
+            rule = derivations.rule_for(path)
+            producer = f"DERIVED {rule.module} {rule.version} from " + ", ".join(
+                f"`{p}`" for p in rule.inputs
+            )
+            service = "tender.services.derive.DerivedWriter.write()"
         if path == summary.SUMMARY_FIELD:
             # Written in a second pass from the record; the page-read summary feeds it.
             record = load_prompt(summary.PROMPT_NAME, summary.PROMPT_VERSION, catalog.prompt_roots)

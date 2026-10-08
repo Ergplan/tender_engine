@@ -1,6 +1,14 @@
-# Context for a new session (written 2026-10-05, last updated 2026-10-06 about 13:30 UTC)
+# Context for a new session (written 2026-10-05, last updated 2026-10-08 about 09:00 UTC)
 
 Read this first, then `CLAUDE.md`, then `docs/reports/STAGE-4-REPORT.md`.
+
+## Since the Stage 4 close (2026-10-07 and 2026-10-08, owner's requests)
+
+- **Document provenance** (migration 0013): `document.source_url`, `document.retrieved_on`; 47 of 51 documents backfilled from the manifests (`scripts.ingest_tenders provenance`). The `ntpc-hybrid-03` RfS came from a consultancy mirror and is to be re-sourced from NTPC's domain (KNOWN-GAPS).
+- **Results dataset assessed, import planned as Stage 6**: `docs/reports/RE-TENDER-RESULTS-ASSESSMENT.md`, stage prompt `docs/STAGE-6-RESULTS-IMPORT.md`; runs only when the owner says so, after the amendment diff view. Source admissibility rule in DECISIONS (2026-10-07): only agency or regulator domains; a secondary source finds a document, never supplies a figure.
+- **Fourteenth tender, type `re_rtc`** (WBSEDCL/PT&P/RE-RTC/2026/01, `/work/tenders/re_rtc/wbsedcl-re-rtc-2026-01/`, RfQ+RfP as `rfs`, draft PPA as `ppa`, both from wbsedcl.in). Schema pack v3 / core v3 (reads v2, v1): `re_rtc_profile`, pack-wide `supply_sources`, core EBITDA, single-station experience, instrument lists. The 13 earlier tenders were not re-read; their `supply_sources` section is read only on request.
+- **Derived sections, producer DERIVED** (ARCHITECTURE "Derived tables"): `source_eligibility` and `optimizer_constraints`, written by `tender.services.derive.DerivedWriter` from decided fields through `tender/domain_packs/power/derivations/`, run mode `derived`, no model call, evidence inherited, each row citing its clause; written only once every input with a candidate is decided (including `not_found` ones, set aside as not in document); approved like any field; inherited rows drawn apart on screen. A table no clause supports is a `not_found` candidate carrying its all-not-addressed rows.
+- Extraction of the WBSEDCL tender is run after the deploy of this work (sync); the 13 others are not re-run.
 
 ## Where the build stands
 

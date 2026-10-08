@@ -15,6 +15,7 @@ TENDER_TYPES = (
     "generation",
     "epc",
     "ipp",
+    "re_rtc",
 )
 TENDER_STATUSES = ("ingested", "extracted", "in_review", "reviewed", "published")
 VERSION_KINDS = ("original", "corrigendum", "amendment", "clarification")

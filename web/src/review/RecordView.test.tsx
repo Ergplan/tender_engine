@@ -57,6 +57,40 @@ describe("RecordView", () => {
     render(<RecordView field={listed} value={["basis: per_mw | rate_inr_per_mw: 5", { basis: "per_component" }]} />);
     expect(within(screen.getByTestId("record-list")).getAllByTestId("record-key")).toHaveLength(3);
   });
+
+  it("sets a derived row read off a general clause apart from one naming its source", () => {
+    const derived = {
+      ...field,
+      value_type: "record_list",
+      keys: [
+        { name: "source", label: "Source", value_type: "enum" },
+        { name: "status", label: "Status", value_type: "enum" },
+        { name: "basis", label: "Basis", value_type: "enum" },
+        { name: "condition", label: "Condition", value_type: "text" },
+      ],
+    } as ReviewField;
+    render(
+      <RecordView
+        field={derived}
+        value={[
+          { source: "bess", status: "allowed", basis: "stated", condition: "charged from RE only" },
+          { source: "thermal", status: "allowed_with_limit", basis: "inherited", condition: "not named" },
+          { source: "other", status: "not_addressed", basis: "none" },
+        ]}
+      />,
+    );
+    const items = within(screen.getByTestId("record-list")).getAllByRole("listitem");
+    expect(items.map((item) => item.getAttribute("data-basis"))).toEqual(["stated", "inherited", "none"]);
+    expect(items[0].className).toContain("bg-white");
+    expect(items[1].className).toContain("border-dashed");
+    expect(within(items[1]).getByTestId("row-basis").textContent).toBe(
+      "Derived from a general clause, not one naming this source",
+    );
+    expect(within(items[2]).getByTestId("row-basis").textContent).toBe("No clause: not addressed");
+    expect(within(items[0]).queryByTestId("row-basis")).toBeNull();
+    // The basis is told by the styling and the label, not repeated as a key.
+    expect(within(items[1]).queryByText("Basis")).toBeNull();
+  });
 });
 
 describe("EditForm for a record", () => {

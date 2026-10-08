@@ -445,6 +445,11 @@
       },
       "CompiledSection": {
         "properties": {
+          "derived": {
+            "default": false,
+            "title": "Derived",
+            "type": "boolean"
+          },
           "label": {
             "title": "Label",
             "type": "string"
@@ -2767,6 +2772,18 @@
           "decided": {
             "title": "Decided",
             "type": "integer"
+          },
+          "derived": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Derived"
           },
           "fields": {
             "items": {

@@ -42,7 +42,7 @@ from core.config import Settings
 from core.db import make_engine, make_session_factory
 from core.llm.client import LLMClient
 from core.models import Document, ExtractionRun, Job
-from core.models.extraction import RECORD_MODE
+from core.models.extraction import RECORD_MODES
 from core.services import jobs
 from core.services.extract import ExtractService
 from core.services.ingest import IngestService, fill_provenance
@@ -539,7 +539,7 @@ def revalidate(services: Services, only: set[str] | None = None) -> list[str]:
                     ExtractionRun.tenant_id == services.settings.tenant_id,
                     ExtractionRun.object_id == tender.id,
                     ExtractionRun.status == "validated",
-                    ExtractionRun.mode != RECORD_MODE,
+                    ExtractionRun.mode.notin_(RECORD_MODES),
                     # Runs of an earlier schema version may hold fields that no longer
                     # exist; their candidates were checked when they were made.
                     ExtractionRun.schema_version

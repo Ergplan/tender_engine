@@ -141,9 +141,9 @@ def test_extraction_of_the_original_reads_each_document_for_its_roles_groups(
     runs = pipeline.tenders.start_extraction(db, tender, created_by="pytest", is_fixture=True)
     by_document = {run.document_id: run for run in runs}
     assert by_document[rfs.id].groups == sorted(
-        s.name for s in pipeline.catalog.get("solar").sections
-    )
-    assert by_document[ppa.id].groups == ["commercial", "penalties"]
+        s.name for s in pipeline.catalog.get("solar").sections if not s.derived
+    ), "every section that reads from pages; never the derived one"
+    assert by_document[ppa.id].groups == ["commercial", "penalties", "supply_sources"]
     assert {(r.object_type, r.object_id, r.object_version, r.schema_name) for r in runs} == {
         ("tender", tender.id, 1, "tender.solar")
     }
@@ -151,7 +151,11 @@ def test_extraction_of_the_original_reads_each_document_for_its_roles_groups(
     pipeline.runner.run_until_idle()
     assert pipeline.tenders.refresh_status(db, tender) == "extracted"
     state = pipeline.review_state.for_object(db, "tender", tender.id)
-    assert state.total == len(pipeline.catalog.get("solar").fields) and len(state.runs) == 2
+    assert state.total == len(pipeline.catalog.get("solar").fields)
+    # The two extractions only: the derived tables wait for decisions on the fields they
+    # are written from, so no derived run exists yet.
+    assert sorted(r.mode for r in db.scalars(select(ExtractionRun))) == ["sync", "sync"]
+    assert len(state.runs) == 2
 
 
 def test_extraction_needs_a_version_and_parsed_documents(pipeline: Pipeline, db: Session) -> None:

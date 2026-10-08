@@ -90,6 +90,8 @@ class TenderReview(BaseModel):
     can_complete: bool
     # Where the summary stands (tender.services.summary.SummaryState); set by the route.
     summary: dict[str, Any] | None = None
+    # Where the derived tables stand (tender.services.derive.DerivedState); set by the route.
+    derived: dict[str, Any] | None = None
 
 
 def tender_review(

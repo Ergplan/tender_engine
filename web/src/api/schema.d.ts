@@ -816,6 +816,11 @@ export interface components {
         };
         /** CompiledSection */
         CompiledSection: {
+            /**
+             * Derived
+             * @default false
+             */
+            derived: boolean;
             /** Label */
             label: string;
             /** Name */
@@ -1606,6 +1611,10 @@ export interface components {
             can_complete: boolean;
             /** Decided */
             decided: number;
+            /** Derived */
+            derived?: {
+                [key: string]: unknown;
+            } | null;
             /** Fields */
             fields: components["schemas"]["ReviewField"][];
             /** Issuing Agency */

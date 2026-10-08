@@ -56,6 +56,11 @@ class SectionDef(_Strict):
     roles: list[str]
     section_kinds: list[str] = Field(default_factory=list)
     keywords: list[str] = Field(default_factory=list)
+    # A derived section is not read from pages: its fields are written by the pack's
+    # derivation rules from the decided fields of the tender (producer DERIVED). Its
+    # `prompt` names the rule module under derivations/ and `roles` the documents the
+    # inherited evidence may come from.
+    derived: bool = False
 
 
 class RawKey(_Strict):
@@ -149,6 +154,7 @@ class CompiledSection(BaseModel):
     prompt_version: str | None = None
     roles: list[str]
     order: int
+    derived: bool = False
 
 
 @dataclass(frozen=True)
@@ -393,6 +399,7 @@ def compile_type(pack_dir: Path, tender_type: str, core_dir: Path | None = None)
                         section_kinds=sections[name].section_kinds,
                         keywords=sections[name].keywords,
                     ),
+                    derived=sections[name].derived,
                 )
                 for name in included
             ],
@@ -418,6 +425,7 @@ def compile_type(pack_dir: Path, tender_type: str, core_dir: Path | None = None)
                 prompt_version=sections[name].prompt_version,
                 roles=sections[name].roles,
                 order=order,
+                derived=sections[name].derived,
             )
             for order, name in enumerate(included, start=1)
         ],

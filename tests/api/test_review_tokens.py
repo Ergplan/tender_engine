@@ -556,8 +556,11 @@ def test_the_summary_is_decided_after_the_fields_it_is_written_from(
     tender = extracted(client, pipeline)
     token = link(client, tender["id"])["token"]
     body = review(client, tender["id"], token)
+    # The derived tables are written from the fields too; the summary does not wait for them.
     others = sum(
-        1 for f in body["fields"] if f["field_path"] != SUMMARY and f["current"] is not None
+        1
+        for f in body["fields"]
+        if f["field_path"] != SUMMARY and f["section"] != "derived" and f["current"] is not None
     )
     assert body["summary"] == {"waiting_for": others, "current": True, "being_written": False}
     for decision, extra in (
@@ -615,8 +618,10 @@ def test_a_correction_to_a_field_has_the_summary_written_again_before_it_can_be_
     # The worker writes the new text, then validates it in a second job. Between the two
     # the earlier text is retired and the new one is stored but not yet in review: the
     # summary field shows no text, and the state must still say that one is on its way,
-    # or the screen would stop looking for it.
-    assert pipeline.runner.run_once() is True
+    # or the screen would stop looking for it. (The decisions also queued the derived
+    # tables, which may come first in the queue; they make no model call.)
+    while len(pipeline.sdk.summary_calls()) == calls:
+        assert pipeline.runner.run_once() is True
     assert len(pipeline.sdk.summary_calls()) == calls + 1
     body = review(client, tender["id"], token)
     assert body["summary"] == {"waiting_for": 0, "current": False, "being_written": True}

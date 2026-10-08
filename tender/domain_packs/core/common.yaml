@@ -1,8 +1,8 @@
 # Core pack: fields that keep their meaning in any sector. Seeded from the field catalogue
 # in docs/MASTER-PROMPT.md. Field paths are core.<catalogue section>.<field>.
 pack: core
-version: v2
-reads_versions: [v1]
+version: v3
+reads_versions: [v1, v2]
 
 # A section is what a reviewer sees as one block and what the extractor reads in one call.
 # roles: the document roles of a tender version this section is extracted from.
@@ -179,6 +179,38 @@ fields:
     type: enum
     enum: [absolute, per_mw]
     help: Whether the turnover requirement is a fixed amount or an amount per MW of quoted capacity.
+  core.eligibility.ebitda_requirement_inr:
+    section: eligibility
+    label: EBITDA requirement
+    type: money_inr
+    unit: INR
+    help: Minimum EBITDA, as the amount the tender prints; ebitda_basis says whether it is a fixed amount or per MW and for which year.
+  core.eligibility.ebitda_basis:
+    section: eligibility
+    label: EBITDA stated as
+    type: text
+    help: "Per MW or absolute, and the financial year or years it is measured over (for example: per MW, preceding financial year)."
+  core.eligibility.min_single_station_mw:
+    section: eligibility
+    label: Minimum single station
+    type: mw
+    unit: MW
+    min: 0.1
+    max: 20000
+    help: The installed capacity one single generating station of the bidder must have, when the experience clause asks for one station rather than a total.
+  core.eligibility.min_continuous_operation_years:
+    section: eligibility
+    label: Minimum continuous operation
+    type: decimal
+    unit: years
+    min: 0
+    max: 40
+    help: Years the station must have been operated continuously, when the experience clause asks for it.
+  core.eligibility.experience_period_end_date:
+    section: eligibility
+    label: Experience counted up to
+    type: date
+    help: The date the operating period is counted back from, when the clause names one.
   core.eligibility.liquidity_requirement_inr:
     section: eligibility
     label: Liquidity requirement
@@ -252,6 +284,22 @@ fields:
     type: enum
     enum: [bg, insurance_surety, cash, other]
     help: "Instrument accepted for EMD; other when several are accepted (say which in the rationale)."
+  core.guarantees.bid_security_instruments:
+    section: guarantees
+    label: Bid security instruments
+    type: record_list
+    help: "Every instrument the tender accepts for the bid security or EMD, one item each, with the issuer it names for it (for example a payment on order instrument from IREDA, PFC or REC)."
+    keys:
+      instrument: {label: Instrument, type: enum, enum: [bank_guarantee, e_bank_guarantee, insurance_surety_bond, payment_on_order_instrument, demand_draft, fixed_deposit_receipt, cash_transfer, other]}
+      issuer: {label: Issuer named, type: text}
+  core.guarantees.pbg_instruments:
+    section: guarantees
+    label: Performance security instruments
+    type: record_list
+    help: "Every instrument the tender accepts for the performance bank guarantee or performance security, one item each, with the issuer it names for it."
+    keys:
+      instrument: {label: Instrument, type: enum, enum: [bank_guarantee, e_bank_guarantee, insurance_surety_bond, payment_on_order_instrument, demand_draft, fixed_deposit_receipt, cash_transfer, other]}
+      issuer: {label: Issuer named, type: text}
   core.guarantees.pbg_per_mw_inr:
     section: guarantees
     label: PBG per MW

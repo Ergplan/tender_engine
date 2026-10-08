@@ -18,7 +18,9 @@ COMMON_SECTIONS = [
     "commercial",
     "penalties",
     "connectivity_and_compliance",
+    "supply_sources",
     "documents",
+    "derived",
 ]
 
 
@@ -32,7 +34,9 @@ def test_every_field_has_a_section_a_value_type_a_label_and_help(catalog: Catalo
     catalog.register(registry)
     for compiled in catalog.types.values():
         section_names = [section.name for section in compiled.sections]
-        assert section_names[:9] == COMMON_SECTIONS and len(section_names) == 10
+        assert section_names[: len(COMMON_SECTIONS)] == COMMON_SECTIONS
+        assert len(section_names) == len(COMMON_SECTIONS) + 1, "one section of its own"
+        assert [s.name for s in compiled.sections if s.derived] == ["derived"]
         assert [field.review_order for field in compiled.fields] == list(
             range(1, len(compiled.fields) + 1)
         )
@@ -80,11 +84,18 @@ def test_field_paths_carry_their_origin(catalog: Catalog) -> None:
 
 def test_schemas_register_with_core_as_tender_type_v2_once(catalog: Catalog) -> None:
     registry, built = build_registry()
-    assert registry.names() == sorted(
-        (f"tender.{name}", version) for name in TENDER_TYPES for version in ("v1", "v2")
-    )
+    names = set(registry.names())
+    # Every type at the current version; the earlier versions too, for the types that
+    # existed then (re_rtc arrived with v3).
+    assert {(f"tender.{name}", "v3") for name in TENDER_TYPES} <= names
+    assert {
+        (f"tender.{name}", version)
+        for name in TENDER_TYPES
+        if name != "re_rtc"
+        for version in ("v1", "v2")
+    } <= names
     built.register(registry)  # a second registration is a no-op, not an error
-    schema = registry.get("tender.fdre", "v2")
+    schema = registry.get("tender.fdre", "v3")
     assert schema.cross_field_rules == [
         "date_order",
         "emd_pbg_within_10x",
@@ -119,8 +130,10 @@ def test_every_section_has_a_registered_prompt_that_extends_the_core_extract_pro
     catalog: Catalog,
 ) -> None:
     core_text = load_prompt("extract", "v1").text
-    names = {s.prompt for compiled in catalog.types.values() for s in compiled.sections}
-    assert len(names) == 18
+    names = {
+        s.prompt for compiled in catalog.types.values() for s in compiled.sections if not s.derived
+    }
+    assert len(names) == 20
     for name in names:
         prompt = load_prompt(name, "v1", catalog.prompt_roots)
         assert prompt.text.startswith(core_text) and "Domain guidance" in prompt.text
@@ -296,6 +309,12 @@ STRUCTURED = {
     "hybrid": {"cuf_terms", "excess_energy_structured"},
     "generation": set(),
     "ipp": set(),
+    "re_rtc": {
+        "rec_obligation",
+        "peak_window",
+        "linked_capacity_obligation",
+        "non_re_tariff_split",
+    },
 }
 EVERY_TYPE = {
     "emd_structured",
@@ -304,7 +323,16 @@ EVERY_TYPE = {
     "delay_ld_structured",
     "shortfall_rules",
     "deemed_generation_structured",
+    # Pack v3 (2026-10-08): instrument lists, the supply-source basis, the derived tables.
+    "bid_security_instruments",
+    "pbg_instruments",
+    "source_mix_rules",
+    "bess_charging_rule",
+    "source_eligibility",
+    "optimizer_constraints",
 }
+# Sections added in pack v3 read with their first prompt; the derived one has no prompt.
+V3_SECTIONS = ("supply_sources", "re_rtc_profile", "derived")
 
 
 def test_every_type_has_its_structured_fields_beside_the_prose(catalog: Catalog) -> None:
@@ -314,17 +342,20 @@ def test_every_type_has_its_structured_fields_beside_the_prose(catalog: Catalog)
         assert structured == EVERY_TYPE | own, tender_type
         groups = {group.name: group for group in compiled.schema.groups}
         for field in compiled.fields:
-            if field.keys:
+            if field.keys and field.section not in V3_SECTIONS:
                 # Commercial and penalties were tightened once more (v3): a number must
                 # be printed in the field's own quotes and is never computed.
                 expected = "v3" if field.section in ("commercial", "penalties") else "v2"
                 assert groups[field.section].prompt_version == expected, field.path
 
 
-def test_schema_v2_also_reads_the_runs_of_v1(catalog: Catalog) -> None:
+def test_schema_v3_also_reads_the_runs_of_v1_and_v2(catalog: Catalog) -> None:
     registry = SchemaRegistry()
     catalog.register(registry)
     for compiled in catalog.types.values():
-        assert compiled.schema.version == "v2" and compiled.reads_versions == ("v1",)
-        earlier = registry.get(compiled.schema.name, "v1")
-        assert earlier.fields == compiled.schema.fields
+        assert compiled.schema.version == "v3" and compiled.reads_versions == ("v1", "v2")
+        if compiled.tender_type == "re_rtc":
+            continue  # new in v3: nothing earlier to read
+        for version in ("v1", "v2"):
+            earlier = registry.get(compiled.schema.name, version)
+            assert earlier.fields == compiled.schema.fields

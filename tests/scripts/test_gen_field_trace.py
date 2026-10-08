@@ -16,8 +16,15 @@ def test_every_field_of_every_tender_type_has_a_complete_row(catalog: Catalog) -
         assert len(cells) == 6 and all(cells), row
         assert cells[2].startswith("review/FieldCard value (") and "review/EditForm" in cells[2]
         assert "approve()" in cells[3]
-        assert "extract('" in cells[3] or "SummaryWriter.write()" in cells[3]
-        assert cells[4].startswith("LLM ") and "; HUMAN approval" in cells[4]
+        assert (
+            "extract('" in cells[3]
+            or "SummaryWriter.write()" in cells[3]
+            or "DerivedWriter.write()" in cells[3]
+        )
+        if "DerivedWriter" in cells[3]:
+            assert cells[4].startswith("DERIVED tender.domain_packs.power.derivations.")
+            assert " from `" in cells[4] and "LLM" not in cells[4]
+        assert cells[4].startswith(("LLM ", "DERIVED ")) and "; HUMAN approval" in cells[4]
         assert cells[5].startswith("RULE type, evidence_located")
     assert "GET /v1/tenders/{tender_id}/review" in text and "POST /v1/approvals" in text
     assert "candidate.value → approval.final_value → canonical_fact.value" in text

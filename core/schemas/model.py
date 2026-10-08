@@ -64,6 +64,9 @@ class FieldGroup(BaseModel):
     max_pages: int | None = None
     routing: RoutingHints = Field(default_factory=RoutingHints)
     guidance: str = ""
+    # A derived group is never sent to the model: its candidates are written by
+    # deterministic code from the object's decided fields (run mode "derived").
+    derived: bool = False
 
 
 class ExtractionSchema(BaseModel):

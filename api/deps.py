@@ -10,16 +10,17 @@ from api.middleware.errors import AppError
 from api.middleware.review_token import ReviewContext
 from core.config import Settings
 from core.schemas import SchemaRegistry
-from core.services.approve import ApprovalService
+from core.services.approve import ApprovalService, DecisionGuard
 from core.services.extract import ExtractService
 from core.services.ingest import IngestService
 from core.services.review_state import ReviewStateService
 from core.storage import Storage
+from tender.services.derive import DerivedGuard, DerivedWriter
 from tender.services.packs import Catalog
 from tender.services.summary import SummaryGuard, SummaryWriter
 from tender.services.tenders import TenderService
 from tender.services.tokens import TokenService
-from tender.services.worker_jobs import summary_writer
+from tender.services.worker_jobs import derived_writer, summary_writer
 
 
 def get_settings(request: Request) -> Settings:
@@ -112,8 +113,12 @@ def get_approvals(
         settings.model_copy(update={"tenant_id": tenant_id}),
     )
     writer = summary_writer(request.app.state.llm, catalog, extract, schemas, tenant_id)
-    guard = SummaryGuard(writer, TenderService(catalog, extract, tenant_id))
-    return ApprovalService(schemas, tenant_id, settings.evidence_match_threshold, guards=[guard])
+    tenders = TenderService(catalog, extract, tenant_id)
+    guards: list[DecisionGuard] = [
+        SummaryGuard(writer, tenders),
+        DerivedGuard(derived_writer(catalog, extract, schemas, tenant_id), tenders, catalog),
+    ]
+    return ApprovalService(schemas, tenant_id, settings.evidence_match_threshold, guards=guards)
 
 
 def get_review_state(schemas: SchemasDep, tenant_id: TenantDep) -> ReviewStateService:
@@ -153,6 +158,16 @@ def get_summary_writer(
 
 
 SummaryWriterDep = Annotated[SummaryWriter, Depends(get_summary_writer)]
+
+
+def get_derived_writer(
+    catalog: CatalogDep, extract: ExtractDep, schemas: SchemasDep, tenant_id: TenantDep
+) -> DerivedWriter:
+    """Only to report where the derived tables stand: the worker writes them."""
+    return derived_writer(catalog, extract, schemas, tenant_id)
+
+
+DerivedWriterDep = Annotated[DerivedWriter, Depends(get_derived_writer)]
 
 
 def get_tokens(tenant_id: TenantDep) -> TokenService:

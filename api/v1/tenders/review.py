@@ -7,6 +7,7 @@ from sqlalchemy import select
 from api.deps import (
     ActorDep,
     CatalogDep,
+    DerivedWriterDep,
     ReviewDep,
     ReviewStateDep,
     SessionDep,
@@ -96,6 +97,7 @@ def get_tender_review(
     review_state: ReviewStateDep,
     catalog: CatalogDep,
     writer: SummaryWriterDep,
+    deriver: DerivedWriterDep,
 ) -> TenderReview:
     """The tender as the reviewer sees it: every field once, with what each version says
     about it and the entry to decide (the latest version that states the field)."""
@@ -106,6 +108,7 @@ def get_tender_review(
     review = reviews.tender_review(session, catalog, tenders, review_state, tender)
     state = writer.state(session, tender, review)
     review.summary = state.model_dump()
+    review.derived = deriver.state(session, tender, review).model_dump()
     # While a summary is being written the summary field may have no entry to decide for
     # a moment; the review cannot be completed across that gap.
     review.can_complete = review.can_complete and not state.being_written and not state.waiting_for

@@ -107,7 +107,11 @@ def collect(
                 # A later version replaces what an earlier one says only where it has a value.
                 if valued or item.field_path not in chosen:
                     chosen[item.field_path] = (number, item)
+        # A derived table is written from decisions, not extracted: it is no reading to rate.
+        derived = {section.name for section in compiled.sections if section.derived}
         for spec in compiled.fields:
+            if spec.section in derived:
+                continue
             picked = chosen.get(spec.path)
             number, shown = picked if picked else (0, None)
             candidate = shown.candidate if shown else None

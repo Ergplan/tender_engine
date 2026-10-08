@@ -38,7 +38,7 @@ from core.models import (
     Job,
     LLMCallLog,
 )
-from core.models.extraction import RECORD_MODE, REVIEWABLE_STATUSES
+from core.models.extraction import RECORD_MODE, RECORD_MODES, REVIEWABLE_STATUSES
 from core.schemas import SchemaRegistry
 from core.services import jobs
 from core.services.approve import ApprovalError, ApprovalService
@@ -167,6 +167,15 @@ def field_sources(
             )
         )
     return sources
+
+
+def decided_field_value(
+    item: ReviewField, reviewer_evidence: dict[str, list[EvidenceView]]
+) -> tuple[Any, list[EvidenceView], str, int] | None:
+    """The value of a field as it stands with its located evidence (the reviewer's where
+    they edited and gave their own), or None when it has none. Shared with the derivation
+    pass (tender.services.derive), which reads the record the same way."""
+    return _field_value(item, reviewer_evidence)
 
 
 def _field_value(
@@ -312,6 +321,46 @@ def compose(
     return "\n\n".join(blocks), spans, drawn, unknown
 
 
+def reviewer_evidence(
+    session: Session, tenant_id: str, tender: Tender
+) -> dict[str, list[EvidenceView]]:
+    """By approval id, the evidence reviewers gave with their edits: the page and the
+    words that state the corrected value, located when the edit was stored."""
+    found: dict[str, list[EvidenceView]] = {}
+    for fact in session.scalars(
+        select(CanonicalFact).where(
+            CanonicalFact.tenant_id == tenant_id,
+            CanonicalFact.object_type == OBJECT_TYPE,
+            CanonicalFact.object_id == tender.id,
+            CanonicalFact.is_current.is_(True),
+        )
+    ):
+        spans = [
+            EvidenceView(
+                id=f"{fact.approval_id}-{place}",
+                document_id=item["document_id"],
+                page_no=item["page_no"],
+                bbox=item.get("bbox"),
+                char_start=item.get("char_start"),
+                char_end=item.get("char_end"),
+                quote=item.get("quote", ""),
+                resolution="reviewer",
+                match_score=None,
+                match_method=None,
+            )
+            for place, item in enumerate(fact.evidence)
+            if item.get("kind") == "reviewer_span" and item.get("char_start") is not None
+        ]
+        if spans:
+            found[fact.approval_id] = spans
+    return found
+
+
+def inherited_span(span: EvidenceView, ordinal: int) -> dict[str, Any]:
+    """A copy of a field's located span, numbered, for a candidate written from the record."""
+    return _inherited(span, ordinal)
+
+
 def _inherited(span: EvidenceView, ordinal: int) -> dict[str, Any]:
     return {
         "document_id": span.document_id,
@@ -355,7 +404,7 @@ class SummaryWriter:
                 ExtractionRun.id == extraction_run_id, ExtractionRun.tenant_id == self._tenant_id
             )
         )
-        if run is None or run.object_type != OBJECT_TYPE or run.mode == RECORD_MODE:
+        if run is None or run.object_type != OBJECT_TYPE or run.mode in RECORD_MODES:
             return
         self.queue_if_settled(session, run.object_id, created_by=ACTOR, is_fixture=run.is_fixture)
 
@@ -376,7 +425,7 @@ class SummaryWriter:
                 ExtractionRun.tenant_id == self._tenant_id,
                 ExtractionRun.object_type == OBJECT_TYPE,
                 ExtractionRun.object_id == tender_id,
-                ExtractionRun.mode != RECORD_MODE,
+                ExtractionRun.mode.notin_(RECORD_MODES),
                 ExtractionRun.status.in_(("queued", "running", "extracted")),
             )
             .limit(1)
@@ -454,10 +503,16 @@ class SummaryWriter:
         review = review or tender_review(
             session, self._catalog, self._tenders, self._review_state, tender
         )
+        # A derived field is written from the others, as the summary is; the summary does
+        # not wait for it.
+        derived = {s.name for s in self._catalog.get(tender.tender_type).sections if s.derived}
         waiting_for = sum(
             1
             for item in review.fields
-            if item.field_path != SUMMARY_FIELD and item.current is not None and not item.decided
+            if item.field_path != SUMMARY_FIELD
+            and item.section not in derived
+            and item.current is not None
+            and not item.decided
         )
         prepared = self._prepare(session, tender, review)
         # Current only once the text written from this record is in review. While it is
@@ -596,36 +651,7 @@ class SummaryWriter:
         return run
 
     def _reviewer_evidence(self, session: Session, tender: Tender) -> dict[str, list[EvidenceView]]:
-        """By approval id, the evidence reviewers gave with their edits: the page and the
-        words that state the corrected value, located when the edit was stored."""
-        found: dict[str, list[EvidenceView]] = {}
-        for fact in session.scalars(
-            select(CanonicalFact).where(
-                CanonicalFact.tenant_id == self._tenant_id,
-                CanonicalFact.object_type == OBJECT_TYPE,
-                CanonicalFact.object_id == tender.id,
-                CanonicalFact.is_current.is_(True),
-            )
-        ):
-            spans = [
-                EvidenceView(
-                    id=f"{fact.approval_id}-{place}",
-                    document_id=item["document_id"],
-                    page_no=item["page_no"],
-                    bbox=item.get("bbox"),
-                    char_start=item.get("char_start"),
-                    char_end=item.get("char_end"),
-                    quote=item.get("quote", ""),
-                    resolution="reviewer",
-                    match_score=None,
-                    match_method=None,
-                )
-                for place, item in enumerate(fact.evidence)
-                if item.get("kind") == "reviewer_span" and item.get("char_start") is not None
-            ]
-            if spans:
-                found[fact.approval_id] = spans
-        return found
+        return reviewer_evidence(session, self._tenant_id, tender)
 
     def _page_summary(
         self, session: Session, tender: Tender
@@ -641,7 +667,7 @@ class SummaryWriter:
                 ExtractionRun.tenant_id == self._tenant_id,
                 ExtractionRun.object_type == OBJECT_TYPE,
                 ExtractionRun.object_id == tender.id,
-                ExtractionRun.mode != RECORD_MODE,
+                ExtractionRun.mode.notin_(RECORD_MODES),
                 Candidate.field_path == SUMMARY_FIELD,
                 Candidate.prompt_name == PAGE_PROMPT,
                 Candidate.value.is_not(None),

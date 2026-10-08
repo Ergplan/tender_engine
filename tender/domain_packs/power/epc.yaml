@@ -1,6 +1,6 @@
 type: epc
 pack: power
-includes: [summary, identity_and_scope, key_dates, eligibility, guarantees, commercial, penalties, connectivity_and_compliance, documents]
+includes: [summary, identity_and_scope, key_dates, eligibility, guarantees, commercial, penalties, connectivity_and_compliance, supply_sources, documents, derived]
 # An EPC works contract has no power purchase agreement and no tariff.
 excludes: [sector.power.common.ppa_tenure_years, sector.power.common.tariff_ceiling_inr_per_kwh]
 sections:

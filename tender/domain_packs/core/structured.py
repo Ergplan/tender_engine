@@ -15,6 +15,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from core.models import Candidate, EvidenceSpan, ExtractionRun
+from core.models.extraction import DERIVED_MODE
 from core.schemas import CandidateOutcome, FieldDef, KeyDef, RuleOutcome
 from tender.domain_packs.core.value_types import NUMBER_KEY_TYPES, VALUE_TYPES
 
@@ -134,7 +135,11 @@ def _schemas() -> dict[tuple[str, str], dict[str, FieldDef]]:
 def structured_numbers_quoted(
     session: Session, run: ExtractionRun, candidates: Sequence[Candidate]
 ) -> list[CandidateOutcome]:
-    """Every number of a structured value occurs in one of that candidate's own quotes."""
+    """Every number of a structured value occurs in one of that candidate's own quotes.
+    A derived run is exempt: its numbers are the decided values of other fields, whose
+    own candidates were held to this rule, and a few are computed from them."""
+    if run.mode == DERIVED_MODE:
+        return []
     fields = _schemas().get((run.schema_name, run.schema_version), {})
     own = [candidate for candidate in candidates if candidate.field_path in fields]
     if not own:

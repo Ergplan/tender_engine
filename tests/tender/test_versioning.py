@@ -7,10 +7,12 @@ def test_the_original_version_reads_each_document_for_the_groups_of_its_role(
 ) -> None:
     fdre = catalog.get("fdre")
     rfs = plan_groups(fdre, version_no=1, role="rfs", page_texts=["anything"])
-    assert rfs == [section.name for section in fdre.sections]
+    assert rfs == [section.name for section in fdre.sections if not section.derived]
+    assert "derived" not in rfs, "a derived section is written from decisions, never read"
     assert plan_groups(fdre, version_no=1, role="ppa", page_texts=[""]) == [
         "commercial",
         "penalties",
+        "supply_sources",
     ]
     assert plan_groups(fdre, version_no=1, role="psa", page_texts=["tariff"]) == []
     epc = catalog.get("epc")
@@ -21,7 +23,9 @@ def test_the_original_version_reads_each_document_for_the_groups_of_its_role(
 def test_an_amendment_may_touch_any_group_but_the_summary(catalog: Catalog) -> None:
     solar = catalog.get("solar")
     groups = groups_for_role(solar, "amendment")
-    assert "summary" not in groups and len(groups) == len(solar.sections) - 1
+    readable = [s for s in solar.sections if not s.derived]
+    assert "summary" not in groups and "derived" not in groups
+    assert len(groups) == len(readable) - 1
     assert groups_for_role(solar, "clarification") == groups
 
 

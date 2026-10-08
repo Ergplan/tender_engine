@@ -1,6 +1,6 @@
 type: generation
 pack: power
-includes: [summary, identity_and_scope, key_dates, eligibility, guarantees, commercial, penalties, connectivity_and_compliance, documents]
+includes: [summary, identity_and_scope, key_dates, eligibility, guarantees, commercial, penalties, connectivity_and_compliance, supply_sources, documents, derived]
 sections:
   gen_tech:
     label: Generation technology

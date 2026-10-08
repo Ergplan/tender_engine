@@ -51,6 +51,26 @@ function Rows({ record, keys, all }: { record: RecordValue; keys: KeyDef[]; all:
   );
 }
 
+/** How a derived row came about: read off a clause that names its subject ("stated"), off
+ * a general clause that does not ("inherited"), or off nothing at all ("none"). Only a
+ * derived table carries the key; any other record has no basis. */
+export function rowBasis(record: RecordValue): "stated" | "inherited" | "none" | null {
+  const basis = record["basis"];
+  return basis === "stated" || basis === "inherited" || basis === "none" ? basis : null;
+}
+
+const BASIS_STYLE: Record<"stated" | "inherited" | "none", string> = {
+  stated: "border-slate-200 bg-white",
+  // A reviewer must see a derivation, not a printed fact: dashed, tinted, labelled.
+  inherited: "border-dashed border-amber-400 bg-amber-50",
+  none: "border-dotted border-slate-300 bg-slate-50 text-slate-500",
+};
+const BASIS_LABEL: Record<"stated" | "inherited" | "none", string | null> = {
+  stated: null,
+  inherited: "Derived from a general clause, not one naming this source",
+  none: "No clause: not addressed",
+};
+
 /** A structured value: every key of a record with what the document states for it, or
  * "not stated"; a list of records item by item, each with the keys it states. */
 export function RecordView({ field, value }: { field: ReviewField; value: unknown }) {
@@ -58,11 +78,24 @@ export function RecordView({ field, value }: { field: ReviewField; value: unknow
   if (field.value_type === "record_list") {
     return (
       <ol className="space-y-1.5" data-testid="record-list">
-        {recordsOf(value).map((record, index) => (
-          <li key={index} className="rounded border border-slate-200 bg-white px-2 py-1">
-            <Rows record={record} keys={keys} all={false} />
-          </li>
-        ))}
+        {recordsOf(value).map((record, index) => {
+          const basis = rowBasis(record);
+          const label = basis ? BASIS_LABEL[basis] : null;
+          return (
+            <li
+              key={index}
+              data-basis={basis ?? undefined}
+              className={"rounded border px-2 py-1 " + (basis ? BASIS_STYLE[basis] : "border-slate-200 bg-white")}
+            >
+              {label && (
+                <p data-testid="row-basis" className="mb-0.5 text-[11px] font-medium uppercase tracking-wide text-amber-800">
+                  {label}
+                </p>
+              )}
+              <Rows record={record} keys={basis ? keys.filter((key) => key.name !== "basis") : keys} all={false} />
+            </li>
+          );
+        })}
       </ol>
     );
   }
