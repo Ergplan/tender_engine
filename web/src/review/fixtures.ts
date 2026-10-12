@@ -1,5 +1,5 @@
 // A small tender for the screen's tests: two sections, one amended field.
-import type { Candidate, Evidence, ReviewEntry, ReviewField, ReviewSession, TenderReview } from "../api/client";
+import type { Candidate, Evidence, ReviewEntry, ReviewField, ReviewSession, TenderAmendments, TenderReview } from "../api/client";
 
 export const DOC = "d".repeat(32);
 export const AMENDMENT_DOC = "a".repeat(32);
@@ -138,3 +138,50 @@ export const SESSION: ReviewSession = {
   expires_at: "2026-11-04T00:00:00Z",
   completed_at: null,
 };
+
+/** The amendments of the fixture tender: version 2 moves the bid deadline. */
+export function makeAmendments(): TenderAmendments {
+  const review = makeReview();
+  const deadline = review.fields[0];
+  return {
+    tender_id: review.tender_id,
+    title: review.title,
+    untouched: 3,
+    versions: [
+      {
+        version_no: 2,
+        kind: "amendment",
+        issued_on: "2026-03-20",
+        summary_of_change: "Bid deadline extended.",
+        documents: review.versions[1].documents,
+        sections_read: ["key_dates"],
+        changes: [
+          {
+            field_path: deadline.field_path,
+            label: deadline.label,
+            section: "key_dates",
+            section_label: "Key dates",
+            value_type: "date",
+            unit: null,
+            required: true,
+            help_text: deadline.help_text,
+            enum_values: null,
+            keys: null,
+            kind: "changed",
+            before: { version_no: 1, version_kind: "original", value: "30.03.2026", decision: null },
+            entry: deadline.entries[1],
+            is_current: true,
+            decided: false,
+            set_aside: false,
+            flagged: false,
+          },
+        ],
+        added: 0,
+        changed: 1,
+        restated: 0,
+        decided: 0,
+        undecided: 1,
+      },
+    ],
+  };
+}

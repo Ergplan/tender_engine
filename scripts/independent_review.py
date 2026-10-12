@@ -1,12 +1,18 @@
 """Independent stage review (operating rule 15).
 
   python -m scripts.independent_review --stage 1 [--model gpt-6.1-sol]
+  python -m scripts.independent_review --stage 4 --range 9cbd0e9^..9cbd0e9 \
+      --prompt-file docs/reports/stage-4-artifacts/derived-sections-prompt.md
 
 Sends exactly three things to a model from a different family than the builder, in a fresh
 context: the stage diff (git diff stage-N-start..HEAD), CLAUDE.md and the stage prompt from
 docs/MASTER-PROMPT.md. The draft stage report is part of the diff. Prints the reviewer's
 answer to the fixed checklist. This is build tooling, not an application LLM call, so it
 does not go through core/llm/.
+
+Work added to a closed stage on the owner's instruction (an addendum) is reviewed the same
+way over its own commits: `--range` names the diff and `--prompt-file` the instruction that
+stands in for the stage prompt.
 """
 
 import argparse
@@ -56,10 +62,10 @@ def stage_prompt(stage: str) -> str:
     return match.group(0)
 
 
-def stage_diff(stage: str) -> str:
+def stage_diff(git_range: str) -> str:
     excludes = [f":!{path}" for path in EXCLUDED]
     return subprocess.check_output(
-        ["git", "diff", f"stage-{stage}-start..HEAD", "--", ".", *excludes], cwd=ROOT, text=True
+        ["git", "diff", git_range, "--", ".", *excludes], cwd=ROOT, text=True
     )
 
 
@@ -67,14 +73,20 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--stage", required=True)
     parser.add_argument("--model", default="gpt-6.1-sol")
+    parser.add_argument("--range", help="git range to review instead of stage-N-start..HEAD")
+    parser.add_argument(
+        "--prompt-file", type=Path, help="the instruction to review against, not the stage prompt"
+    )
     args = parser.parse_args()
     key = os.environ.get("OPENAI_API_KEY")
     if not key:
         raise SystemExit("OPENAI_API_KEY is not set")
+    git_range = args.range or f"stage-{args.stage}-start..HEAD"
+    prompt = args.prompt_file.read_text() if args.prompt_file else stage_prompt(args.stage)
     user = (
         f"# Input 1: CLAUDE.md\n\n{(ROOT / 'CLAUDE.md').read_text()}\n\n"
-        f"# Input 2: the stage prompt\n\n{stage_prompt(args.stage)}\n\n"
-        f"# Input 3: git diff stage-{args.stage}-start..HEAD\n\n{stage_diff(args.stage)}"
+        f"# Input 2: the stage prompt\n\n{prompt}\n\n"
+        f"# Input 3: git diff {git_range}\n\n{stage_diff(git_range)}"
     )
     body = {
         "model": args.model,

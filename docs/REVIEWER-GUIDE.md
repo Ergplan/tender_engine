@@ -26,6 +26,8 @@ When a field has several evidence chips they are numbered. In the summary, each 
 
 A field that comes from an amendment carries a tag such as "v2 amendment" and shows what the earlier version said. If the amendment does not in fact change the field, mark it Not in document: the earlier version's value comes back for you to decide.
 
+The "Amendments" button in the header opens a second screen that lists, for each corrigendum, amendment or clarification, every field it states beside what stood before it, with the amending document on the right. The decisions there are the same decisions: approve, edit, "Not in this version" (the earlier reading comes back) or flag, and a field decided on either screen is decided on both.
+
 Complete review becomes available once every required field (marked with a red star) has a decision. After completing, the review can be read but no longer changed.
 
 ## Structured fields

@@ -809,3 +809,67 @@ def test_a_decision_can_be_cleared_through_the_link_and_the_field_is_undecided_a
         headers=as_reviewer(token),
     )
     assert stale.status_code == 409
+
+
+def test_the_amendments_of_the_tender_are_served_to_its_reviewer(
+    client: TestClient, pipeline: Pipeline
+) -> None:
+    """GET /tenders/{id}/amendments: the later versions with what each states against what
+    stood before; reachable with the review link of that tender only."""
+    tender = extracted(client, pipeline)
+    token = link(client, tender["id"])["token"]
+    headers = as_reviewer(token)
+    none = client.get(f"/api/v1/tenders/{tender['id']}/amendments", headers=headers)
+    assert none.status_code == 200 and none.json()["versions"] == []
+
+    pipeline.sdk.answers = dict(AMENDMENT_ANSWERS)
+    added = add_version(
+        client,
+        tender["id"],
+        AMENDMENT_PAGES,
+        "amendment-01.pdf",
+        kind="amendment",
+        issued_on="2026-03-20",
+        summary_of_change="Bid deadline extended.",
+    )
+    assert added.status_code == 201, added.text
+    pipeline.runner.run_until_idle()
+    client.post(f"/api/v1/tenders/{tender['id']}/extract", json={}, headers=ASHA)
+    pipeline.runner.run_until_idle()
+
+    body = client.get(f"/api/v1/tenders/{tender['id']}/amendments", headers=headers).json()
+    (version,) = body["versions"]
+    assert (version["version_no"], version["kind"], version["issued_on"]) == (
+        2,
+        "amendment",
+        "2026-03-20",
+    )
+    assert version["summary_of_change"] == "Bid deadline extended."
+    assert version["documents"][0]["filename"] == "amendment-01.pdf"
+    (change,) = version["changes"]
+    assert (change["field_path"], change["kind"], change["is_current"]) == (
+        DEADLINE,
+        "changed",
+        True,
+    )
+    assert change["before"]["value"] == "30.03.2026" and change["before"]["version_no"] == 1
+    assert change["entry"]["state"]["candidate"]["value"] == "15.04.2026"
+    assert change["entry"]["state"]["candidate"]["evidence"][0]["page_no"] == 1
+    assert (version["undecided"], body["untouched"] > 0) == (1, True)
+
+    # Decided through the same route as on the review screen; the view follows.
+    decided = client.post(
+        "/api/v1/approvals",
+        json={"candidate_id": change["entry"]["state"]["candidate"]["id"], "decision": "approved"},
+        headers=headers,
+    )
+    assert decided.status_code == 201, decided.text
+    after = client.get(f"/api/v1/tenders/{tender['id']}/amendments", headers=headers).json()
+    assert after["versions"][0]["changes"][0]["decided"] is True
+    assert after["versions"][0]["decided"] == 1
+
+    other = create(client, external_ref="ACME/RE/2026/009", title="Another tender")
+    assert (
+        client.get(f"/api/v1/tenders/{other['id']}/amendments", headers=headers).status_code == 404
+    )
+    assert client.get(f"/api/v1/tenders/{'0' * 32}/amendments").status_code == 404

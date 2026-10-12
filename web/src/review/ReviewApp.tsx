@@ -1,6 +1,7 @@
 import { Component, type ReactNode, useEffect, useMemo, useState } from "react";
 
 import { ApiError, reviewApi, type ReviewSession, type TenderReview } from "../api/client";
+import { AmendmentsPage } from "./AmendmentsPage";
 import { MessagePage } from "./MessagePage";
 import { ReviewScreen } from "./ReviewScreen";
 import { SummaryPage } from "./SummaryPage";
@@ -9,6 +10,8 @@ type State =
   | { kind: "loading" }
   | { kind: "ready"; session: ReviewSession; review: TenderReview }
   | { kind: "refused"; message: string };
+
+export type ReviewPage = "review" | "summary" | "amendments";
 
 /** A fault in the screen leaves a plain message, not an empty page. Decisions are saved
  * as they are made, so nothing is lost by reloading. */
@@ -29,12 +32,13 @@ class Safely extends Component<{ children: ReactNode }, { failed: boolean }> {
   }
 }
 
-/** /review/<token> opens straight into the tender; /review/<token>/summary is the
- * read-only view after completion. */
-export function ReviewApp({ token, summary }: { token: string; summary: boolean }) {
+/** /review/<token> opens straight into the tender; /review/<token>/amendments shows what
+ * each later version changed; /review/<token>/summary is the read-only view after
+ * completion. */
+export function ReviewApp({ token, page }: { token: string; page: ReviewPage }) {
   const api = useMemo(() => reviewApi(token), [token]);
   const [state, setState] = useState<State>({ kind: "loading" });
-  const [showSummary, setShowSummary] = useState(summary);
+  const [shown, setShown] = useState<ReviewPage>(page);
 
   useEffect(() => {
     let cancelled = false;
@@ -61,17 +65,24 @@ export function ReviewApp({ token, summary }: { token: string; summary: boolean 
   if (state.kind === "loading") return <p className="p-8 font-sans text-slate-600">Opening the review…</p>;
   if (state.kind === "refused") return <MessagePage title="This review cannot be opened" message={state.message} />;
   const base = `/review/${token}`;
-  if (showSummary)
+  if (shown === "summary")
     return <SummaryPage api={api} tenderId={state.session.tender_id} reviewHref={base} />;
+  if (shown === "amendments")
+    return (
+      <Safely>
+        <AmendmentsPage api={api} session={state.session} review={state.review} reviewHref={base} />
+      </Safely>
+    );
   return (
     <Safely>
       <ReviewScreen
         api={api}
         session={state.session}
         initial={state.review}
+        amendmentsHref={`${base}/amendments`}
         onCompleted={() => {
           window.history.pushState(null, "", `${base}/summary`);
-          setShowSummary(true);
+          setShown("summary");
         }}
       />
     </Safely>

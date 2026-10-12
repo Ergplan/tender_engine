@@ -1,6 +1,227 @@
 {
   "components": {
     "schemas": {
+      "AmendmentChange": {
+        "properties": {
+          "before": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ChangeBefore"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "decided": {
+            "title": "Decided",
+            "type": "boolean"
+          },
+          "entry": {
+            "$ref": "#/components/schemas/ReviewEntry"
+          },
+          "enum_values": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enum Values"
+          },
+          "field_path": {
+            "title": "Field Path",
+            "type": "string"
+          },
+          "flagged": {
+            "title": "Flagged",
+            "type": "boolean"
+          },
+          "help_text": {
+            "title": "Help Text",
+            "type": "string"
+          },
+          "is_current": {
+            "title": "Is Current",
+            "type": "boolean"
+          },
+          "keys": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/KeyDef"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Keys"
+          },
+          "kind": {
+            "enum": [
+              "added",
+              "changed",
+              "restated"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "required": {
+            "title": "Required",
+            "type": "boolean"
+          },
+          "section": {
+            "title": "Section",
+            "type": "string"
+          },
+          "section_label": {
+            "title": "Section Label",
+            "type": "string"
+          },
+          "set_aside": {
+            "title": "Set Aside",
+            "type": "boolean"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          },
+          "value_type": {
+            "title": "Value Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "field_path",
+          "label",
+          "section",
+          "section_label",
+          "value_type",
+          "unit",
+          "required",
+          "help_text",
+          "enum_values",
+          "kind",
+          "before",
+          "entry",
+          "is_current",
+          "decided",
+          "set_aside",
+          "flagged"
+        ],
+        "title": "AmendmentChange",
+        "type": "object"
+      },
+      "AmendmentVersion": {
+        "properties": {
+          "added": {
+            "title": "Added",
+            "type": "integer"
+          },
+          "changed": {
+            "title": "Changed",
+            "type": "integer"
+          },
+          "changes": {
+            "items": {
+              "$ref": "#/components/schemas/AmendmentChange"
+            },
+            "title": "Changes",
+            "type": "array"
+          },
+          "decided": {
+            "title": "Decided",
+            "type": "integer"
+          },
+          "documents": {
+            "items": {
+              "$ref": "#/components/schemas/ReviewDocument"
+            },
+            "title": "Documents",
+            "type": "array"
+          },
+          "issued_on": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Issued On"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "restated": {
+            "title": "Restated",
+            "type": "integer"
+          },
+          "sections_read": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Sections Read",
+            "type": "array"
+          },
+          "summary_of_change": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summary Of Change"
+          },
+          "undecided": {
+            "title": "Undecided",
+            "type": "integer"
+          },
+          "version_no": {
+            "title": "Version No",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "version_no",
+          "kind",
+          "issued_on",
+          "summary_of_change",
+          "documents",
+          "sections_read",
+          "changes",
+          "added",
+          "changed",
+          "restated",
+          "decided",
+          "undecided"
+        ],
+        "title": "AmendmentVersion",
+        "type": "object"
+      },
       "ApprovalOut": {
         "properties": {
           "candidate_id": {
@@ -441,6 +662,41 @@
           "created_by"
         ],
         "title": "CanonicalFactView",
+        "type": "object"
+      },
+      "ChangeBefore": {
+        "description": "What stood for the field before this version: the latest earlier reading, as the\nreviewer left it (their edit if they made one).",
+        "properties": {
+          "decision": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decision"
+          },
+          "value": {
+            "title": "Value"
+          },
+          "version_kind": {
+            "title": "Version Kind",
+            "type": "string"
+          },
+          "version_no": {
+            "title": "Version No",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "version_no",
+          "version_kind",
+          "value",
+          "decision"
+        ],
+        "title": "ChangeBefore",
         "type": "object"
       },
       "CompiledSection": {
@@ -2407,6 +2663,37 @@
           "queued"
         ],
         "title": "SummaryQueued",
+        "type": "object"
+      },
+      "TenderAmendments": {
+        "properties": {
+          "tender_id": {
+            "title": "Tender Id",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "untouched": {
+            "title": "Untouched",
+            "type": "integer"
+          },
+          "versions": {
+            "items": {
+              "$ref": "#/components/schemas/AmendmentVersion"
+            },
+            "title": "Versions",
+            "type": "array"
+          }
+        },
+        "required": [
+          "tender_id",
+          "title",
+          "versions",
+          "untouched"
+        ],
+        "title": "TenderAmendments",
         "type": "object"
       },
       "TenderCreate": {
@@ -4393,6 +4680,49 @@
         "summary": "Get Tender",
         "tags": [
           "tenders"
+        ]
+      }
+    },
+    "/api/v1/tenders/{tender_id}/amendments": {
+      "get": {
+        "description": "The tender's later versions, each with the fields it states against what stood\nbefore them, and that version's reading to decide. A projection of the review.",
+        "operationId": "get_tender_amendments_api_v1_tenders__tender_id__amendments_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tender_id",
+            "required": true,
+            "schema": {
+              "title": "Tender Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TenderAmendments"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Tender Amendments",
+        "tags": [
+          "review"
         ]
       }
     },

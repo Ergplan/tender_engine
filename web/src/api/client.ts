@@ -19,6 +19,9 @@ export type PageInfo = Schemas["PageOut"];
 export type SectionInfo = Schemas["SectionOut"];
 export type SearchHit = Schemas["SearchHit"];
 export type Snapshot = Schemas["SnapshotOut"];
+export type TenderAmendments = Schemas["TenderAmendments"];
+export type AmendmentVersion = Schemas["AmendmentVersion"];
+export type AmendmentChange = Schemas["AmendmentChange"];
 export type ApprovalRequest = Schemas["ApprovalRequest"];
 export type ApprovalResult = Schemas["ApprovalOut"];
 
@@ -86,6 +89,7 @@ export function reviewApi(token: string) {
     complete: (tenderId: string) =>
       request<Snapshot>("POST", `/tenders/${tenderId}/complete-review`, token),
     snapshot: (tenderId: string) => get<Snapshot>(`/tenders/${tenderId}/snapshot`),
+    amendments: (tenderId: string) => get<TenderAmendments>(`/tenders/${tenderId}/amendments`),
     document: (documentId: string) => get<DocumentInfo>(`/documents/${documentId}`),
     pages: (documentId: string) => get<PageInfo[]>(`/documents/${documentId}/pages`),
     sections: (documentId: string) => get<SectionInfo[]>(`/documents/${documentId}/sections`),

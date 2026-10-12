@@ -570,3 +570,24 @@ describe("evidence on a field of several quotes", () => {
     expect(quotes).toHaveTextContent("2p. 1: “Issued by Acme Renewables Agency”");
   });
 });
+
+describe("the way to the amendments", () => {
+  it("offers the amendments when the tender has a later version, with what is left to decide there", async () => {
+    const review = makeReview();
+    const fake = fakeApi(review);
+    render(<ReviewScreen api={fake.api} session={SESSION} initial={review} amendmentsHref="/review/x/amendments" onCompleted={vi.fn()} />);
+    await screen.findAllByTestId("pdf-page");
+    const link = screen.getByTestId("amendments-link");
+    expect(link).toHaveAttribute("href", "/review/x/amendments");
+    expect(link).toHaveTextContent("Amendments · 1 field · 1 to decide");
+  });
+
+  it("offers nothing when the tender has only its original", async () => {
+    const review = makeReview();
+    review.versions = [review.versions[0]];
+    const fake = fakeApi(review);
+    render(<ReviewScreen api={fake.api} session={SESSION} initial={review} amendmentsHref="/review/x/amendments" onCompleted={vi.fn()} />);
+    await screen.findAllByTestId("pdf-page");
+    expect(screen.queryByTestId("amendments-link")).toBeNull();
+  });
+});

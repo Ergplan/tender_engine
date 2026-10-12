@@ -111,7 +111,8 @@ export function shownValue(field: ReviewField, entry: ReviewEntry | null): unkno
   return entry?.state.candidate?.value ?? null;
 }
 
-function decisionLine(entry: ReviewEntry, field: ReviewField): { text: string; tone: string } | null {
+/** The decision on an entry in one line, or null when there is none standing. */
+export function decisionLine(entry: ReviewEntry, field: ReviewField): { text: string; tone: string } | null {
   const approval = entry.state.approval;
   if (!approval) return null;
   const by = ` · ${approval.reviewer}`;

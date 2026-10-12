@@ -10,6 +10,7 @@ from api.deps import (
     DerivedWriterDep,
     ReviewDep,
     ReviewStateDep,
+    SchemasDep,
     SessionDep,
     SettingsDep,
     SummaryWriterDep,
@@ -28,6 +29,7 @@ from api.v1.schemas.tenders import (
 from core.models import Document
 from tender.models import ReviewToken, TenderVersion, TenderVersionDocument
 from tender.services import review as reviews
+from tender.services.amendments import TenderAmendments, tender_amendments
 from tender.services.review import TenderReview
 from tender.services.tenders import TenderError
 
@@ -113,6 +115,24 @@ def get_tender_review(
     # a moment; the review cannot be completed across that gap.
     review.can_complete = review.can_complete and not state.being_written and not state.waiting_for
     return review
+
+
+@router.get("/tenders/{tender_id}/amendments", response_model=TenderAmendments)
+def get_tender_amendments(
+    tender_id: str,
+    session: SessionDep,
+    tenders: TendersDep,
+    review_state: ReviewStateDep,
+    catalog: CatalogDep,
+    schemas: SchemasDep,
+) -> TenderAmendments:
+    """The tender's later versions, each with the fields it states against what stood
+    before them, and that version's reading to decide. A projection of the review."""
+    try:
+        tender = tenders.get(session, tender_id)
+    except LookupError as exc:
+        raise AppError("not_found", f"tender {tender_id} does not exist") from exc
+    return tender_amendments(session, catalog, tenders, review_state, schemas, tender)
 
 
 @router.post("/tenders/{tender_id}/complete-review", response_model=SnapshotOut, status_code=201)

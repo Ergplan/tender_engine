@@ -42,7 +42,10 @@ ALLOWED: tuple[tuple[str, re.Pattern[str]], ...] = tuple(
         ("GET", r"/review-session"),
         ("GET", r"/files-auth"),
         ("GET", rf"/tenders/(?P<tender>{ID})"),
-        ("GET", rf"/tenders/(?P<tender>{ID})/(versions|review|review-state|view|snapshot)"),
+        (
+            "GET",
+            rf"/tenders/(?P<tender>{ID})/(versions|review|review-state|view|snapshot|amendments)",
+        ),
         ("POST", rf"/tenders/(?P<tender>{ID})/complete-review"),
         ("GET", r"/schemas/tender/[a-z_]+"),
         ("GET", rf"/documents/(?P<document>{ID})"),

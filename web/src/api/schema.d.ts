@@ -489,6 +489,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/tenders/{tender_id}/amendments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Tender Amendments
+         * @description The tender's later versions, each with the fields it states against what stood
+         *     before them, and that version's reading to decide. A projection of the review.
+         */
+        get: operations["get_tender_amendments_api_v1_tenders__tender_id__amendments_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/tenders/{tender_id}/complete-review": {
         parameters: {
             query?: never;
@@ -669,6 +690,71 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AmendmentChange */
+        AmendmentChange: {
+            before: components["schemas"]["ChangeBefore"] | null;
+            /** Decided */
+            decided: boolean;
+            entry: components["schemas"]["ReviewEntry"];
+            /** Enum Values */
+            enum_values: string[] | null;
+            /** Field Path */
+            field_path: string;
+            /** Flagged */
+            flagged: boolean;
+            /** Help Text */
+            help_text: string;
+            /** Is Current */
+            is_current: boolean;
+            /** Keys */
+            keys?: components["schemas"]["KeyDef"][] | null;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "added" | "changed" | "restated";
+            /** Label */
+            label: string;
+            /** Required */
+            required: boolean;
+            /** Section */
+            section: string;
+            /** Section Label */
+            section_label: string;
+            /** Set Aside */
+            set_aside: boolean;
+            /** Unit */
+            unit: string | null;
+            /** Value Type */
+            value_type: string;
+        };
+        /** AmendmentVersion */
+        AmendmentVersion: {
+            /** Added */
+            added: number;
+            /** Changed */
+            changed: number;
+            /** Changes */
+            changes: components["schemas"]["AmendmentChange"][];
+            /** Decided */
+            decided: number;
+            /** Documents */
+            documents: components["schemas"]["ReviewDocument"][];
+            /** Issued On */
+            issued_on: string | null;
+            /** Kind */
+            kind: string;
+            /** Restated */
+            restated: number;
+            /** Sections Read */
+            sections_read: string[];
+            /** Summary Of Change */
+            summary_of_change: string | null;
+            /** Undecided */
+            undecided: number;
+            /** Version No */
+            version_no: number;
+        };
         /** ApprovalOut */
         ApprovalOut: {
             /** Candidate Id */
@@ -813,6 +899,21 @@ export interface components {
             value: unknown;
             /** Value Type */
             value_type: string;
+        };
+        /**
+         * ChangeBefore
+         * @description What stood for the field before this version: the latest earlier reading, as the
+         *     reviewer left it (their edit if they made one).
+         */
+        ChangeBefore: {
+            /** Decision */
+            decision: string | null;
+            /** Value */
+            value: unknown;
+            /** Version Kind */
+            version_kind: string;
+            /** Version No */
+            version_no: number;
         };
         /** CompiledSection */
         CompiledSection: {
@@ -1491,6 +1592,17 @@ export interface components {
             queued: boolean;
             /** Tender Id */
             tender_id: string;
+        };
+        /** TenderAmendments */
+        TenderAmendments: {
+            /** Tender Id */
+            tender_id: string;
+            /** Title */
+            title: string;
+            /** Untouched */
+            untouched: number;
+            /** Versions */
+            versions: components["schemas"]["AmendmentVersion"][];
         };
         /** TenderCreate */
         TenderCreate: {
@@ -2506,6 +2618,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["TenderOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_tender_amendments_api_v1_tenders__tender_id__amendments_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tender_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TenderAmendments"];
                 };
             };
             /** @description Validation Error */

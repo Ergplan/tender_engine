@@ -31,11 +31,14 @@ export function ReviewScreen({
   api,
   session,
   initial,
+  amendmentsHref,
   onCompleted,
 }: {
   api: ReviewApi;
   session: ReviewSession;
   initial: TenderReview;
+  /** Where the amendments are checked side by side; offered when there is a later version. */
+  amendmentsHref?: string;
   onCompleted: () => void;
 }) {
   const [review, setReview] = useState(initial);
@@ -197,6 +200,12 @@ export function ReviewScreen({
 
   const undecided = review.total - review.decided;
   const minutes = minutesLeft(decisionTimes, undecided);
+  // Fields a later version states, and how many of them are still to be decided there.
+  const amended = review.fields.filter((field) => field.entries.some((entry) => entry.version_no > 1));
+  const amendedUndecided = amended.filter((field) => {
+    const entry = currentEntry(field);
+    return entry !== null && entry.version_no > 1 && !field.decided;
+  }).length;
 
   function drag(event: React.PointerEvent) {
     const box = container.current?.getBoundingClientRect();
@@ -235,6 +244,17 @@ export function ReviewScreen({
             <span data-testid="reviewer-name">{session.reviewer_name}</span>
           </p>
         </div>
+        {amendmentsHref && review.versions.length > 1 && (
+          <a
+            href={amendmentsHref}
+            data-testid="amendments-link"
+            title="What each corrigendum, amendment or clarification changed, against what stood before"
+            className="shrink-0 rounded border border-violet-300 bg-violet-50 px-2 py-1 text-xs font-medium text-violet-900 hover:bg-violet-100"
+          >
+            Amendments · {amended.length} {amended.length === 1 ? "field" : "fields"}
+            {amendedUndecided > 0 ? ` · ${amendedUndecided} to decide` : ""}
+          </a>
+        )}
         <span className="shrink-0 text-right text-sm tabular-nums text-slate-700">
           <span data-testid="progress">
             {review.decided} of {review.total} fields decided
