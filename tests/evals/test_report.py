@@ -202,3 +202,58 @@ def test_the_last_two_versions_of_each_prompt_are_judged_apart() -> None:
     twice = scores + [score("c", RATE, "guarantees", "wrong_value", "v3")]
     assert accuracy_by_prompt_version(twice)["extract/guarantees"] == {"v3": 0.0, "v10": 1.0}
     assert accuracy_by_prompt_version(twice + [scores[2]])["extract/guarantees"]["v3"] == 1.0
+
+
+def test_structured_fields_are_reported_key_by_key() -> None:
+    """A record is scored key by key (runner.match_record); the report and the dashboard
+    add those outcomes up per key, an item of a list under its key name."""
+    structured = "core.guarantees.emd_structured"
+    records, scores = two_records()
+    scores += [
+        FieldScore(
+            slug="seci-solar-1",
+            tender_type="solar",
+            issuing_agency="SECI",
+            field_path=structured,
+            section="guarantees",
+            value_type="record",
+            required=False,
+            outcome="correct",
+            gold_value={},
+            candidate_value={},
+            evidence_ok=True,
+            key_outcomes={"basis": "correct", "rate_inr_per_mw": "correct"},
+        ),  # fmt: skip
+        FieldScore(
+            slug="seci-solar-2",
+            tender_type="solar",
+            issuing_agency="SECI",
+            field_path=structured,
+            section="guarantees",
+            value_type="record",
+            required=False,
+            outcome="wrong_value",
+            gold_value={},
+            candidate_value={},
+            evidence_ok=True,
+            key_outcomes={"1.basis": "correct", "1.rate_inr_per_mw": "missing"},
+        ),  # fmt: skip
+    ]
+    summary = summarise(scores)
+    keys = summary.by_key[structured]
+    assert keys["basis"] == {"n": 2, "correct": 2, "misses": 0, "kinds": {}, "accuracy": 1.0}
+    assert keys["rate_inr_per_mw"] == {
+        "n": 2,
+        "correct": 1,
+        "misses": 1,
+        "kinds": {"missing": 1},
+        "accuracy": 0.5,
+    }
+    assert RATE not in summary.by_key, "a scalar has no keys"
+    text = render_report(records, scores, Counter({"solar": 2}), {}, [])
+    assert "## Structured fields by key" in text
+    assert f"| `{structured}` | `rate_inr_per_mw` | 50% | 2 | 1 | missing 1 |" in text
+    assert f"| `{structured}` | `basis` | 100% | 2 | 0 | - |" in text
+    assert "No structured field scored yet." in render_report(
+        records, scores[:6], Counter({"solar": 2}), {}, []
+    )

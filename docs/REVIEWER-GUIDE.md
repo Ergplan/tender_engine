@@ -17,6 +17,7 @@ You open the review from the link you were sent. The link is yours: your name is
 5. Flag if you are unsure, and move on. A flagged field is not counted as decided.
 6. Clear decision undoes a decision you made by mistake; the field is undecided again and nothing is recorded as a correction.
 7. Where the model also read the field differently (from other pages, or in another pass), the card shows that reading below the value with its own quotes: pick the one the document supports.
+8. Add a note keeps the value as it is and stores a remark with your Approve or Not in document ("also accepted as an insurance surety bond"). It is shown on the decision line and is not counted as a correction; use Edit when the value itself is wrong.
 
 The summary at the top is written from the fields below it, not read from the document a second time. Each of its sentences carries the evidence of the fields it draws on, so a number after a sentence opens the same passage as the chip of that field. If a value in the summary is wrong, the field it comes from is wrong: correct the field. Point at a number to see which field it comes from and the words it quotes; click it to see the passage.
 

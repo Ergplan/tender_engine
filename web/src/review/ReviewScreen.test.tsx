@@ -19,7 +19,7 @@ function fakeApi(review: TenderReview) {
   const api = {
     session: vi.fn(async () => SESSION),
     review: vi.fn(async () => state.review),
-    decide: vi.fn(async (body: { candidate_id: string; decision: string }) => {
+    decide: vi.fn(async (body: { candidate_id: string; decision: string; note?: string | null }) => {
       // The server's answer to a decision: the field's current entry now carries it.
       const next = structuredClone(state.review);
       for (const field of next.fields) {
@@ -31,7 +31,7 @@ function fakeApi(review: TenderReview) {
           decision: body.decision,
           final_value: null,
           reviewer: "Asha Rao",
-          note: null,
+          note: body.note ?? null,
           decided_at: "2026-10-05T10:00:00Z",
         };
         field.decided = body.decision !== "flagged" && body.decision !== "cleared";
@@ -182,6 +182,28 @@ describe("deciding", () => {
     expect(within(card(DEADLINE)).getByTestId("save-state")).toHaveTextContent("Saved");
     expect(screen.getByTestId("progress")).toHaveTextContent("1 of 4");
     await waitFor(() => expect(card(PREBID).dataset.focused).toBe("yes"));
+  });
+
+  it("approves with a note that is sent with the decision and shown on its line", async () => {
+    const { calls } = await open();
+    fireEvent.click(within(card(EMD)).getByTestId("note-toggle"));
+    const box = within(card(EMD)).getByTestId("decision-note");
+    fireEvent.change(box, { target: { value: "Also accepted as an insurance surety bond" } });
+    fireEvent.click(within(card(EMD)).getByTestId("approve"));
+    await waitFor(() => expect(card(EMD).dataset.decided).toBe("yes"));
+    expect(calls.decide).toHaveBeenCalledWith(
+      expect.objectContaining({ candidate_id: "c-emd", decision: "approved", note: "Also accepted as an insurance surety bond" }),
+    );
+    expect(within(card(EMD)).getByTestId("decision")).toHaveTextContent(
+      "Approved · Asha Rao — Also accepted as an insurance surety bond",
+    );
+    expect(within(card(EMD)).queryByTestId("decision-note")).toBeNull();
+    // Enter in the box approves with the note too.
+    fireEvent.click(within(card(DEADLINE)).getByTestId("note-toggle"));
+    fireEvent.change(within(card(DEADLINE)).getByTestId("decision-note"), { target: { value: "time is 15:00" } });
+    fireEvent.submit(within(card(DEADLINE)).getByTestId("decision-note").closest("form")!);
+    await waitFor(() => expect(card(DEADLINE).dataset.decided).toBe("yes"));
+    expect(calls.decide).toHaveBeenLastCalledWith(expect.objectContaining({ decision: "approved", note: "time is 15:00" }));
   });
 
   it("edits a date in a date input and sends the typed value with the decision it replaces", async () => {

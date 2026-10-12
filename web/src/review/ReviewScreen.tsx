@@ -109,7 +109,7 @@ export function ReviewScreen({
           decision: decision.decision,
           previous_approval_id: entry.state.approval?.id ?? null,
           final_value: decision.decision === "edited" ? decision.value : null,
-          note: "note" in decision ? decision.note : null,
+          note: "note" in decision ? (decision.note ?? null) : null,
           evidence: decision.decision === "edited" ? decision.evidence : null,
         });
         const fresh = await reload();

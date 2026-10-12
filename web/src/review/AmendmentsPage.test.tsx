@@ -110,6 +110,16 @@ describe("AmendmentsPage", () => {
     expect(fake.calls.decide).toHaveBeenLastCalledWith(expect.objectContaining({ decision: "not_in_document" }));
   });
 
+  it("takes a note with Not in this version", async () => {
+    const fake = await open();
+    const card = screen.getByTestId("amendment-card");
+    fireEvent.click(within(card).getByTestId("note-toggle"));
+    fireEvent.change(within(card).getByTestId("decision-note"), { target: { value: "only restates the time" } });
+    fireEvent.click(within(card).getByTestId("not-in-document"));
+    await waitFor(() => expect(within(card).getByTestId("decision")).toHaveTextContent("Not in document · Asha Rao — only restates the time"));
+    expect(fake.calls.decide).toHaveBeenLastCalledWith(expect.objectContaining({ decision: "not_in_document", note: "only restates the time" }));
+  });
+
   it("flags with a note and offers the edit form on this version's reading", async () => {
     const fake = await open();
     const card = screen.getByTestId("amendment-card");
@@ -120,6 +130,20 @@ describe("AmendmentsPage", () => {
     expect(fake.calls.decide).toHaveBeenLastCalledWith(expect.objectContaining({ decision: "flagged", note: "time of day differs" }));
     fireEvent.click(within(card).getByTestId("edit"));
     expect(within(card).getByTestId("edit-save")).toBeInTheDocument();
+  });
+
+  it("answers the reviewer's keys: J focuses, Enter approves, N sets aside", async () => {
+    const fake = await open();
+    const card = screen.getByTestId("amendment-card");
+    fireEvent.keyDown(window, { key: "j" });
+    await waitFor(() => expect(card).toHaveAttribute("data-focused", "yes"));
+    fireEvent.keyDown(window, { key: "Enter" });
+    await waitFor(() => expect(card).toHaveAttribute("data-decided", "yes"));
+    expect(fake.calls.decide).toHaveBeenLastCalledWith(expect.objectContaining({ decision: "approved" }));
+    fireEvent.keyDown(window, { key: "u" });
+    await waitFor(() => expect(card).toHaveAttribute("data-decided", "no"));
+    fireEvent.keyDown(window, { key: "n" });
+    await waitFor(() => expect(within(card).getByTestId("standing")).toHaveTextContent("Set aside"));
   });
 
   it("is read-only once the review is completed", async () => {

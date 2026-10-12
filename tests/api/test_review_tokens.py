@@ -7,7 +7,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from core.models import AuditLog, Document
+from core.models import AuditLog, Document, Feedback
 from scripts import review_token as review_token_command
 from tender.models import ReviewToken, Tender, TenderReviewSnapshot
 from tests.api.test_tenders import ASHA, add_version, create, extracted
@@ -873,3 +873,33 @@ def test_the_amendments_of_the_tender_are_served_to_its_reviewer(
         client.get(f"/api/v1/tenders/{other['id']}/amendments", headers=headers).status_code == 404
     )
     assert client.get(f"/api/v1/tenders/{'0' * 32}/amendments").status_code == 404
+
+
+def test_an_approval_keeps_the_reviewers_note_and_the_review_shows_it(
+    client: TestClient, pipeline: Pipeline, db: Session
+) -> None:
+    """A note on an approved value (owner's feedback, 2026-10-06): the value stands as
+    read, the remark is stored on the approval and shown; it is not a correction."""
+    tender = extracted(client, pipeline)
+    token = link(client, tender["id"])["token"]
+    first = review(client, tender["id"], token)
+    emd = next(f for f in first["fields"] if f["field_path"] == EMD)
+    candidate = emd["entries"][0]["state"]["candidate"]["id"]
+    saved = client.post(
+        "/api/v1/approvals",
+        json={"candidate_id": candidate, "decision": "approved", "note": "Also as an eBG"},
+        headers=as_reviewer(token),
+    )
+    assert saved.status_code == 201, saved.text
+    assert saved.json()["note"] == "Also as an eBG"
+    after = review(client, tender["id"], token)
+    emd = next(f for f in after["fields"] if f["field_path"] == EMD)
+    approval = emd["entries"][0]["state"]["approval"]
+    assert (approval["decision"], approval["note"], emd["decided"]) == (
+        "approved",
+        "Also as an eBG",
+        True,
+    )
+    assert db.scalar(select(Feedback).where(Feedback.field_path == EMD)) is None, (
+        "a note is not a correction"
+    )

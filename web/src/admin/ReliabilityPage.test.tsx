@@ -30,6 +30,12 @@ const DATA = {
         "sector.power.common.metering_point": { n: 1, correct: 0, accuracy: 0, evidence_n: 1, evidence_correct: 1, evidence_accuracy: 1, misses: 1 },
       },
     },
+    by_key: {
+      "core.guarantees.emd_structured": {
+        basis: { n: 1, correct: 1, misses: 0, kinds: {}, accuracy: 1 },
+        rate_inr_per_mw: { n: 1, correct: 0, misses: 1, kinds: { missing: 1 }, accuracy: 0 },
+      },
+    },
     misses: [],
   },
   stability: {
@@ -63,6 +69,10 @@ describe("ReliabilityPage", () => {
     expect(table).toHaveTextContent("core.key_dates.bid_submission_deadline");
     expect(table).toHaveTextContent("100% (1)");
     expect(table).toHaveTextContent("0% (1)");
+    const keys = screen.getAllByTestId("key-row");
+    expect(keys).toHaveLength(2);
+    expect(keys[1]).toHaveTextContent("rate_inr_per_mw");
+    expect(keys[1]).toHaveTextContent("(missing 1)");
     expect(screen.getByTestId("tender-table")).toHaveTextContent("nhpc-fdre-ii");
     expect(screen.getByTestId("tender-table")).toHaveTextContent("54");
     expect(screen.getByText(/A comparison appears once more than one prompt version/)).toBeInTheDocument();

@@ -1547,6 +1547,14 @@ export interface components {
                     [key: string]: unknown;
                 };
             };
+            /** By Key */
+            by_key: {
+                [key: string]: {
+                    [key: string]: {
+                        [key: string]: unknown;
+                    };
+                };
+            };
             /** By Section */
             by_section: {
                 [key: string]: {

@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import type { AmendmentChange, Evidence, ReviewField } from "../api/client";
 import { confidenceBand, formatList, formatValue } from "../lib/format";
+import { DecisionNote } from "./DecisionNote";
 import { EditForm } from "./EditForm";
 import { EvidenceChip } from "./EvidenceChip";
 import { type CardMode, type Decision, decisionLine, type SaveState } from "./FieldCard";
@@ -83,6 +84,15 @@ export function AmendmentCard({
   onShowEvidence: (evidence: Evidence) => void;
 }) {
   const [note, setNote] = useState("");
+  const [noting, setNoting] = useState(false);
+  const [remark, setRemark] = useState("");
+  useEffect(() => {
+    if (change.decided) {
+      setNoting(false);
+      setRemark("");
+    }
+  }, [change.decided]);
+  const withNote = noting && remark.trim() ? { note: remark.trim() } : {};
   const field = fieldOf(change);
   const entry = change.entry;
   const candidate = entry.state.candidate;
@@ -198,6 +208,15 @@ export function AmendmentCard({
         </p>
       )}
 
+      {!readOnly && mode === "view" && noting && (
+        <DecisionNote
+          value={remark}
+          onChange={setRemark}
+          onSubmit={() => {
+            if (blocker === null) onDecide({ decision: "approved", ...withNote });
+          }}
+        />
+      )}
       {!readOnly && mode === "view" && (
         <div className="mt-1.5 flex flex-wrap items-center gap-1.5" onClick={(event) => event.stopPropagation()}>
           <button
@@ -206,7 +225,7 @@ export function AmendmentCard({
             disabled={blocker !== null}
             title={blocker ?? "Approve this version's reading"}
             className={BUTTON + " border-green-600 bg-green-600 text-white hover:bg-green-700"}
-            onClick={() => onDecide({ decision: "approved" })}
+            onClick={() => onDecide({ decision: "approved", ...withNote })}
           >
             Approve
           </button>
@@ -224,7 +243,7 @@ export function AmendmentCard({
             data-testid="not-in-document"
             title="This version does not state the field: the earlier reading stands"
             className={BUTTON + " border-slate-400 bg-white hover:bg-slate-100"}
-            onClick={() => onDecide({ decision: "not_in_document" })}
+            onClick={() => onDecide({ decision: "not_in_document", ...withNote })}
           >
             Not in this version
           </button>
@@ -237,6 +256,17 @@ export function AmendmentCard({
           >
             Flag
           </button>
+          {!change.decided && (
+            <button
+              type="button"
+              data-testid="note-toggle"
+              title="Keep the value and say something about it; the note is stored with your decision"
+              className={"px-1 text-xs underline " + (noting ? "text-sky-800" : "text-slate-600")}
+              onClick={() => setNoting(!noting)}
+            >
+              {noting ? "No note" : "Add a note"}
+            </button>
+          )}
           {(change.decided || change.flagged) && (
             <button
               type="button"

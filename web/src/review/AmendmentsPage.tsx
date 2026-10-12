@@ -11,9 +11,10 @@ import {
   type TenderReview,
 } from "../api/client";
 import { formatDate } from "../lib/format";
+import { keyAction, neighbour, nextWhere } from "../lib/keyboard";
 import { AmendmentCard } from "./AmendmentCard";
 import type { CardMode, Decision, SaveState } from "./FieldCard";
-import { documentName, firstEvidence, type PdfTarget } from "./model";
+import { approveBlocker, documentName, firstEvidence, type PdfTarget } from "./model";
 import { type Highlight, PdfPane } from "./PdfPane";
 
 function keyOf(change: AmendmentChange): string {
@@ -103,7 +104,7 @@ export function AmendmentsPage({
           decision: decision.decision,
           previous_approval_id: change.entry.state.approval?.id ?? null,
           final_value: decision.decision === "edited" ? decision.value : null,
-          note: "note" in decision ? decision.note : null,
+          note: "note" in decision ? (decision.note ?? null) : null,
           evidence: decision.decision === "edited" ? decision.evidence : null,
         });
         await load();
@@ -123,6 +124,37 @@ export function AmendmentsPage({
     },
     [api, load, readOnly],
   );
+
+  // The reviewer's keys, as on the review screen: Enter approves and moves to the next
+  // undecided change, E edits, N sets the reading aside, F flags, U clears, J/K move.
+  const order = useMemo(() => [...changes.keys()], [changes]);
+  useEffect(() => {
+    function onKey(event: KeyboardEvent) {
+      const action = keyAction(event);
+      if (!action) return;
+      const change = focused ? changes.get(focused) : undefined;
+      if (action === "next" || action === "previous") {
+        event.preventDefault();
+        return focus(neighbour(order, focused, action === "next" ? 1 : -1));
+      }
+      if (action === "cancel") return setMode("view");
+      if (!change || readOnly || mode !== "view") return;
+      event.preventDefault();
+      if (action === "approve") {
+        const blocker = approveBlocker(change.entry);
+        if (blocker) return setSaves((before) => ({ ...before, [keyOf(change)]: { kind: "failed", message: blocker } }));
+        void decide(change, { decision: "approved" }).then(() => {
+          const next = nextWhere(order, keyOf(change), (key) => !(changes.get(key)?.decided ?? true));
+          if (next) focus(next);
+        });
+      } else if (action === "not_in_document") void decide(change, { decision: "not_in_document" });
+      else if (action === "edit") setMode("edit");
+      else if (action === "flag") setMode("flag");
+      else if (action === "clear" && (change.decided || change.flagged)) void decide(change, { decision: "cleared" });
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [changes, decide, focus, focused, mode, order, readOnly]);
 
   const highlights = useMemo<Highlight[]>(() => {
     const change = focused ? changes.get(focused) : undefined;

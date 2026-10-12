@@ -390,6 +390,21 @@ def render_report(
                 f"| `{path}` | {_pct(bucket['accuracy'])} | {bucket['n']} | "
                 f"{bucket['misses']} | {why} |"
             )
+    lines += ["", "## Structured fields by key", ""]
+    if not summary.by_key:
+        lines.append("No structured field scored yet.")
+    else:
+        lines += [
+            "| Field | Key | Accuracy | n | Misses | What the misses look like |",
+            "| --- | --- | --- | --- | --- | --- |",
+        ]
+        for path, keys in summary.by_key.items():
+            for key, bucket in keys.items():
+                why = ", ".join(f"{k} {n}" for k, n in sorted(bucket["kinds"].items()))
+                lines.append(
+                    f"| `{path}` | `{key}` | {_pct(bucket['accuracy'])} | {bucket['n']} | "
+                    f"{bucket['misses']} | {why or '-'} |"
+                )
     lines += ["", "## Prompt versions tried", ""]
     if not comparisons:
         lines.append("No scored run in `evals/results/` yet.")

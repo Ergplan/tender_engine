@@ -383,7 +383,34 @@ class Summary(BaseModel):
     by_type: dict[str, dict[str, Any]]
     by_section: dict[str, dict[str, Any]]
     by_type_field: dict[str, dict[str, dict[str, Any]]]
+    # Structured fields key by key: field path → key name → n, correct, misses, accuracy
+    # and the kinds of miss (wrong_value, missing, extra, format). An item of a list of
+    # records counts under its key name, whatever its place in the list.
+    by_key: dict[str, dict[str, dict[str, Any]]]
     misses: list[dict[str, Any]]
+
+
+def _key_bucket() -> dict[str, Any]:
+    return {"n": 0, "correct": 0, "misses": 0, "kinds": {}}
+
+
+def _add_keys(by_key: dict[str, dict[str, dict[str, Any]]], score: FieldScore) -> None:
+    for name, outcome in (score.key_outcomes or {}).items():
+        # "2.rate_inr_per_mw" is the key of the second item.
+        key = name.split(".", 1)[1] if name.split(".", 1)[0].isdigit() else name
+        bucket = by_key[score.field_path].setdefault(key, _key_bucket())
+        bucket["n"] += 1
+        if outcome == "correct":
+            bucket["correct"] += 1
+        else:
+            bucket["misses"] += 1
+            bucket["kinds"][outcome] = bucket["kinds"].get(outcome, 0) + 1
+
+
+def _finish_keys(keys: dict[str, dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    for bucket in keys.values():
+        bucket["accuracy"] = round(bucket["correct"] / bucket["n"], 4) if bucket["n"] else None
+    return dict(sorted(keys.items()))
 
 
 def _bucket() -> dict[str, Any]:
@@ -416,11 +443,13 @@ def summarise(scores: list[FieldScore]) -> Summary:
     by_type: dict[str, dict[str, Any]] = defaultdict(_bucket)
     by_section: dict[str, dict[str, Any]] = defaultdict(_bucket)
     by_type_field: dict[str, dict[str, dict[str, Any]]] = defaultdict(lambda: defaultdict(_bucket))
+    by_key: dict[str, dict[str, dict[str, Any]]] = defaultdict(dict)
     for score in counted:
         _add(by_field[score.field_path], score)
         _add(by_type[score.tender_type], score)
         _add(by_section[score.section], score)
         _add(by_type_field[score.tender_type][score.field_path], score)
+        _add_keys(by_key, score)
     evidence = [s for s in counted if s.evidence_ok is not None]
     return Summary(
         scored=len(counted),
@@ -441,6 +470,7 @@ def summarise(scores: list[FieldScore]) -> Summary:
             t: {f: _finish(v) for f, v in sorted(fields.items())}
             for t, fields in sorted(by_type_field.items())
         },
+        by_key={path: _finish_keys(keys) for path, keys in sorted(by_key.items())},
         misses=[
             {
                 "slug": s.slug,

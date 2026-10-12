@@ -2552,6 +2552,17 @@
             "title": "By Field",
             "type": "object"
           },
+          "by_key": {
+            "additionalProperties": {
+              "additionalProperties": {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              "type": "object"
+            },
+            "title": "By Key",
+            "type": "object"
+          },
           "by_section": {
             "additionalProperties": {
               "additionalProperties": true,
@@ -2642,6 +2653,7 @@
           "by_type",
           "by_section",
           "by_type_field",
+          "by_key",
           "misses"
         ],
         "title": "Summary",

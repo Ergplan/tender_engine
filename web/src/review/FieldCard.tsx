@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import type { Evidence, ReviewEntry, ReviewField } from "../api/client";
 import { confidenceBand, formatList, formatValue, paragraphs } from "../lib/format";
 import { RecordView } from "./RecordView";
+import { DecisionNote } from "./DecisionNote";
 import { EditForm, type EditResult } from "./EditForm";
 import { EvidenceChip } from "./EvidenceChip";
 import { CONFIDENCE_HINT } from "./guide";
@@ -20,9 +21,10 @@ import {
 export type SaveState = { kind: "saving" } | { kind: "saved" } | { kind: "failed"; message: string };
 export type CardMode = "view" | "edit" | "flag";
 export type Decision =
-  // candidate_id names another reading of the field than the one shown ("Use this reading").
-  | { decision: "approved"; candidate_id?: string }
-  | { decision: "not_in_document" }
+  // candidate_id names another reading of the field than the one shown ("Use this reading");
+  // note is the reviewer's remark kept with the decision.
+  | { decision: "approved"; candidate_id?: string; note?: string | null }
+  | { decision: "not_in_document"; note?: string | null }
   | { decision: "flagged"; note: string }
   | { decision: "cleared" }
   | ({ decision: "edited" } & EditResult);
@@ -116,16 +118,18 @@ export function decisionLine(entry: ReviewEntry, field: ReviewField): { text: st
   const approval = entry.state.approval;
   if (!approval) return null;
   const by = ` · ${approval.reviewer}`;
-  if (approval.decision === "approved") return { text: `Approved${by}`, tone: "text-green-700" };
+  // The reviewer's remark, kept with the decision.
+  const remark = approval.note ? ` — ${approval.note}` : "";
+  if (approval.decision === "approved") return { text: `Approved${by}${remark}`, tone: "text-green-700" };
   if (approval.decision === "edited")
     return {
       text: field.keys?.length
-        ? `Edited${by}`
-        : `Edited to ${formatValue(approval.final_value, field.value_type, field.unit)}${by}`,
+        ? `Edited${by}${remark}`
+        : `Edited to ${formatValue(approval.final_value, field.value_type, field.unit)}${by}${remark}`,
       tone: "text-green-700",
     };
   if (approval.decision === "not_in_document")
-    return { text: `Not in document${by}`, tone: "text-green-700" };
+    return { text: `Not in document${by}${remark}`, tone: "text-green-700" };
   if (approval.decision === "flagged")
     return { text: `Flagged: ${approval.note ?? "come back"}${by}`, tone: "text-amber-700" };
   // A cleared decision is no decision: the card reads as undecided.
@@ -170,11 +174,22 @@ export function FieldCard({
   const candidate = entry?.state.candidate ?? null;
   const element = useRef<HTMLDivElement>(null);
   const [note, setNote] = useState("");
+  // A remark to go with Approve or Not in document, opened with "Add a note".
+  const [noting, setNoting] = useState(false);
+  const [remark, setRemark] = useState("");
   const [whole, setWhole] = useState(false);
   const [wholeReason, setWholeReason] = useState(false);
   useEffect(() => {
     if (focused) element.current?.scrollIntoView({ block: "nearest" });
   }, [focused]);
+  useEffect(() => {
+    // Once the decision is saved the remark is on it; the box closes.
+    if (field.decided) {
+      setNoting(false);
+      setRemark("");
+    }
+  }, [field.decided]);
+  const withNote = noting && remark.trim() ? { note: remark.trim() } : {};
 
   const lock = summaryLock(summary, false);
   const blocker = summaryLock(summary, true) ?? approveBlocker(entry);
@@ -417,6 +432,15 @@ export function FieldCard({
         </div>
       ))}
 
+      {entry && !readOnly && mode === "view" && noting && (
+        <DecisionNote
+          value={remark}
+          onChange={setRemark}
+          onSubmit={() => {
+            if (blocker === null) onDecide({ decision: "approved", ...withNote });
+          }}
+        />
+      )}
       {entry && !readOnly && mode === "view" && (
         <div className="mt-1.5 flex flex-wrap items-center gap-1.5" onClick={(event) => event.stopPropagation()}>
           <button
@@ -425,7 +449,7 @@ export function FieldCard({
             disabled={blocker !== null}
             title={blocker ?? "Approve (Enter)"}
             className={BUTTON + " border-green-600 bg-green-600 text-white hover:bg-green-700"}
-            onClick={() => onDecide({ decision: "approved" })}
+            onClick={() => onDecide({ decision: "approved", ...withNote })}
           >
             Approve
           </button>
@@ -445,7 +469,7 @@ export function FieldCard({
             disabled={lock !== null}
             title={lock ?? "Not in document (N)"}
             className={BUTTON + " border-slate-400 bg-white hover:bg-slate-100"}
-            onClick={() => onDecide({ decision: "not_in_document" })}
+            onClick={() => onDecide({ decision: "not_in_document", ...withNote })}
           >
             Not in document
           </button>
@@ -458,6 +482,17 @@ export function FieldCard({
           >
             Flag
           </button>
+          {!field.decided && (
+            <button
+              type="button"
+              data-testid="note-toggle"
+              title="Keep the value and say something about it; the note is stored with your decision"
+              className={"px-1 text-xs underline " + (noting ? "text-sky-800" : "text-slate-600")}
+              onClick={() => setNoting(!noting)}
+            >
+              {noting ? "No note" : "Add a note"}
+            </button>
+          )}
           {(field.decided || field.flagged) && (
             <button
               type="button"

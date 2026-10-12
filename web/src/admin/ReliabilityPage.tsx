@@ -150,6 +150,47 @@ export function ReliabilityPage() {
         </div>
       )}
 
+      <h2 className="mt-6 font-semibold">Structured fields by key</h2>
+      {Object.keys(data.summary.by_key).length === 0 ? (
+        <p className="mt-1 text-slate-600">No structured field scored yet.</p>
+      ) : (
+        <table data-testid="key-table" className="mt-2 min-w-full border-collapse text-xs">
+          <thead>
+            <tr>
+              {["Field", "Key", "Accuracy", "n", "Misses"].map((h) => (
+                <th key={h} className="border-b px-2 py-1 text-left">
+                  {h}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {Object.entries(data.summary.by_key).flatMap(([path, keys]) =>
+              Object.entries(keys as Record<string, { accuracy: number | null; n: number; misses: number; kinds: Record<string, number> }>).map(
+                ([key, cell]) => (
+                  <tr key={`${path}.${key}`} data-testid="key-row">
+                    <td className="border-b px-2 py-1 font-mono">{path}</td>
+                    <td className="border-b px-2 py-1 font-mono">{key}</td>
+                    <td className={"border-b px-2 py-1 " + band(cell.accuracy)}>{pct(cell.accuracy)}</td>
+                    <td className="border-b px-2 py-1">{cell.n}</td>
+                    <td className="border-b px-2 py-1">
+                      {cell.misses}
+                      {cell.misses > 0 && (
+                        <span className="ml-1 text-slate-600">
+                          ({Object.entries(cell.kinds)
+                            .map(([kind, count]) => `${kind} ${count}`)
+                            .join(", ")})
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                ),
+              ),
+            )}
+          </tbody>
+        </table>
+      )}
+
       <h2 className="mt-6 font-semibold">Reviewed tenders</h2>
       <table data-testid="tender-table" className="mt-2 min-w-full border-collapse text-xs">
         <thead>
