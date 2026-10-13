@@ -262,11 +262,22 @@ def score_record(
 def candidates_in_review(
     session: Session, review_state: ReviewStateService, record: GoldRecord
 ) -> dict[str, CandidateUnderTest]:
-    """The reading each field shows now, at the version the gold record was reviewed at."""
-    state = review_state.for_object(session, "tender", record.tender_id, record.reviewed_version)
+    """The reading each field shows now, at the version the gold record shows the field
+    from: an amendment states a few fields and the rest stand as the original read them,
+    so a field is scored against the candidate of its own version, not the latest one."""
+    reviewed = record.reviewed_version
+    versions = {field.version_no or reviewed for field in record.fields} | {reviewed}
+    by_version = {
+        version: {
+            f.field_path: f
+            for f in review_state.for_object(session, "tender", record.tender_id, version).fields
+        }
+        for version in sorted(versions)
+    }
     found: dict[str, CandidateUnderTest] = {}
-    for field in state.fields:
-        if field.candidate is None:
+    for gold_field in record.fields:
+        field = by_version[gold_field.version_no or reviewed].get(gold_field.field_path)
+        if field is None or field.candidate is None:
             continue
         found[field.field_path] = CandidateUnderTest(
             id=field.candidate.id,

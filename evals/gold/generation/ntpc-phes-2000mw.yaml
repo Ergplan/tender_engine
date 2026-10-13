@@ -1,0 +1,1981 @@
+# Gold record of ntpc-phes-2000mw (generation), reviewed by venture@aayuda.energy, completed 2026-10-13T07:29:24.573606+00:00; written by make gold on 2026-10-13T12:39:28+00:00. Never edited by hand.
+tenant_id: ergplan
+tender_id: 6e81a61dfa7b4a31aa616eddc73c3ab3
+slug: ntpc-phes-2000mw
+tender_type: generation
+issuing_agency: NTPC Renewable Energy Ltd
+title: Abridged IFB for Selection of Developer(s) for ISTS-Connected Pumped Hydro Energy Storage of 2000 MW / 12000 MWh under
+  PHES-as-a-Service model (NIT only)
+schema_version: v3
+reviewed_version: 1
+reviewer: venture@aayuda.energy
+completed_at: '2026-10-13T07:29:24.573606+00:00'
+snapshot_id: f375f3b3d64e4ef1a4f59bdc29d4a70c
+made_at: '2026-10-13T12:39:28+00:00'
+fields:
+- field_path: core.summary.plain_english_summary
+  section: summary
+  value_type: long_text
+  required: true
+  decision: approved
+  final_value: 'What is procured: NTPC Renewable Energy Limited is selecting developers for ISTS-connected pumped hydro energy
+    storage solutions totalling 2000 MW / 12000 MWh, procured under a PHES-as-a-Service model through an e-reverse auction.
+    [1][2][3][4][5][6][7][8] A bid must offer at least 500 MW at a single location and may go up to 2000 MW. [1][9][10]
+
+
+    Buyer and offtaker: The tender is issued by NTPC Renewable Energy Limited, which published the notice as an abridged IFB
+    on its tender page. [11][12] NTPC Renewable Energy Limited (NTPC REL) is also the offtaker: it avails the storage capacity
+    as a service under an Energy Storage Service Agreement to meet its own RE RTC commitments. [13][14][15][16]
+
+
+    Location: Projects may be located anywhere in India provided they are connected to the ISTS, with a minimum of 500 MW
+    at a single location. [17][10][8] The delivery and metering point is the interconnecting point with the ISTS substation.
+    [18][19]
+
+
+    Timeline: The tender was issued on 29 May 2026; bids are due by 21 July 2026 at 15:00 and technical bids open the same
+    day at 15:30, although the portal notice also lists a separate closing date of 6 July 2026 whose purpose is unclear, and
+    pre-bid, query and e-reverse auction dates are not given. [20][21][22][23] The agreement is to be signed within 90 days,
+    and the project must be commissioned within 48 months counted from the effective date. [16][24][25][26] The agreement
+    runs for 25 years. [27][28]
+
+
+    Eligibility: The record does not state who may bid or any technical or financial qualification thresholds. It does state
+    that for under-construction or not-yet-commissioned projects the bidder must already have obtained the required clearances,
+    with the DPR approved by the designated government authorities. [29]
+
+
+    Money at risk: The record does not state the earnest money deposit, bid security, performance guarantee or the conditions
+    for their forfeiture.
+
+
+    Tariff or payment: The successful bidder is paid a capacity charge on an annual fixed charge basis under an Energy Storage
+    Service Agreement of 25 years, and the tariff is not two-part. [27][28][30][31][15][16] Charging power is supplied by
+    NTPC REL from the RE projects of NTPC/NTPC REL, and the storage facility is used on an on-demand basis. [32][33]
+
+
+    Obligations and penalties: The developer is responsible for connectivity and transmission up to the ISTS substation. [18][34][19]
+    The bidder must obtain the required clearances and have the DPR approved by the designated government authorities; water
+    is not specifically addressed. [29][35] The record does not state the penalties for a shortfall in availability or a delay
+    in commissioning.'
+  version_no: 1
+  evidence_pages:
+  - 1
+  - 2
+  - 3
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:29:17.915345+00:00'
+  note: null
+  candidate:
+    id: 482b65888e4c4e4aaa747e1a0fc1a9a1
+    value: 'What is procured: NTPC Renewable Energy Limited is selecting developers for ISTS-connected pumped hydro energy
+      storage solutions totalling 2000 MW / 12000 MWh, procured under a PHES-as-a-Service model through an e-reverse auction.
+      [1][2][3][4][5][6][7][8] A bid must offer at least 500 MW at a single location and may go up to 2000 MW. [1][9][10]
+
+
+      Buyer and offtaker: The tender is issued by NTPC Renewable Energy Limited, which published the notice as an abridged
+      IFB on its tender page. [11][12] NTPC Renewable Energy Limited (NTPC REL) is also the offtaker: it avails the storage
+      capacity as a service under an Energy Storage Service Agreement to meet its own RE RTC commitments. [13][14][15][16]
+
+
+      Location: Projects may be located anywhere in India provided they are connected to the ISTS, with a minimum of 500 MW
+      at a single location. [17][10][8] The delivery and metering point is the interconnecting point with the ISTS substation.
+      [18][19]
+
+
+      Timeline: The tender was issued on 29 May 2026; bids are due by 21 July 2026 at 15:00 and technical bids open the same
+      day at 15:30, although the portal notice also lists a separate closing date of 6 July 2026 whose purpose is unclear,
+      and pre-bid, query and e-reverse auction dates are not given. [20][21][22][23] The agreement is to be signed within
+      90 days, and the project must be commissioned within 48 months counted from the effective date. [16][24][25][26] The
+      agreement runs for 25 years. [27][28]
+
+
+      Eligibility: The record does not state who may bid or any technical or financial qualification thresholds. It does state
+      that for under-construction or not-yet-commissioned projects the bidder must already have obtained the required clearances,
+      with the DPR approved by the designated government authorities. [29]
+
+
+      Money at risk: The record does not state the earnest money deposit, bid security, performance guarantee or the conditions
+      for their forfeiture.
+
+
+      Tariff or payment: The successful bidder is paid a capacity charge on an annual fixed charge basis under an Energy Storage
+      Service Agreement of 25 years, and the tariff is not two-part. [27][28][30][31][15][16] Charging power is supplied by
+      NTPC REL from the RE projects of NTPC/NTPC REL, and the storage facility is used on an on-demand basis. [32][33]
+
+
+      Obligations and penalties: The developer is responsible for connectivity and transmission up to the ISTS substation.
+      [18][34][19] The bidder must obtain the required clearances and have the DPR approved by the designated government authorities;
+      water is not specifically addressed. [29][35] The record does not state the penalties for a shortfall in availability
+      or a delay in commissioning.'
+    confidence: 0.85
+    prompt_name: summary_record
+    prompt_version: v1
+    pages:
+    - 1
+    - 2
+    - 3
+- field_path: core.identity.tender_number
+  section: identity_and_scope
+  value_type: text
+  required: true
+  decision: approved
+  final_value: NRE-CS-5846-004(PHES)-9
+  version_no: 1
+  evidence_pages:
+  - 1
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:36:08.944911+00:00'
+  note: null
+  candidate:
+    id: 462ad2a93b5c4eb1a737076875d106e4
+    value: NRE-CS-5846-004(PHES)-9
+    confidence: 0.97
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 1
+- field_path: core.identity.issuing_agency
+  section: identity_and_scope
+  value_type: text
+  required: true
+  decision: approved
+  final_value: NTPC Renewable Energy Limited
+  version_no: 1
+  evidence_pages:
+  - 1
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:36:17.726178+00:00'
+  note: null
+  candidate:
+    id: 42f858a73b844e0abfd40bf1aac07d25
+    value: NTPC Renewable Energy Limited
+    confidence: 0.97
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 1
+- field_path: core.identity.title
+  section: identity_and_scope
+  value_type: text
+  required: true
+  decision: approved
+  final_value: SELECTION OF DEVELOPER(S) FOR ISTS CONNECTED PUMP HYDRO ENERGY STORAGE SOLUTIONS OF 2000 MW / 12000 MWh WITH
+    500 MW (MIN) CAPACITY AT SINGLE LOCATION (ANYWHERE IN INDIA) UNDER PHES AS SERVICE MODEL
+  version_no: 1
+  evidence_pages:
+  - 1
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:36:25.660686+00:00'
+  note: null
+  candidate:
+    id: 844e0881655c4dfeaed7d993134d846c
+    value: SELECTION OF DEVELOPER(S) FOR ISTS CONNECTED PUMP HYDRO ENERGY STORAGE SOLUTIONS OF 2000 MW / 12000 MWh WITH 500
+      MW (MIN) CAPACITY AT SINGLE LOCATION (ANYWHERE IN INDIA) UNDER PHES AS SERVICE MODEL
+    confidence: 0.96
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 1
+- field_path: core.identity.procurement_mode
+  section: identity_and_scope
+  value_type: enum
+  required: false
+  decision: approved
+  final_value: e_reverse_auction
+  version_no: 1
+  evidence_pages:
+  - 1
+  - 2
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:53:46.700240+00:00'
+  note: null
+  candidate:
+    id: 51eda10d25eb42a6aea305a707172a2d
+    value: e_reverse_auction
+    confidence: 0.8
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 1
+    - 2
+- field_path: core.identity.portal
+  section: identity_and_scope
+  value_type: text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages:
+  - 1
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:27:59.817708+00:00'
+  note: null
+  candidate:
+    id: 50af538e88af4fdd876e97ccb6cd5e84
+    value: https://www.bharat-electronictender.com
+    confidence: 0.5
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 1
+- field_path: core.identity.tender_type_as_stated
+  section: identity_and_scope
+  value_type: text
+  required: false
+  decision: approved
+  final_value: ISTS Connected Pump Hydro Energy Storage Solutions under PHES as Service Model
+  version_no: 1
+  evidence_pages:
+  - 2
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:59:02.221574+00:00'
+  note: null
+  candidate:
+    id: adca6a5976b74a83a32b99eebcfdc222
+    value: ISTS Connected Pump Hydro Energy Storage Solutions under PHES as Service Model
+    confidence: 0.9
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 2
+- field_path: sector.power.common.total_capacity_mw
+  section: identity_and_scope
+  value_type: mw
+  required: false
+  decision: approved
+  final_value: 2000
+  version_no: 1
+  evidence_pages:
+  - 1
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:59:07.120947+00:00'
+  note: null
+  candidate:
+    id: bcb2b4c2d50b439092198cf9da2ff11b
+    value: 2000.0
+    confidence: 0.95
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 1
+- field_path: sector.power.common.total_capacity_mwh
+  section: identity_and_scope
+  value_type: mwh
+  required: false
+  decision: approved
+  final_value: 12000
+  version_no: 1
+  evidence_pages:
+  - 2
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:59:08.512921+00:00'
+  note: null
+  candidate:
+    id: 39ef31bc1b6f4c0fb3403b28115363a0
+    value: 12000.0
+    confidence: 0.95
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 2
+- field_path: sector.power.common.min_bid_mw
+  section: identity_and_scope
+  value_type: mw
+  required: false
+  decision: approved
+  final_value: 500
+  version_no: 1
+  evidence_pages:
+  - 2
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:59:12.872188+00:00'
+  note: null
+  candidate:
+    id: c1f6dbbc7d764e25b9793e86ec570af5
+    value: 500.0
+    confidence: 0.9
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 2
+- field_path: sector.power.common.max_bid_mw
+  section: identity_and_scope
+  value_type: mw
+  required: false
+  decision: approved
+  final_value: 2000
+  version_no: 1
+  evidence_pages:
+  - 2
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:59:15.868344+00:00'
+  note: null
+  candidate:
+    id: fe10000e3fe24c96ac92ea1496cc1943
+    value: 2000.0
+    confidence: 0.8
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 2
+- field_path: sector.power.common.max_projects_per_bidder
+  section: identity_and_scope
+  value_type: int
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:59:19.719585+00:00'
+  note: null
+  candidate:
+    id: 3d9344a1f68349269832aa4d1ddbb8a8
+    value: null
+    confidence: 0.0
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.location_constraint
+  section: identity_and_scope
+  value_type: enum
+  required: false
+  decision: approved
+  final_value: ists_anywhere
+  version_no: 1
+  evidence_pages:
+  - 3
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:01:45.878821+00:00'
+  note: null
+  candidate:
+    id: 5790d499b3a241f7bfee6aea29cb517f
+    value: ists_anywhere
+    confidence: 0.95
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 3
+- field_path: sector.power.common.named_states_or_sites
+  section: identity_and_scope
+  value_type: list_text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:01:54.743441+00:00'
+  note: null
+  candidate:
+    id: 25750b48258348f298820fee0110162b
+    value: null
+    confidence: 0.0
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.delivery_point
+  section: identity_and_scope
+  value_type: text
+  required: false
+  decision: approved
+  final_value: Interconnecting point with ISTS Substation
+  version_no: 1
+  evidence_pages:
+  - 3
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:01:56.809788+00:00'
+  note: null
+  candidate:
+    id: 486bd318c74d46ebb18369ecbed1348b
+    value: Interconnecting point with ISTS Substation
+    confidence: 0.45
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 3
+- field_path: sector.power.common.metering_point
+  section: identity_and_scope
+  value_type: text
+  required: false
+  decision: approved
+  final_value: At interconnecting point with ISTS Substation
+  version_no: 1
+  evidence_pages:
+  - 3
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:02:09.393887+00:00'
+  note: null
+  candidate:
+    id: 93e164ff14f3459f97ba83c6c8a3cada
+    value: At interconnecting point with ISTS Substation
+    confidence: 0.92
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 3
+- field_path: core.key_dates.nit_date
+  section: key_dates
+  value_type: date
+  required: false
+  decision: approved
+  final_value: '2026-05-29'
+  version_no: 1
+  evidence_pages:
+  - 1
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:02:13.588905+00:00'
+  note: null
+  candidate:
+    id: e3d821f123d44452bda9d09b9ffd5d38
+    value: '2026-05-29'
+    confidence: 0.95
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 1
+- field_path: core.key_dates.pre_bid_meeting_date
+  section: key_dates
+  value_type: date
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:02:14.745072+00:00'
+  note: null
+  candidate:
+    id: ccad210f94eb4d829c51d6fc61f230c7
+    value: null
+    confidence: 0.0
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages: []
+- field_path: core.key_dates.query_deadline
+  section: key_dates
+  value_type: date
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:02:15.684172+00:00'
+  note: null
+  candidate:
+    id: 9cbe1b84e3084fac8abb8d7af4c83681
+    value: null
+    confidence: 0.0
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages: []
+- field_path: core.key_dates.bid_submission_deadline
+  section: key_dates
+  value_type: date
+  required: true
+  decision: approved
+  final_value: '2026-07-21'
+  version_no: 1
+  evidence_pages:
+  - 1
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:07:57.000591+00:00'
+  note: null
+  candidate:
+    id: cf676fbdecb544e2a22e85372f8f6d94
+    value: '2026-07-21'
+    confidence: 0.95
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 1
+- field_path: core.key_dates.technical_opening_date
+  section: key_dates
+  value_type: date
+  required: false
+  decision: approved
+  final_value: '2026-07-21'
+  version_no: 1
+  evidence_pages:
+  - 1
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:02:31.498370+00:00'
+  note: null
+  candidate:
+    id: dfe94cb9a9fc4e52b21524c444d7c13b
+    value: '2026-07-21'
+    confidence: 0.85
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 1
+- field_path: core.key_dates.era_date
+  section: key_dates
+  value_type: date
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:02:41.981653+00:00'
+  note: null
+  candidate:
+    id: 31c5987037cf4c88a87a3e172560796d
+    value: null
+    confidence: 0.0
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages: []
+- field_path: core.key_dates.dates_deferred_note
+  section: key_dates
+  value_type: long_text
+  required: false
+  decision: edited
+  final_value: The NTPC tender-portal notice specifies the bid submission deadline as 21 July 2026 at 15:00 and the bid opening
+    date as 21 July 2026 at 15:30. The notice also lists a separate Closing Date of 6 July 2026 at 15:00, whose purpose requires
+    clarification. Pre-bid meeting, query deadline and e-reverse auction dates are not specified in the available documents
+    and require verification against the detailed IFB.
+  version_no: 1
+  evidence_pages:
+  - 1
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:06:38.598148+00:00'
+  note: null
+  candidate:
+    id: 7862551c2e144c11b0f5ecadf73fc962
+    value: Pre-bid meeting, query deadline, bid submission deadline, bid opening and e-reverse auction dates are not printed
+      in this abridged IFB; they are deferred to the detailed IFB to be published on https://www.bharat-electronictender.com,
+      https://ntpctender.ntpc.co.in, www.ntpc.co.in and https://ngel.in/tender from 15.06.2026.
+    confidence: 0.85
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 1
+- field_path: core.key_dates.bid_validity
+  section: key_dates
+  value_type: int
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:09:18.788272+00:00'
+  note: null
+  candidate:
+    id: 7d2dd159f0784880ab9909bcb2aa9124
+    value: null
+    confidence: 0.0
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages: []
+- field_path: core.key_dates.bid_validity_unit
+  section: key_dates
+  value_type: enum
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:09:20.053556+00:00'
+  note: null
+  candidate:
+    id: 33a982f1e6bd44819bfe3230866168db
+    value: null
+    confidence: 0.0
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages: []
+- field_path: core.key_dates.loa_timeline
+  section: key_dates
+  value_type: text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:09:21.052049+00:00'
+  note: null
+  candidate:
+    id: 2eec10b4a3714cfc898866555d092a40
+    value: null
+    confidence: 0.0
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.ppa_signing_window_days
+  section: key_dates
+  value_type: int
+  required: false
+  decision: edited
+  final_value: 90
+  version_no: 1
+  evidence_pages:
+  - 2
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:09:52.006118+00:00'
+  note: null
+  candidate:
+    id: 325218e92f8f4153a5fd800ef18543ff
+    value: 90
+    confidence: 0.6
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 2
+- field_path: sector.power.common.financial_closure_months
+  section: key_dates
+  value_type: duration_months
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:09:56.758161+00:00'
+  note: null
+  candidate:
+    id: 13d1e04f6e194bceaf366c386e62815d
+    value: null
+    confidence: 0.0
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.financial_closure_reference
+  section: key_dates
+  value_type: enum
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:09:57.954109+00:00'
+  note: null
+  candidate:
+    id: 17514bc95b664cb89133db3d5684dc31
+    value: null
+    confidence: 0.0
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.scod_months
+  section: key_dates
+  value_type: duration_months
+  required: false
+  decision: approved
+  final_value: 48
+  version_no: 1
+  evidence_pages:
+  - 2
+  - 3
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:09:59.682774+00:00'
+  note: null
+  candidate:
+    id: 84141fc56bb64165942f7c837a523f86
+    value: 48
+    confidence: 0.9
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 2
+    - 3
+- field_path: sector.power.common.scod_reference
+  section: key_dates
+  value_type: enum
+  required: false
+  decision: edited
+  final_value: effective_date
+  version_no: 1
+  evidence_pages:
+  - 2
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:10:54.215817+00:00'
+  note: null
+  candidate:
+    id: 125b6ec7370b4ffb8be1fd4624f6fd29
+    value: ppa_signing
+    confidence: 0.9
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 2
+- field_path: sector.power.common.ppa_tenure_years
+  section: key_dates
+  value_type: int
+  required: false
+  decision: approved
+  final_value: 25
+  version_no: 1
+  evidence_pages:
+  - 2
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:11:14.412346+00:00'
+  note: null
+  candidate:
+    id: dbe79fed132849e2bf596c6671b57850
+    value: 25
+    confidence: 0.9
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 2
+- field_path: core.eligibility.technical_experience_requirement
+  section: eligibility
+  value_type: long_text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:11:19.928082+00:00'
+  note: null
+  candidate:
+    id: 5660799afec24918a40c8b002120dc7d
+    value: null
+    confidence: 0.0
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages: []
+- field_path: core.eligibility.turnover_requirement_inr
+  section: eligibility
+  value_type: money_inr
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:11:21.759626+00:00'
+  note: null
+  candidate:
+    id: 1e1d420b2b93443aa386977499222240
+    value: null
+    confidence: 0.0
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages: []
+- field_path: core.eligibility.turnover_basis
+  section: eligibility
+  value_type: enum
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:11:22.809448+00:00'
+  note: null
+  candidate:
+    id: 4352b460bb2446e5ad1f762f65d373e5
+    value: null
+    confidence: 0.0
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages: []
+- field_path: core.eligibility.ebitda_requirement_inr
+  section: eligibility
+  value_type: money_inr
+  required: false
+  decision: null
+  final_value: null
+  version_no: null
+  evidence_pages: []
+  reviewer: null
+  decided_at: null
+  note: null
+  candidate: null
+- field_path: core.eligibility.ebitda_basis
+  section: eligibility
+  value_type: text
+  required: false
+  decision: null
+  final_value: null
+  version_no: null
+  evidence_pages: []
+  reviewer: null
+  decided_at: null
+  note: null
+  candidate: null
+- field_path: core.eligibility.min_single_station_mw
+  section: eligibility
+  value_type: mw
+  required: false
+  decision: null
+  final_value: null
+  version_no: null
+  evidence_pages: []
+  reviewer: null
+  decided_at: null
+  note: null
+  candidate: null
+- field_path: core.eligibility.min_continuous_operation_years
+  section: eligibility
+  value_type: decimal
+  required: false
+  decision: null
+  final_value: null
+  version_no: null
+  evidence_pages: []
+  reviewer: null
+  decided_at: null
+  note: null
+  candidate: null
+- field_path: core.eligibility.experience_period_end_date
+  section: eligibility
+  value_type: date
+  required: false
+  decision: null
+  final_value: null
+  version_no: null
+  evidence_pages: []
+  reviewer: null
+  decided_at: null
+  note: null
+  candidate: null
+- field_path: core.eligibility.liquidity_requirement_inr
+  section: eligibility
+  value_type: money_inr
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:11:36.151871+00:00'
+  note: null
+  candidate:
+    id: 28120253ab6440e598620b4af48789b2
+    value: null
+    confidence: 0.0
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages: []
+- field_path: core.eligibility.liquidity_basis
+  section: eligibility
+  value_type: enum
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:11:37.199492+00:00'
+  note: null
+  candidate:
+    id: 6ec777599a3742c0b0493e309ad21a3d
+    value: null
+    confidence: 0.0
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages: []
+- field_path: core.eligibility.consortium_allowed
+  section: eligibility
+  value_type: bool
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:11:38.364782+00:00'
+  note: null
+  candidate:
+    id: 0ba19fde9ab440dd9c0cc5ad1511d81b
+    value: null
+    confidence: 0.0
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages: []
+- field_path: core.eligibility.max_consortium_members
+  section: eligibility
+  value_type: int
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:11:40.394815+00:00'
+  note: null
+  candidate:
+    id: 3892b979d4544e2fbf085d77f4e717dc
+    value: null
+    confidence: 0.0
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages: []
+- field_path: core.eligibility.parent_affiliate_credentials_allowed
+  section: eligibility
+  value_type: bool
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:11:41.201413+00:00'
+  note: null
+  candidate:
+    id: 3e3c0153c7534d888b309c1f055d90d1
+    value: null
+    confidence: 0.0
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages: []
+- field_path: core.eligibility.shareholding_lock_in
+  section: eligibility
+  value_type: long_text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:11:42.061876+00:00'
+  note: null
+  candidate:
+    id: 585129af9abd4d27887f38f15ec1204b
+    value: null
+    confidence: 0.0
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.min_commissioned_mw
+  section: eligibility
+  value_type: mw
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:11:44.027797+00:00'
+  note: null
+  candidate:
+    id: 191a44de377f4027a627c4567eb77e73
+    value: null
+    confidence: 0.0
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.under_construction_counts
+  section: eligibility
+  value_type: bool
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:11:45.063500+00:00'
+  note: null
+  candidate:
+    id: a11d109f02f14129a05d980abf9804ff
+    value: null
+    confidence: 0.0
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.net_worth_per_mw_inr
+  section: eligibility
+  value_type: money_inr
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:11:46.111857+00:00'
+  note: null
+  candidate:
+    id: ab83599d213b479395287557ea155e32
+    value: null
+    confidence: 0.0
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages: []
+- field_path: core.guarantees.emd_per_mw_inr
+  section: guarantees
+  value_type: money_inr
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:11:49.409256+00:00'
+  note: null
+  candidate:
+    id: 409f43e380704871a27158919826af94
+    value: null
+    confidence: 0.0
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages: []
+- field_path: core.guarantees.emd_formula
+  section: guarantees
+  value_type: long_text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:11:50.832657+00:00'
+  note: null
+  candidate:
+    id: 296bd780f823416fb526945b6eebceef
+    value: null
+    confidence: 0.0
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages: []
+- field_path: core.guarantees.emd_structured
+  section: guarantees
+  value_type: record
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:11:52.404922+00:00'
+  note: null
+  candidate:
+    id: 64187633402141e29e921619cef59e55
+    value: null
+    confidence: 0.0
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages: []
+- field_path: core.guarantees.emd_form
+  section: guarantees
+  value_type: enum
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:11:53.292780+00:00'
+  note: null
+  candidate:
+    id: 00146c7ae1ae4ca48de7eb9fec9c31e5
+    value: null
+    confidence: 0.0
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages: []
+- field_path: core.guarantees.bid_security_instruments
+  section: guarantees
+  value_type: record_list
+  required: false
+  decision: null
+  final_value: null
+  version_no: null
+  evidence_pages: []
+  reviewer: null
+  decided_at: null
+  note: null
+  candidate: null
+- field_path: core.guarantees.pbg_instruments
+  section: guarantees
+  value_type: record_list
+  required: false
+  decision: null
+  final_value: null
+  version_no: null
+  evidence_pages: []
+  reviewer: null
+  decided_at: null
+  note: null
+  candidate: null
+- field_path: core.guarantees.pbg_per_mw_inr
+  section: guarantees
+  value_type: money_inr
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:12:05.299334+00:00'
+  note: null
+  candidate:
+    id: 03b8e05c78074390a3a0dc730caff255
+    value: null
+    confidence: 0.0
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages: []
+- field_path: core.guarantees.pbg_formula
+  section: guarantees
+  value_type: long_text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:12:07.112795+00:00'
+  note: null
+  candidate:
+    id: 4025ba1b7c4f42a992833da1bd966880
+    value: null
+    confidence: 0.0
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages: []
+- field_path: core.guarantees.pbg_schedule
+  section: guarantees
+  value_type: long_text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:12:08.214199+00:00'
+  note: null
+  candidate:
+    id: 7ed313b1d9a841a5b85882ae26ea072c
+    value: null
+    confidence: 0.0
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages: []
+- field_path: core.guarantees.pbg_structured
+  section: guarantees
+  value_type: record
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:12:10.328725+00:00'
+  note: null
+  candidate:
+    id: 29e755d3a45848018add3f1905023fbe
+    value: null
+    confidence: 0.0
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages: []
+- field_path: core.guarantees.success_charge_inr
+  section: guarantees
+  value_type: money_inr
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:12:11.295101+00:00'
+  note: null
+  candidate:
+    id: a6cd8cd37ea94b7c8a20051e07ae6fee
+    value: null
+    confidence: 0.0
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages: []
+- field_path: core.guarantees.processing_fee_inr
+  section: guarantees
+  value_type: money_inr
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:12:12.597065+00:00'
+  note: null
+  candidate:
+    id: 0d0294be5e1b43a78006b48761c07d2e
+    value: null
+    confidence: 0.0
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages: []
+- field_path: core.guarantees.bg_validity_months
+  section: guarantees
+  value_type: duration_months
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:12:13.899426+00:00'
+  note: null
+  candidate:
+    id: 0caee34c3316474794569cb9f5e00f61
+    value: null
+    confidence: 0.0
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages: []
+- field_path: core.guarantees.bg_release_conditions
+  section: guarantees
+  value_type: long_text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:12:15.110677+00:00'
+  note: null
+  candidate:
+    id: 5a2c4f5c496346258e80240a34867795
+    value: null
+    confidence: 0.0
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages: []
+- field_path: core.commercial.payment_security_mechanism
+  section: commercial
+  value_type: long_text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:12:18.447056+00:00'
+  note: null
+  candidate:
+    id: 4363d7a151d143b299dedebac602decc
+    value: null
+    confidence: 0.0
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages: []
+- field_path: core.commercial.payment_security_structured
+  section: commercial
+  value_type: record
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:12:20.194302+00:00'
+  note: null
+  candidate:
+    id: 608ab5ef623a403ba19ef44ace6523aa
+    value: null
+    confidence: 0.0
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages: []
+- field_path: core.commercial.change_in_law_clause
+  section: commercial
+  value_type: long_text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:12:21.047307+00:00'
+  note: null
+  candidate:
+    id: 48c6daa57a1b4227be3bac44bee4e8e6
+    value: null
+    confidence: 0.0
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages: []
+- field_path: core.commercial.late_payment_surcharge
+  section: commercial
+  value_type: text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:12:22.411775+00:00'
+  note: null
+  candidate:
+    id: 0d1aa6d3e45248f4b6fdaa53e3235f9f
+    value: null
+    confidence: 0.0
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages: []
+- field_path: core.commercial.termination_compensation
+  section: commercial
+  value_type: long_text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:12:23.337528+00:00'
+  note: null
+  candidate:
+    id: c5bef8f8f464490b8a342f57720f2ea5
+    value: null
+    confidence: 0.0
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages: []
+- field_path: core.commercial.offtaker
+  section: commercial
+  value_type: text
+  required: false
+  decision: approved
+  final_value: NTPC Renewable Energy Limited (NTPC REL) – avails the pumped hydro energy storage capacity as a service under
+    an Energy Storage Service Agreement to meet its own RE RTC commitments
+  version_no: 1
+  evidence_pages:
+  - 2
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:12:37.317430+00:00'
+  note: null
+  candidate:
+    id: ad369d03b2b348b590fcd927aec35289
+    value: NTPC Renewable Energy Limited (NTPC REL) – avails the pumped hydro energy storage capacity as a service under an
+      Energy Storage Service Agreement to meet its own RE RTC commitments
+    confidence: 0.85
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages:
+    - 2
+- field_path: sector.power.common.tariff_ceiling_inr_per_kwh
+  section: commercial
+  value_type: decimal
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:15:11.193555+00:00'
+  note: null
+  candidate:
+    id: 61f1c2832b78499d8e5d8ddbede41b0e
+    value: null
+    confidence: 0.0
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages: []
+- field_path: sector.power.common.tariff_structure
+  section: commercial
+  value_type: enum
+  required: false
+  decision: edited
+  final_value: capacity_charge
+  version_no: 1
+  evidence_pages:
+  - 2
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:15:43.177680+00:00'
+  note: Annual Fixed Energy Storage Service Charge (INR/MWh/year), as specified on page 2. The service agreement is for 25
+    years.
+  candidate:
+    id: 18cdc2eaee624d949256f72e299cff7a
+    value: capacity_charge
+    confidence: 0.6
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages:
+    - 2
+- field_path: sector.power.common.deemed_generation_clause
+  section: commercial
+  value_type: long_text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:15:49.909546+00:00'
+  note: null
+  candidate:
+    id: 5e50c86c189f4563b263d76bc85d5588
+    value: null
+    confidence: 0.0
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages: []
+- field_path: sector.power.common.deemed_generation_structured
+  section: commercial
+  value_type: record
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:15:52.343072+00:00'
+  note: null
+  candidate:
+    id: 089706adb5254eb6a66b071162779823
+    value: null
+    confidence: 0.0
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages: []
+- field_path: core.penalties.delay_ld_per_mw_per_day_inr
+  section: penalties
+  value_type: money_inr
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:15:54.778319+00:00'
+  note: null
+  candidate:
+    id: 16ca652d3a244d89b8aecb201a8ffde3
+    value: null
+    confidence: 0.0
+    prompt_name: extract/penalties
+    prompt_version: v3
+    pages: []
+- field_path: core.penalties.delay_ld_structured
+  section: penalties
+  value_type: record
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:26:04.708585+00:00'
+  note: null
+  candidate:
+    id: 11c67806d5494bdb98e6b6554790057f
+    value: null
+    confidence: 0.0
+    prompt_name: extract/penalties
+    prompt_version: v3
+    pages: []
+- field_path: core.penalties.max_scod_extension_months
+  section: penalties
+  value_type: duration_months
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:15:56.357336+00:00'
+  note: null
+  candidate:
+    id: 1b5a193a86b7475d9f42a6a687752e6d
+    value: null
+    confidence: 0.0
+    prompt_name: extract/penalties
+    prompt_version: v3
+    pages: []
+- field_path: core.penalties.shortfall_penalty_basis
+  section: penalties
+  value_type: long_text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:15:57.344670+00:00'
+  note: null
+  candidate:
+    id: 60973b4611df49d9be3a46d28b020ae1
+    value: null
+    confidence: 0.0
+    prompt_name: extract/penalties
+    prompt_version: v3
+    pages: []
+- field_path: core.penalties.shortfall_rules
+  section: penalties
+  value_type: record_list
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:15:58.309399+00:00'
+  note: null
+  candidate:
+    id: c255572782244eb0846f911c1920c091
+    value: null
+    confidence: 0.0
+    prompt_name: extract/penalties
+    prompt_version: v3
+    pages: []
+- field_path: core.penalties.pbg_encashment_triggers
+  section: penalties
+  value_type: long_text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:16:01.775430+00:00'
+  note: null
+  candidate:
+    id: 722493247ce64514b4656eec47028b91
+    value: null
+    confidence: 0.0
+    prompt_name: extract/penalties
+    prompt_version: v3
+    pages: []
+- field_path: core.penalties.termination_delay_months
+  section: penalties
+  value_type: duration_months
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:16:02.646480+00:00'
+  note: null
+  candidate:
+    id: 5b4508fd3a844c5b8749439056b850f2
+    value: null
+    confidence: 0.0
+    prompt_name: extract/penalties
+    prompt_version: v3
+    pages: []
+- field_path: sector.power.common.connectivity_responsibility
+  section: connectivity_and_compliance
+  value_type: enum
+  required: false
+  decision: approved
+  final_value: developer
+  version_no: 1
+  evidence_pages:
+  - 3
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:19:25.617369+00:00'
+  note: null
+  candidate:
+    id: 7bbabfb2aa3c4e8e9f6db351d6a45387
+    value: developer
+    confidence: 0.9
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages:
+    - 3
+- field_path: sector.power.common.gna_requirement
+  section: connectivity_and_compliance
+  value_type: long_text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:19:26.965444+00:00'
+  note: null
+  candidate:
+    id: 259e7bc6fdba4b60ab08909bc61e2047
+    value: null
+    confidence: 0.0
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.ists_waiver_cutoff_date
+  section: connectivity_and_compliance
+  value_type: date
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:19:27.771138+00:00'
+  note: null
+  candidate:
+    id: 2452b2e1390d42878a7966e93aeb74ad
+    value: null
+    confidence: 0.0
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.line_to_pooling_station_responsibility
+  section: connectivity_and_compliance
+  value_type: text
+  required: false
+  decision: approved
+  final_value: PHES Bidder (developer) - connectivity and transmission till the ISTS Substation is in the Bidder's scope
+  version_no: 1
+  evidence_pages:
+  - 3
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:20:17.025159+00:00'
+  note: null
+  candidate:
+    id: 461350fa1d6d4962bcacdd1468804660
+    value: PHES Bidder (developer) - connectivity and transmission till the ISTS Substation is in the Bidder's scope
+    confidence: 0.85
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages:
+    - 3
+- field_path: sector.power.common.almm_required
+  section: connectivity_and_compliance
+  value_type: bool
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:20:33.375490+00:00'
+  note: null
+  candidate:
+    id: 1bebf4e186a6479c8ab4d67c0382fa1d
+    value: null
+    confidence: 0.0
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.dcr_required
+  section: connectivity_and_compliance
+  value_type: bool
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:20:34.406480+00:00'
+  note: null
+  candidate:
+    id: f620c9aabfc749a8ab3780e73e590f37
+    value: null
+    confidence: 0.0
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.local_content_rule
+  section: connectivity_and_compliance
+  value_type: long_text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:20:35.839337+00:00'
+  note: null
+  candidate:
+    id: 28ca6422b7ea4085be130a29cb904525
+    value: null
+    confidence: 0.0
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.land_responsibility
+  section: connectivity_and_compliance
+  value_type: text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:20:39.840836+00:00'
+  note: null
+  candidate:
+    id: 6879e70770f547fca0690de43f699493
+    value: null
+    confidence: 0.0
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.clearances_responsibility
+  section: connectivity_and_compliance
+  value_type: text
+  required: false
+  decision: approved
+  final_value: Bidder - required clearances for under-construction/not-yet-commissioned projects must already have been obtained
+    by the Bidder, with DPR approved by designated Govt. authorities
+  version_no: 1
+  evidence_pages:
+  - 2
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:20:47.458867+00:00'
+  note: null
+  candidate:
+    id: d8a8ae386cbd4363ba4a6fb740cec6f5
+    value: Bidder - required clearances for under-construction/not-yet-commissioned projects must already have been obtained
+      by the Bidder, with DPR approved by designated Govt. authorities
+    confidence: 0.7
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages:
+    - 2
+- field_path: sector.power.common.source_mix_rules
+  section: supply_sources
+  value_type: record_list
+  required: false
+  decision: approved
+  final_value:
+  - source: pumped_storage
+    condition: ISTS connected pumped hydro energy storage of 2000 MW / 12000 MWh, 500 MW (min) at single location anywhere
+      in India, under PHES as service model
+    treatment: required
+    limit_unit: null
+    limit_value: null
+  version_no: 1
+  evidence_pages:
+  - 1
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:21:14.078264+00:00'
+  note: null
+  candidate:
+    id: a33266d7e5484a0a8a69088a0be34374
+    value:
+    - 'source: pumped_storage | treatment: required | condition: ISTS connected pumped hydro energy storage of 2000 MW / 12000
+      MWh, 500 MW (min) at single location anywhere in India, under PHES as service model'
+    confidence: 0.45
+    prompt_name: extract/supply_sources
+    prompt_version: v1
+    pages:
+    - 1
+- field_path: sector.power.common.bess_charging_rule
+  section: supply_sources
+  value_type: record
+  required: false
+  decision: approved
+  final_value:
+    re_only: true
+    co_located_required: null
+    regulation_reference: null
+  version_no: 1
+  evidence_pages:
+  - 2
+  - 3
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:21:26.762343+00:00'
+  note: null
+  candidate:
+    id: cc88d5e90feb424e940509b2b2c97726
+    value:
+    - 're_only: yes'
+    confidence: 0.75
+    prompt_name: extract/supply_sources
+    prompt_version: v1
+    pages:
+    - 2
+    - 3
+- field_path: core.documents.required_documents
+  section: documents
+  value_type: list_text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:21:51.979329+00:00'
+  note: null
+  candidate:
+    id: 046cfb2d3e1c4b42835591c430fee9ec
+    value: null
+    confidence: 0.0
+    prompt_name: extract/documents
+    prompt_version: v1
+    pages: []
+- field_path: core.documents.annexure_formats
+  section: documents
+  value_type: list_text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:21:37.113213+00:00'
+  note: null
+  candidate:
+    id: 74bb7aeca1d24d5886f2ad2843abbaad
+    value: null
+    confidence: 0.0
+    prompt_name: extract/documents
+    prompt_version: v1
+    pages: []
+- field_path: core.documents.draft_agreements_referenced
+  section: documents
+  value_type: list_text
+  required: false
+  decision: approved
+  final_value:
+  - Energy Storage Service Agreement (on annual fixed charge basis, 25 years)
+  version_no: 1
+  evidence_pages:
+  - 2
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:21:47.280433+00:00'
+  note: null
+  candidate:
+    id: 6d8d4d34320c4e48a451cebbd59a5552
+    value:
+    - Energy Storage Service Agreement (on annual fixed charge basis, 25 years)
+    confidence: 0.85
+    prompt_name: extract/documents
+    prompt_version: v1
+    pages:
+    - 2
+- field_path: sector.power.generation.fuel_type
+  section: gen_tech
+  value_type: text
+  required: false
+  decision: approved
+  final_value: Pumped hydro energy storage (PHES), ISTS connected, provided under a storage-as-a-service model
+  version_no: 1
+  evidence_pages:
+  - 1
+  - 3
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:23:19.268778+00:00'
+  note: null
+  candidate:
+    id: 55182b5d0ecd49e5ac7f2f512accc894
+    value: Pumped hydro energy storage (PHES), ISTS connected, provided under a storage-as-a-service model
+    confidence: 0.95
+    prompt_name: extract/gen_tech
+    prompt_version: v1
+    pages:
+    - 1
+    - 3
+- field_path: sector.power.generation.fuel_supply_arrangement
+  section: gen_tech
+  value_type: text
+  required: false
+  decision: approved
+  final_value: Charging/pumping power is provided by NTPC REL from power generated by RE projects of NTPC/NTPC REL; the storage
+    facility is used on an On-Demand basis
+  version_no: 1
+  evidence_pages:
+  - 2
+  - 3
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:23:30.434010+00:00'
+  note: null
+  candidate:
+    id: d75cdcc0d9144798aae2f4e01d37c68b
+    value: Charging/pumping power is provided by NTPC REL from power generated by RE projects of NTPC/NTPC REL; the storage
+      facility is used on an On-Demand basis
+    confidence: 0.9
+    prompt_name: extract/gen_tech
+    prompt_version: v1
+    pages:
+    - 2
+    - 3
+- field_path: sector.power.generation.heat_rate_or_design_energy
+  section: gen_tech
+  value_type: text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:23:32.113272+00:00'
+  note: null
+  candidate:
+    id: 24333006258742fb87af848a01b52472
+    value: null
+    confidence: 0.0
+    prompt_name: extract/gen_tech
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.generation.tariff_two_part
+  section: gen_tech
+  value_type: bool
+  required: false
+  decision: approved
+  final_value: false
+  version_no: 1
+  evidence_pages:
+  - 2
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:28:20.694867+00:00'
+  note: null
+  candidate:
+    id: 4146a3b394714aeab31b2a890b7b8585
+    value: false
+    confidence: 0.6
+    prompt_name: extract/gen_tech
+    prompt_version: v1
+    pages:
+    - 2
+- field_path: sector.power.generation.capacity_charge_recovery_rule
+  section: gen_tech
+  value_type: text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:24:26.871101+00:00'
+  note: null
+  candidate:
+    id: 75d60bb7b7ef4bb59aab35b48671a5cd
+    value: null
+    confidence: 0.0
+    prompt_name: extract/gen_tech
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.generation.availability_norm_percent
+  section: gen_tech
+  value_type: percent
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:24:28.019183+00:00'
+  note: null
+  candidate:
+    id: 0149d33f3f7245eb9979f8da4493af30
+    value: null
+    confidence: 0.0
+    prompt_name: extract/gen_tech
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.generation.water_clearance_responsibility
+  section: gen_tech
+  value_type: text
+  required: false
+  decision: approved
+  final_value: 'Bidder: required clearances for the project are to be obtained by the Bidder and the DPR approved by designated
+    Govt authorities; water is not specifically addressed'
+  version_no: 1
+  evidence_pages:
+  - 2
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T07:24:47.833113+00:00'
+  note: null
+  candidate:
+    id: bf27359c291c48f4ba4a937e5f380b2d
+    value: 'Bidder: required clearances for the project are to be obtained by the Bidder and the DPR approved by designated
+      Govt authorities; water is not specifically addressed'
+    confidence: 0.4
+    prompt_name: extract/gen_tech
+    prompt_version: v1
+    pages:
+    - 2

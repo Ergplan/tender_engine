@@ -1,0 +1,2559 @@
+# Gold record of ntpc-hybrid-03 (hybrid), reviewed by venture@aayuda.energy, completed 2026-10-13T06:26:14.258399+00:00; written by make gold on 2026-10-13T12:39:06+00:00. Never edited by hand.
+tenant_id: ergplan
+tender_id: d647ca7752b64b65a8f18fe138f57e6a
+slug: ntpc-hybrid-03
+tender_type: hybrid
+issuing_agency: NTPC
+title: RfS for Selection of Hybrid Power Generators for Supply of 1200 MW from ISTS-Connected Wind-Solar Hybrid Power Projects
+  anywhere in India (HYBRID-03)
+schema_version: v3
+reviewed_version: 1
+reviewer: venture@aayuda.energy
+completed_at: '2026-10-13T06:26:14.258399+00:00'
+snapshot_id: d7914c0d1fb4472dad7fb271fa6e059b
+made_at: '2026-10-13T12:39:06+00:00'
+fields:
+- field_path: core.summary.plain_english_summary
+  section: summary
+  value_type: long_text
+  required: true
+  decision: approved
+  final_value: 'What is procured: NTPC is procuring 1200 MW of wind-solar hybrid power from ISTS-connected projects anywhere
+    in India, with a greenshoe option of additional capacity of up to 600 MW. [1][2][3][4][5] Projects are on a Build-Own-Operate
+    basis, with or without an energy storage system, and each resource must make up at least 33 percent of the project with
+    a combined CUF floor of 30 percent. [6][7][8][9][10] Bids must be at least 50 MW and no more than 600 MW. [11][12][13][14]
+
+
+    Buyer and offtaker: NTPC Limited issues the tender and signs the Power Purchase Agreement as intermediary procurer, selling
+    the power under back-to-back Power Sale Agreements to End Procurers or Buying Entities (DISCOMs) who assume all of NTPC''s
+    obligations under the PPA. [15][16][17][18][19][20][21] The specific End Procurers are not named. [22]
+
+
+    Location: Projects may be located anywhere in India, connected to the ISTS, on land that the generator identifies and
+    arranges itself. [23][24][25][26] The delivery point is the ISTS substation at which the project is interconnected, and
+    metering is at the low voltage side of the CTU/STU substation where power is injected. [27][28][29] The solar and wind
+    parts of a project may be at the same or different sites. [30]
+
+
+    Timeline: The tender was issued on 30 October 2024, the pre-bid meeting and last date for queries were on 18 November
+    2024, and bids were due and technical bids opened on 2 December 2024; the financial bid opening and reverse auction dates
+    are to be intimated later by NTPC. [31][32][33][34][35][36][37][38][39] Bids remain valid for 180 days. [40] Financial
+    closure is due 6 months before the scheduled commissioning date, commissioning is due 24 months from the effective date,
+    and the PPA runs for 25 years. [41][42][43][44]
+
+
+    Eligibility: No prior project experience is required; the only technical criterion is that the bidder deploy commercially
+    established technologies, with wind turbines from the MNRE RLMM list and solar modules from ALMM List-I. [45][46] Financially,
+    bidders need a net worth of INR 11460000 (INR 1.146 crore) per MW, turnover of INR 6154000 (INR 61.54 lakh) per MW and
+    liquidity of INR 1230800 (INR 12.31 lakh) per MW. [47][48][49][50] Consortia may bid and parent or affiliate credentials
+    may be used, but the successful bidder''s shareholding in the project company must not fall below 51% until one year after
+    the scheduled commencement of supply date without NTPC''s approval. [51][52][53][54]
+
+
+    Money at risk: The EMD is INR 1160000 (INR 11.6 lakh) per MW of capacity bid and must be valid for 10 months, alongside
+    a bid processing fee of INR 300000 (INR 3 lakh) and success charges of INR 100000 (INR 1 lakh) per MW. [55][56][57][58][59][60][61][40]
+    A performance bank guarantee of INR 2900000 (INR 29 lakh) per MW of awarded contracted capacity is submitted for each
+    project before PPA signing, initially valid for 7 months beyond the SCSD, and a POI from IREDA/PFC/REC may be given in
+    its place. [62][63][64][65][66] The PBG is encashed proportionately per day for delay in commencement of supply up to
+    6 months beyond the SCSD, and may be encashed for failure to achieve financial closure, failure to execute the PPA in
+    time, PPA signing delayed beyond 30 days for reasons attributable to the bidder, Integrity Pact breaches or misrepresentation;
+    unsuccessful bidders'' EMD is released within fifteen days of the reverse auction and the PBG is returned within 45 days
+    of the SCSD. [67][68][69][70][71][72][73][74][75][76]
+
+
+    Tariff or payment: The tariff is fixed and discovered through an e-reverse auction, under a 25-year PPA. [77][78][44][79]
+    The generator pays PSM charges of Rs. 0.02/kWh to NTPC as a discount in the monthly tariff payment; the size of any letter
+    of credit or payment security fund is not stated. [80] Energy above the maximum CUF (120% of declared CUF) may be sold
+    to other entities subject to the Procurer''s first right of refusal, and is bought at the PPA tariff if the Procurer takes
+    it. [81][82][83]
+
+
+    Obligations and penalties: The generator must arrange land, obtain all clearances, build and pay for the dedicated transmission
+    line up to the interconnection point and secure connectivity, with the ISTS waiver cut-off on 30 June 2028; GNA responsibility
+    is placed on the Buying Entities in some clauses but listed among the generator''s responsibilities in another. [84][85][86][87][88][89][90][91][23][25][92]
+    If supply falls below the minimum CUF (90% of the declared annual CUF), the generator pays a penalty of one and a half
+    times the PPA tariff on the shortfall in energy, relaxable to the extent of grid non-availability beyond its control.
+    [93][94] Delay in commencement of supply is penalised by per-day PBG encashment for up to 6 months beyond the SCSD, and
+    delay beyond 6 months leads to termination. [95][72][73][74][75][76][96][97]'
+  version_no: 1
+  evidence_pages:
+  - 1
+  - 7
+  - 8
+  - 10
+  - 13
+  - 14
+  - 15
+  - 19
+  - 20
+  - 21
+  - 22
+  - 23
+  - 24
+  - 25
+  - 26
+  - 27
+  - 28
+  - 29
+  - 30
+  - 31
+  - 35
+  - 36
+  - 39
+  - 44
+  - 45
+  - 46
+  - 47
+  - 49
+  - 50
+  - 51
+  - 52
+  - 54
+  - 60
+  - 61
+  - 63
+  - 70
+  - 73
+  - 87
+  - 113
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:26:08.983148+00:00'
+  note: null
+  candidate:
+    id: 93746e55a4a34a008d2dda7a71f610b2
+    value: 'What is procured: NTPC is procuring 1200 MW of wind-solar hybrid power from ISTS-connected projects anywhere in
+      India, with a greenshoe option of additional capacity of up to 600 MW. [1][2][3][4][5] Projects are on a Build-Own-Operate
+      basis, with or without an energy storage system, and each resource must make up at least 33 percent of the project with
+      a combined CUF floor of 30 percent. [6][7][8][9][10] Bids must be at least 50 MW and no more than 600 MW. [11][12][13][14]
+
+
+      Buyer and offtaker: NTPC Limited issues the tender and signs the Power Purchase Agreement as intermediary procurer,
+      selling the power under back-to-back Power Sale Agreements to End Procurers or Buying Entities (DISCOMs) who assume
+      all of NTPC''s obligations under the PPA. [15][16][17][18][19][20][21] The specific End Procurers are not named. [22]
+
+
+      Location: Projects may be located anywhere in India, connected to the ISTS, on land that the generator identifies and
+      arranges itself. [23][24][25][26] The delivery point is the ISTS substation at which the project is interconnected,
+      and metering is at the low voltage side of the CTU/STU substation where power is injected. [27][28][29] The solar and
+      wind parts of a project may be at the same or different sites. [30]
+
+
+      Timeline: The tender was issued on 30 October 2024, the pre-bid meeting and last date for queries were on 18 November
+      2024, and bids were due and technical bids opened on 2 December 2024; the financial bid opening and reverse auction
+      dates are to be intimated later by NTPC. [31][32][33][34][35][36][37][38][39] Bids remain valid for 180 days. [40] Financial
+      closure is due 6 months before the scheduled commissioning date, commissioning is due 24 months from the effective date,
+      and the PPA runs for 25 years. [41][42][43][44]
+
+
+      Eligibility: No prior project experience is required; the only technical criterion is that the bidder deploy commercially
+      established technologies, with wind turbines from the MNRE RLMM list and solar modules from ALMM List-I. [45][46] Financially,
+      bidders need a net worth of INR 11460000 (INR 1.146 crore) per MW, turnover of INR 6154000 (INR 61.54 lakh) per MW and
+      liquidity of INR 1230800 (INR 12.31 lakh) per MW. [47][48][49][50] Consortia may bid and parent or affiliate credentials
+      may be used, but the successful bidder''s shareholding in the project company must not fall below 51% until one year
+      after the scheduled commencement of supply date without NTPC''s approval. [51][52][53][54]
+
+
+      Money at risk: The EMD is INR 1160000 (INR 11.6 lakh) per MW of capacity bid and must be valid for 10 months, alongside
+      a bid processing fee of INR 300000 (INR 3 lakh) and success charges of INR 100000 (INR 1 lakh) per MW. [55][56][57][58][59][60][61][40]
+      A performance bank guarantee of INR 2900000 (INR 29 lakh) per MW of awarded contracted capacity is submitted for each
+      project before PPA signing, initially valid for 7 months beyond the SCSD, and a POI from IREDA/PFC/REC may be given
+      in its place. [62][63][64][65][66] The PBG is encashed proportionately per day for delay in commencement of supply up
+      to 6 months beyond the SCSD, and may be encashed for failure to achieve financial closure, failure to execute the PPA
+      in time, PPA signing delayed beyond 30 days for reasons attributable to the bidder, Integrity Pact breaches or misrepresentation;
+      unsuccessful bidders'' EMD is released within fifteen days of the reverse auction and the PBG is returned within 45
+      days of the SCSD. [67][68][69][70][71][72][73][74][75][76]
+
+
+      Tariff or payment: The tariff is fixed and discovered through an e-reverse auction, under a 25-year PPA. [77][78][44][79]
+      The generator pays PSM charges of Rs. 0.02/kWh to NTPC as a discount in the monthly tariff payment; the size of any
+      letter of credit or payment security fund is not stated. [80] Energy above the maximum CUF (120% of declared CUF) may
+      be sold to other entities subject to the Procurer''s first right of refusal, and is bought at the PPA tariff if the
+      Procurer takes it. [81][82][83]
+
+
+      Obligations and penalties: The generator must arrange land, obtain all clearances, build and pay for the dedicated transmission
+      line up to the interconnection point and secure connectivity, with the ISTS waiver cut-off on 30 June 2028; GNA responsibility
+      is placed on the Buying Entities in some clauses but listed among the generator''s responsibilities in another. [84][85][86][87][88][89][90][91][23][25][92]
+      If supply falls below the minimum CUF (90% of the declared annual CUF), the generator pays a penalty of one and a half
+      times the PPA tariff on the shortfall in energy, relaxable to the extent of grid non-availability beyond its control.
+      [93][94] Delay in commencement of supply is penalised by per-day PBG encashment for up to 6 months beyond the SCSD,
+      and delay beyond 6 months leads to termination. [95][72][73][74][75][76][96][97]'
+    confidence: 0.86
+    prompt_name: summary_record
+    prompt_version: v1
+    pages:
+    - 1
+    - 7
+    - 8
+    - 10
+    - 13
+    - 14
+    - 15
+    - 19
+    - 20
+    - 21
+    - 22
+    - 23
+    - 24
+    - 25
+    - 26
+    - 27
+    - 28
+    - 29
+    - 30
+    - 31
+    - 35
+    - 36
+    - 39
+    - 44
+    - 45
+    - 46
+    - 47
+    - 49
+    - 50
+    - 51
+    - 52
+    - 54
+    - 60
+    - 61
+    - 63
+    - 70
+    - 73
+    - 87
+    - 113
+- field_path: core.identity.tender_number
+  section: identity_and_scope
+  value_type: text
+  required: true
+  decision: approved
+  final_value: NTPC/RE-CS/2024-25/HYBRID-03
+  version_no: 1
+  evidence_pages:
+  - 1
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-07T12:24:07.987687+00:00'
+  note: null
+  candidate:
+    id: f2e4613504db48e293be2c9d848416b9
+    value: NTPC/RE-CS/2024-25/HYBRID-03
+    confidence: 0.98
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 1
+- field_path: core.identity.issuing_agency
+  section: identity_and_scope
+  value_type: text
+  required: true
+  decision: approved
+  final_value: NTPC Limited
+  version_no: 1
+  evidence_pages:
+  - 1
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-07T12:24:03.582739+00:00'
+  note: null
+  candidate:
+    id: a2ae88d6dcaa4ec1ab2e2b26d42bf9fa
+    value: NTPC Limited
+    confidence: 0.98
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 1
+- field_path: core.identity.title
+  section: identity_and_scope
+  value_type: text
+  required: true
+  decision: approved
+  final_value: Selection of Hybrid Power Generators for Supply of 1200 MW Power ISTS-Connected Wind-Solar Hybrid Power Projects
+    Anywhere in India with "Greenshoe Option" of Additional Capacity upto 600 MW (HYBRID-03)
+  version_no: 1
+  evidence_pages:
+  - 1
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-07T12:49:33.346436+00:00'
+  note: null
+  candidate:
+    id: 7b9a08801f9547aa81e91723ed3165cd
+    value: Selection of Hybrid Power Generators for Supply of 1200 MW Power ISTS-Connected Wind-Solar Hybrid Power Projects
+      Anywhere in India with "Greenshoe Option" of Additional Capacity upto 600 MW (HYBRID-03)
+    confidence: 0.95
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 1
+- field_path: core.identity.procurement_mode
+  section: identity_and_scope
+  value_type: enum
+  required: false
+  decision: approved
+  final_value: e_reverse_auction
+  version_no: 1
+  evidence_pages:
+  - 8
+  - 60
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:10:56.646751+00:00'
+  note: null
+  candidate:
+    id: 0e017905960f4c0bb66d5d7403583874
+    value: e_reverse_auction
+    confidence: 0.95
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 8
+    - 60
+- field_path: core.identity.portal
+  section: identity_and_scope
+  value_type: text
+  required: false
+  decision: approved
+  final_value: https://www.bharat-electronictender.com
+  version_no: 1
+  evidence_pages:
+  - 8
+  - 17
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-07T12:49:46.664471+00:00'
+  note: null
+  candidate:
+    id: 5ba4d29b839a4044bcd5196978877f91
+    value: https://www.bharat-electronictender.com
+    confidence: 0.95
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 8
+    - 17
+- field_path: core.identity.tender_type_as_stated
+  section: identity_and_scope
+  value_type: text
+  required: false
+  decision: approved
+  final_value: ISTS-connected Wind-Solar Hybrid Power Projects with or without energy storage system (ESS), on Build-Own-Operate
+    basis
+  version_no: 1
+  evidence_pages:
+  - 7
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-07T12:50:00.860965+00:00'
+  note: null
+  candidate:
+    id: 8c6539dd2e494e4384c3819df66144bc
+    value: ISTS-connected Wind-Solar Hybrid Power Projects with or without energy storage system (ESS), on Build-Own-Operate
+      basis
+    confidence: 0.9
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 7
+- field_path: sector.power.common.total_capacity_mw
+  section: identity_and_scope
+  value_type: mw
+  required: false
+  decision: approved
+  final_value: 1200
+  version_no: 1
+  evidence_pages:
+  - 19
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-07T12:50:05.561162+00:00'
+  note: null
+  candidate:
+    id: e37ba3df2eb345f9a38c93fa4ad2cf58
+    value: 1200.0
+    confidence: 0.95
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 19
+- field_path: sector.power.common.total_capacity_mwh
+  section: identity_and_scope
+  value_type: mwh
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-07T12:50:08.063193+00:00'
+  note: null
+  candidate:
+    id: cac3dad9fd594fe9a42e9036c4af7254
+    value: null
+    confidence: 0.0
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.min_bid_mw
+  section: identity_and_scope
+  value_type: mw
+  required: false
+  decision: approved
+  final_value: 50
+  version_no: 1
+  evidence_pages:
+  - 7
+  - 19
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-07T12:50:13.763514+00:00'
+  note: null
+  candidate:
+    id: 673ce2b9d5a749798aabaa8b766f0b4d
+    value: 50.0
+    confidence: 0.95
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 7
+    - 19
+- field_path: sector.power.common.max_bid_mw
+  section: identity_and_scope
+  value_type: mw
+  required: false
+  decision: approved
+  final_value: 600
+  version_no: 1
+  evidence_pages:
+  - 19
+  - 36
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-07T12:50:18.126107+00:00'
+  note: null
+  candidate:
+    id: 666696d333a848c1b9529b614031f50b
+    value: 600.0
+    confidence: 0.93
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 19
+    - 36
+- field_path: sector.power.common.max_projects_per_bidder
+  section: identity_and_scope
+  value_type: int
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-07T12:50:21.335119+00:00'
+  note: null
+  candidate:
+    id: 4592724e23dc4f5485338363f6c0bcfe
+    value: null
+    confidence: 0.0
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.location_constraint
+  section: identity_and_scope
+  value_type: enum
+  required: false
+  decision: approved
+  final_value: ists_anywhere
+  version_no: 1
+  evidence_pages:
+  - 7
+  - 28
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-07T12:50:33.160378+00:00'
+  note: null
+  candidate:
+    id: 243d280af76d4e98b236dbc219c5e436
+    value: ists_anywhere
+    confidence: 0.95
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 7
+    - 28
+- field_path: sector.power.common.named_states_or_sites
+  section: identity_and_scope
+  value_type: list_text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-07T12:50:37.359241+00:00'
+  note: null
+  candidate:
+    id: 37aa48ba84bf46c98c6d941346da7d41
+    value: null
+    confidence: 0.0
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.delivery_point
+  section: identity_and_scope
+  value_type: text
+  required: false
+  decision: approved
+  final_value: ISTS substation at which the project is interconnected (Delivery / Interconnection / Metering Point)
+  version_no: 1
+  evidence_pages:
+  - 19
+  - 22
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T05:14:35.894498+00:00'
+  note: null
+  candidate:
+    id: e323aa9897344699abd105407e989531
+    value: ISTS substation at which the project is interconnected (Delivery / Interconnection / Metering Point)
+    confidence: 0.5
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 19
+    - 22
+- field_path: sector.power.common.metering_point
+  section: identity_and_scope
+  value_type: text
+  required: false
+  decision: approved
+  final_value: Low voltage side of the CTU / STU substation at which power is injected in the transmission system of CTU /
+    STU
+  version_no: 1
+  evidence_pages:
+  - 28
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T05:15:28.456957+00:00'
+  note: null
+  candidate:
+    id: 2cbca64a59684ccc8283492d519844e3
+    value: Low voltage side of the CTU / STU substation at which power is injected in the transmission system of CTU / STU
+    confidence: 0.92
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 28
+- field_path: core.key_dates.nit_date
+  section: key_dates
+  value_type: date
+  required: false
+  decision: approved
+  final_value: '2024-10-30'
+  version_no: 1
+  evidence_pages:
+  - 14
+  - 21
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T05:15:58.770606+00:00'
+  note: null
+  candidate:
+    id: 8345801af8884311bf6122c8118520cb
+    value: '2024-10-30'
+    confidence: 0.9
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 14
+    - 21
+- field_path: core.key_dates.pre_bid_meeting_date
+  section: key_dates
+  value_type: date
+  required: false
+  decision: approved
+  final_value: '2024-11-18'
+  version_no: 1
+  evidence_pages:
+  - 21
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T05:16:13.756486+00:00'
+  note: null
+  candidate:
+    id: 96f77034d454468d85fb42b180b8c7ed
+    value: '2024-11-18'
+    confidence: 0.9
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 21
+- field_path: core.key_dates.query_deadline
+  section: key_dates
+  value_type: date
+  required: false
+  decision: approved
+  final_value: '2024-11-18'
+  version_no: 1
+  evidence_pages:
+  - 21
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T05:16:26.808234+00:00'
+  note: null
+  candidate:
+    id: 0e7371c4e232478c87dca15bcdf0383a
+    value: '2024-11-18'
+    confidence: 0.88
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 21
+- field_path: core.key_dates.bid_submission_deadline
+  section: key_dates
+  value_type: date
+  required: true
+  decision: approved
+  final_value: '2024-12-02'
+  version_no: 1
+  evidence_pages:
+  - 21
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T05:16:37.290461+00:00'
+  note: null
+  candidate:
+    id: 73279bfd07e5485bb7c52404468cd6d3
+    value: '2024-12-02'
+    confidence: 0.9
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 21
+- field_path: core.key_dates.technical_opening_date
+  section: key_dates
+  value_type: date
+  required: false
+  decision: approved
+  final_value: '2024-12-02'
+  version_no: 1
+  evidence_pages:
+  - 21
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T05:16:50.342336+00:00'
+  note: null
+  candidate:
+    id: 9faebe41d0c348f0b28bbca4588af3ff
+    value: '2024-12-02'
+    confidence: 0.9
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 21
+- field_path: core.key_dates.era_date
+  section: key_dates
+  value_type: date
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:14:50.636278+00:00'
+  note: null
+  candidate:
+    id: 8b1b894546ec4703a95c5e96d5454461
+    value: null
+    confidence: 0.0
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages: []
+- field_path: core.key_dates.dates_deferred_note
+  section: key_dates
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: Financial Bid Opening date is not printed ('Shall be intimated later'); the date and time for start of Reverse
+    Auction is not printed ('To be intimated to all bidders separately'). Both will be set by later intimation from NTPC to
+    bidders.
+  version_no: 1
+  evidence_pages:
+  - 21
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T05:17:17.556733+00:00'
+  note: null
+  candidate:
+    id: bcd8d7001b504f4aa68f88d0d014caa0
+    value: Financial Bid Opening date is not printed ('Shall be intimated later'); the date and time for start of Reverse
+      Auction is not printed ('To be intimated to all bidders separately'). Both will be set by later intimation from NTPC
+      to bidders.
+    confidence: 0.9
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 21
+- field_path: core.key_dates.bid_validity
+  section: key_dates
+  value_type: int
+  required: false
+  decision: approved
+  final_value: 180
+  version_no: 1
+  evidence_pages:
+  - 44
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T05:17:22.944727+00:00'
+  note: null
+  candidate:
+    id: 998b4bc9b35e476bb94f71571bf539c2
+    value: 180
+    confidence: 0.9
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 44
+- field_path: core.key_dates.bid_validity_unit
+  section: key_dates
+  value_type: enum
+  required: false
+  decision: approved
+  final_value: days
+  version_no: 1
+  evidence_pages:
+  - 44
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T05:17:30.773754+00:00'
+  note: null
+  candidate:
+    id: 22983e32c69f451f8215f700a6aebc17
+    value: days
+    confidence: 0.9
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 44
+- field_path: core.key_dates.loa_timeline
+  section: key_dates
+  value_type: text
+  required: false
+  decision: approved
+  final_value: At the end of selection process, a Letter of Award (LoA) will be issued to the successful Bidders for each
+    Project.
+  version_no: 1
+  evidence_pages:
+  - 35
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T05:17:39.396183+00:00'
+  note: null
+  candidate:
+    id: 30a49d3e6e754646a987041712233936
+    value: At the end of selection process, a Letter of Award (LoA) will be issued to the successful Bidders for each Project.
+    confidence: 0.8
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 35
+- field_path: sector.power.common.ppa_signing_window_days
+  section: key_dates
+  value_type: int
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:15:01.920662+00:00'
+  note: null
+  candidate:
+    id: 5b7db0141f7342e4a2f586d5b716b997
+    value: null
+    confidence: 0.0
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.financial_closure_months
+  section: key_dates
+  value_type: duration_months
+  required: false
+  decision: approved
+  final_value: 6
+  version_no: 1
+  evidence_pages:
+  - 51
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T05:17:51.596016+00:00'
+  note: null
+  candidate:
+    id: dfa359772c9b4000a5b4d64f181cf2be
+    value: 6
+    confidence: 0.9
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 51
+- field_path: sector.power.common.financial_closure_reference
+  section: key_dates
+  value_type: enum
+  required: false
+  decision: approved
+  final_value: before_scod
+  version_no: 1
+  evidence_pages:
+  - 51
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:11:16.525010+00:00'
+  note: null
+  candidate:
+    id: 50b1c6e246474e379591426b5cd18063
+    value: before_scod
+    confidence: 0.9
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 51
+- field_path: sector.power.common.scod_months
+  section: key_dates
+  value_type: duration_months
+  required: false
+  decision: approved
+  final_value: 24
+  version_no: 1
+  evidence_pages:
+  - 14
+  - 52
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:11:20.791664+00:00'
+  note: null
+  candidate:
+    id: 86880267d45b4e8fa0acebee5ad6b2b8
+    value: 24
+    confidence: 0.92
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 14
+    - 52
+- field_path: sector.power.common.scod_reference
+  section: key_dates
+  value_type: enum
+  required: false
+  decision: approved
+  final_value: effective_date
+  version_no: 1
+  evidence_pages:
+  - 52
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:11:24.310014+00:00'
+  note: null
+  candidate:
+    id: e234ecf3c4ab465c8e074119b9ad2064
+    value: effective_date
+    confidence: 0.92
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 52
+- field_path: sector.power.common.ppa_tenure_years
+  section: key_dates
+  value_type: int
+  required: false
+  decision: approved
+  final_value: 25
+  version_no: 1
+  evidence_pages:
+  - 39
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T05:19:45.467597+00:00'
+  note: null
+  candidate:
+    id: 05b314619aad47ca8a05cc3e1f0fc217
+    value: 25
+    confidence: 0.92
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 39
+- field_path: core.eligibility.technical_experience_requirement
+  section: eligibility
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: No prior project experience or commissioned capacity is required. The only technical eligibility criterion
+    (Clause 3.8 B.1) is that the bidder deploy commercially established and operational technologies (wind turbines from the
+    MNRE RLMM list and solar modules from ALMM List-I), with an undertaking in Format 6.7 and technology details in Format
+    6.9.
+  version_no: 1
+  evidence_pages:
+  - 24
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:11:33.077929+00:00'
+  note: null
+  candidate:
+    id: 21450777c72047f08715b26fcdea6e4b
+    value: No prior project experience or commissioned capacity is required. The only technical eligibility criterion (Clause
+      3.8 B.1) is that the bidder deploy commercially established and operational technologies (wind turbines from the MNRE
+      RLMM list and solar modules from ALMM List-I), with an undertaking in Format 6.7 and technology details in Format 6.9.
+    confidence: 0.9
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages:
+    - 24
+- field_path: core.eligibility.turnover_requirement_inr
+  section: eligibility
+  value_type: money_inr
+  required: false
+  decision: approved
+  final_value: 6154000
+  version_no: 1
+  evidence_pages:
+  - 25
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T05:20:45.620742+00:00'
+  note: null
+  candidate:
+    id: e1f4f7e8331046359802fa861622014d
+    value: 6154000.0
+    confidence: 0.92
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages:
+    - 25
+- field_path: core.eligibility.turnover_basis
+  section: eligibility
+  value_type: enum
+  required: false
+  decision: approved
+  final_value: per_mw
+  version_no: 1
+  evidence_pages:
+  - 25
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T05:20:50.763303+00:00'
+  note: null
+  candidate:
+    id: e5ad501de38a437a9c89937b5ffbe201
+    value: per_mw
+    confidence: 0.95
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages:
+    - 25
+- field_path: core.eligibility.ebitda_requirement_inr
+  section: eligibility
+  value_type: money_inr
+  required: false
+  decision: null
+  final_value: null
+  version_no: null
+  evidence_pages: []
+  reviewer: null
+  decided_at: null
+  note: null
+  candidate: null
+- field_path: core.eligibility.ebitda_basis
+  section: eligibility
+  value_type: text
+  required: false
+  decision: null
+  final_value: null
+  version_no: null
+  evidence_pages: []
+  reviewer: null
+  decided_at: null
+  note: null
+  candidate: null
+- field_path: core.eligibility.min_single_station_mw
+  section: eligibility
+  value_type: mw
+  required: false
+  decision: null
+  final_value: null
+  version_no: null
+  evidence_pages: []
+  reviewer: null
+  decided_at: null
+  note: null
+  candidate: null
+- field_path: core.eligibility.min_continuous_operation_years
+  section: eligibility
+  value_type: decimal
+  required: false
+  decision: null
+  final_value: null
+  version_no: null
+  evidence_pages: []
+  reviewer: null
+  decided_at: null
+  note: null
+  candidate: null
+- field_path: core.eligibility.experience_period_end_date
+  section: eligibility
+  value_type: date
+  required: false
+  decision: null
+  final_value: null
+  version_no: null
+  evidence_pages: []
+  reviewer: null
+  decided_at: null
+  note: null
+  candidate: null
+- field_path: core.eligibility.liquidity_requirement_inr
+  section: eligibility
+  value_type: money_inr
+  required: false
+  decision: approved
+  final_value: 1230800
+  version_no: 1
+  evidence_pages:
+  - 25
+  - 26
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T05:21:09.119425+00:00'
+  note: null
+  candidate:
+    id: e66d3df7da224377ac43870358f2d374
+    value: 1230800.0
+    confidence: 0.85
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages:
+    - 25
+    - 26
+- field_path: core.eligibility.liquidity_basis
+  section: eligibility
+  value_type: enum
+  required: false
+  decision: approved
+  final_value: per_mw
+  version_no: 1
+  evidence_pages:
+  - 25
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T05:21:11.288254+00:00'
+  note: null
+  candidate:
+    id: eac9fa1f4f06413e8b84eb9f5e4a994e
+    value: per_mw
+    confidence: 0.92
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages:
+    - 25
+- field_path: core.eligibility.consortium_allowed
+  section: eligibility
+  value_type: bool
+  required: false
+  decision: approved
+  final_value: true
+  version_no: 1
+  evidence_pages:
+  - 22
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T05:21:23.624085+00:00'
+  note: null
+  candidate:
+    id: bbec80a524f14184abc7969c9236d783
+    value: true
+    confidence: 0.95
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages:
+    - 22
+- field_path: core.eligibility.max_consortium_members
+  section: eligibility
+  value_type: int
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:15:21.289407+00:00'
+  note: null
+  candidate:
+    id: e5705bf458c742afbf7d12883493fe6e
+    value: null
+    confidence: 0.0
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages: []
+- field_path: core.eligibility.parent_affiliate_credentials_allowed
+  section: eligibility
+  value_type: bool
+  required: false
+  decision: approved
+  final_value: true
+  version_no: 1
+  evidence_pages:
+  - 26
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T05:21:35.851100+00:00'
+  note: null
+  candidate:
+    id: 2c2c17f2f84340889d71c0d293f505f3
+    value: true
+    confidence: 0.93
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages:
+    - 26
+- field_path: core.eligibility.shareholding_lock_in
+  section: eligibility
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: Successful bidder's shareholding in the SPV/project company (or combined shareholding of consortium members)
+    shall not fall below 51% at any time prior to 1 year from the SCSD, except with prior approval of NTPC. For a consortium,
+    the Lead Member must hold not less than 51% controlling shareholding, unchanged from the bid submission deadline up to
+    one year after SCSD (Clause 3.8 A.7).
+  version_no: 1
+  evidence_pages:
+  - 23
+  - 50
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T05:22:07.676811+00:00'
+  note: null
+  candidate:
+    id: 4c37642cdf06417f85fe0e06de23a0c7
+    value: Successful bidder's shareholding in the SPV/project company (or combined shareholding of consortium members) shall
+      not fall below 51% at any time prior to 1 year from the SCSD, except with prior approval of NTPC. For a consortium,
+      the Lead Member must hold not less than 51% controlling shareholding, unchanged from the bid submission deadline up
+      to one year after SCSD (Clause 3.8 A.7).
+    confidence: 0.9
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages:
+    - 23
+    - 50
+- field_path: sector.power.common.min_commissioned_mw
+  section: eligibility
+  value_type: mw
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:16:32.595449+00:00'
+  note: null
+  candidate:
+    id: 24847394744643ec92377a055a649341
+    value: null
+    confidence: 0.0
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.under_construction_counts
+  section: eligibility
+  value_type: bool
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:16:33.825173+00:00'
+  note: null
+  candidate:
+    id: cd702785f9f746b7b1272e4a14e19dcb
+    value: null
+    confidence: 0.0
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.net_worth_per_mw_inr
+  section: eligibility
+  value_type: money_inr
+  required: false
+  decision: approved
+  final_value: 11460000
+  version_no: 1
+  evidence_pages:
+  - 25
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T05:22:33.577150+00:00'
+  note: null
+  candidate:
+    id: fd6740b44dbb41f6a51966fbb984a9ef
+    value: 11460000.0
+    confidence: 0.93
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages:
+    - 25
+- field_path: core.guarantees.emd_per_mw_inr
+  section: guarantees
+  value_type: money_inr
+  required: false
+  decision: approved
+  final_value: 1160000
+  version_no: 1
+  evidence_pages:
+  - 45
+  - 73
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T05:22:51.875219+00:00'
+  note: null
+  candidate:
+    id: 862bd7889594413ebff1fac33e678866
+    value: 1160000.0
+    confidence: 0.95
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages:
+    - 45
+    - 73
+- field_path: core.guarantees.emd_formula
+  section: guarantees
+  value_type: long_text
+  required: false
+  decision: edited
+  final_value: EMD Amount = ₹11,60,000 × Capacity Bid (MW), at the specified rate of ₹11.60 lakh per MW.
+  version_no: 1
+  evidence_pages:
+  - 45
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:25:25.630244+00:00'
+  note: null
+  candidate:
+    id: 5dce798a98a34316b8441232fa3c825a
+    value: null
+    confidence: 0.0
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages: []
+- field_path: core.guarantees.emd_structured
+  section: guarantees
+  value_type: record
+  required: false
+  decision: approved
+  final_value:
+    basis: per_mw
+    cap_inr: null
+    cap_per: null
+    percent: null
+    components: null
+    percent_of: null
+    lump_sum_inr: null
+    rate_inr_per_mw: 1160000
+  version_no: 1
+  evidence_pages:
+  - 45
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T05:23:59.511672+00:00'
+  note: null
+  candidate:
+    id: 89da11eb48b14136998ecf2f0cb8ab77
+    value:
+    - 'basis: per_mw'
+    - 'rate_inr_per_mw: 1160000'
+    confidence: 0.95
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages:
+    - 45
+- field_path: core.guarantees.emd_form
+  section: guarantees
+  value_type: enum
+  required: false
+  decision: approved
+  final_value: other
+  version_no: 1
+  evidence_pages:
+  - 46
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:11:58.461147+00:00'
+  note: null
+  candidate:
+    id: d28ace8153b04c29b835e9386d684fb9
+    value: other
+    confidence: 0.9
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages:
+    - 46
+- field_path: core.guarantees.bid_security_instruments
+  section: guarantees
+  value_type: record_list
+  required: false
+  decision: null
+  final_value: null
+  version_no: null
+  evidence_pages: []
+  reviewer: null
+  decided_at: null
+  note: null
+  candidate: null
+- field_path: core.guarantees.pbg_instruments
+  section: guarantees
+  value_type: record_list
+  required: false
+  decision: null
+  final_value: null
+  version_no: null
+  evidence_pages: []
+  reviewer: null
+  decided_at: null
+  note: null
+  candidate: null
+- field_path: core.guarantees.pbg_per_mw_inr
+  section: guarantees
+  value_type: money_inr
+  required: false
+  decision: approved
+  final_value: 2900000
+  version_no: 1
+  evidence_pages:
+  - 46
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T05:32:48.128017+00:00'
+  note: null
+  candidate:
+    id: 6ec31dc6393f418ba8e3bb1096742f4e
+    value: 2900000.0
+    confidence: 0.95
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages:
+    - 46
+- field_path: core.guarantees.pbg_formula
+  section: guarantees
+  value_type: long_text
+  required: false
+  decision: edited
+  final_value: PBG Amount = ₹29,00,000 × Awarded Contracted Capacity (MW), calculated separately for each project, as per
+    Clause 3.24(ii).
+  version_no: 1
+  evidence_pages:
+  - 46
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:18:34.520389+00:00'
+  note: null
+  candidate:
+    id: a715f7eecb4a4372b1aee513337552e7
+    value: null
+    confidence: 0.0
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages: []
+- field_path: core.guarantees.pbg_schedule
+  section: guarantees
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: PBG of Rs. 29.00 Lakh/MW of contracted capacity awarded is to be submitted by the successful bidder for each
+    project separately, prior to signing of PPA; the due date is intimated by NTPC and shall be at least 15 days prior to
+    PPA signing. PBG should be initially valid for 7 months beyond the SCSD and extended if SCSD is extended. A POI from IREDA/PFC/REC
+    may be submitted in lieu of the PBG. PPA is signed only after verification of the PBG.
+  version_no: 1
+  evidence_pages:
+  - 46
+  - 47
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T05:33:19.452324+00:00'
+  note: null
+  candidate:
+    id: 5d23c76501b149719fd501f3bda126c6
+    value: PBG of Rs. 29.00 Lakh/MW of contracted capacity awarded is to be submitted by the successful bidder for each project
+      separately, prior to signing of PPA; the due date is intimated by NTPC and shall be at least 15 days prior to PPA signing.
+      PBG should be initially valid for 7 months beyond the SCSD and extended if SCSD is extended. A POI from IREDA/PFC/REC
+      may be submitted in lieu of the PBG. PPA is signed only after verification of the PBG.
+    confidence: 0.9
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages:
+    - 46
+    - 47
+- field_path: core.guarantees.pbg_structured
+  section: guarantees
+  value_type: record
+  required: false
+  decision: approved
+  final_value:
+    basis: per_mw
+    cap_inr: null
+    cap_per: null
+    percent: null
+    components: null
+    percent_of: null
+    lump_sum_inr: null
+    rate_inr_per_mw: 2900000
+    submitted_before: ppa_signing
+    valid_months_after_scod: 7
+  version_no: 1
+  evidence_pages:
+  - 46
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T05:34:50.677064+00:00'
+  note: null
+  candidate:
+    id: 6aa1d59952fe467ab41dc3927c1af28a
+    value:
+    - 'basis: per_mw'
+    - 'rate_inr_per_mw: 2900000'
+    - 'valid_months_after_scod: 7'
+    - 'submitted_before: ppa_signing'
+    confidence: 0.9
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages:
+    - 46
+- field_path: core.guarantees.success_charge_inr
+  section: guarantees
+  value_type: money_inr
+  required: false
+  decision: approved
+  final_value: 100000
+  version_no: 1
+  evidence_pages:
+  - 49
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T05:35:34.719250+00:00'
+  note: null
+  candidate:
+    id: 4a61e5990dac4e70b69f57d7f6c67406
+    value: 100000.0
+    confidence: 0.95
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages:
+    - 49
+- field_path: core.guarantees.processing_fee_inr
+  section: guarantees
+  value_type: money_inr
+  required: false
+  decision: approved
+  final_value: 300000
+  version_no: 1
+  evidence_pages:
+  - 20
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:12:10.796544+00:00'
+  note: null
+  candidate:
+    id: c8c185d83d934d4ba3bbe8cff5a243e3
+    value: 300000.0
+    confidence: 0.9
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages:
+    - 20
+- field_path: core.guarantees.bg_validity_months
+  section: guarantees
+  value_type: duration_months
+  required: false
+  decision: approved
+  final_value: 10
+  version_no: 1
+  evidence_pages:
+  - 44
+  - 45
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T05:38:37.350069+00:00'
+  note: null
+  candidate:
+    id: d3acf0e7de2242e88689c9ce7d2d32e8
+    value: 10
+    confidence: 0.8
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages:
+    - 44
+    - 45
+- field_path: core.guarantees.bg_release_conditions
+  section: guarantees
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: EMD of unsuccessful bidders is released within fifteen days of completion of the reverse auction. For successful
+    bidders, the EMD is returned only on receipt and verification of the PBG/POI in acceptable form (EMD validity to be extended
+    to 90 days beyond the PBG due date); EMD for excess capacity applied for is not refunded until the process is completed/annulled
+    or PBG is received and verified. If PPA signing is delayed beyond 12 months from LoA the bidder may exit and the EMD is
+    returned on request. PBG is returned to the generator within 45 days of the SCSD of the project; for commencement of supply
+    from part capacity, PBG corresponding to that part is released within 45 days. NTPC may release the PBG if replaced by
+    a POI from IREDA/PFC/REC.
+  version_no: 1
+  evidence_pages:
+  - 35
+  - 46
+  - 47
+  - 61
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T05:39:04.500292+00:00'
+  note: null
+  candidate:
+    id: 65752405fbe441faba22d20ea83d8805
+    value: EMD of unsuccessful bidders is released within fifteen days of completion of the reverse auction. For successful
+      bidders, the EMD is returned only on receipt and verification of the PBG/POI in acceptable form (EMD validity to be
+      extended to 90 days beyond the PBG due date); EMD for excess capacity applied for is not refunded until the process
+      is completed/annulled or PBG is received and verified. If PPA signing is delayed beyond 12 months from LoA the bidder
+      may exit and the EMD is returned on request. PBG is returned to the generator within 45 days of the SCSD of the project;
+      for commencement of supply from part capacity, PBG corresponding to that part is released within 45 days. NTPC may release
+      the PBG if replaced by a POI from IREDA/PFC/REC.
+    confidence: 0.9
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages:
+    - 35
+    - 46
+    - 47
+    - 61
+- field_path: core.commercial.payment_security_mechanism
+  section: commercial
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: The attached pages only state that, as part of the Payment Security Mechanism set out in the PPA, the HPG will
+    pay PSM Charges of Rs. 0.02/kWh to NTPC by offering a commensurate discount in the monthly tariff payment made by NTPC.
+    The size of any letter of credit, payment security fund or state guarantee is not stated in the attached pages (the PPA
+    at Annexure-3 is not attached).
+  version_no: 1
+  evidence_pages:
+  - 49
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T05:40:53.561978+00:00'
+  note: null
+  candidate:
+    id: 7460c075d21b4042b30e2460f91c5657
+    value: The attached pages only state that, as part of the Payment Security Mechanism set out in the PPA, the HPG will
+      pay PSM Charges of Rs. 0.02/kWh to NTPC by offering a commensurate discount in the monthly tariff payment made by NTPC.
+      The size of any letter of credit, payment security fund or state guarantee is not stated in the attached pages (the
+      PPA at Annexure-3 is not attached).
+    confidence: 0.6
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages:
+    - 49
+- field_path: core.commercial.payment_security_structured
+  section: commercial
+  value_type: record
+  required: false
+  decision: approved
+  final_value:
+    lc_required: null
+    lc_revolving: null
+    psf_available: true
+    state_guarantee: null
+    payment_due_days: null
+    lc_months_of_billing: null
+    lc_drawable_after_days: null
+    psf_charge_inr_per_kwh: 0.02
+  version_no: 1
+  evidence_pages:
+  - 49
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T05:40:28.355562+00:00'
+  note: null
+  candidate:
+    id: db54e0cfea9d4219bb03c0edbcf9c73e
+    value:
+    - 'psf_available: yes'
+    - 'psf_charge_inr_per_kwh: 0.02'
+    confidence: 0.6
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages:
+    - 49
+- field_path: core.commercial.change_in_law_clause
+  section: commercial
+  value_type: long_text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:19:30.853031+00:00'
+  note: null
+  candidate:
+    id: 3223a603667c4e929cf4afed94f1322f
+    value: null
+    confidence: 0.0
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages: []
+- field_path: core.commercial.late_payment_surcharge
+  section: commercial
+  value_type: text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:19:32.068404+00:00'
+  note: null
+  candidate:
+    id: 5640082de73d4f2a9fbc3e9b195e9e5d
+    value: null
+    confidence: 0.0
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages: []
+- field_path: core.commercial.termination_compensation
+  section: commercial
+  value_type: long_text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:19:33.266698+00:00'
+  note: null
+  candidate:
+    id: 9860f657d36c4c21a80db2d3d069682f
+    value: null
+    confidence: 0.0
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages: []
+- field_path: core.commercial.offtaker
+  section: commercial
+  value_type: text
+  required: false
+  decision: approved
+  final_value: NTPC Limited (intermediary procurer under the PPA), selling under back-to-back Power Sale Agreements to End
+    Procurer(s) / Buying Entities (DISCOMs) who assume all obligations of NTPC under the PPA
+  version_no: 1
+  evidence_pages:
+  - 10
+  - 39
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T05:41:26.518070+00:00'
+  note: null
+  candidate:
+    id: 2fdcc028f00a4bceb51300331fb1188d
+    value: NTPC Limited (intermediary procurer under the PPA), selling under back-to-back Power Sale Agreements to End Procurer(s)
+      / Buying Entities (DISCOMs) who assume all obligations of NTPC under the PPA
+    confidence: 0.9
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages:
+    - 10
+    - 39
+- field_path: sector.power.common.tariff_ceiling_inr_per_kwh
+  section: commercial
+  value_type: decimal
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:20:21.540304+00:00'
+  note: null
+  candidate:
+    id: ee71584e4cd3468ebc22c40610cb26a6
+    value: null
+    confidence: 0.0
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages: []
+- field_path: sector.power.common.tariff_structure
+  section: commercial
+  value_type: enum
+  required: false
+  decision: approved
+  final_value: fixed
+  version_no: 1
+  evidence_pages:
+  - 31
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T05:43:31.299696+00:00'
+  note: null
+  candidate:
+    id: cd7dc265ad1d49bd8944d422ebeecd94
+    value: fixed
+    confidence: 0.95
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages:
+    - 31
+- field_path: sector.power.common.deemed_generation_clause
+  section: commercial
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: The attached pages do not state any deemed generation compensation. They only provide that the minimum CUF
+    limit is relaxable by NTPC to the extent of non-availability of grid for evacuation beyond the HPG's control, and that
+    power offered on day-ahead basis (within maximum CUF) but not scheduled by the Procurer(s) may be sold by the HPG to any
+    third party or power exchange without NOC. Any compensation for grid unavailability or backdown would be in the PPA (Annexure-3),
+    which is not attached.
+  version_no: 1
+  evidence_pages:
+  - 30
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:12:31.431603+00:00'
+  note: null
+  candidate:
+    id: 9266850606cb4c08819837851ad41d8d
+    value: The attached pages do not state any deemed generation compensation. They only provide that the minimum CUF limit
+      is relaxable by NTPC to the extent of non-availability of grid for evacuation beyond the HPG's control, and that power
+      offered on day-ahead basis (within maximum CUF) but not scheduled by the Procurer(s) may be sold by the HPG to any third
+      party or power exchange without NOC. Any compensation for grid unavailability or backdown would be in the PPA (Annexure-3),
+      which is not attached.
+    confidence: 0.4
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages:
+    - 30
+- field_path: sector.power.common.deemed_generation_structured
+  section: commercial
+  value_type: record
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:20:57.723586+00:00'
+  note: null
+  candidate:
+    id: a7f8bd0f1da94773b39e7bd146c7cf0f
+    value: null
+    confidence: 0.0
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages: []
+- field_path: core.penalties.delay_ld_per_mw_per_day_inr
+  section: penalties
+  value_type: money_inr
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:21:00.323254+00:00'
+  note: null
+  candidate:
+    id: b0f508870248436f885b3397a9e143c4
+    value: null
+    confidence: 0.0
+    prompt_name: extract/penalties
+    prompt_version: v3
+    pages: []
+- field_path: core.penalties.delay_ld_structured
+  section: penalties
+  value_type: record
+  required: false
+  decision: approved
+  final_value:
+    basis: pbg_encashment_per_day
+    pct_per_week: null
+    rate_inr_per_mw_per_day: null
+    pbg_encashed_over_months: 6
+    cap_pct_of_contract_price: null
+  version_no: 1
+  evidence_pages:
+  - 54
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:13:12.841261+00:00'
+  note: null
+  candidate:
+    id: 8a5e334a0451490f92a0147cae483962
+    value:
+    - 'basis: pbg_encashment_per_day'
+    - 'pbg_encashed_over_months: 6'
+    confidence: 0.9
+    prompt_name: extract/penalties
+    prompt_version: v3
+    pages:
+    - 54
+- field_path: core.penalties.max_scod_extension_months
+  section: penalties
+  value_type: duration_months
+  required: false
+  decision: approved
+  final_value: 6
+  version_no: 1
+  evidence_pages:
+  - 54
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T05:49:05.797236+00:00'
+  note: null
+  candidate:
+    id: d59b1aa3c9f445acba36596ee73bfcde
+    value: 6
+    confidence: 0.95
+    prompt_name: extract/penalties
+    prompt_version: v3
+    pages:
+    - 54
+- field_path: core.penalties.shortfall_penalty_basis
+  section: penalties
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: If the project supplies less energy than that corresponding to the minimum CUF (90% of the declared/revised
+    annual CUF, measured annually April–March), the HPG pays the Procurer a penalty for the shortfall calculated at one and
+    half times the PPA tariff for the shortfall in energy terms, per the PPA. The lower limit is relaxable by NTPC to the
+    extent of grid non-availability beyond the HPG's control.
+  version_no: 1
+  evidence_pages:
+  - 30
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T05:49:09.464278+00:00'
+  note: null
+  candidate:
+    id: 9179e8a819b34fe2958d8c395f2cc542
+    value: If the project supplies less energy than that corresponding to the minimum CUF (90% of the declared/revised annual
+      CUF, measured annually April–March), the HPG pays the Procurer a penalty for the shortfall calculated at one and half
+      times the PPA tariff for the shortfall in energy terms, per the PPA. The lower limit is relaxable by NTPC to the extent
+      of grid non-availability beyond the HPG's control.
+    confidence: 0.92
+    prompt_name: extract/penalties
+    prompt_version: v3
+    pages:
+    - 30
+- field_path: core.penalties.shortfall_rules
+  section: penalties
+  value_type: record_list
+  required: false
+  decision: approved
+  final_value:
+  - metric: annual_cuf
+    measured: annual
+    threshold_of: declared_cuf
+    threshold_pct: 90
+    tolerance_pct: null
+    default_after_years: null
+    penalty_multiple_of_tariff: 1.5
+    default_damages_months_of_tariff: null
+  version_no: 1
+  evidence_pages:
+  - 30
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T05:52:05.261351+00:00'
+  note: null
+  candidate:
+    id: 21d3444c8e6d439cbd8c4718c4b5b2fc
+    value:
+    - 'metric: annual_cuf | threshold_pct: 90 | threshold_of: declared_cuf | measured: annual | penalty_multiple_of_tariff:
+      1.5'
+    confidence: 0.9
+    prompt_name: extract/penalties
+    prompt_version: v3
+    pages:
+    - 30
+- field_path: core.penalties.pbg_encashment_triggers
+  section: penalties
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: '(1) Delay in commencement of power supply beyond SCSD up to 6 months: PBG/POI encashed on a per-day basis
+    proportionate to the Contracted Capacity not commenced (e.g. PBG x (100/240) x (18/180)). (2) Default in achieving Financial
+    Closure (6 months before SCSD) within the stipulated time, or failure to furnish documents or pay the Rs. 100/MW/day +
+    GST extension charge within the 7-day notice: NTPC may encash PBG/POI and remove the Project / terminate the PPA. (3)
+    Failure to submit requisite documents, meet eligibility or execute the PPA within the stipulated time: BG equivalent to
+    the EMD encashed from EMD or PBG as liquidated damages. (4) PPA signing delayed beyond 30 days for reasons attributable
+    to the HPG: NTPC may cancel LoA and encash EMD/PBG. (5) Integrity Pact transgression leading to disqualification or termination
+    of LOA/PPA: forfeiture of EMD and encashment of PBG. (6) Concealment/misrepresentation in bid: Bank Guarantee provided
+    up to that stage encashed.'
+  version_no: 1
+  evidence_pages:
+  - 39
+  - 47
+  - 51
+  - 54
+  - 113
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T05:52:16.650446+00:00'
+  note: null
+  candidate:
+    id: 80b9c06368d348e99f209630e83e4a28
+    value: '(1) Delay in commencement of power supply beyond SCSD up to 6 months: PBG/POI encashed on a per-day basis proportionate
+      to the Contracted Capacity not commenced (e.g. PBG x (100/240) x (18/180)). (2) Default in achieving Financial Closure
+      (6 months before SCSD) within the stipulated time, or failure to furnish documents or pay the Rs. 100/MW/day + GST extension
+      charge within the 7-day notice: NTPC may encash PBG/POI and remove the Project / terminate the PPA. (3) Failure to submit
+      requisite documents, meet eligibility or execute the PPA within the stipulated time: BG equivalent to the EMD encashed
+      from EMD or PBG as liquidated damages. (4) PPA signing delayed beyond 30 days for reasons attributable to the HPG: NTPC
+      may cancel LoA and encash EMD/PBG. (5) Integrity Pact transgression leading to disqualification or termination of LOA/PPA:
+      forfeiture of EMD and encashment of PBG. (6) Concealment/misrepresentation in bid: Bank Guarantee provided up to that
+      stage encashed.'
+    confidence: 0.88
+    prompt_name: extract/penalties
+    prompt_version: v3
+    pages:
+    - 39
+    - 47
+    - 51
+    - 54
+    - 113
+- field_path: core.penalties.termination_delay_months
+  section: penalties
+  value_type: duration_months
+  required: false
+  decision: approved
+  final_value: 6
+  version_no: 1
+  evidence_pages:
+  - 54
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T05:52:19.790463+00:00'
+  note: null
+  candidate:
+    id: 5a57973d2e604e4b862b15b29329dfde
+    value: 6
+    confidence: 0.95
+    prompt_name: extract/penalties
+    prompt_version: v3
+    pages:
+    - 54
+- field_path: sector.power.common.connectivity_responsibility
+  section: connectivity_and_compliance
+  value_type: enum
+  required: false
+  decision: approved
+  final_value: developer
+  version_no: 1
+  evidence_pages:
+  - 27
+  - 63
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T05:52:49.672003+00:00'
+  note: null
+  candidate:
+    id: f304e85f02cd4ddb97a146e9c082d54e
+    value: developer
+    confidence: 0.95
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages:
+    - 27
+    - 63
+- field_path: sector.power.common.gna_requirement
+  section: connectivity_and_compliance
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: GNA is to be obtained under the CERC (Connectivity and GNA to ISTS) Regulations, 2022 and the HPG must follow
+    the CERC/CTU detailed procedure and GNA timelines for connectivity. Clause 3.9.1(ix) and Clause 3.28.5 place responsibility
+    for obtaining GNA (and transmission charges/losses beyond the Delivery Point up to the drawl point) on the Buying Entities
+    / End Procurer(s) prior to commencement of supply; delay in GNA operationalization not attributable to the HPG extends
+    SCSD. However, Section 5.0(d) lists getting GNA for the Project among the HPG's responsibilities.
+  version_no: 1
+  evidence_pages:
+  - 29
+  - 54
+  - 63
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T05:57:27.544310+00:00'
+  note: null
+  candidate:
+    id: de3fa6fd362a4ea0b9bdb24eb04e069a
+    value: GNA is to be obtained under the CERC (Connectivity and GNA to ISTS) Regulations, 2022 and the HPG must follow the
+      CERC/CTU detailed procedure and GNA timelines for connectivity. Clause 3.9.1(ix) and Clause 3.28.5 place responsibility
+      for obtaining GNA (and transmission charges/losses beyond the Delivery Point up to the drawl point) on the Buying Entities
+      / End Procurer(s) prior to commencement of supply; delay in GNA operationalization not attributable to the HPG extends
+      SCSD. However, Section 5.0(d) lists getting GNA for the Project among the HPG's responsibilities.
+    confidence: 0.75
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages:
+    - 29
+    - 54
+    - 63
+- field_path: sector.power.common.ists_waiver_cutoff_date
+  section: connectivity_and_compliance
+  value_type: date
+  required: false
+  decision: approved
+  final_value: '2028-06-30'
+  version_no: 1
+  evidence_pages:
+  - 30
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T05:57:31.244498+00:00'
+  note: null
+  candidate:
+    id: 00088a745ce740c59407bff608ec05ee
+    value: '2028-06-30'
+    confidence: 0.85
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages:
+    - 30
+- field_path: sector.power.common.line_to_pooling_station_responsibility
+  section: connectivity_and_compliance
+  value_type: text
+  required: false
+  decision: approved
+  final_value: The HPG builds and pays for the dedicated transmission line up to the Interconnection Point; the entire cost
+    of transmission including construction of the line, reactive compensation, wheeling/scheduling charges, maintenance and
+    losses up to and including the Interconnection Point is borne by the HPG without reimbursement by the Procurer. Where
+    projects share a pooling substation, the common transmission system to the ISTS substation is constructed and maintained
+    by the HPG(s) and losses are apportioned among them.
+  version_no: 1
+  evidence_pages:
+  - 15
+  - 28
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T05:57:48.115181+00:00'
+  note: null
+  candidate:
+    id: 8781afc8f07f4d14800870f57a9a2c77
+    value: The HPG builds and pays for the dedicated transmission line up to the Interconnection Point; the entire cost of
+      transmission including construction of the line, reactive compensation, wheeling/scheduling charges, maintenance and
+      losses up to and including the Interconnection Point is borne by the HPG without reimbursement by the Procurer. Where
+      projects share a pooling substation, the common transmission system to the ISTS substation is constructed and maintained
+      by the HPG(s) and losses are apportioned among them.
+    confidence: 0.9
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages:
+    - 15
+    - 28
+- field_path: sector.power.common.almm_required
+  section: connectivity_and_compliance
+  value_type: bool
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:21:58.181110+00:00'
+  note: null
+  candidate:
+    id: 8cba1d3bd7b845349847159f7e096610
+    value: null
+    confidence: 0.0
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.dcr_required
+  section: connectivity_and_compliance
+  value_type: bool
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:22:00.274222+00:00'
+  note: null
+  candidate:
+    id: 2ccd1b48e9da4ed9a06142f157a92727
+    value: null
+    confidence: 0.0
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.local_content_rule
+  section: connectivity_and_compliance
+  value_type: long_text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:22:01.849689+00:00'
+  note: null
+  candidate:
+    id: 115dae4fe90d4656b9d1e1ce064f4c60
+    value: null
+    confidence: 0.0
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.land_responsibility
+  section: connectivity_and_compliance
+  value_type: text
+  required: false
+  decision: approved
+  final_value: The HPG (Generator) identifies and arranges the land for the Project anywhere in India; the Procurer is not
+    responsible for delays.
+  version_no: 1
+  evidence_pages:
+  - 7
+  - 63
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T05:58:37.805523+00:00'
+  note: null
+  candidate:
+    id: 3ff9ef021d0a4690b1cf8769b4aff4a4
+    value: The HPG (Generator) identifies and arranges the land for the Project anywhere in India; the Procurer is not responsible
+      for delays.
+    confidence: 0.95
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages:
+    - 7
+    - 63
+- field_path: sector.power.common.clearances_responsibility
+  section: connectivity_and_compliance
+  value_type: text
+  required: false
+  decision: approved
+  final_value: The HPG (Generator) obtains all clearances, permits and licenses (including NOC/environmental clearance, forest
+    clearance, MoD clearances for WTGs, ISTS connectivity/GNA, GIB-related compliance and any other legally required clearances)
+    prior to the scheduled date of commencement of supply; the Procurer is not responsible for delays in obtaining them.
+  version_no: 1
+  evidence_pages:
+  - 63
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T05:58:46.469297+00:00'
+  note: null
+  candidate:
+    id: bd94e287084146af8ae844ed00950568
+    value: The HPG (Generator) obtains all clearances, permits and licenses (including NOC/environmental clearance, forest
+      clearance, MoD clearances for WTGs, ISTS connectivity/GNA, GIB-related compliance and any other legally required clearances)
+      prior to the scheduled date of commencement of supply; the Procurer is not responsible for delays in obtaining them.
+    confidence: 0.95
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages:
+    - 63
+- field_path: sector.power.common.source_mix_rules
+  section: supply_sources
+  value_type: record_list
+  required: false
+  decision: approved
+  final_value:
+  - source: wind
+    condition: rated power capacity of one resource (wind or solar) shall be at least 33% of the total contracted capacity
+    treatment: required
+    limit_unit: percent_of_contracted_capacity
+    limit_value: 33
+  - source: solar
+    condition: rated power capacity of one resource (wind or solar) shall be at least 33% of the total contracted capacity
+    treatment: required
+    limit_unit: percent_of_contracted_capacity
+    limit_value: 33
+  - source: bess
+    condition: with or without energy storage system (ESS); ESS charged using a source other than Wind-Solar Hybrid power
+      would not qualify as Hybrid power
+    treatment: allowed
+    limit_unit: null
+    limit_value: null
+  version_no: 1
+  evidence_pages:
+  - 7
+  - 18
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T05:59:48.205077+00:00'
+  note: null
+  candidate:
+    id: 6e1b95667fd34027a93277a903d2e561
+    value:
+    - 'source: wind | treatment: required | limit_value: 33 | limit_unit: percent_of_contracted_capacity | condition: rated
+      power capacity of one resource (wind or solar) shall be at least 33% of the total contracted capacity'
+    - 'source: solar | treatment: required | limit_value: 33 | limit_unit: percent_of_contracted_capacity | condition: rated
+      power capacity of one resource (wind or solar) shall be at least 33% of the total contracted capacity'
+    - 'source: bess | treatment: allowed | condition: with or without energy storage system (ESS); ESS charged using a source
+      other than Wind-Solar Hybrid power would not qualify as Hybrid power'
+    confidence: 0.85
+    prompt_name: extract/supply_sources
+    prompt_version: v1
+    pages:
+    - 7
+    - 18
+- field_path: sector.power.common.bess_charging_rule
+  section: supply_sources
+  value_type: record
+  required: false
+  decision: approved
+  final_value:
+    re_only: true
+    co_located_required: null
+    regulation_reference: null
+  version_no: 1
+  evidence_pages:
+  - 7
+  - 18
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:00:12.353897+00:00'
+  note: null
+  candidate:
+    id: ba622eabb8f84e3f9335a1bc2bdcac16
+    value:
+    - 're_only: yes'
+    confidence: 0.85
+    prompt_name: extract/supply_sources
+    prompt_version: v1
+    pages:
+    - 7
+    - 18
+- field_path: core.documents.required_documents
+  section: documents
+  value_type: list_text
+  required: false
+  decision: approved
+  final_value:
+  - Details of Processing Fee submitted through Electronic transfer/NEFT Payments (with Declaration for Payment of Processing
+    Fees uploaded on ETS portal)
+  - Declaration for Payment of Cost of Bidding Document (uploaded on ETS portal, Technical Bid Part)
+  - Bank Guarantee (along with copy of SFMS)/POI towards EMD as per Format 6.3 A/6.3 A-1 (original submitted offline in sealed
+    envelope)
+  - Certified True Copy of Board Resolution from the Bidding Company or Lead Member of the Consortium in favour of the person
+    signing the response to RfS (offline)
+  - Pass-phrase of Technical and Financial Bids each sealed in separate envelopes (offline)
+  - Covering Letter as per Format 6.1
+  - Power of Attorney in favour of the Lead Member issued by all other Consortium Members as per Format 6.2 (in case of Bidding
+    Consortium); Board Resolutions with legal opinion in place of PoA for foreign members
+  - Board Resolutions as per Format 6.4 duly certified by Company Secretary or Director (authorising signatory, committing
+    100% equity, additional equity contribution, Parent/Affiliate undertakings; CEO/MD letter if Board Resolution not available)
+  - Consortium Agreement as per Format 6.5 along with Board resolution from each Member (in case of Consortium)
+  - Financial Requirements as per Format 6.6 and Format 6.6 A, 6.6 B & 6.6 C (as applicable)
+  - Technical Criteria as per Format 6.7
+  - Disclosure statement as per Format 6.8 regarding participation of related companies
+  - Declaration for the Proposed Technology Tie Up as per Format 6.9 (separately for each project)
+  - Undertaking in accordance with clause 3.24.2 of RfS, Format 6.10
+  - Acceptance of attribute online on ETS portal regarding Compliance of all provisions of RfS as per Format 6.13a (Certificate
+    of Compliance)
+  - Acceptance of attribute online on ETS portal regarding compliance of Fraud Prevention Policy as per Format 6.14
+  - Checklist for Bank Guarantee as per Appendix – A
+  - Memorandum & Articles of Association (highlighting power/renewable energy provision) and Certificate of Incorporation
+    of Bidding Company / all Consortium members, with shareholders rights and obligations filed with ROC (English translation
+    notarised by Indian Consulate for foreign bidders)
+  - Shareholding pattern of the bidding company / consortium
+  - First Round Tariff Bid (in Rs/kWh) filled online in Electronic Form-Financial Part at ETS Portal (Second Envelope)
+  - RfS and PPA digitally signed in token of acceptance (per Covering Letter)
+  version_no: 1
+  evidence_pages:
+  - 31
+  - 40
+  - 41
+  - 42
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:04:11.869293+00:00'
+  note: null
+  candidate:
+    id: 2300a8275afa42d285cd4426ec45bd9f
+    value:
+    - Details of Processing Fee submitted through Electronic transfer/NEFT Payments (with Declaration for Payment of Processing
+      Fees uploaded on ETS portal)
+    - Declaration for Payment of Cost of Bidding Document (uploaded on ETS portal, Technical Bid Part)
+    - Bank Guarantee (along with copy of SFMS)/POI towards EMD as per Format 6.3 A/6.3 A-1 (original submitted offline in
+      sealed envelope)
+    - Certified True Copy of Board Resolution from the Bidding Company or Lead Member of the Consortium in favour of the person
+      signing the response to RfS (offline)
+    - Pass-phrase of Technical and Financial Bids each sealed in separate envelopes (offline)
+    - Covering Letter as per Format 6.1
+    - Power of Attorney in favour of the Lead Member issued by all other Consortium Members as per Format 6.2 (in case of
+      Bidding Consortium); Board Resolutions with legal opinion in place of PoA for foreign members
+    - Board Resolutions as per Format 6.4 duly certified by Company Secretary or Director (authorising signatory, committing
+      100% equity, additional equity contribution, Parent/Affiliate undertakings; CEO/MD letter if Board Resolution not available)
+    - Consortium Agreement as per Format 6.5 along with Board resolution from each Member (in case of Consortium)
+    - Financial Requirements as per Format 6.6 and Format 6.6 A, 6.6 B & 6.6 C (as applicable)
+    - Technical Criteria as per Format 6.7
+    - Disclosure statement as per Format 6.8 regarding participation of related companies
+    - Declaration for the Proposed Technology Tie Up as per Format 6.9 (separately for each project)
+    - Undertaking in accordance with clause 3.24.2 of RfS, Format 6.10
+    - Acceptance of attribute online on ETS portal regarding Compliance of all provisions of RfS as per Format 6.13a (Certificate
+      of Compliance)
+    - Acceptance of attribute online on ETS portal regarding compliance of Fraud Prevention Policy as per Format 6.14
+    - Checklist for Bank Guarantee as per Appendix – A
+    - Memorandum & Articles of Association (highlighting power/renewable energy provision) and Certificate of Incorporation
+      of Bidding Company / all Consortium members, with shareholders rights and obligations filed with ROC (English translation
+      notarised by Indian Consulate for foreign bidders)
+    - Shareholding pattern of the bidding company / consortium
+    - First Round Tariff Bid (in Rs/kWh) filled online in Electronic Form-Financial Part at ETS Portal (Second Envelope)
+    - RfS and PPA digitally signed in token of acceptance (per Covering Letter)
+    confidence: 0.88
+    prompt_name: extract/documents
+    prompt_version: v1
+    pages:
+    - 31
+    - 40
+    - 41
+    - 42
+- field_path: core.documents.annexure_formats
+  section: documents
+  value_type: list_text
+  required: false
+  decision: approved
+  final_value:
+  - Format 6.1 – Format of Covering Letter
+  - Format 6.2 – Format for Power of Attorney
+  - Format 6.3 A – Format for BG for Earnest Money Deposit
+  - Format 6.3 A-1 – Format for POI in lieu of Earnest Money Deposit
+  - Appendix-1 to Format 6.3 A
+  - Format 6.3 B – Format for Performance Bank Guarantee
+  - Format 6.3 C – Format for POI in lieu of PBG
+  - Format 6.3 D – Format for BG/POI Forwarding Letter
+  - Format 6.4 – Format for Board Resolutions
+  - Format 6.5 – Format for Consortium Agreement
+  - Format 6.5A – Undertaking from the Bidder in case of Consortium
+  - Format 6.5B – Undertaking from the Bidder in case of Foreign Company
+  - Format 6.6 – Format for Financial Requirement – Net Worth
+  - Format 6.6A – Undertaking in accordance with Cl. No.-3.8.A.8
+  - Format 6.6B – Certificate from CEO/CFO in accordance with Note to Cl. No.-3.8.C.1 & C.2
+  - Format 6.6C – Format of In-Principle Sanction Letter regarding Line of Credit Commitment
+  - Format 6.7 – Format for Technical Criteria
+  - Format 6.8 – Format for Disclosure
+  - Format 6.9 – Declaration by HPG
+  - Format 6.10 – Undertaking in accordance with Cl. No.-3.24.2
+  - Format 6.11 – Declaration Restriction on Procurement from Certain Countries
+  - Format 6.12 A – Integrity Pact
+  - Format 6.12 B – Draft for Integrity Pact
+  - Format 6.13 A – Certificate for Compliance to all provisions of RfS Document
+  - Format 6.13 B – Draft for Certificate for Compliance to all provisions of RfS Document
+  - Format 6.14 – Declaration on Fraud Prevention Policy
+  - Appendix – A – Check List for Bank Guarantees
+  - Annexure 1 – Not Applicable
+  - Annexure – 2 – List of Banks
+  - Annexure – 3 – Copy of PPA
+  - Annexure – 4 – Special Instructions to Bidders for e-Tendering
+  - Annexure – 5 – Terms & Conditions of Reverse Auction
+  - Business Rules of Reverse Auction
+  version_no: 1
+  evidence_pages:
+  - 4
+  - 5
+  - 66
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:04:19.112437+00:00'
+  note: null
+  candidate:
+    id: 81306e9eb1574e5c95420e8c325fd085
+    value:
+    - Format 6.1 – Format of Covering Letter
+    - Format 6.2 – Format for Power of Attorney
+    - Format 6.3 A – Format for BG for Earnest Money Deposit
+    - Format 6.3 A-1 – Format for POI in lieu of Earnest Money Deposit
+    - Appendix-1 to Format 6.3 A
+    - Format 6.3 B – Format for Performance Bank Guarantee
+    - Format 6.3 C – Format for POI in lieu of PBG
+    - Format 6.3 D – Format for BG/POI Forwarding Letter
+    - Format 6.4 – Format for Board Resolutions
+    - Format 6.5 – Format for Consortium Agreement
+    - Format 6.5A – Undertaking from the Bidder in case of Consortium
+    - Format 6.5B – Undertaking from the Bidder in case of Foreign Company
+    - Format 6.6 – Format for Financial Requirement – Net Worth
+    - Format 6.6A – Undertaking in accordance with Cl. No.-3.8.A.8
+    - Format 6.6B – Certificate from CEO/CFO in accordance with Note to Cl. No.-3.8.C.1 & C.2
+    - Format 6.6C – Format of In-Principle Sanction Letter regarding Line of Credit Commitment
+    - Format 6.7 – Format for Technical Criteria
+    - Format 6.8 – Format for Disclosure
+    - Format 6.9 – Declaration by HPG
+    - Format 6.10 – Undertaking in accordance with Cl. No.-3.24.2
+    - Format 6.11 – Declaration Restriction on Procurement from Certain Countries
+    - Format 6.12 A – Integrity Pact
+    - Format 6.12 B – Draft for Integrity Pact
+    - Format 6.13 A – Certificate for Compliance to all provisions of RfS Document
+    - Format 6.13 B – Draft for Certificate for Compliance to all provisions of RfS Document
+    - Format 6.14 – Declaration on Fraud Prevention Policy
+    - Appendix – A – Check List for Bank Guarantees
+    - Annexure 1 – Not Applicable
+    - Annexure – 2 – List of Banks
+    - Annexure – 3 – Copy of PPA
+    - Annexure – 4 – Special Instructions to Bidders for e-Tendering
+    - Annexure – 5 – Terms & Conditions of Reverse Auction
+    - Business Rules of Reverse Auction
+    confidence: 0.9
+    prompt_name: extract/documents
+    prompt_version: v1
+    pages:
+    - 4
+    - 5
+    - 66
+- field_path: core.documents.draft_agreements_referenced
+  section: documents
+  value_type: list_text
+  required: false
+  decision: approved
+  final_value:
+  - Power Purchase Agreement (PPA) between NTPC and the Selected Bidder (standard PPA enclosed at Annexure – 3, separate file)
+  - Power Sale Agreement (PSA) between NTPC and End Procurer(s) (standard PSA enclosed with the RfS, back-to-back with PPA)
+  - Consortium Agreement (Format 6.5)
+  - Integrity Pact (Format 6.12 A / 6.12 B, to be signed with NTPC)
+  version_no: 1
+  evidence_pages:
+  - 13
+  - 39
+  - 70
+  - 87
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:04:24.603625+00:00'
+  note: null
+  candidate:
+    id: fa895a655b51439090998669aec1149d
+    value:
+    - Power Purchase Agreement (PPA) between NTPC and the Selected Bidder (standard PPA enclosed at Annexure – 3, separate
+      file)
+    - Power Sale Agreement (PSA) between NTPC and End Procurer(s) (standard PSA enclosed with the RfS, back-to-back with PPA)
+    - Consortium Agreement (Format 6.5)
+    - Integrity Pact (Format 6.12 A / 6.12 B, to be signed with NTPC)
+    confidence: 0.85
+    prompt_name: extract/documents
+    prompt_version: v1
+    pages:
+    - 13
+    - 39
+    - 70
+    - 87
+- field_path: sector.power.hybrid.min_share_per_resource_percent
+  section: hybrid_mix
+  value_type: percent
+  required: true
+  decision: approved
+  final_value: 33
+  version_no: 1
+  evidence_pages:
+  - 13
+  - 19
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:07:00.094960+00:00'
+  note: null
+  candidate:
+    id: 9d882497fa484f13ada2764a81c43a2a
+    value: 33.0
+    confidence: 0.95
+    prompt_name: extract/hybrid_mix
+    prompt_version: v2
+    pages:
+    - 13
+    - 19
+- field_path: sector.power.hybrid.combined_cuf_floor_percent
+  section: hybrid_mix
+  value_type: percent
+  required: false
+  decision: approved
+  final_value: 30
+  version_no: 1
+  evidence_pages:
+  - 30
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:09:07.735320+00:00'
+  note: null
+  candidate:
+    id: e888367af3c94e69bbce672df1f54ca1
+    value: 30.0
+    confidence: 0.95
+    prompt_name: extract/hybrid_mix
+    prompt_version: v2
+    pages:
+    - 30
+- field_path: sector.power.hybrid.oversizing_allowance_percent
+  section: hybrid_mix
+  value_type: percent
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:22:58.313799+00:00'
+  note: null
+  candidate:
+    id: afe828bef49f4a03abaef5cfac4f5979
+    value: null
+    confidence: 0.0
+    prompt_name: extract/hybrid_mix
+    prompt_version: v2
+    pages: []
+- field_path: sector.power.hybrid.storage_permitted
+  section: hybrid_mix
+  value_type: bool
+  required: false
+  decision: approved
+  final_value: true
+  version_no: 1
+  evidence_pages:
+  - 19
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:09:14.439336+00:00'
+  note: null
+  candidate:
+    id: 5cf5b40bdf484ba08c03baaf56547deb
+    value: true
+    confidence: 0.95
+    prompt_name: extract/hybrid_mix
+    prompt_version: v2
+    pages:
+    - 19
+- field_path: sector.power.hybrid.storage_metering_rule
+  section: hybrid_mix
+  value_type: text
+  required: false
+  decision: approved
+  final_value: ESS may be included, but ESS charged using a source other than Wind-Solar Hybrid power would not qualify as
+    Hybrid power.
+  version_no: 1
+  evidence_pages:
+  - 19
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:09:26.451352+00:00'
+  note: null
+  candidate:
+    id: 330a82cd11ee4d9e917e254260312fad
+    value: ESS may be included, but ESS charged using a source other than Wind-Solar Hybrid power would not qualify as Hybrid
+      power.
+    confidence: 0.7
+    prompt_name: extract/hybrid_mix
+    prompt_version: v2
+    pages:
+    - 19
+- field_path: sector.power.hybrid.excess_generation_treatment
+  section: hybrid_mix
+  value_type: text
+  required: false
+  decision: approved
+  final_value: Energy above the maximum CUF (120% of declared CUF) may be sold by the HPG to any other entity, subject to
+    first right of refusal of the Procurer(s) (deemed refusal after 15 days); if the Procurer purchases the excess generation
+    it is at the PPA tariff. Power offered day-ahead within maximum CUF but not scheduled may be sold to third parties or
+    power exchange without NOC.
+  version_no: 1
+  evidence_pages:
+  - 30
+  - 39
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:09:57.055957+00:00'
+  note: null
+  candidate:
+    id: b14b2d09d717435e80ba390f69610c85
+    value: Energy above the maximum CUF (120% of declared CUF) may be sold by the HPG to any other entity, subject to first
+      right of refusal of the Procurer(s) (deemed refusal after 15 days); if the Procurer purchases the excess generation
+      it is at the PPA tariff. Power offered day-ahead within maximum CUF but not scheduled may be sold to third parties or
+      power exchange without NOC.
+    confidence: 0.9
+    prompt_name: extract/hybrid_mix
+    prompt_version: v2
+    pages:
+    - 30
+    - 39
+- field_path: sector.power.hybrid.cuf_terms
+  section: hybrid_mix
+  value_type: record
+  required: false
+  decision: approved
+  final_value:
+    declared_min_pct: 30
+    band_lower_pct_of_declared: 90
+    band_upper_pct_of_declared: 120
+    revision_allowed_within_years: 3
+  version_no: 1
+  evidence_pages:
+  - 30
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:10:15.738627+00:00'
+  note: null
+  candidate:
+    id: 26b35fdba25e4d27941f882d4bf680ce
+    value:
+    - 'declared_min_pct: 30'
+    - 'band_lower_pct_of_declared: 90'
+    - 'band_upper_pct_of_declared: 120'
+    - 'revision_allowed_within_years: 3'
+    confidence: 0.9
+    prompt_name: extract/hybrid_mix
+    prompt_version: v2
+    pages:
+    - 30
+- field_path: sector.power.hybrid.excess_energy_structured
+  section: hybrid_mix
+  value_type: record
+  required: false
+  decision: approved
+  final_value:
+    above: max_cuf
+    price_basis: ppa_tariff
+    pct_of_tariff: null
+    fixed_inr_per_kwh: null
+    procurer_first_right: true
+  version_no: 1
+  evidence_pages:
+  - 30
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T06:10:24.826208+00:00'
+  note: null
+  candidate:
+    id: ddd402fb398f4cd697ccadae6550eae7
+    value:
+    - 'above: max_cuf'
+    - 'price_basis: ppa_tariff'
+    - 'procurer_first_right: yes'
+    confidence: 0.85
+    prompt_name: extract/hybrid_mix
+    prompt_version: v2
+    pages:
+    - 30

@@ -107,7 +107,10 @@ def test_the_tables_wait_for_the_fields_they_read_then_are_written_with_their_ev
     # that field's.
     optimizer = live(db, tender.id, OPTIMIZER)
     assert (optimizer.status, optimizer.confidence) == ("validated", 1.0)
-    assert (optimizer.prompt_name, optimizer.prompt_version) == ("derive", "v1")
+    assert (optimizer.prompt_name, optimizer.prompt_version) == (
+        "derive",
+        optimizer_constraints.VERSION,
+    )
     assert optimizer.llm_call_log_id is None and optimizer.window_pages == []
     (row,) = optimizer.value
     assert (row["kind"], row["subject"], row["comparator"], row["value"], row["unit"]) == (
@@ -129,7 +132,9 @@ def test_the_tables_wait_for_the_fields_they_read_then_are_written_with_their_ev
         source.char_end,
         source.quote,
     )
-    assert "Derived by optimizer_constraints v1" in optimizer.rationale
+    assert (
+        f"Derived by optimizer_constraints {optimizer_constraints.VERSION}" in optimizer.rationale
+    )
     assert "Inputs sha256: " in optimizer.rationale
     # Nothing decided speaks of a source: the table is there, every row not addressed,
     # with no evidence to inherit, so it is not approvable.

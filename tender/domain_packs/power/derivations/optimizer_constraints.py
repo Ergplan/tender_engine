@@ -21,7 +21,7 @@ from tender.domain_packs.power.derivations import (
     records_of,
 )
 
-VERSION = "v1"
+VERSION = "v2"
 FIELD = "sector.power.common.optimizer_constraints"
 RTC = "sector.power.re_rtc."
 GREEN_MIN = RTC + "traceable_green_min_pct"
@@ -42,6 +42,33 @@ MIX = "sector.power.common.source_mix_rules"
 CAPACITY = "sector.power.common.total_capacity_mw"
 TENURE = "sector.power.common.ppa_tenure_years"
 STORAGE_MANDATORY = "sector.power.fdre.storage_mandatory"
+# v2 (2026-10-13, from the owner's edit of the NTPC PHES table): the energy procured, the
+# size of a project, where it may be, when it must be commissioned and financed, the PPA
+# window, and the storage and availability figures.
+COMMON = "sector.power.common."
+ENERGY = COMMON + "total_capacity_mwh"
+MIN_BID = COMMON + "min_bid_mw"
+MAX_BID = COMMON + "max_bid_mw"
+MIN_COMMISSIONED = COMMON + "min_commissioned_mw"
+LOCATION = COMMON + "location_constraint"
+SCOD_MONTHS = COMMON + "scod_months"
+SCOD_REFERENCE = COMMON + "scod_reference"
+FC_MONTHS = COMMON + "financial_closure_months"
+FC_REFERENCE = COMMON + "financial_closure_reference"
+PPA_WINDOW_DAYS = COMMON + "ppa_signing_window_days"
+BESS = "sector.power.bess."
+STORAGE_MW = BESS + "capacity_mw"
+STORAGE_MWH = BESS + "capacity_mwh"
+CYCLES = BESS + "cycles_per_day"
+ROUND_TRIP = BESS + "round_trip_efficiency_guarantee_percent"
+AVAILABILITY_FLOOR = BESS + "availability_floor_percent"
+ASSURED_AVAILABILITY = "sector.power.fdre.assured_availability_percent"
+LOCATIONS = {
+    "ists_anywhere": "anywhere in India, connected to the ISTS",
+    "state_specific": "within the state(s) the tender names",
+    "named_substation": "at the substation(s) the tender names",
+    "named_site": "at the site(s) the tender names",
+}
 INPUTS = (
     GREEN_MIN,
     REC,
@@ -61,6 +88,22 @@ INPUTS = (
     CAPACITY,
     TENURE,
     STORAGE_MANDATORY,
+    ENERGY,
+    MIN_BID,
+    MAX_BID,
+    MIN_COMMISSIONED,
+    LOCATION,
+    SCOD_MONTHS,
+    SCOD_REFERENCE,
+    FC_MONTHS,
+    FC_REFERENCE,
+    PPA_WINDOW_DAYS,
+    STORAGE_MW,
+    STORAGE_MWH,
+    CYCLES,
+    ROUND_TRIP,
+    AVAILABILITY_FLOOR,
+    ASSURED_AVAILABILITY,
 )
 
 
@@ -266,6 +309,57 @@ def derive(inputs: Inputs) -> Derivation:
         out.add(
             "quantity", "contract_term", tenure, comparator="==", value=number, unit="years",
             period="contract_term",
+        )  # fmt: skip
+
+    # The energy procured, the size of a project, the storage figures and the availability
+    # floors: one quantity each, from the field that states it.
+    quantities: tuple[tuple[str, str, str, str, str, str | None], ...] = (
+        (ENERGY, "contracted_energy_capacity", "==", "mwh", "mwh", None),
+        (MIN_BID, "project_capacity_min", ">=", "mw", "min", None),
+        (MAX_BID, "project_capacity_max", "<=", "mw", "max", None),
+        (MIN_COMMISSIONED, "min_commissioned_capacity", ">=", "mw", "commission", None),
+        (STORAGE_MW, "storage_power_capacity", "==", "mw", "mw", None),
+        (STORAGE_MWH, "storage_energy_capacity", "==", "mwh", "mwh", None),
+        (CYCLES, "storage_cycles_per_day", "==", "cycles_per_day", "cycle", "daily"),
+        (ROUND_TRIP, "round_trip_efficiency", ">=", "percent", "efficiency", None),
+        (AVAILABILITY_FLOOR, "availability", ">=", "percent", "availab", "annual"),
+        (ASSURED_AVAILABILITY, "assured_availability", ">=", "percent", "availab", "annual"),
+    )
+    for path, subject, comparator, unit, keyword, over in quantities:
+        decided = inputs.get(path)
+        number = _number(decided.value) if decided else None
+        if decided and number is not None:
+            out.add(
+                "quantity", subject, decided, keyword=keyword, comparator=comparator,
+                value=number, unit=unit, period=over,
+            )  # fmt: skip
+
+    location = inputs.get(LOCATION)
+    if location and isinstance(location.value, str) and location.value in LOCATIONS:
+        out.add(
+            "obligation", "location_constraint", location, keyword="locat", holds=True,
+            condition=LOCATIONS[location.value],
+        )  # fmt: skip
+
+    # Milestones counted from an event: the months or days, and the event the tender
+    # names for them (its own field, so the row names both).
+    for path, reference_path, subject, keyword, offset_key in (
+        (SCOD_MONTHS, SCOD_REFERENCE, "scheduled_commissioning", "commission", "offset_months"),
+        (FC_MONTHS, FC_REFERENCE, "financial_closure", "financial closure", "offset_months"),
+        (PPA_WINDOW_DAYS, None, "ppa_signing", "ppa", "offset_days"),
+    ):
+        decided = inputs.get(path)
+        number = _number(decided.value) if decided else None
+        if not decided or number is None:
+            continue
+        reference = inputs.get(reference_path) if reference_path else None
+        named = reference.value if reference and isinstance(reference.value, str) else None
+        offset: dict[str, Any] = {offset_key: number}
+        out.add(
+            "temporal", subject, decided, keyword=keyword,
+            inputs=(path, reference.path) if reference and named else None,
+            relative_to=named or ("loa" if path == PPA_WINDOW_DAYS else "unspecified"),
+            **offset,
         )  # fmt: skip
 
     mandatory = inputs.get(STORAGE_MANDATORY)

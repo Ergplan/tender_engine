@@ -145,3 +145,18 @@ def test_a_field_decided_on_an_earlier_version_keeps_its_decision_in_the_gold_re
     inherited = [f for f in record.fields if f.version_no == 1 and f.decision]
     assert inherited and all(f.candidate is not None for f in inherited)
     assert sum(1 for f in record.fields if f.decision) == done.json()["snapshot"]["decided"]
+    # Scored against the candidate of each field's own version: the deadline against the
+    # amendment's reading, the EMD against the original's (the amendment did not state it).
+    candidates = candidates_in_review(db, pipeline.review_state, record)
+    assert candidates[DEADLINE].value == "15.04.2026" and candidates[EMD].value == 928000
+    scores = {
+        s.field_path: s
+        for s in score_record(record, candidates, pipeline.catalog, pipeline.schemas)
+    }
+    assert scores[DEADLINE].correct and scores[EMD].correct
+    assert not any(
+        s.outcome == "missing" for s in scores.values() if s.field_path in (EMD, DEADLINE)
+    )
+    assert sum(1 for s in scores.values() if s.outcome == "missing") == 0, (
+        "no decided field of version 1 reads as missing at version 2"
+    )

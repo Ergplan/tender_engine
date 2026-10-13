@@ -1,0 +1,2072 @@
+# Gold record of ntpc-rel-600mw-anantapur-wtg (wind), reviewed by venture@aayuda.energy, completed 2026-10-13T08:55:36.901347+00:00; written by make gold on 2026-10-13T12:39:47+00:00. Never edited by hand.
+tenant_id: ergplan
+tender_id: 672e255cf33342108744079f066640d6
+slug: ntpc-rel-600mw-anantapur-wtg
+tender_type: wind
+issuing_agency: NTPC Renewable Energy Ltd
+title: Supply and Installation of Wind Turbine Generators (200 WTG) for ISTS-Connected 600 MW Wind Energy Project at Anantapur,
+  Andhra Pradesh (NIT only)
+schema_version: v3
+reviewed_version: 1
+reviewer: venture@aayuda.energy
+completed_at: '2026-10-13T08:55:36.901347+00:00'
+snapshot_id: 246a7218979040dd91f4b3a69aad4f74
+made_at: '2026-10-13T12:39:47+00:00'
+fields:
+- field_path: core.summary.plain_english_summary
+  section: summary
+  value_type: long_text
+  required: true
+  decision: approved
+  final_value: 'What is procured: NTPC REL is buying the supply and installation of wind turbine generators for an ISTS-connected
+    wind energy project with a nominal capacity of 600 MW, made up of 200 WTGs, under domestic competitive bidding. [1][2][3][4]
+    The turbines must be ALMM (Wind) listed and of any rating of 3.0 MW or above, with no hub height restriction stated. [5][6][7][8]
+    The scope also includes ten years of comprehensive operation and maintenance of the WTGs and unit substations from commissioning
+    of the project. [9]
+
+
+    Buyer and offtaker: The tender is issued by NTPC Renewable Energy Limited (NTPC REL), a subsidiary of NTPC Limited, which
+    invites bids on a single-stage two-envelope basis through the ISN Electronic Tender Services portal. [10][11][12][13]
+    NTPC REL is the Employer and owner procuring the WTG supply, installation and O&M services. [14][15] The Employer intends
+    to finance the package from its own resources or borrowings. [15]
+
+
+    Location: The project is at a named site in Anantapur, Andhra Pradesh, and is to be connected to the inter-state transmission
+    system (ISTS). [4][1] The WTGs are to be placed at 200 locations for a minimum of 600 MW; the land is made available by
+    NTPC REL, and land, the power evacuation system, pooling substation, internal roads, grid substation connectivity and
+    SCADA backbone network are outside the WTG package scope. [16][17][18]
+
+
+    Timeline: The tender was issued on 19 August 2026, the pre-bid meeting and the last date for queries are both on 1 September
+    2026, and bids are due and technical bids opened on 15 September 2026. [19][20][21][22][23] Bid validity, the award timeline
+    and the commissioning schedule are not printed in the IFB, which refers to bidding document No. NRE-CS-5924-003(WTG)-9
+    on the ETS portal for detailed terms. [24]
+
+
+    Eligibility: The bidder must be a manufacturer of an approved WTG model of minimum rating 3000 kW in the latest ALMM (Wind)
+    List issued by MNRE prior to the techno-commercial bid opening, or an Indian company that is a subsidiary, holding or
+    group company of such a firm and furnishes a joint undertaking with it for joint and several performance of the contract.
+    [25][26][27][5][7] No project commissioning or track-record experience is specified. [25][26] The turnover requirement
+    is INR 10,240,000 (INR 1.024 crore) per MW. [28][29]
+
+
+    Money at risk: A Bid Security of INR 50,00,00,000 (fifty crore) must accompany all bids, submitted in a separate sealed
+    envelope, with proof of e-payment if paid through EFT. [30][31][32][33][34] The record does not state a performance guarantee
+    or the conditions under which the bid security is forfeited.
+
+
+    Tariff or payment: The record does not state how the successful bidder is paid or the term of the supply and installation
+    contract.
+
+
+    Obligations and penalties: The contractor must supply and install ALMM (Wind) listed WTGs, offer a UL-certified Annual
+    Energy Production based on the site-specific wind data NTPC REL makes available, and provide inputs for statutory approvals
+    and clearances for power evacuation and grid connectivity. [35][5][6][36][37] The contractor also carries ten years of
+    comprehensive operation and maintenance of the WTGs and unit substations from commissioning. [9] The record does not state
+    the penalties for a shortfall or delay.'
+  version_no: 1
+  evidence_pages:
+  - 1
+  - 2
+  - 3
+  - 5
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:55:29.596911+00:00'
+  note: null
+  candidate:
+    id: 6dc708630d66476caf2287525a942de3
+    value: 'What is procured: NTPC REL is buying the supply and installation of wind turbine generators for an ISTS-connected
+      wind energy project with a nominal capacity of 600 MW, made up of 200 WTGs, under domestic competitive bidding. [1][2][3][4]
+      The turbines must be ALMM (Wind) listed and of any rating of 3.0 MW or above, with no hub height restriction stated.
+      [5][6][7][8] The scope also includes ten years of comprehensive operation and maintenance of the WTGs and unit substations
+      from commissioning of the project. [9]
+
+
+      Buyer and offtaker: The tender is issued by NTPC Renewable Energy Limited (NTPC REL), a subsidiary of NTPC Limited,
+      which invites bids on a single-stage two-envelope basis through the ISN Electronic Tender Services portal. [10][11][12][13]
+      NTPC REL is the Employer and owner procuring the WTG supply, installation and O&M services. [14][15] The Employer intends
+      to finance the package from its own resources or borrowings. [15]
+
+
+      Location: The project is at a named site in Anantapur, Andhra Pradesh, and is to be connected to the inter-state transmission
+      system (ISTS). [4][1] The WTGs are to be placed at 200 locations for a minimum of 600 MW; the land is made available
+      by NTPC REL, and land, the power evacuation system, pooling substation, internal roads, grid substation connectivity
+      and SCADA backbone network are outside the WTG package scope. [16][17][18]
+
+
+      Timeline: The tender was issued on 19 August 2026, the pre-bid meeting and the last date for queries are both on 1 September
+      2026, and bids are due and technical bids opened on 15 September 2026. [19][20][21][22][23] Bid validity, the award
+      timeline and the commissioning schedule are not printed in the IFB, which refers to bidding document No. NRE-CS-5924-003(WTG)-9
+      on the ETS portal for detailed terms. [24]
+
+
+      Eligibility: The bidder must be a manufacturer of an approved WTG model of minimum rating 3000 kW in the latest ALMM
+      (Wind) List issued by MNRE prior to the techno-commercial bid opening, or an Indian company that is a subsidiary, holding
+      or group company of such a firm and furnishes a joint undertaking with it for joint and several performance of the contract.
+      [25][26][27][5][7] No project commissioning or track-record experience is specified. [25][26] The turnover requirement
+      is INR 10,240,000 (INR 1.024 crore) per MW. [28][29]
+
+
+      Money at risk: A Bid Security of INR 50,00,00,000 (fifty crore) must accompany all bids, submitted in a separate sealed
+      envelope, with proof of e-payment if paid through EFT. [30][31][32][33][34] The record does not state a performance
+      guarantee or the conditions under which the bid security is forfeited.
+
+
+      Tariff or payment: The record does not state how the successful bidder is paid or the term of the supply and installation
+      contract.
+
+
+      Obligations and penalties: The contractor must supply and install ALMM (Wind) listed WTGs, offer a UL-certified Annual
+      Energy Production based on the site-specific wind data NTPC REL makes available, and provide inputs for statutory approvals
+      and clearances for power evacuation and grid connectivity. [35][5][6][36][37] The contractor also carries ten years
+      of comprehensive operation and maintenance of the WTGs and unit substations from commissioning. [9] The record does
+      not state the penalties for a shortfall or delay.'
+    confidence: 0.86
+    prompt_name: summary_record
+    prompt_version: v1
+    pages:
+    - 1
+    - 2
+    - 3
+    - 5
+- field_path: core.identity.tender_number
+  section: identity_and_scope
+  value_type: text
+  required: true
+  decision: approved
+  final_value: NRE-CS-5924-003(WTG)-9
+  version_no: 1
+  evidence_pages:
+  - 1
+  - 7
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:26:36.718143+00:00'
+  note: null
+  candidate:
+    id: b9fab46ff5ed4c31889e04e7648dedbd
+    value: NRE-CS-5924-003(WTG)-9
+    confidence: 0.95
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 1
+    - 7
+- field_path: core.identity.issuing_agency
+  section: identity_and_scope
+  value_type: text
+  required: true
+  decision: approved
+  final_value: NTPC Renewable Energy Limited (NTPC REL)
+  version_no: 1
+  evidence_pages:
+  - 1
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:26:38.250419+00:00'
+  note: null
+  candidate:
+    id: 4e46e3d082924a3aaa71b10959527a69
+    value: NTPC Renewable Energy Limited (NTPC REL)
+    confidence: 0.95
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 1
+- field_path: core.identity.title
+  section: identity_and_scope
+  value_type: text
+  required: true
+  decision: approved
+  final_value: SUPPLY AND INSTALLATION OF WIND TURBINE GENERATORS (WTG) FOR ISTS CONNECTED WIND ENERGY PROJECT WITH NOMINAL
+    CAPACITY OF 600 MW (200 WTG) IN ANANTAPUR, ANDHRA PRADESH
+  version_no: 1
+  evidence_pages:
+  - 1
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:26:41.948458+00:00'
+  note: null
+  candidate:
+    id: 969c80412eb84f99927f44602dfb016a
+    value: SUPPLY AND INSTALLATION OF WIND TURBINE GENERATORS (WTG) FOR ISTS CONNECTED WIND ENERGY PROJECT WITH NOMINAL CAPACITY
+      OF 600 MW (200 WTG) IN ANANTAPUR, ANDHRA PRADESH
+    confidence: 0.95
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 1
+- field_path: core.identity.procurement_mode
+  section: identity_and_scope
+  value_type: enum
+  required: false
+  decision: approved
+  final_value: single_stage_two_envelope
+  version_no: 1
+  evidence_pages:
+  - 1
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:26:47.685051+00:00'
+  note: null
+  candidate:
+    id: 1a91a3b1caf64d25a1486aa8c5e9ae93
+    value: single_stage_two_envelope
+    confidence: 0.9
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 1
+- field_path: core.identity.portal
+  section: identity_and_scope
+  value_type: text
+  required: false
+  decision: approved
+  final_value: ISN Electronic Tender Services (ETS) portal, https://www.bharat-electronictender.com
+  version_no: 1
+  evidence_pages:
+  - 5
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:26:58.163593+00:00'
+  note: null
+  candidate:
+    id: 16fa7342b0ed4653a250dc10fe2b5d7b
+    value: ISN Electronic Tender Services (ETS) portal, https://www.bharat-electronictender.com
+    confidence: 0.9
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 5
+- field_path: core.identity.tender_type_as_stated
+  section: identity_and_scope
+  value_type: text
+  required: false
+  decision: approved
+  final_value: Supply and Installation of Wind Turbine Generators (WTG) for ISTS connected wind energy project (Domestic Competitive
+    Bidding)
+  version_no: 1
+  evidence_pages:
+  - 1
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:27:06.033307+00:00'
+  note: null
+  candidate:
+    id: 5859779504724dbfad94ac6ae64a3bc6
+    value: Supply and Installation of Wind Turbine Generators (WTG) for ISTS connected wind energy project (Domestic Competitive
+      Bidding)
+    confidence: 0.8
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 1
+- field_path: sector.power.common.total_capacity_mw
+  section: identity_and_scope
+  value_type: mw
+  required: false
+  decision: approved
+  final_value: 600
+  version_no: 1
+  evidence_pages:
+  - 1
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:27:21.337437+00:00'
+  note: null
+  candidate:
+    id: 38328e72119948bf9f6c95de034c77bc
+    value: 600.0
+    confidence: 0.9
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 1
+- field_path: sector.power.common.total_capacity_mwh
+  section: identity_and_scope
+  value_type: mwh
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:27:31.534306+00:00'
+  note: null
+  candidate:
+    id: 1d5c67c0d97240fca9869900128ab34e
+    value: null
+    confidence: 0.0
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.min_bid_mw
+  section: identity_and_scope
+  value_type: mw
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:27:32.847802+00:00'
+  note: null
+  candidate:
+    id: 514b4e598e4b4243b492fd0fd967d567
+    value: null
+    confidence: 0.0
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.max_bid_mw
+  section: identity_and_scope
+  value_type: mw
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:27:34.099850+00:00'
+  note: null
+  candidate:
+    id: 134598482930445b87fa4b01e563e5f6
+    value: null
+    confidence: 0.0
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.max_projects_per_bidder
+  section: identity_and_scope
+  value_type: int
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:27:36.215799+00:00'
+  note: null
+  candidate:
+    id: f9e7115ede8048c38588ae9fda197b11
+    value: null
+    confidence: 0.0
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.location_constraint
+  section: identity_and_scope
+  value_type: enum
+  required: false
+  decision: edited
+  final_value: named_site
+  version_no: 1
+  evidence_pages:
+  - 1
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:28:57.701900+00:00'
+  note: ANANTAPUR, ANDHRA PRADESH, exact sites are governed by specifications
+  candidate:
+    id: 9aea137e9ab44e1daa19b263f7a1e93e
+    value: named_site
+    confidence: 0.6
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 1
+- field_path: sector.power.common.named_states_or_sites
+  section: identity_and_scope
+  value_type: list_text
+  required: false
+  decision: approved
+  final_value:
+  - Anantapur, Andhra Pradesh
+  version_no: 1
+  evidence_pages:
+  - 1
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:29:02.555634+00:00'
+  note: null
+  candidate:
+    id: 9c69cdf42b794181b9458ca45117cffa
+    value:
+    - Anantapur, Andhra Pradesh
+    confidence: 0.85
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 1
+- field_path: sector.power.common.delivery_point
+  section: identity_and_scope
+  value_type: text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:29:09.572041+00:00'
+  note: null
+  candidate:
+    id: ec7da2f359394c868459321d8ca4ecab
+    value: null
+    confidence: 0.0
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.metering_point
+  section: identity_and_scope
+  value_type: text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:29:10.887834+00:00'
+  note: null
+  candidate:
+    id: 1ad73d6ba88949b6a22aebd214563993
+    value: null
+    confidence: 0.0
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages: []
+- field_path: core.key_dates.nit_date
+  section: key_dates
+  value_type: date
+  required: false
+  decision: approved
+  final_value: '2026-08-19'
+  version_no: 1
+  evidence_pages:
+  - 1
+  - 2
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:29:34.241036+00:00'
+  note: null
+  candidate:
+    id: 37e3c30e0d9a4e33837026be6dd00497
+    value: '2026-08-19'
+    confidence: 0.95
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 1
+    - 2
+- field_path: core.key_dates.pre_bid_meeting_date
+  section: key_dates
+  value_type: date
+  required: false
+  decision: approved
+  final_value: '2026-09-01'
+  version_no: 1
+  evidence_pages:
+  - 2
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:29:38.074576+00:00'
+  note: null
+  candidate:
+    id: a35b5ae9d5d54307838f101a4171b50e
+    value: '2026-09-01'
+    confidence: 0.95
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 2
+- field_path: core.key_dates.query_deadline
+  section: key_dates
+  value_type: date
+  required: false
+  decision: approved
+  final_value: '2026-09-01'
+  version_no: 1
+  evidence_pages:
+  - 2
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:29:43.925360+00:00'
+  note: null
+  candidate:
+    id: 291306fcfee14b2491f5f579d86ca770
+    value: '2026-09-01'
+    confidence: 0.95
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 2
+- field_path: core.key_dates.bid_submission_deadline
+  section: key_dates
+  value_type: date
+  required: true
+  decision: approved
+  final_value: '2026-09-15'
+  version_no: 1
+  evidence_pages:
+  - 2
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:29:47.846456+00:00'
+  note: null
+  candidate:
+    id: 2f3290ed02d34265b8d0a2665df4a141
+    value: '2026-09-15'
+    confidence: 0.95
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 2
+- field_path: core.key_dates.technical_opening_date
+  section: key_dates
+  value_type: date
+  required: false
+  decision: approved
+  final_value: '2026-09-15'
+  version_no: 1
+  evidence_pages:
+  - 2
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:29:54.324140+00:00'
+  note: null
+  candidate:
+    id: e23bf7f3850a42089977bb82d930bb97
+    value: '2026-09-15'
+    confidence: 0.95
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 2
+- field_path: core.key_dates.era_date
+  section: key_dates
+  value_type: date
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:54:33.542407+00:00'
+  note: null
+  candidate:
+    id: 4d6e8e946f44476aac745ab6b2c8453b
+    value: null
+    confidence: 0.0
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages: []
+- field_path: core.key_dates.dates_deferred_note
+  section: key_dates
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: The IFB prints only the issue, download, pre-bid/query, bid submission and technical opening dates. Bid validity,
+    award timeline, commissioning schedule and other terms are not printed here; the IFB refers to the bidding document No.
+    NRE-CS-5924-003(WTG)-9 available on the ETS portal for detailed terms and conditions.
+  version_no: 1
+  evidence_pages:
+  - 2
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:30:31.726965+00:00'
+  note: null
+  candidate:
+    id: a2f540fdf6fe43668ed0f3ae25535eab
+    value: The IFB prints only the issue, download, pre-bid/query, bid submission and technical opening dates. Bid validity,
+      award timeline, commissioning schedule and other terms are not printed here; the IFB refers to the bidding document
+      No. NRE-CS-5924-003(WTG)-9 available on the ETS portal for detailed terms and conditions.
+    confidence: 0.6
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 2
+- field_path: core.key_dates.bid_validity
+  section: key_dates
+  value_type: int
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:30:43.608211+00:00'
+  note: null
+  candidate:
+    id: 93e953fe214d4641b5c63d2d2f07f304
+    value: null
+    confidence: 0.0
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages: []
+- field_path: core.key_dates.bid_validity_unit
+  section: key_dates
+  value_type: enum
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:30:44.656505+00:00'
+  note: null
+  candidate:
+    id: 47311b8cd37c44ff9010be87070bb170
+    value: null
+    confidence: 0.0
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages: []
+- field_path: core.key_dates.loa_timeline
+  section: key_dates
+  value_type: text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:30:45.809998+00:00'
+  note: null
+  candidate:
+    id: 4bbbc631100e4470984bcbf7f4a29173
+    value: null
+    confidence: 0.0
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.ppa_signing_window_days
+  section: key_dates
+  value_type: int
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:30:46.842933+00:00'
+  note: null
+  candidate:
+    id: 035cde82f8f645aa9a3db94a24e83cfe
+    value: null
+    confidence: 0.0
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.financial_closure_months
+  section: key_dates
+  value_type: duration_months
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:30:49.897922+00:00'
+  note: null
+  candidate:
+    id: 76c07ffccf354ed48979cc548d70b304
+    value: null
+    confidence: 0.0
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.financial_closure_reference
+  section: key_dates
+  value_type: enum
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:30:51.011224+00:00'
+  note: null
+  candidate:
+    id: 9a49acff4c8e4e01ab5a5f03c400aa0b
+    value: null
+    confidence: 0.0
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.scod_months
+  section: key_dates
+  value_type: duration_months
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:30:52.009589+00:00'
+  note: null
+  candidate:
+    id: 79b3a495c53c4fadb7949212bdc4144b
+    value: null
+    confidence: 0.0
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.scod_reference
+  section: key_dates
+  value_type: enum
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:30:53.567010+00:00'
+  note: null
+  candidate:
+    id: b6f0a0ad521342deb19cbc17a0ee50f1
+    value: null
+    confidence: 0.0
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.ppa_tenure_years
+  section: key_dates
+  value_type: int
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:30:54.836689+00:00'
+  note: null
+  candidate:
+    id: 97e4edcfd4b84bdd9328486a754e3b31
+    value: null
+    confidence: 0.0
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages: []
+- field_path: core.eligibility.technical_experience_requirement
+  section: eligibility
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: The Bidder must be a manufacturer of an approved Wind Turbine Generator (WTG) model of minimum rating 3000
+    kW in the latest ALMM (Wind) List issued by MNRE prior to the techno-commercial bid opening date (Clause 1.1); OR the
+    Bidder must be an Indian company registered in India that is a Subsidiary/Holding/Group Company of a firm meeting Clause
+    1.1, furnishing a joint undertaking with that firm for joint and several performance of the contract (Clause 1.2). No
+    project commissioning/track-record experience is specified.
+  version_no: 1
+  evidence_pages:
+  - 3
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:31:09.431392+00:00'
+  note: null
+  candidate:
+    id: 6fbd9d7966794b3b82a05a0ce1eca711
+    value: The Bidder must be a manufacturer of an approved Wind Turbine Generator (WTG) model of minimum rating 3000 kW in
+      the latest ALMM (Wind) List issued by MNRE prior to the techno-commercial bid opening date (Clause 1.1); OR the Bidder
+      must be an Indian company registered in India that is a Subsidiary/Holding/Group Company of a firm meeting Clause 1.1,
+      furnishing a joint undertaking with that firm for joint and several performance of the contract (Clause 1.2). No project
+      commissioning/track-record experience is specified.
+    confidence: 0.92
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages:
+    - 3
+- field_path: core.eligibility.turnover_requirement_inr
+  section: eligibility
+  value_type: money_inr
+  required: false
+  decision: approved
+  final_value: 10240000
+  version_no: 1
+  evidence_pages:
+  - 3
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:31:17.162279+00:00'
+  note: null
+  candidate:
+    id: 00f913e5fb2d4479afcc0cc52ea15a5b
+    value: 10240000.0
+    confidence: 0.9
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages:
+    - 3
+- field_path: core.eligibility.turnover_basis
+  section: eligibility
+  value_type: enum
+  required: false
+  decision: approved
+  final_value: per_mw
+  version_no: 1
+  evidence_pages:
+  - 3
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:31:27.414287+00:00'
+  note: null
+  candidate:
+    id: 39579a98ccd24b35b8ae1426a5c69095
+    value: per_mw
+    confidence: 0.9
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages:
+    - 3
+- field_path: core.eligibility.ebitda_requirement_inr
+  section: eligibility
+  value_type: money_inr
+  required: false
+  decision: null
+  final_value: null
+  version_no: null
+  evidence_pages: []
+  reviewer: null
+  decided_at: null
+  note: null
+  candidate: null
+- field_path: core.eligibility.ebitda_basis
+  section: eligibility
+  value_type: text
+  required: false
+  decision: null
+  final_value: null
+  version_no: null
+  evidence_pages: []
+  reviewer: null
+  decided_at: null
+  note: null
+  candidate: null
+- field_path: core.eligibility.min_single_station_mw
+  section: eligibility
+  value_type: mw
+  required: false
+  decision: null
+  final_value: null
+  version_no: null
+  evidence_pages: []
+  reviewer: null
+  decided_at: null
+  note: null
+  candidate: null
+- field_path: core.eligibility.min_continuous_operation_years
+  section: eligibility
+  value_type: decimal
+  required: false
+  decision: null
+  final_value: null
+  version_no: null
+  evidence_pages: []
+  reviewer: null
+  decided_at: null
+  note: null
+  candidate: null
+- field_path: core.eligibility.experience_period_end_date
+  section: eligibility
+  value_type: date
+  required: false
+  decision: null
+  final_value: null
+  version_no: null
+  evidence_pages: []
+  reviewer: null
+  decided_at: null
+  note: null
+  candidate: null
+- field_path: core.eligibility.liquidity_requirement_inr
+  section: eligibility
+  value_type: money_inr
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:31:33.415311+00:00'
+  note: null
+  candidate:
+    id: 7d2ca7e81ae9405b89df5a14a5f8f5fb
+    value: null
+    confidence: 0.0
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages: []
+- field_path: core.eligibility.liquidity_basis
+  section: eligibility
+  value_type: enum
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:31:34.461560+00:00'
+  note: null
+  candidate:
+    id: 4db325b2f87f49f68a7f3be30fd6b128
+    value: null
+    confidence: 0.0
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages: []
+- field_path: core.eligibility.consortium_allowed
+  section: eligibility
+  value_type: bool
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:31:35.561545+00:00'
+  note: null
+  candidate:
+    id: c39752a6bc614761927df3452f23680a
+    value: null
+    confidence: 0.0
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages: []
+- field_path: core.eligibility.max_consortium_members
+  section: eligibility
+  value_type: int
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:31:44.799966+00:00'
+  note: null
+  candidate:
+    id: ed8ed899914942fa9331a57690d2a4c1
+    value: null
+    confidence: 0.0
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages: []
+- field_path: core.eligibility.parent_affiliate_credentials_allowed
+  section: eligibility
+  value_type: bool
+  required: false
+  decision: approved
+  final_value: true
+  version_no: 1
+  evidence_pages:
+  - 3
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:31:53.865133+00:00'
+  note: null
+  candidate:
+    id: 41a951f22b984291a4099e856bd86a5b
+    value: true
+    confidence: 0.9
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages:
+    - 3
+- field_path: core.eligibility.shareholding_lock_in
+  section: eligibility
+  value_type: long_text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:32:00.799471+00:00'
+  note: null
+  candidate:
+    id: 817f16eb56904ab085470b548835ecf8
+    value: null
+    confidence: 0.0
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.min_commissioned_mw
+  section: eligibility
+  value_type: mw
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:32:02.447328+00:00'
+  note: null
+  candidate:
+    id: 3059c5ad3f3e4bc288444786f666b98a
+    value: null
+    confidence: 0.0
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.under_construction_counts
+  section: eligibility
+  value_type: bool
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:32:04.997291+00:00'
+  note: null
+  candidate:
+    id: f4fa19ad82594d6baf6b2579e5b63d99
+    value: null
+    confidence: 0.0
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.net_worth_per_mw_inr
+  section: eligibility
+  value_type: money_inr
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:32:06.968765+00:00'
+  note: null
+  candidate:
+    id: a5f69339673d4e6e985f464659c36638
+    value: null
+    confidence: 0.0
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages: []
+- field_path: core.guarantees.emd_per_mw_inr
+  section: guarantees
+  value_type: money_inr
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:32:23.017391+00:00'
+  note: null
+  candidate:
+    id: dbdfbb2f599f4eb1923bdf642a5f1b22
+    value: null
+    confidence: 0.0
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages: []
+- field_path: core.guarantees.emd_formula
+  section: guarantees
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: Bid Security of INR 50,00,00,000/- (Indian Rupees Fifty Crore Only), to accompany all bids
+  version_no: 1
+  evidence_pages:
+  - 2
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:32:27.982564+00:00'
+  note: null
+  candidate:
+    id: 525ce0fa2a984e94bc2bc1758a5b5e04
+    value: Bid Security of INR 50,00,00,000/- (Indian Rupees Fifty Crore Only), to accompany all bids
+    confidence: 0.95
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages:
+    - 2
+- field_path: core.guarantees.emd_structured
+  section: guarantees
+  value_type: record
+  required: false
+  decision: approved
+  final_value:
+    basis: lump_sum
+    cap_inr: null
+    cap_per: null
+    percent: null
+    components: null
+    percent_of: null
+    lump_sum_inr: 500000000
+    rate_inr_per_mw: null
+  version_no: 1
+  evidence_pages:
+  - 2
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:32:35.319361+00:00'
+  note: null
+  candidate:
+    id: 1bf3263bd375475a9f37dd5a62a59878
+    value:
+    - 'basis: lump_sum'
+    - 'lump_sum_inr: 500000000'
+    confidence: 0.95
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages:
+    - 2
+- field_path: core.guarantees.emd_form
+  section: guarantees
+  value_type: enum
+  required: false
+  decision: edited
+  final_value: other
+  version_no: 1
+  evidence_pages:
+  - 2
+  - 5
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:41:06.174162+00:00'
+  note: Bid Security of ₹50 crore. Electronic Fund Transfer (EFT) is permitted. The IFB also contemplates submission of Bid
+    Security in a separate sealed envelope, but does not identify the specific physical security instrument.
+  candidate:
+    id: eab3639dc6d1463bb4386413339fd725
+    value: other
+    confidence: 0.4
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages:
+    - 2
+    - 5
+- field_path: core.guarantees.bid_security_instruments
+  section: guarantees
+  value_type: record_list
+  required: false
+  decision: null
+  final_value: null
+  version_no: null
+  evidence_pages: []
+  reviewer: null
+  decided_at: null
+  note: null
+  candidate: null
+- field_path: core.guarantees.pbg_instruments
+  section: guarantees
+  value_type: record_list
+  required: false
+  decision: null
+  final_value: null
+  version_no: null
+  evidence_pages: []
+  reviewer: null
+  decided_at: null
+  note: null
+  candidate: null
+- field_path: core.guarantees.pbg_per_mw_inr
+  section: guarantees
+  value_type: money_inr
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:41:32.680985+00:00'
+  note: null
+  candidate:
+    id: 5dce8bc028fd481790f2ec2c8057cb52
+    value: null
+    confidence: 0.0
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages: []
+- field_path: core.guarantees.pbg_formula
+  section: guarantees
+  value_type: long_text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:41:33.846636+00:00'
+  note: null
+  candidate:
+    id: d412df534ebf42279d8792e7d2906c58
+    value: null
+    confidence: 0.0
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages: []
+- field_path: core.guarantees.pbg_schedule
+  section: guarantees
+  value_type: long_text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:41:34.776124+00:00'
+  note: null
+  candidate:
+    id: 971c4848985c4f3ba60050032375a0b0
+    value: null
+    confidence: 0.0
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages: []
+- field_path: core.guarantees.pbg_structured
+  section: guarantees
+  value_type: record
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:41:36.873565+00:00'
+  note: null
+  candidate:
+    id: 3c7ab1cc2efb4e6ea6b4aef2a1c184b6
+    value: null
+    confidence: 0.0
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages: []
+- field_path: core.guarantees.success_charge_inr
+  section: guarantees
+  value_type: money_inr
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:41:37.947604+00:00'
+  note: null
+  candidate:
+    id: bc21fd7b2a594f33b095c9ddcbf6a414
+    value: null
+    confidence: 0.0
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages: []
+- field_path: core.guarantees.processing_fee_inr
+  section: guarantees
+  value_type: money_inr
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:41:38.980576+00:00'
+  note: null
+  candidate:
+    id: 2faa081df88c475bb3685628c49e2bbf
+    value: null
+    confidence: 0.0
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages: []
+- field_path: core.guarantees.bg_validity_months
+  section: guarantees
+  value_type: duration_months
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:41:39.813046+00:00'
+  note: null
+  candidate:
+    id: 3350d67548b748aebb9c73859caf87ec
+    value: null
+    confidence: 0.0
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages: []
+- field_path: core.guarantees.bg_release_conditions
+  section: guarantees
+  value_type: long_text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:41:41.427852+00:00'
+  note: null
+  candidate:
+    id: 194a9bafa1bc486d86d8a99559d865a6
+    value: null
+    confidence: 0.0
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages: []
+- field_path: core.commercial.payment_security_mechanism
+  section: commercial
+  value_type: long_text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:41:46.310982+00:00'
+  note: null
+  candidate:
+    id: b4cc69e90d594295a75f4d79deba44a9
+    value: null
+    confidence: 0.0
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages: []
+- field_path: core.commercial.payment_security_structured
+  section: commercial
+  value_type: record
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:41:47.363152+00:00'
+  note: null
+  candidate:
+    id: 1031539604764774ad358ea34d1494ba
+    value: null
+    confidence: 0.0
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages: []
+- field_path: core.commercial.change_in_law_clause
+  section: commercial
+  value_type: long_text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:41:57.134337+00:00'
+  note: null
+  candidate:
+    id: 96d307a9cc4c444f946e0985f51b07b5
+    value: null
+    confidence: 0.0
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages: []
+- field_path: core.commercial.late_payment_surcharge
+  section: commercial
+  value_type: text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:41:58.668074+00:00'
+  note: null
+  candidate:
+    id: f145e5289dac4cd5a4f91e92fa483f1d
+    value: null
+    confidence: 0.0
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages: []
+- field_path: core.commercial.termination_compensation
+  section: commercial
+  value_type: long_text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:42:01.048422+00:00'
+  note: null
+  candidate:
+    id: 29b3e43a3ce44f038aae179cb84e2a9d
+    value: null
+    confidence: 0.0
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages: []
+- field_path: core.commercial.offtaker
+  section: commercial
+  value_type: text
+  required: false
+  decision: approved
+  final_value: NTPC Renewable Energy Limited (NTPC REL), a subsidiary of NTPC Limited, as Employer/owner procuring the WTG
+    supply, installation and O&M services
+  version_no: 1
+  evidence_pages:
+  - 1
+  - 2
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:43:17.852413+00:00'
+  note: null
+  candidate:
+    id: bceb4ddc03f441a1ba61ca56cf633d1d
+    value: NTPC Renewable Energy Limited (NTPC REL), a subsidiary of NTPC Limited, as Employer/owner procuring the WTG supply,
+      installation and O&M services
+    confidence: 0.7
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages:
+    - 1
+    - 2
+- field_path: sector.power.common.tariff_ceiling_inr_per_kwh
+  section: commercial
+  value_type: decimal
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:43:22.270836+00:00'
+  note: null
+  candidate:
+    id: da9c4a41b5a3435ba491dee0f7beb1ab
+    value: null
+    confidence: 0.0
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages: []
+- field_path: sector.power.common.tariff_structure
+  section: commercial
+  value_type: enum
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:43:23.320285+00:00'
+  note: null
+  candidate:
+    id: 3d2d8ec8eb734f9dae0ac897d8c15738
+    value: null
+    confidence: 0.0
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages: []
+- field_path: sector.power.common.deemed_generation_clause
+  section: commercial
+  value_type: long_text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:43:24.518898+00:00'
+  note: null
+  candidate:
+    id: bf30f3e44c384fab86297b38243dc9db
+    value: null
+    confidence: 0.0
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages: []
+- field_path: sector.power.common.deemed_generation_structured
+  section: commercial
+  value_type: record
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:43:25.668806+00:00'
+  note: null
+  candidate:
+    id: 6c5cff4682134c37ba88023b29c38c8c
+    value: null
+    confidence: 0.0
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages: []
+- field_path: core.penalties.delay_ld_per_mw_per_day_inr
+  section: penalties
+  value_type: money_inr
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:43:32.936258+00:00'
+  note: null
+  candidate:
+    id: b2c6b00651834bdd939e25d40896926e
+    value: null
+    confidence: 0.0
+    prompt_name: extract/penalties
+    prompt_version: v3
+    pages: []
+- field_path: core.penalties.delay_ld_structured
+  section: penalties
+  value_type: record
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:43:33.921063+00:00'
+  note: null
+  candidate:
+    id: 87855132ac584879a22762938f6b306d
+    value: null
+    confidence: 0.0
+    prompt_name: extract/penalties
+    prompt_version: v3
+    pages: []
+- field_path: core.penalties.max_scod_extension_months
+  section: penalties
+  value_type: duration_months
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:43:35.620339+00:00'
+  note: null
+  candidate:
+    id: e60b10858aab47d9be1a30239340a694
+    value: null
+    confidence: 0.0
+    prompt_name: extract/penalties
+    prompt_version: v3
+    pages: []
+- field_path: core.penalties.shortfall_penalty_basis
+  section: penalties
+  value_type: long_text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:43:36.486605+00:00'
+  note: null
+  candidate:
+    id: 8d443d53c7fd44b3b59708b3de976e8f
+    value: null
+    confidence: 0.0
+    prompt_name: extract/penalties
+    prompt_version: v3
+    pages: []
+- field_path: core.penalties.shortfall_rules
+  section: penalties
+  value_type: record_list
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:43:37.461594+00:00'
+  note: null
+  candidate:
+    id: 0cb51d324207420cac40c609c5d23ee4
+    value: null
+    confidence: 0.0
+    prompt_name: extract/penalties
+    prompt_version: v3
+    pages: []
+- field_path: core.penalties.pbg_encashment_triggers
+  section: penalties
+  value_type: long_text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:43:39.371156+00:00'
+  note: null
+  candidate:
+    id: 63a88b4e22824d2c81c85a9f237b9470
+    value: null
+    confidence: 0.0
+    prompt_name: extract/penalties
+    prompt_version: v3
+    pages: []
+- field_path: core.penalties.termination_delay_months
+  section: penalties
+  value_type: duration_months
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:43:40.837065+00:00'
+  note: null
+  candidate:
+    id: 5a84af756f884efcb9033cb70d95f856
+    value: null
+    confidence: 0.0
+    prompt_name: extract/penalties
+    prompt_version: v3
+    pages: []
+- field_path: sector.power.common.connectivity_responsibility
+  section: connectivity_and_compliance
+  value_type: enum
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:44:31.988643+00:00'
+  note: null
+  candidate:
+    id: 76afefb1938b4e278f399c5ad5ae5f84
+    value: null
+    confidence: 0.0
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.gna_requirement
+  section: connectivity_and_compliance
+  value_type: long_text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:43:54.956502+00:00'
+  note: null
+  candidate:
+    id: b827af26b5a44500952bac812e441b49
+    value: null
+    confidence: 0.0
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.ists_waiver_cutoff_date
+  section: connectivity_and_compliance
+  value_type: date
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:43:55.995594+00:00'
+  note: null
+  candidate:
+    id: 67f0398096d343f4887e9d5641d75e9d
+    value: null
+    confidence: 0.0
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.line_to_pooling_station_responsibility
+  section: connectivity_and_compliance
+  value_type: text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:44:47.208558+00:00'
+  note: null
+  candidate:
+    id: 79bec76f921141fb8ae5d3528a719ac3
+    value: null
+    confidence: 0.0
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.almm_required
+  section: connectivity_and_compliance
+  value_type: bool
+  required: false
+  decision: approved
+  final_value: true
+  version_no: 1
+  evidence_pages:
+  - 1
+  - 3
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:45:24.099575+00:00'
+  note: null
+  candidate:
+    id: 9d427603bb7e445f9ebb09d0d3f409ed
+    value: true
+    confidence: 0.95
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages:
+    - 1
+    - 3
+- field_path: sector.power.common.dcr_required
+  section: connectivity_and_compliance
+  value_type: bool
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:45:27.643445+00:00'
+  note: null
+  candidate:
+    id: 54660dd68c61435185638bad03648c8a
+    value: null
+    confidence: 0.0
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.local_content_rule
+  section: connectivity_and_compliance
+  value_type: long_text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:45:29.667474+00:00'
+  note: null
+  candidate:
+    id: fc5e3917aaf746f48cd0785f4a5851b6
+    value: null
+    confidence: 0.0
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.land_responsibility
+  section: connectivity_and_compliance
+  value_type: text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:49:04.856837+00:00'
+  note: null
+  candidate:
+    id: 87b22db8d5d84043aba5d85e0e654c34
+    value: null
+    confidence: 0.0
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.clearances_responsibility
+  section: connectivity_and_compliance
+  value_type: text
+  required: false
+  decision: edited
+  final_value: Contractor (bidder) provides inputs for statutory approvals and clearances for power evacuation/grid connectivity/state
+    nodal renewable energy agency as required; obtaining the approvals is not expressly assigned (implied to rest with the
+    Employer).
+  version_no: 1
+  evidence_pages:
+  - 2
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:49:43.977736+00:00'
+  note: The WTG contractor is responsible for providing inputs for applicable statutory approvals and clearances relating
+    to power evacuation, grid connectivity and the State Nodal Renewable Energy Agency. The supplied documents do not expressly
+    assign responsibility for obtaining all such approvals.The WTG contractor is responsible for providing inputs for applicable
+    statutory approvals and clearances relating to power evacuation, grid connectivity and the State Nodal Renewable Energy
+    Agency. The supplied documents do not expressly assign responsibility for obtaining all such approvals.
+  candidate:
+    id: 6ee6f02f1f5446418d5dbd1c543c9660
+    value: Contractor (bidder) provides inputs for statutory approvals and clearances for power evacuation/grid connectivity/state
+      nodal renewable energy agency as required; obtaining the approvals is not expressly assigned (implied to rest with the
+      Employer).
+    confidence: 0.6
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages:
+    - 2
+- field_path: sector.power.common.source_mix_rules
+  section: supply_sources
+  value_type: record_list
+  required: false
+  decision: null
+  final_value: null
+  version_no: null
+  evidence_pages: []
+  reviewer: null
+  decided_at: null
+  note: null
+  candidate: null
+- field_path: sector.power.common.bess_charging_rule
+  section: supply_sources
+  value_type: record
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:49:51.892897+00:00'
+  note: null
+  candidate:
+    id: bcb893ee77134c63a75a90e736ff87cd
+    value: null
+    confidence: 0.0
+    prompt_name: extract/supply_sources
+    prompt_version: v1
+    pages: []
+- field_path: core.documents.required_documents
+  section: documents
+  value_type: list_text
+  required: false
+  decision: approved
+  final_value:
+  - Bid Security of INR 50,00,00,000/- in a separate sealed envelope (proof of e-payment in separate sealed envelope if submitted
+    through EFT)
+  - Undertaking jointly executed by the firm qualified as per Clause 1.1 and the Bidder (where Bidder qualifies as Subsidiary/Holding/Group
+    Company under Clause 1.2)
+  - Letter of Undertaking from the Holding Company supported by Holding Company's Board Resolution (where turnover or net
+    worth is met through Holding Company)
+  - Certificate from Statutory Auditor of Seller Entity / Demerged Entity certifying turnover attributable to transferred
+    business (slump sale/demerger cases)
+  - Documentary evidence of business transfer transaction (Business Transfer Agreement / Slump Sale Agreement / Scheme of
+    Demerger and statutory/regulatory approvals)
+  - Unaudited unconsolidated financial statements of the Bidder with audited consolidated financial statements of its Holding
+    Company (where standalone audited statements not available)
+  - Certificate from CEO/CFO of the Holding Company that unaudited unconsolidated statements form part of its consolidated
+    statements
+  - Financial results certified by a practicing Chartered Accountant (where audited results not available) or CEO/CFO certificate
+    that results are under audit
+  - Copy of Non-Disclosure Agreement duly signed by authorized signatory, uploaded on ETS portal before close of bid sale
+    period
+  - Registration with M/s ISN Electronic Tender Services (ETS)
+  - Hard copy of Bid Security and other documents as detailed in Bidding Documents before bid submission closing date
+  - Registration with the Competent Authority for bidders from a country sharing a land border with India (or having specified
+    ToT arrangement with such entity)
+  version_no: 1
+  evidence_pages:
+  - 2
+  - 3
+  - 5
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:50:28.505219+00:00'
+  note: null
+  candidate:
+    id: dbd69181f37b4147ac563f7ae9e4ad6a
+    value:
+    - Bid Security of INR 50,00,00,000/- in a separate sealed envelope (proof of e-payment in separate sealed envelope if
+      submitted through EFT)
+    - Undertaking jointly executed by the firm qualified as per Clause 1.1 and the Bidder (where Bidder qualifies as Subsidiary/Holding/Group
+      Company under Clause 1.2)
+    - Letter of Undertaking from the Holding Company supported by Holding Company's Board Resolution (where turnover or net
+      worth is met through Holding Company)
+    - Certificate from Statutory Auditor of Seller Entity / Demerged Entity certifying turnover attributable to transferred
+      business (slump sale/demerger cases)
+    - Documentary evidence of business transfer transaction (Business Transfer Agreement / Slump Sale Agreement / Scheme of
+      Demerger and statutory/regulatory approvals)
+    - Unaudited unconsolidated financial statements of the Bidder with audited consolidated financial statements of its Holding
+      Company (where standalone audited statements not available)
+    - Certificate from CEO/CFO of the Holding Company that unaudited unconsolidated statements form part of its consolidated
+      statements
+    - Financial results certified by a practicing Chartered Accountant (where audited results not available) or CEO/CFO certificate
+      that results are under audit
+    - Copy of Non-Disclosure Agreement duly signed by authorized signatory, uploaded on ETS portal before close of bid sale
+      period
+    - Registration with M/s ISN Electronic Tender Services (ETS)
+    - Hard copy of Bid Security and other documents as detailed in Bidding Documents before bid submission closing date
+    - Registration with the Competent Authority for bidders from a country sharing a land border with India (or having specified
+      ToT arrangement with such entity)
+    confidence: 0.8
+    prompt_name: extract/documents
+    prompt_version: v1
+    pages:
+    - 2
+    - 3
+    - 5
+- field_path: core.documents.annexure_formats
+  section: documents
+  value_type: list_text
+  required: false
+  decision: approved
+  final_value:
+  - Non-Disclosure Agreement (format enclosed along with the IFB)
+  version_no: 1
+  evidence_pages:
+  - 5
+  - 7
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:50:38.029186+00:00'
+  note: null
+  candidate:
+    id: 3a1d86ff11554c97ba342841a7f64ac6
+    value:
+    - Non-Disclosure Agreement (format enclosed along with the IFB)
+    confidence: 0.6
+    prompt_name: extract/documents
+    prompt_version: v1
+    pages:
+    - 5
+    - 7
+- field_path: core.documents.draft_agreements_referenced
+  section: documents
+  value_type: list_text
+  required: false
+  decision: edited
+  final_value:
+  - Non-Disclosure Agreement between the bidder (Company) and NTPC Renewable Energy Limited. A Non-Disclosure Agreement (NDA)
+    template between the bidder and NTPC Renewable Energy Limited is enclosed with the IFB. The NDA must be submitted as required
+    for access to bidding documents. No draft WTG supply, installation or O&M contract is included in the supplied documents.
+  version_no: 1
+  evidence_pages:
+  - 5
+  - 7
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:50:57.698716+00:00'
+  note: null
+  candidate:
+    id: 1a431adc54a2429f9969819ca3eb7363
+    value:
+    - Non-Disclosure Agreement between the bidder (Company) and NTPC Renewable Energy Limited
+    confidence: 0.7
+    prompt_name: extract/documents
+    prompt_version: v1
+    pages:
+    - 5
+    - 7
+- field_path: sector.power.wind.rlmm_requirement
+  section: wind_tech
+  value_type: text
+  required: false
+  decision: approved
+  final_value: 'Turbines must be ALMM (Wind) listed: scope requires supply of "ALMM (Wind) listed wind turbine generators
+    (WTGs)" and the bidder must be a manufacturer of an approved WTG model of minimum rating 3000 kW in the latest ALMM (Wind)
+    List (Approved List of Models and Manufacturers (Wind) issued by MNRE) prior to techno-commercial bid opening. The document
+    refers to ALMM (Wind), not RLMM.'
+  version_no: 1
+  evidence_pages:
+  - 1
+  - 3
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:53:16.510102+00:00'
+  note: null
+  candidate:
+    id: 19bcdc24f1a64644bccfafda727de27d
+    value: 'Turbines must be ALMM (Wind) listed: scope requires supply of "ALMM (Wind) listed wind turbine generators (WTGs)"
+      and the bidder must be a manufacturer of an approved WTG model of minimum rating 3000 kW in the latest ALMM (Wind) List
+      (Approved List of Models and Manufacturers (Wind) issued by MNRE) prior to techno-commercial bid opening. The document
+      refers to ALMM (Wind), not RLMM.'
+    confidence: 0.85
+    prompt_name: extract/wind_tech
+    prompt_version: v2
+    pages:
+    - 1
+    - 3
+- field_path: sector.power.wind.min_cuf_percent
+  section: wind_tech
+  value_type: percent
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:53:48.488516+00:00'
+  note: null
+  candidate:
+    id: ce4c03f400624617bc0c496267f6c983
+    value: null
+    confidence: 0.0
+    prompt_name: extract/wind_tech
+    prompt_version: v2
+    pages: []
+- field_path: sector.power.wind.resource_data_obligation
+  section: wind_tech
+  value_type: text
+  required: false
+  decision: approved
+  final_value: Site specific wind data for certification of AEP is made available by NTPC REL to bidders; the bidder must
+    offer M/S UL certified Annual Energy Production (AEP).
+  version_no: 1
+  evidence_pages:
+  - 1
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:53:54.358189+00:00'
+  note: null
+  candidate:
+    id: f7c9d54f65ca4dab8bf346641d72727a
+    value: Site specific wind data for certification of AEP is made available by NTPC REL to bidders; the bidder must offer
+      M/S UL certified Annual Energy Production (AEP).
+    confidence: 0.7
+    prompt_name: extract/wind_tech
+    prompt_version: v2
+    pages:
+    - 1
+- field_path: sector.power.wind.hub_height_or_tech_restrictions
+  section: wind_tech
+  value_type: text
+  required: false
+  decision: approved
+  final_value: WTGs must be ALMM (Wind) listed with any rating of 3.0 MW or above; the bidder must be a manufacturer of an
+    approved WTG model of minimum rating 3000 kW in the latest ALMM (Wind) List. No hub height restriction is stated.
+  version_no: 1
+  evidence_pages:
+  - 1
+  - 3
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:53:58.747508+00:00'
+  note: null
+  candidate:
+    id: 16e29fc883c041499fcd7fdf811db803
+    value: WTGs must be ALMM (Wind) listed with any rating of 3.0 MW or above; the bidder must be a manufacturer of an approved
+      WTG model of minimum rating 3000 kW in the latest ALMM (Wind) List. No hub height restriction is stated.
+    confidence: 0.85
+    prompt_name: extract/wind_tech
+    prompt_version: v2
+    pages:
+    - 1
+    - 3
+- field_path: sector.power.wind.site_transmission_constraints
+  section: wind_tech
+  value_type: text
+  required: false
+  decision: approved
+  final_value: Project located in Andhra Pradesh (Anantapur) at 200 locations for minimum 600 MW; land for the wind farm is
+    made available by NTPC REL; land, power evacuation system, pooling substation, internal roads, grid substation connectivity
+    and SCADA backbone network are outside the WTG package scope.
+  version_no: 1
+  evidence_pages:
+  - 1
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:54:01.059870+00:00'
+  note: null
+  candidate:
+    id: c1e89f20efd34811867f235f9e0f736a
+    value: Project located in Andhra Pradesh (Anantapur) at 200 locations for minimum 600 MW; land for the wind farm is made
+      available by NTPC REL; land, power evacuation system, pooling substation, internal roads, grid substation connectivity
+      and SCADA backbone network are outside the WTG package scope.
+    confidence: 0.75
+    prompt_name: extract/wind_tech
+    prompt_version: v2
+    pages:
+    - 1
+- field_path: sector.power.wind.cuf_terms
+  section: wind_tech
+  value_type: record
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:54:03.990309+00:00'
+  note: null
+  candidate:
+    id: b5f488b2575b403ab62f71af0d94186c
+    value: null
+    confidence: 0.0
+    prompt_name: extract/wind_tech
+    prompt_version: v2
+    pages: []
+- field_path: sector.power.wind.excess_energy_structured
+  section: wind_tech
+  value_type: record
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-13T08:54:06.083088+00:00'
+  note: null
+  candidate:
+    id: 550a24981d3c4e20a2ce4338b75dc03c
+    value: null
+    confidence: 0.0
+    prompt_name: extract/wind_tech
+    prompt_version: v2
+    pages: []

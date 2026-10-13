@@ -366,3 +366,111 @@ def test_the_clause_cited_is_the_span_that_mentions_the_subject_else_the_first()
     assert clause_of(decided("x.y.z", 1)) == ""
     long = decided("x.y.z", 1, span(1, "w " * 200))
     assert clause_of(long).endswith("...”") and len(clause_of(long)) < 260
+
+
+PHES_CLAUSE = "SOLUTIONS OF 2000 MW / 12000 MWh WITH 500 MW (MIN) CAPACITY AT SINGLE LOCATION"
+COMMON = "sector.power.common."
+
+
+def ntpc_phes() -> Inputs:
+    """The NTPC PHES tender as the owner read it (2026-10-13): the rule's v1 table held only
+    the power capacity and the term; their edit listed what was missing."""
+
+    def field(name: str, value: Any, page: int, quote: str) -> tuple[str, Decided]:
+        path = name if "." in name else COMMON + name
+        return path, decided(path, value, span(page, quote))
+
+    return dict(
+        [
+            field("total_capacity_mw", 2000, 1, PHES_CLAUSE),
+            field("total_capacity_mwh", 12000, 1, PHES_CLAUSE),
+            field("min_bid_mw", 500, 1, PHES_CLAUSE),
+            field("max_bid_mw", 2000, 3, "a bidder may quote up to the full 2000 MW (max)"),
+            field("location_constraint", "ists_anywhere", 2, "located anywhere in India (ISTS)"),
+            field("scod_months", 48, 4, "commissioning within 48 months from the ESSA signing"),
+            field("scod_reference", "ppa_signing", 4, "counted from the signing of the ESSA"),
+            field("ppa_signing_window_days", 30, 5, "the ESSA shall be signed within 30 days"),
+            field("ppa_tenure_years", 25, 2, "for a period of 25 Years"),
+            field("sector.power.bess.cycles_per_day", 2, 6, "two charge-discharge cycles per day"),
+            field(
+                "sector.power.bess.round_trip_efficiency_guarantee_percent",
+                75,
+                6,
+                "round trip efficiency of not less than 75%",
+            ),
+            field("sector.power.bess.availability_floor_percent", 95, 6, "availability of 95%"),
+        ]
+    )
+
+
+def test_phes_constraints_carry_energy_size_location_and_milestones_from_their_fields() -> None:
+    derivation = optimizer_constraints.derive(ntpc_phes())
+    by_subject = {row.value["subject"]: row.value for row in derivation.rows}
+    assert set(by_subject) == {
+        "contracted_capacity",
+        "contracted_energy_capacity",
+        "project_capacity_min",
+        "project_capacity_max",
+        "location_constraint",
+        "scheduled_commissioning",
+        "ppa_signing",
+        "contract_term",
+        "storage_cycles_per_day",
+        "round_trip_efficiency",
+        "availability",
+    }
+    energy = by_subject["contracted_energy_capacity"]
+    assert (energy["kind"], energy["comparator"], energy["value"], energy["unit"]) == (
+        "quantity",
+        "==",
+        12000.0,
+        "mwh",
+    )
+    assert energy["clause"] == f"p.1: “{PHES_CLAUSE}”"
+    assert (
+        by_subject["project_capacity_min"]["comparator"],
+        by_subject["project_capacity_min"]["value"],
+    ) == (">=", 500.0)
+    assert (
+        by_subject["project_capacity_max"]["comparator"],
+        by_subject["project_capacity_max"]["value"],
+    ) == ("<=", 2000.0)
+    location = by_subject["location_constraint"]
+    assert (location["kind"], location["holds"], location["condition"]) == (
+        "obligation",
+        True,
+        "anywhere in India, connected to the ISTS",
+    )
+    scod = by_subject["scheduled_commissioning"]
+    assert (scod["kind"], scod["relative_to"], scod["offset_months"]) == (
+        "temporal",
+        "ppa_signing",
+        48.0,
+    )
+    assert scod["derived_from"] == f"{COMMON}scod_months, {COMMON}scod_reference", (
+        "the milestone names the field that gives its event as well"
+    )
+    assert scod["clause"].startswith("p.4:")
+    ppa = by_subject["ppa_signing"]
+    assert (ppa["relative_to"], ppa["offset_days"]) == ("loa", 30.0)
+    assert by_subject["storage_cycles_per_day"]["period"] == "daily"
+    assert by_subject["availability"]["unit"] == "percent"
+    assert all(row.value["basis"] == "stated" for row in derivation.rows)
+    assert derivation.note == "11 constraint(s) from 12 decided field(s)"
+    assert (
+        optimizer_constraints.VERSION == "v2"
+        and rule_for(optimizer_constraints.FIELD).version == "v2"
+    )
+
+
+def test_a_milestone_without_its_reference_field_says_so() -> None:
+    inputs = {
+        COMMON + "scod_months": decided(
+            COMMON + "scod_months", 24, span(4, "commissioning within 24 months")
+        )
+    }
+    (row,) = optimizer_constraints.derive(inputs).rows
+    assert (row.value["relative_to"], row.value["derived_from"]) == (
+        "unspecified",
+        COMMON + "scod_months",
+    )
