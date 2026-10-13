@@ -184,7 +184,7 @@ Not resolvable by code, listed with a rationale:
 
 The rest (e4–e12) are operational claims a diff cannot prove — the tender's ingestion, the NTPC portal, the six completed reviews, the live table states, the v5 routing counts, the `supply_sources` cost, the WBSEDCL document's wording, NHPC's missing tables — and stand as recorded in DECISIONS, KNOWN-GAPS and the database; (d) as before, `make trace` run after the fixes with no diff.
 
-**Addendum run 3** runs on the commit that carries these two fixes and the freshness check; its outcome is recorded below it once it has run.
+**Addendum run 3** (on commit 0224ff9, the two fixes and the freshness check): no new code defect. The three invariant findings and the audit notes repeat runs 1 and 2 and stand as listed there; both freshness endpoints have their test (b). Six report claims were wording, now tightened: the guard refuses approve, edit and set-aside, not "every decision" (a flag or a clear passes) (e2); the header counts fields, the amendment screen readings per version (e3); the PPA window's event is the field's own definition, days from the Letter of Award, not a reading of clause text — said so in the rule (e4); `site_wide` applies to files not held (e5); a page with no links leaves a document with its own URL verified (e6). The twelve others (e7–e18) are operational claims a diff cannot prove — ingestion and extraction results, the NTPC portal, the completed reviews, live table states, the review link, the first freshness run's finds — recorded in DECISIONS, KNOWN-GAPS, `FRESHNESS-REPORT.md` and the database; (d) `make trace` run after every fix with no diff. The loop over the addenda ends here.
 
 ## Open questions
 

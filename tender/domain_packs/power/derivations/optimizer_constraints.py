@@ -362,6 +362,8 @@ def derive(inputs: Inputs) -> Derivation:
         out.add(
             "temporal", subject, decided, keyword=keyword,
             inputs=(path, reference.path) if reference and named else None,
+            # The PPA window has no reference field: the schema defines it as days from
+            # the Letter of Award, so that is its event, not a guess.
             relative_to=named or ("loa" if path == PPA_WINDOW_DAYS else "unspecified"),
             **offset,
         )  # fmt: skip

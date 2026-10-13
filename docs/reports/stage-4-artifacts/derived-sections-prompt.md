@@ -67,6 +67,17 @@ under (e) for them is the "what changed" entries dated 2026-10-12 and 2026-10-13
    `make eval` and `make report`; the scorer must take each gold field's candidate from the
    version the record shows it from.
 
+5. 2026-10-13, after Amendment-03 of seci-cfd-i was found nine days after its posting:
+   "The corpus drifts. It is nine days old and already stale on at least one tender. Add
+   a freshness check: a weekly job that re-reads each tender's source listing page,
+   compares the document list against what we hold, and reports new or changed files
+   without ingesting them. Report-only, no automatic ingestion, since a new amendment
+   must be reviewed before it changes any canonical value." Also from that message:
+   ingest Amendment-03 as a new version on seci-cfd-i, kind corrigendum, issued
+   2026-10-08, source seci.co.in, and re-extract only the sections it touches. The
+   "draft report" for this item is `docs/reports/FRESHNESS-REPORT.md`'s header and the
+   dated lines in DECISIONS, ARCHITECTURE and KNOWN-GAPS.
+
 Standing rules that apply throughout: a reviewer's decision is the only source of a
 canonical value; the owner's approval rows are never changed by code; gold records are made
 only on the owner's word; no secret or review token appears in the repo.
