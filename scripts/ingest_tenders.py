@@ -11,6 +11,8 @@
   python -m scripts.ingest_tenders summary [--out docs/reports/EXTRACTION-SUMMARY.md]
   python -m scripts.ingest_tenders cost-plan [--only slug,slug]
   python -m scripts.ingest_tenders summarize [--only slug,slug] [--force]
+  python -m scripts.ingest_tenders freshness [--root /work/tenders]
+                                             [--out docs/reports/FRESHNESS-REPORT.md]
 
 `ingest` reads <root>/<type>/<slug>/manifest.yaml, creates each tender, groups its files
 into versions and uploads them; the worker parses and section-maps them. Each file's
@@ -49,7 +51,7 @@ from core.services.ingest import IngestService, fill_provenance
 from core.services.review_state import ReviewStateService
 from core.services.validate import ValidationService
 from core.storage import make_storage
-from tender.services import extraction_summary
+from tender.services import extraction_summary, freshness
 from tender.services.amendment_map import routing_records
 from tender.services.packs import Catalog, build_registry
 from tender.services.summary import SummaryWriter
@@ -60,6 +62,7 @@ from tender.services.worker_jobs import summary_writer
 ACTOR = "ingest_tenders"
 DEFAULT_ROOT = Path("/work/tenders")
 DEFAULT_SUMMARY = Path("docs/reports/EXTRACTION-SUMMARY.md")
+DEFAULT_FRESHNESS = Path("docs/reports/FRESHNESS-REPORT.md")
 
 
 @dataclass(frozen=True)
@@ -602,6 +605,26 @@ def summary(services: Services, out: Path) -> str:
     return text
 
 
+def freshness_check(services: Services, root: Path, out: Path) -> list[str]:
+    """Read every tender's source page again, compare what it lists with the documents
+    held, record the comparison and write the report. Nothing is ingested."""
+    checker = freshness.FreshnessChecker(services.settings.tenant_id, tenders_root=root)
+    with services.session_factory() as session:
+        checks = checker.check_all(session, created_by=ACTOR)
+    freshness.write_report(checks, out)
+    lines = []
+    for check in checks:
+        if not check.reachable:
+            lines.append(f"{check.slug}: {check.error}")
+            continue
+        lines.append(
+            f"{check.slug}: {check.listed} listed, {len(check.new)} new, "
+            f"{len(check.changed)} changed, {check.unchanged} unchanged"
+            + (f", {len(check.unreadable)} unreadable" if check.unreadable else "")
+        )
+    return [*lines, f"report: {out}"]
+
+
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(prog="ingest_tenders", description=__doc__)
     parser.add_argument(
@@ -618,6 +641,7 @@ def main(argv: list[str]) -> int:
             "cost-plan",
             "revalidate",
             "summarize",
+            "freshness",
         ),
     )
     parser.add_argument("--root", type=Path, default=DEFAULT_ROOT)
@@ -653,6 +677,9 @@ def main(argv: list[str]) -> int:
         print("\n".join(revalidate(services, only)))
     elif args.command == "resume":
         print("\n".join(resume(services, only)))
+    elif args.command == "freshness":
+        out = args.out if args.out != DEFAULT_SUMMARY else DEFAULT_FRESHNESS
+        print("\n".join(freshness_check(services, args.root, out)))
     elif args.command == "wait":
         return 0 if wait(services, args.timeout) else 1
     else:

@@ -47,3 +47,9 @@ class Settings(BaseSettings):
 
     # Where reviewers reach the app; review links are built from it.
     public_base_url: str = "https://34.131.65.108"
+
+    # The tender folders with their manifests (mounted read-only in the containers): the
+    # freshness check reads each tender's source page from them. Days between two checks
+    # of the corpus against the agencies' pages; 0 turns the weekly job off.
+    tenders_root: str = "/work/tenders"
+    freshness_interval_days: float = 7.0

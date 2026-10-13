@@ -1553,6 +1553,51 @@
         "title": "FieldView",
         "type": "object"
       },
+      "FreshnessOut": {
+        "properties": {
+          "checks": {
+            "items": {
+              "$ref": "#/components/schemas/SourceCheck"
+            },
+            "title": "Checks",
+            "type": "array"
+          },
+          "generated_at": {
+            "format": "date-time",
+            "title": "Generated At",
+            "type": "string"
+          },
+          "interval_days": {
+            "title": "Interval Days",
+            "type": "number"
+          },
+          "stale": {
+            "title": "Stale",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "generated_at",
+          "interval_days",
+          "checks",
+          "stale"
+        ],
+        "title": "FreshnessOut",
+        "type": "object"
+      },
+      "FreshnessQueued": {
+        "properties": {
+          "job_id": {
+            "title": "Job Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "job_id"
+        ],
+        "title": "FreshnessQueued",
+        "type": "object"
+      },
       "GoldOut": {
         "properties": {
           "decided": {
@@ -1732,6 +1777,96 @@
           "name"
         ],
         "title": "KeyDef",
+        "type": "object"
+      },
+      "Listed": {
+        "description": "One document the source page lists, or one a held document's own URL points at.",
+        "properties": {
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "filename": {
+            "title": "Filename",
+            "type": "string"
+          },
+          "held_as": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Held As"
+          },
+          "members": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Members"
+          },
+          "members_held": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Members Held"
+          },
+          "own_url": {
+            "default": false,
+            "title": "Own Url",
+            "type": "boolean"
+          },
+          "sha256": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sha256"
+          },
+          "size": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Size"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "url",
+          "filename"
+        ],
+        "title": "Listed",
         "type": "object"
       },
       "PageOut": {
@@ -2466,6 +2601,121 @@
           "snapshot"
         ],
         "title": "SnapshotOut",
+        "type": "object"
+      },
+      "SourceCheck": {
+        "description": "One tender's page against the documents held.",
+        "properties": {
+          "changed": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/Listed"
+            },
+            "title": "Changed",
+            "type": "array"
+          },
+          "checked_at": {
+            "format": "date-time",
+            "title": "Checked At",
+            "type": "string"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "held": {
+            "default": 0,
+            "title": "Held",
+            "type": "integer"
+          },
+          "listed": {
+            "default": 0,
+            "title": "Listed",
+            "type": "integer"
+          },
+          "new": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/Listed"
+            },
+            "title": "New",
+            "type": "array"
+          },
+          "not_listed": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Not Listed",
+            "type": "array"
+          },
+          "page_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Page Url"
+          },
+          "reachable": {
+            "title": "Reachable",
+            "type": "boolean"
+          },
+          "site_wide": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/Listed"
+            },
+            "title": "Site Wide",
+            "type": "array"
+          },
+          "slug": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Slug"
+          },
+          "tender_id": {
+            "title": "Tender Id",
+            "type": "string"
+          },
+          "unchanged": {
+            "default": 0,
+            "title": "Unchanged",
+            "type": "integer"
+          },
+          "unreadable": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/Listed"
+            },
+            "title": "Unreadable",
+            "type": "array"
+          }
+        },
+        "required": [
+          "tender_id",
+          "slug",
+          "page_url",
+          "checked_at",
+          "reachable"
+        ],
+        "title": "SourceCheck",
         "type": "object"
       },
       "Stability": {
@@ -3655,6 +3905,75 @@
           }
         },
         "summary": "Get Feedback",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/freshness": {
+      "get": {
+        "operationId": "get_freshness_api_v1_admin_freshness_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshnessOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Freshness",
+        "tags": [
+          "admin"
+        ]
+      },
+      "post": {
+        "description": "Queue one check of every tender now. It does not move the weekly schedule.",
+        "operationId": "run_freshness_api_v1_admin_freshness_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-reviewer",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Reviewer"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FreshnessQueued"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Run Freshness",
         "tags": [
           "admin"
         ]

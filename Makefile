@@ -76,3 +76,6 @@ feedback-report: ## FEEDBACK-REPORT.md from the feedback table
 report: ## RELIABILITY-REPORT.md and REVIEW-LOG.md from the gold records
 	$(COMPOSE) exec -T api python -m evals.report
 
+freshness: ## read every tender's source page again and report new or changed files; nothing is ingested
+	$(COMPOSE) exec -T api python -m scripts.ingest_tenders freshness
+

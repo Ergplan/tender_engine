@@ -87,6 +87,50 @@ def test_the_route_is_closed_when_no_admin_token_is_configured(
         )
 
 
+def test_the_freshness_check_is_read_and_queued_through_the_api(
+    make_pipeline: Callable[..., Pipeline],
+) -> None:
+    """GET /admin/freshness: the last check of every tender; POST: one check queued for the
+    worker, on demand, which does not touch the weekly schedule. Nothing is ingested."""
+    from sqlalchemy import select
+
+    from core.models import Job
+    from tender.services import freshness
+
+    pipeline = make_pipeline(admin_token="s3cret-admin")
+    client = app_for(pipeline)
+    tender = extracted(client, pipeline)
+    assert client.get("/api/v1/admin/freshness").status_code == 401
+    assert client.post("/api/v1/admin/freshness").status_code == 401
+    empty = client.get("/api/v1/admin/freshness", headers=ADMIN)
+    assert empty.status_code == 200, empty.text
+    assert empty.json()["checks"] == [] and empty.json()["stale"] == 0
+
+    queued = client.post("/api/v1/admin/freshness", headers=ADMIN)
+    assert queued.status_code == 202, queued.text
+    with pipeline.session_factory() as db:
+        job = db.scalars(select(Job).where(Job.id == queued.json()["job_id"])).one()
+        assert (job.kind, job.status, job.payload["repeat"]) == (
+            freshness.JOB_KIND,
+            "queued",
+            False,
+        )
+        # The worker's handler, with the agency's site standing in; the tender has no
+        # manifest here, so the check records that and nothing else.
+        checker = freshness.FreshnessChecker(
+            pipeline.settings.tenant_id, tenders_root=Path("/nonexistent")
+        )
+        handlers = freshness.job_handlers(checker, pipeline.settings.tenant_id, interval_days=0)
+        handlers[freshness.JOB_KIND](db, dict(job.payload))
+    shown = client.get("/api/v1/admin/freshness", headers=ADMIN).json()
+    (check,) = shown["checks"]
+    assert check["tender_id"] == tender["id"] and check["reachable"] is False
+    assert check["error"] == "no source page in the tender's manifest"
+    assert (
+        shown["stale"] == 0 and shown["interval_days"] == pipeline.settings.freshness_interval_days
+    )
+
+
 def test_gold_eval_and_feedback_are_api_operations(
     make_pipeline: Callable[..., Pipeline], eval_roots: Path
 ) -> None:

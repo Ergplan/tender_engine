@@ -177,6 +177,15 @@ Not resolvable by code, listed with a rationale:
 - `make trace` (d): run after the fixes, no diff.
 - The fourteenth tender's ingestion, the NTPC portal findings and the NHPC review (e1, e7): statements a diff cannot prove; the manifests, the documents' `source_url` and the DECISIONS lines record them.
 
+**Addendum run 2** (on commit 354b346): the same three invariant findings as run 1 (by design, as above), every endpoint tested, the same audit notes, twelve report claims, two of them code:
+
+- "The stricter of two clauses stands" held only for the status: two limits of the same status on one source kept whichever came first (e2). Fixed: between equal statuses in the same unit the lower limit stands, both clauses' conditions kept; test.
+- The review header's "Amendments · N fields" counted the summary and the derived tables among fields a later version states, which the amendment screen does not list (e3). Fixed: the header counts what the screen lists.
+
+The rest (e4–e12) are operational claims a diff cannot prove — the tender's ingestion, the NTPC portal, the six completed reviews, the live table states, the v5 routing counts, the `supply_sources` cost, the WBSEDCL document's wording, NHPC's missing tables — and stand as recorded in DECISIONS, KNOWN-GAPS and the database; (d) as before, `make trace` run after the fixes with no diff.
+
+**Addendum run 3** runs on the commit that carries these two fixes and the freshness check; its outcome is recorded below it once it has run.
+
 ## Open questions
 
 1. Which of the corpus gaps should be ingested, and may the Ramagiri spreadsheets be converted to PDF for the parser, or should spreadsheet reading be built?

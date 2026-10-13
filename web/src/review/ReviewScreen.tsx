@@ -200,8 +200,15 @@ export function ReviewScreen({
 
   const undecided = review.total - review.decided;
   const minutes = minutesLeft(decisionTimes, undecided);
-  // Fields a later version states, and how many of them are still to be decided there.
-  const amended = review.fields.filter((field) => field.entries.some((entry) => entry.version_no > 1));
+  // Fields a later version states, and how many of them are still to be decided there: the
+  // fields the amendment screen lists, so not the summary and not the derived tables.
+  const derivedPaths = (review.derived?.fields as string[] | undefined) ?? [];
+  const amended = review.fields.filter(
+    (field) =>
+      field.field_path !== SUMMARY_FIELD &&
+      !derivedPaths.includes(field.field_path) &&
+      field.entries.some((entry) => entry.version_no > 1),
+  );
   const amendedUndecided = amended.filter((field) => {
     const entry = currentEntry(field);
     return entry !== null && entry.version_no > 1 && !field.decided;

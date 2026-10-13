@@ -1,0 +1,69 @@
+reviewer: gpt-6.1-sol  input chars: 459470  tokens in/out: 119539/2669
+
+## (a) Non-negotiable invariants
+
+| Invariant | Assessment from the supplied diff |
+|---|---|
+| **The LLM never writes truth** | Derivations insert candidates, not canonical facts (`tender/services/derive.py:330–354`). The existing canonical writer is outside the diff, so its exclusivity cannot be verified. The automatically generated reviewer-attributed decision is addressed below. |
+| **Every value carries its evidence** | `record_candidate` requires located spans (`core/services/extract.py:740–744`). However, `unsupported_candidate` deliberately stores and exposes a non-null value without evidence; see finding 1. |
+| **The tender is a versioned object** | Derived runs have `object_version` (`tender/services/derive.py:299–307`); amendment comparisons project separate versions (`tender/services/amendments.py:116–119`). No production in-place version edit is shown. Existing canonical version attachment and current-view behavior are outside the diff. |
+| **Candidates are immutable** | Rewrites insert a new candidate and supersede the earlier candidate, rather than modifying its value (`tender/services/derive.py:330–357`). Reviewer edits use the approval API (`web/src/review/AmendmentsPage.tsx:108–116`). |
+| **Validation is deterministic** | The added validation branch is plain Python (`tender/domain_packs/core/structured.py:138–142`); derived candidates enqueue validation (`tender/services/derive.py:360–366`). No model-based validation is introduced. Existing failed-validation marking and visibility are outside the diff. |
+| **Everything is audited and tenant-scoped** | Added production SQL queries filter by tenant, including candidate reads (`tender/services/derive.py:190–198`), amendment-run reads (`tender/services/amendments.py:210–218`), and canonical evidence reads (`tender/services/summary.py:328–336`). No new table is added. Audit coverage of delegated writes cannot be verified; see finding 3 and (c). |
+| **Feedback is stored, never auto-applied** | No added runtime path reads feedback to change prompts, thresholds, or models. The approval-note test verifies that an unchanged value produces no correction (`tests/api/test_review_tokens.py:884–906`). Existing correction persistence is outside the diff. |
+| **API first** | The amendment projection is exposed through the versioned API (`api/v1/tenders/review.py:120–135`), called through the UI API client (`web/src/api/client.ts:92`). Derived state is returned through the existing review endpoint (`api/v1/tenders/review.py:113`). |
+
+FINDINGS: 3
+1. `core/services/extract.py:760–795`: `unsupported_candidate` stores a value-bearing table with no `evidence_span` and expressly makes it visible. This violates the invariant requiring rejection of a candidate carrying a value without evidence before reviewer exposure. Naming it `not_found` does not remove its non-null value.
+2. `tender/services/derive.py:429–436`: code creates a separate `flagged` approval under the input decision’s reviewer identity, withdrawing a table decision without a human decision on that table. Calling the approval handler does not establish that this generated decision is a human decision.
+3. `core/services/extract.py:745–758,780–795`; `tender/services/derive.py:355–357,429–436`: auditing cannot be established because the delegated `_add_candidate`, `supersede`, and `ApprovalService.approve` audit implementations are not supplied.
+
+## (b) Tests for added API endpoints
+
+- **`GET /api/v1/tenders/{tender_id}/amendments`** — `test_the_amendments_of_the_tender_are_served_to_its_reviewer`, `tests/api/test_review_tokens.py:814–879`. Covers an original-only tender, amendment values and evidence, approval reflected in the projection, another tender’s token scope, and a nonexistent tender.
+
+No other API endpoint is added in the supplied diff.
+
+FINDINGS: none
+
+## (c) Audit coverage of writes
+
+| Production write path | Audit call shown |
+|---|---|
+| Located derived candidate: `tender/services/derive.py:330–342` → `ExtractService.record_candidate` → `_add_candidate` | None visible; `_add_candidate` implementation is outside the diff. |
+| Unsupported derived candidate: `tender/services/derive.py:344–354` → `ExtractService.unsupported_candidate` → `_add_candidate` | None visible; `_add_candidate` implementation is outside the diff. |
+| Previous derived candidate supersession: `tender/services/derive.py:355–357` → `ExtractService.supersede` | Audit implementation is outside the diff. |
+| Generated flagged approval: `tender/services/derive.py:429–436` → `ApprovalService.approve` | Approval persistence, associated canonical/feedback writes, and auditing are outside the diff. |
+
+No direct production `tender_version`, `canonical_fact`, or `feedback` write is added in the visible code. UI decisions delegate to the existing approval endpoint; its persistence implementation is not supplied. These are verification gaps, not proof that the delegated writes lack auditing.
+
+FINDINGS: 4
+1. `core/services/extract.py:745–758`: candidate insertion through `record_candidate` has no audit call shown.
+2. `core/services/extract.py:780–795`: candidate insertion through `unsupported_candidate` has no audit call shown.
+3. `tender/services/derive.py:355–357`: candidate supersession has no audit call shown.
+4. `tender/services/derive.py:429–436`: generated approval and any associated canonical-fact or feedback writes have no audit call shown.
+
+## (d) FIELD-TRACE regeneration
+
+**Not verifiable from these inputs.** A trace generator already exists, so this is not “not applicable.” The supplied generator changes and structural tests do not demonstrate an executed regeneration with no diff. The stage report asserts that result but provides no command output establishing it.
+
+FINDINGS: 1
+1. `scripts/gen_field_trace.py:199–230`; `tests/scripts/test_gen_field_trace.py:16–37`; `docs/reports/STAGE-4-REPORT.md:179`: the supplied code, tests, and report assertion do not establish that `make trace` regenerates the committed `docs/FIELD-TRACE.md` without diff.
+
+## (e) Draft-report claims unsupported by the supplied code
+
+The reporting scope includes the substitute report sections specified in Input 2 and the addendum section of `STAGE-4-REPORT.md`.
+
+FINDINGS: 12
+1. `docs/ARCHITECTURE.md:242`; `docs/reports/STAGE-4-REPORT.md:176`: the claim that unsupported tables satisfy the invariant’s no-evidence exception is contradicted by their retained non-null value and deliberate exposure without evidence (`core/services/extract.py:760–795`).
+2. `docs/ARCHITECTURE.md:241`: “the stricter of two clauses stands” is not supported for two numerical limits with the same status. `_stricter` compares only status ranks and retains the standing row on equal ranks, without comparing limit values (`tender/domain_packs/power/derivations/source_eligibility.py:94–118`).
+3. `docs/ARCHITECTURE.md:333`: the amendment-header field and undecided counts are not calculated from the amendment projection. The header counts unique review fields, includes summary/derived fields with later entries, and counts only current later readings (`web/src/review/ReviewScreen.tsx:203–209`), whereas the amendment projection excludes summary/derived fields and lists changes per version.
+4. `docs/DECISIONS.md:145`; `docs/ARCHITECTURE.md:418`: actual ingestion of the fourteenth tender, draft-PPA discovery and attachment, recorded source URLs, and absence of earlier-corpus rereads are operational claims not established by the supplied code or manifests.
+5. `docs/DECISIONS.md:149`; `docs/KNOWN-GAPS.md:86`: the external NTPC sourcing attempt, portal contents, registration restriction, and inability to obtain the RfS are not established by retrieval artifacts in the diff.
+6. `docs/DECISIONS.md:151`; `docs/ARCHITECTURE.md:421–422`: completion of six owner reviews and their approval for gold creation are not established by code. Generated reports assert the completed reviews, but the corresponding approval records and gold records are not supplied.
+7. `docs/DECISIONS.md:152`; `docs/KNOWN-GAPS.md:88`: preservation of the six live tenders’ v1 tables is not established by the supplied live data. `_digest` supports compatibility with earlier input sets, but its unit test does not establish those tenders’ actual table versions or approval state.
+8. `docs/DECISIONS.md:153`; `docs/reports/STAGE-4-REPORT.md:170`: live-database confirmation that the reviewed tables became current again, and that SECI CfD-I waits for v5 decisions, is not established by database output in the diff.
+9. `docs/DECISIONS.md:155`; `docs/ARCHITECTURE.md:423`: actual retrieval, hash, ingestion and extraction of SECI CfD-I v5, routing counts, and changed-reading counts are not established by manifests, source files, or execution results supplied here.
+10. `docs/KNOWN-GAPS.md:82`: the claimed `supply_sources` reread on six reviewed tenders and its USD 8.95 cost are not established by execution or call-log data in the diff.
+11. `docs/KNOWN-GAPS.md:83`: the assertion that neither thermal nor market purchase is named anywhere in the WBSEDCL RfQ/RfP cannot be established without the document. Synthetic rule fixtures do not establish document-wide absence.
+12. `docs/KNOWN-GAPS.md:91`: NHPC FDRE-II’s actual absence of derived tables and absence of any triggering validation or input decision since 2026-10-08 are live-state claims not established by the supplied code.

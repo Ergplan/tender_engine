@@ -87,10 +87,28 @@ def _row(
     return Row(value=value, inputs=inputs, inherited=basis == "inherited")
 
 
+def _limit(row: Row) -> float | None:
+    value = row.value.get("limit_value")
+    return float(value) if isinstance(value, int | float) else None
+
+
 def _stricter(candidate: Row, standing: Row | None) -> Row:
+    """Of two clauses on one source, the stricter stands: the higher status, and between
+    two limits of the same status in the same unit, the lower limit. Otherwise the row
+    already standing stays."""
     if standing is None:
         return candidate
-    if STRICTNESS[candidate.value["status"]] > STRICTNESS[standing.value["status"]]:
+    ranks = (STRICTNESS[candidate.value["status"]], STRICTNESS[standing.value["status"]])
+    limits = (_limit(candidate), _limit(standing))
+    same_unit = candidate.value.get("limit_unit") == standing.value.get("limit_unit")
+    tighter = (
+        ranks[0] == ranks[1]
+        and same_unit
+        and limits[0] is not None
+        and limits[1] is not None
+        and limits[0] < limits[1]
+    )
+    if ranks[0] > ranks[1] or tighter:
         merged = candidate
         other = standing
     else:

@@ -47,6 +47,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/freshness": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Freshness */
+        get: operations["get_freshness_api_v1_admin_freshness_get"];
+        put?: never;
+        /**
+         * Run Freshness
+         * @description Queue one check of every tender now. It does not move the weekly schedule.
+         */
+        post: operations["run_freshness_api_v1_admin_freshness_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/gold": {
         parameters: {
             query?: never;
@@ -1183,6 +1204,25 @@ export interface components {
             /** Version No */
             version_no: number | null;
         };
+        /** FreshnessOut */
+        FreshnessOut: {
+            /** Checks */
+            checks: components["schemas"]["SourceCheck"][];
+            /**
+             * Generated At
+             * Format: date-time
+             */
+            generated_at: string;
+            /** Interval Days */
+            interval_days: number;
+            /** Stale */
+            stale: number;
+        };
+        /** FreshnessQueued */
+        FreshnessQueued: {
+            /** Job Id */
+            job_id: string;
+        };
         /** GoldOut */
         GoldOut: {
             /** Decided */
@@ -1256,6 +1296,33 @@ export interface components {
              * @default text
              */
             value_type: string;
+        };
+        /**
+         * Listed
+         * @description One document the source page lists, or one a held document's own URL points at.
+         */
+        Listed: {
+            /** Error */
+            error?: string | null;
+            /** Filename */
+            filename: string;
+            /** Held As */
+            held_as?: string | null;
+            /** Members */
+            members?: number | null;
+            /** Members Held */
+            members_held?: number | null;
+            /**
+             * Own Url
+             * @default false
+             */
+            own_url: boolean;
+            /** Sha256 */
+            sha256?: string | null;
+            /** Size */
+            size?: number | null;
+            /** Url */
+            url: string;
         };
         /** PageOut */
         PageOut: {
@@ -1516,6 +1583,67 @@ export interface components {
             };
             /** Tender Id */
             tender_id: string;
+        };
+        /**
+         * SourceCheck
+         * @description One tender's page against the documents held.
+         */
+        SourceCheck: {
+            /**
+             * Changed
+             * @default []
+             */
+            changed: components["schemas"]["Listed"][];
+            /**
+             * Checked At
+             * Format: date-time
+             */
+            checked_at: string;
+            /** Error */
+            error?: string | null;
+            /**
+             * Held
+             * @default 0
+             */
+            held: number;
+            /**
+             * Listed
+             * @default 0
+             */
+            listed: number;
+            /**
+             * New
+             * @default []
+             */
+            new: components["schemas"]["Listed"][];
+            /**
+             * Not Listed
+             * @default []
+             */
+            not_listed: string[];
+            /** Page Url */
+            page_url: string | null;
+            /** Reachable */
+            reachable: boolean;
+            /**
+             * Site Wide
+             * @default []
+             */
+            site_wide: components["schemas"]["Listed"][];
+            /** Slug */
+            slug: string | null;
+            /** Tender Id */
+            tender_id: string;
+            /**
+             * Unchanged
+             * @default 0
+             */
+            unchanged: number;
+            /**
+             * Unreadable
+             * @default []
+             */
+            unreadable: components["schemas"]["Listed"][];
         };
         /** Stability */
         Stability: {
@@ -1959,6 +2087,57 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["FeedbackOut"];
+                };
+            };
+        };
+    };
+    get_freshness_api_v1_admin_freshness_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FreshnessOut"];
+                };
+            };
+        };
+    };
+    run_freshness_api_v1_admin_freshness_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-reviewer"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FreshnessQueued"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

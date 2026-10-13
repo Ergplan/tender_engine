@@ -526,3 +526,44 @@ def test_every_row_the_optimiser_rule_can_write_fits_the_tables_keys() -> None:
             allowed = keys[name].enum_values
             if allowed:
                 assert value in allowed, f"{row.value['subject']}.{name} = {value!r} not allowed"
+
+
+def test_of_two_limits_on_one_source_the_lower_stands_and_a_higher_status_beats_either() -> None:
+    """Two clauses limit thermal, 49% and 30% of annual energy: the 30% row stands, naming
+    both clauses. A prohibition beats any limit (addendum review run 2, 2026-10-13)."""
+    limited = decided(
+        MIX,
+        [
+            {
+                "source": "thermal",
+                "treatment": "allowed_with_limit",
+                "limit_value": 49,
+                "limit_unit": "percent_of_annual_energy",
+                "condition": "overall",
+            },  # noqa: E501
+            {
+                "source": "thermal",
+                "treatment": "allowed_with_limit",
+                "limit_value": 30,
+                "limit_unit": "percent_of_annual_energy",
+                "condition": "in peak hours",
+            },  # noqa: E501
+        ],
+        span(3, "thermal power up to 49% ... thermal supply in peak hours up to 30%"),
+    )
+    rows = {r.value["source"]: r.value for r in source_eligibility.derive({MIX: limited}).rows}
+    thermal = rows["thermal"]
+    assert (thermal["status"], thermal["limit_value"]) == ("allowed_with_limit", 30)
+    assert thermal["condition"] == "in peak hours; overall", "both clauses' conditions kept"
+    reversed_order = decided(MIX, list(reversed(limited.value)), *limited.spans)
+    rows = {
+        r.value["source"]: r.value for r in source_eligibility.derive({MIX: reversed_order}).rows
+    }
+    assert rows["thermal"]["limit_value"] == 30, "whichever clause comes first"
+    prohibited = decided(
+        MIX,
+        [*limited.value, {"source": "thermal", "treatment": "prohibited"}],
+        *limited.spans,
+    )
+    rows = {r.value["source"]: r.value for r in source_eligibility.derive({MIX: prohibited}).rows}
+    assert rows["thermal"]["status"] == "prohibited" and "limit_value" not in rows["thermal"]
