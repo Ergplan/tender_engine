@@ -158,6 +158,39 @@ def test_a_released_version_is_frozen(tmp_path: Path) -> None:
         verify(tmp_path, [f for f in V1 if f.path != "core.a.number"], reads=())
 
 
+def test_allowed_values_may_be_widened_on_a_released_version_but_not_narrowed_or_renamed(
+    tmp_path: Path,
+) -> None:
+    """A value stored under the released definition is still allowed, so it means the same;
+    the derived tables' key enums grow with their rules (2026-10-13)."""
+    keyed = field(
+        "core.a.keyed",
+        "record_list",
+        keys=[KeyDef(name="kind", value_type="enum", enum_values=["a", "b"])],
+    )
+    release(tmp_path, "v1", [*V1, keyed])
+    release(tmp_path, "v2", [*V1, keyed])
+    widened = [
+        f.model_copy(update={"enum_values": ["x", "y", "z"]}) if f.path == "core.a.mode" else f
+        for f in V1
+    ]
+    widened_key = keyed.model_copy(
+        update={"keys": [KeyDef(name="kind", value_type="enum", enum_values=["a", "b", "c"])]}
+    )
+    assert verify(tmp_path, [*widened, widened_key], reads=()) == (), "widened on the frozen v2"
+    assert verify(tmp_path, [*widened, widened_key]) == (), "and read from v1 without read_again"
+    narrowed = [
+        f.model_copy(update={"enum_values": ["x"]}) if f.path == "core.a.mode" else f for f in V1
+    ]
+    with pytest.raises(PackError, match=r"released and frozen.*\['core.a.mode'\]"):
+        verify(tmp_path, [*narrowed, keyed], reads=())
+    renamed_key = keyed.model_copy(
+        update={"keys": [KeyDef(name="sort", value_type="enum", enum_values=["a", "b", "c"])]}
+    )
+    with pytest.raises(PackError, match=r"defined differently than in v1.*\['core.a.keyed'\]"):
+        verify(tmp_path, [*V1, renamed_key], version="v3")
+
+
 def test_signature_holds_type_unit_values_and_record_keys_only() -> None:
     record = field(
         "core.a.rec",

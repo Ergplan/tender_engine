@@ -1,0 +1,69 @@
+reviewer: gpt-6.1-sol  input chars: 416665  tokens in/out: 108657/3343
+
+## (a) Non-negotiable invariants
+
+| Invariant | Assessment from the supplied diff |
+|---|---|
+| **The LLM never writes truth** | New derivations write candidates through `record_candidate` or `unsupported_candidate`, not canonical facts (`tender/services/derive.py:330–354`). However, the guard also creates a reviewer-attributed decision automatically; see finding 2. The existing canonical-writing handler is not supplied, so its exclusivity cannot be independently verified. |
+| **Every value carries its evidence** | Located spans are required by `record_candidate` (`core/services/extract.py:740–744`). The new `unsupported_candidate` deliberately bypasses that requirement for a non-null table and exposes it for review without evidence (`core/services/extract.py:760–795`); see finding 1. |
+| **The tender is a versioned object** | Derived runs carry `object_version` (`tender/services/derive.py:299–307`), and the amendment projection reads separate later versions (`tender/services/amendments.py:116–119`). No production in-place tender-version edit is shown. The existing version-creation and canonical-projection implementations are outside the supplied diff. |
+| **Candidates are immutable** | Derivation rewrites produce another candidate and supersede the earlier one (`tender/services/derive.py:330–357`); they do not edit its value. Reviewer edits are sent through the existing approval endpoint (`web/src/review/AmendmentsPage.tsx:108–116`). No candidate-value mutation is shown. |
+| **Validation is deterministic** | The added validation branch is plain Python (`tender/domain_packs/core/structured.py:138–142`), and derivations enqueue the existing validation job (`tender/services/derive.py:360–366`). No model call in validation is added. The existing failed-validation visibility behavior is not supplied. |
+| **Everything is audited and tenant-scoped** | New production SQL reads include tenant filters, for example `tender/services/derive.py:190–198`, `tender/services/amendments.py:206–212`, and `tender/services/summary.py:331–336`. No new ORM table is added. Audit calls for the delegated writes are not visible; see finding 3 and checklist (c). |
+| **Feedback is stored, never auto-applied** | No added runtime code reads feedback to alter prompts, thresholds, or models. The added approval-note integration test checks that an unchanged value produces no feedback (`tests/api/test_review_tokens.py:902–905`). The existing feedback-writing implementation is outside the diff. |
+| **API first** | The amendment operation is exposed by a router endpoint (`api/v1/tenders/review.py:120–135`), and the UI accesses it through the API client (`web/src/api/client.ts:92`). Derived state is exposed through the existing review endpoint (`api/v1/tenders/review.py:113`). No intelligence operation bypassing the API in the UI is shown. |
+
+FINDINGS: 3
+1. `core/services/extract.py:760–795`: `unsupported_candidate` stores a non-null value with no evidence and status `not_found`, expressly so it is shown. This violates the requirement to reject a value-bearing candidate without an `evidence_span` before reviewer exposure. Blocking plain approval does not satisfy that rejection requirement.
+2. `tender/services/derive.py:418–432`: an input decision causes code to create a separate `flagged` approval under the human reviewer’s identity, withdrawing the table’s previous decision without a human decision on that table. This conflicts with the human-decision-only truth pipeline and the prompt’s standing protection of the owner’s approval rows.
+3. `core/services/extract.py:745–758,780–795`; `tender/services/derive.py:355–357,426–432`: audit compliance cannot be verified because the implementations of `_add_candidate`, `supersede`, and `ApprovalService.approve`, including their audit calls, are not supplied.
+
+## (b) Tests for added API endpoints
+
+The only added endpoint shown is:
+
+- **`GET /api/v1/tenders/{tender_id}/amendments`** — tested by `test_the_amendments_of_the_tender_are_served_to_its_reviewer`, `tests/api/test_review_tokens.py:814–879`. It covers an original-only tender, an amendment with evidence, an approval reflected in the projection, another tender’s token scope, and a nonexistent tender.
+
+FINDINGS: none
+
+## (c) Audit coverage of writes
+
+The following production write paths are introduced or exercised by the new production code:
+
+| Write path | Audit evidence supplied |
+|---|---|
+| Located derived candidate: `tender/services/derive.py:330–342` → `ExtractService.record_candidate` → existing `_add_candidate` (`core/services/extract.py:745–758`) | No audit call is visible. |
+| Unsupported derived candidate: `tender/services/derive.py:344–354` → `ExtractService.unsupported_candidate` → existing `_add_candidate` (`core/services/extract.py:780–795`) | No audit call is visible. |
+| Superseding a previous derived candidate: `tender/services/derive.py:355–357` → existing `ExtractService.supersede` | Its audit implementation is not supplied. |
+| Automatically flagging the table’s approval: `tender/services/derive.py:426–432` → existing `ApprovalService.approve` | Its approval, canonical-fact, feedback, and audit behavior is not supplied. |
+
+No direct production `tender_version` or `feedback` write is added in the visible code. UI decisions delegate to the existing `POST /approvals`; that handler’s persistence and audit implementation is not included.
+
+FINDINGS: 4
+1. `core/services/extract.py:745–758`: the candidate insertion delegated by `record_candidate` has no audit call shown.
+2. `core/services/extract.py:780–795`: the candidate insertion delegated by `unsupported_candidate` has no audit call shown.
+3. `tender/services/derive.py:355–357`: the candidate supersession has no audit call shown.
+4. `tender/services/derive.py:426–432`: the generated approval decision and any associated canonical-fact or feedback writes have no audit call shown.
+
+## (d) FIELD-TRACE regeneration
+
+**Not verifiable from these inputs.** The stage already has a trace generator, so “not applicable” does not apply. The diff updates the generator, the committed FIELD-TRACE, and structural trace tests, but supplies neither an execution of `make trace` nor a regeneration/no-diff result.
+
+FINDINGS: 1
+1. `scripts/gen_field_trace.py:199–230`; `tests/scripts/test_gen_field_trace.py:16–30`: generation logic and structural assertions do not establish that `make trace` regenerates the committed `docs/FIELD-TRACE.md` without diff.
+
+## (e) Draft-report claims unsupported by the supplied code
+
+The reporting scope is the substitute specified in Input 2: the designated ARCHITECTURE sections and dated entries, DECISIONS lines, and KNOWN-GAPS entries.
+
+FINDINGS: 10
+1. `docs/DECISIONS.md:145`; `docs/ARCHITECTURE.md:418`: the fourteenth tender’s actual ingestion, draft-PPA discovery and attachment, recorded document URLs, and the absence of earlier-corpus rereads are operational claims not established by the diff. No corresponding manifest or ingestion result is supplied.
+2. `docs/ARCHITECTURE.md:242`; `docs/DECISIONS.md:146`: “the same refusal” and treatment “as any candidate without evidence” are not supported for unsupported tables. `core/services/extract.py:760–795` expressly retains and shows a non-null table without evidence instead of rejecting it.
+3. `docs/ARCHITECTURE.md:243`: the claim that derived decisions are refused while the table is being rewritten is broader than the guard implements. `tender/services/derive.py:381–400` checks currency only for `approved`, permits stale edits and set-aside decisions when inputs are decided, and does not check `being_written`.
+4. `docs/ARCHITECTURE.md:241`; `docs/DECISIONS.md:152`: the claimed usable typed rule-v2 constraints are not supported by the unchanged schema enums. Rule v2 emits subjects such as `contracted_energy_capacity`, `project_capacity_min`, `scheduled_commissioning`, and `ppa_signing`, plus units `percent` and `cycles_per_day` (`tender/domain_packs/power/derivations/optimizer_constraints.py:315–365`); these are absent from the allowed enums in `tender/domain_packs/power/pack.yaml:290–302`. It also emits `relative_to="unspecified"`, which that enum excludes.
+5. `docs/DECISIONS.md:152`: “Nothing is computed” is contradicted by the calculation of the non-RE share as `100 - share` in `tender/domain_packs/power/derivations/optimizer_constraints.py:151–154`.
+6. `docs/ARCHITECTURE.md:333`; `docs/DECISIONS.md:148`: “what stood before” is not always the effective earlier value. `tender/services/amendments.py:131,184–200` selects the immediately preceding entry and returns its candidate value even when its decision is `not_in_document`, rather than finding the earlier reading that still stands.
+7. `docs/DECISIONS.md:149`; `docs/KNOWN-GAPS.md:86`: the external sourcing attempt, portal contents, bidder-login restriction, and inability to obtain the NTPC RfS are not established by code or retrieval artifacts in the diff.
+8. `docs/KNOWN-GAPS.md:82`: absence of `supply_sources` readings does not imply every source will be `not_addressed`. The rule independently addresses BESS from approved storage fields and solar or wind from a linked-build obligation (`tender/domain_packs/power/derivations/source_eligibility.py:173–236`).
+9. `docs/DECISIONS.md:152`; `docs/KNOWN-GAPS.md:88`: excluding the rule version from the hash does not establish that a rule upgrade never rewrites an existing table or that all six reviewed tenders retain v1. The hash covers the union of current-rule inputs, and v2 expands that union (`tender/services/derive.py:74–82,111–114,282–291`). Already-decided newly included fields can therefore change currency.
+10. `docs/ARCHITECTURE.md:422`: the claim that FEEDBACK-REPORT was regenerated with 15 corrections is not established by execution evidence. The changed artifact asserts 15 corrections on 13 fields, but its visible detail lists only 12 corrections across 10 fields (`docs/reports/FEEDBACK-REPORT.md:5,21–119`).

@@ -139,8 +139,8 @@ class DerivedWriter:
             for item in review.fields
             if item.field_path in wanted and item.current is not None and not item.decided
         )
-        digest = inputs_hash(self.inputs(session, tender, review))
         live = self._live(session, tender)
+        digest = self._digest(self.inputs(session, tender, review), rules, live)
         current = all(
             rule.field_path in live and HASH_HEADING + digest in live[rule.field_path].rationale
             for rule in rules
@@ -176,6 +176,18 @@ class DerivedWriter:
             being_written=being_written,
             fields=[rule.field_path for rule in rules],
         )
+
+    @staticmethod
+    def _digest(inputs: Inputs, rules: list[Rule], live: dict[str, Candidate]) -> str:
+        """The hash the tables in review would carry if written from the record as it
+        stands, over the fields their own rule versions read: a later version of a rule
+        that reads more fields does not make a table written before it stale. A table
+        not yet written is judged by the current version."""
+        wanted: set[str] = set()
+        for rule in rules:
+            table = live.get(rule.field_path)
+            wanted.update(rule.inputs_at(table.prompt_version if table else rule.version))
+        return inputs_hash({path: d for path, d in inputs.items() if path in wanted})
 
     def _live(self, session: Session, tender: Tender) -> dict[str, Candidate]:
         """The derived candidate in review per derived field."""
@@ -278,13 +290,14 @@ class DerivedWriter:
         ):
             return None
         inputs = self.inputs(session, tender, review)
-        digest = inputs_hash(inputs)
         live = self._live(session, tender)
         if not force and all(
-            rule.field_path in live and HASH_HEADING + digest in live[rule.field_path].rationale
+            rule.field_path in live
+            and HASH_HEADING + self._digest(inputs, rules, live) in live[rule.field_path].rationale
             for rule in rules
         ):
             return None
+        digest = inputs_hash(inputs)
 
         run = ExtractionRun(
             tenant_id=self._tenant_id,
@@ -363,8 +376,9 @@ class DerivedGuard:
     fields, so
 
     - a derived field cannot be approved, edited or set aside while a field its rule reads
-      is undecided;
-    - it cannot be approved while it is not the reading of the record as it stands;
+      is undecided, while the table in review is not the reading of the record as it
+      stands, or while it is being written again (a decision on a stale table would be
+      lost with it);
     - a decision on a field a rule reads withdraws a decision already made on the derived
       field (flagged, with the reason) and writes it again."""
 
@@ -389,7 +403,7 @@ class DerivedGuard:
             raise ApprovalError(
                 f"decide the fields it is derived from first ({state.waiting_for} to go)"
             )
-        if decision == "approved" and not state.current:
+        if not state.current or state.being_written:
             raise ApprovalError(
                 "the table is being written again from your decisions; it will be ready in a moment"
             )

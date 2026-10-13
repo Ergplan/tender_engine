@@ -7,6 +7,7 @@ from typing import Any
 
 import anthropic
 import httpx2
+import pytest
 import yaml
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
@@ -182,6 +183,22 @@ def files(*items: tuple[str, str, str | None]) -> Manifest:
 
 def shape(manifest: Manifest) -> list[tuple[str, list[str]]]:
     return [(v.kind, [f.path.name for f in v.files]) for v in plan_versions(manifest)]
+
+
+def test_an_amending_file_may_open_a_corrigendum_and_a_file_may_be_pinned_to_a_version() -> None:
+    manifest = files(("rfs", "rfs", "2026-04-19"), ("a1", "amendment", "2026-07-17"))
+    pinned = ManifestFile(Path("notice"), "nit", None, attach_to="2")
+    a2 = ManifestFile(Path("a2"), "amendment", date(2026, 10, 8), kind="corrigendum")
+    planned = Manifest(**{**manifest.__dict__, "files": [*manifest.files, pinned, a2]})
+    assert shape(planned) == [
+        ("original", ["rfs"]),
+        ("amendment", ["a1", "notice"]),
+        ("corrigendum", ["a2"]),
+    ], "the notice stays with v2 when v3 arrives; the file's kind names its version's"
+    astray = Manifest(**{**manifest.__dict__, "files": [*manifest.files, pinned, a2]})
+    astray.files[2] = ManifestFile(Path("notice"), "nit", None, attach_to="9")
+    with pytest.raises(ValueError, match="version 9"):
+        plan_versions(astray)
 
 
 def test_undated_agreements_belong_to_the_original_and_each_change_is_a_version() -> None:

@@ -27,13 +27,18 @@ import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-# Generated or locked files: large, and not something a reviewer can judge.
+# Generated or locked files: large, and not something a reviewer can judge. Gold records
+# and scored results are data the owner's reviews produced, not code; the released schema
+# snapshots are locked copies of the live YAMLs, which the diff shows.
 ATTEMPTS, WAIT_SECONDS = 6, 20
 EXCLUDED = (
     "uv.lock",
     "web/package-lock.json",
     "web/src/api/openapi.json",
     "web/src/api/schema.d.ts",
+    "evals/gold/",
+    "evals/results/",
+    "tender/domain_packs/power/released/",
 )
 CHECKLIST = """You are an independent reviewer of one stage of a software build. You have no
 other context than the three inputs below. Answer this fixed checklist and nothing else.

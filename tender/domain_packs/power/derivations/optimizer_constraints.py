@@ -69,7 +69,8 @@ LOCATIONS = {
     "named_substation": "at the substation(s) the tender names",
     "named_site": "at the site(s) the tender names",
 }
-INPUTS = (
+# What v1 read; a table v1 wrote is current while these are as it read them.
+INPUTS_V1 = (
     GREEN_MIN,
     REC,
     CUF_ANNUAL,
@@ -88,6 +89,9 @@ INPUTS = (
     CAPACITY,
     TENURE,
     STORAGE_MANDATORY,
+)
+INPUTS = (
+    *INPUTS_V1,
     ENERGY,
     MIN_BID,
     MAX_BID,
@@ -344,7 +348,7 @@ def derive(inputs: Inputs) -> Derivation:
     # Milestones counted from an event: the months or days, and the event the tender
     # names for them (its own field, so the row names both).
     for path, reference_path, subject, keyword, offset_key in (
-        (SCOD_MONTHS, SCOD_REFERENCE, "scheduled_commissioning", "commission", "offset_months"),
+        (SCOD_MONTHS, SCOD_REFERENCE, "scod", "commission", "offset_months"),
         (FC_MONTHS, FC_REFERENCE, "financial_closure", "financial closure", "offset_months"),
         (PPA_WINDOW_DAYS, None, "ppa_signing", "ppa", "offset_days"),
     ):
@@ -396,4 +400,5 @@ RULE = Rule(
     inputs=INPUTS,
     derive=derive,
     row_key="id",
+    inputs_by_version={"v1": INPUTS_V1},
 )

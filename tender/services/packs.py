@@ -450,6 +450,28 @@ def _key_signature(key: KeyDef) -> Signature:
     return signature
 
 
+def compatible(before: Signature | None, after: Signature | None) -> bool:
+    """Whether a stored value of a field defined as `before` still means the same under
+    `after`: the signatures are equal, or differ only in allowed values that were widened
+    (every value allowed before is allowed still), here or in a record's keys. A
+    narrowed or renamed set, a new type or unit, or a key added or removed is a change."""
+    if before == after:
+        return True
+    if before is None or after is None or set(before) != set(after):
+        return False
+    for name, was in before.items():
+        now = after[name]
+        if name == "enum":
+            if not set(was) <= set(now):
+                return False
+        elif name == "keys":
+            if set(was) != set(now) or not all(compatible(was[k], now[k]) for k in was):
+                return False
+        elif was != now:
+            return False
+    return True
+
+
 def field_signature(field: TenderField) -> Signature:
     """What a stored value of the field depends on: its type, unit, allowed values and the
     keys of a record. Labels, help text, bounds, the section and whether it is required
@@ -520,8 +542,13 @@ def verify_versions(
     frozen = (read_released(pack_dir, version) or {}).get(tender_type)
     if frozen is not None and frozen != current:
         differing = sorted(
-            path for path in set(frozen) | set(current) if frozen.get(path) != current.get(path)
+            path
+            for path in set(frozen) | set(current)
+            if not compatible(frozen.get(path), current.get(path))
         )
+    else:
+        differing = []
+    if differing:
         raise PackError(
             f"{where}: version {version} is released and frozen, but these fields differ from "
             f"{released_file(pack_dir, version).name}: {differing}. Make a new version."
@@ -541,7 +568,9 @@ def verify_versions(
         declared = set(read_again.get(earlier, []))
         orphaned = sorted(path for path in before if path not in current)
         changed = sorted(
-            path for path in before if path in current and before[path] != current[path]
+            path
+            for path in before
+            if path in current and not compatible(before[path], current[path])
         )
         undeclared = [path for path in changed if path not in declared]
         stale = sorted(path for path in declared if path in before and path not in changed)

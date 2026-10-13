@@ -172,3 +172,44 @@ def test_a_restated_value_is_told_apart_from_a_changed_one(pipeline: Pipeline, d
     kinds = {c.field_path: c.kind for c in version.changes}
     assert kinds == {DEADLINE: "changed", EMD: "restated"}
     assert (version.changed, version.restated) == (1, 1)
+
+
+def test_what_stood_before_skips_a_reading_set_aside_as_not_in_its_document(
+    pipeline: Pipeline, db: Session
+) -> None:
+    """v2's reading of the deadline is set aside, so v1's stands; v3 then changes v1's
+    value, not v2's (the independent review of 2026-10-13)."""
+    tender = extracted_tender(pipeline, db)
+    amended_tender(pipeline, db, tender)
+    (change,) = amendments(pipeline, db, tender.id).versions[0].changes
+    assert change.entry.state.candidate is not None
+    pipeline.approvals.approve(
+        db, candidate_id=change.entry.state.candidate.id, decision="not_in_document", reviewer="A"
+    )
+    pipeline.sdk.answers = {
+        **AMENDMENT_ANSWERS,
+        "bid_submission_deadline": answer(
+            "30.04.2026", "The last date of bid submission is extended to 30.04.2026"
+        ),
+        "emd_per_mw_inr": answer(
+            928000, "Earnest Money Deposit (EMD) of INR 928000 per MW shall be furnished."
+        ),
+    }
+    document = parsed(pipeline, db, RESTATING_PAGES, "corrigendum-02.pdf")
+    pipeline.tenders.add_version(
+        db, tender, document, "corrigendum", date(2026, 4, 1), created_by="pytest"
+    )
+    pipeline.tenders.start_extraction(db, tender, created_by="pytest", is_fixture=True)
+    pipeline.runner.run_until_idle()
+    second, third = amendments(pipeline, db, tender.id).versions
+    (deadline,) = [c for c in third.changes if c.field_path == DEADLINE]
+    assert deadline.before is not None
+    assert (deadline.before.version_no, deadline.before.value, deadline.before.decision) == (
+        1,
+        "30.03.2026",
+        None,
+    ), "v2's set-aside reading never stood; v3 changes what v1 states"
+    assert deadline.kind == "changed"
+    (set_aside,) = second.changes
+    assert set_aside.set_aside and set_aside.before is not None
+    assert set_aside.before.version_no == 1, "v2 is still shown against v1, as before"

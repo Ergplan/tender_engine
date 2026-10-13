@@ -36,3 +36,37 @@ Design the schema and the two derived sections first and show me the field list 
 ---
 
 Follow-up after the design was shown: "Yes to both" (thermal and market purchase inherit the general non-RE clause's 49% limit, with basis `inherited`; the peak window is both a quantity and an obligation). "Also fetch the draft PPA from wbsedcl.in or the TCIL ETS portal and attach it as a document with role ppa on this tender's version, so the commercial and penalty fields have a source. If it is behind the portal login, say so and I will download it. For the UI: a derived source row whose status is inherited from a general clause rather than a clause naming that source must be visually distinct from a directly stated one, so a reviewer sees the derivation rather than reading it as a printed fact."
+
+---
+
+## Later instructions in the same range (2026-10-12 and 2026-10-13)
+
+The commits after the derived sections (`c3c3769`, `59d2916`, `0dfb85d`, `5fff42b`) implement
+these owner instructions, given in the operating phase. The "draft stage report" to judge
+under (e) for them is the "what changed" entries dated 2026-10-12 and 2026-10-13 in
+`docs/ARCHITECTURE.md`, the lines of those dates in `docs/DECISIONS.md`, and the entries of
+`docs/KNOWN-GAPS.md` in the diff.
+
+1. "Do any other build task like making the UI for the final application. Making amendment
+   review screen." Scope as recorded: a second screen of the review link, per later version
+   the fields it states against what stood before, typed added/changed/restated, with that
+   version's evidence and the reviewer's decision, using the same decisions and the same
+   `POST /approvals` as the review screen; the summary and the derived tables are not
+   amendment changes. Also: re-source the `ntpc-hybrid-03` RfS from an NTPC domain and
+   compare hashes (record the outcome if it cannot be done).
+2. "Can you continue building." From the owner's review of NHPC FDRE-II: a note may accompany
+   Approve or Not in document, not only an edit, stored on the approval and shown on the
+   decision line; the reviewer's keys work on the amendment screen; the reliability report
+   and dashboard show accuracy by key for structured fields.
+3. "Check the status and continue the build." From the owner's edit of the NTPC PHES
+   optimiser table (its rows held the power capacity and the term; the edit listed the
+   energy procured, the project size limits, the location, the commissioning deadline and
+   the term): optimiser constraints rule v2, every row still from one decided field and
+   its clause, nothing computed; an approved table stays as approved.
+4. "All six, make gold." Gold records for the six reviews completed on 2026-10-13, then
+   `make eval` and `make report`; the scorer must take each gold field's candidate from the
+   version the record shows it from.
+
+Standing rules that apply throughout: a reviewer's decision is the only source of a
+canonical value; the owner's approval rows are never changed by code; gold records are made
+only on the owner's word; no secret or review token appears in the repo.

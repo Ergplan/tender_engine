@@ -173,8 +173,16 @@ def test_a_new_decision_on_an_input_withdraws_the_tables_decision_and_writes_the
     assert "decided after this table was derived" in (table.approval.note or "")
     derived = writer.state(db, tender)
     assert derived.current is False and derived.being_written is True
-    with pytest.raises(ApprovalError, match="written again"):
-        guarded.approve(db, candidate_id=first.id, decision="approved", reviewer="Asha")
+    # No decision of any kind on the stale table: it would be lost with it.
+    for decision in ("approved", "edited", "not_in_document"):
+        with pytest.raises(ApprovalError, match="written again"):
+            guarded.approve(
+                db,
+                candidate_id=first.id,
+                decision=decision,
+                reviewer="Asha",
+                final_value=[] if decision == "edited" else None,
+            )
     pipeline.runner.run_until_idle()
     db.expire_all()
     second = live(db, tender.id, OPTIMIZER)
@@ -201,3 +209,34 @@ def test_the_table_cannot_be_decided_while_a_field_it_reads_is_undecided(
         guarded.approve(db, candidate_id=table.id, decision="approved", reviewer="Asha")
     with pytest.raises(ApprovalError, match="derived from first"):
         guarded.approve(db, candidate_id=table.id, decision="not_in_document", reviewer="Asha")
+
+
+def test_a_table_written_by_an_earlier_rule_version_is_current_by_the_fields_it_read() -> None:
+    """Rule v2 reads more fields than v1. A v1 table on a tender whose new fields are
+    decided is still the reading of the record as v1 read it: not stale, not rewritten,
+    its approval kept (the six tenders reviewed before 2026-10-13)."""
+    from types import SimpleNamespace
+
+    from tender.domain_packs.power.derivations import Decided, Rule
+    from tender.services.derive import inputs_hash
+
+    def rule(version: str) -> Rule:
+        return Rule(
+            field_path="t",
+            module="m",
+            version=version,
+            inputs=("a", "b"),
+            derive=lambda inputs: None,  # type: ignore[arg-type, return-value]
+            inputs_by_version={"v1": ("a",)},
+        )
+
+    inputs = {
+        path: Decided(path=path, label=path, value=1, spans=[], version_no=1) for path in "ab"
+    }
+    v1_table = SimpleNamespace(prompt_version="v1")
+    v2_table = SimpleNamespace(prompt_version="v2")
+    digest = DerivedWriter._digest
+    assert digest(inputs, [rule("v2")], {"t": v1_table}) == inputs_hash({"a": inputs["a"]})  # type: ignore[dict-item]
+    assert digest(inputs, [rule("v2")], {"t": v2_table}) == inputs_hash(inputs)  # type: ignore[dict-item]
+    assert digest(inputs, [rule("v2")], {}) == inputs_hash(inputs), "not yet written: by v2"
+    assert digest(inputs, [rule("v1")], {"t": v1_table}) == inputs_hash({"a": inputs["a"]})  # type: ignore[dict-item]

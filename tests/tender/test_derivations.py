@@ -412,7 +412,7 @@ def test_phes_constraints_carry_energy_size_location_and_milestones_from_their_f
         "project_capacity_min",
         "project_capacity_max",
         "location_constraint",
-        "scheduled_commissioning",
+        "scod",
         "ppa_signing",
         "contract_term",
         "storage_cycles_per_day",
@@ -441,7 +441,7 @@ def test_phes_constraints_carry_energy_size_location_and_milestones_from_their_f
         True,
         "anywhere in India, connected to the ISTS",
     )
-    scod = by_subject["scheduled_commissioning"]
+    scod = by_subject["scod"]
     assert (scod["kind"], scod["relative_to"], scod["offset_months"]) == (
         "temporal",
         "ppa_signing",
@@ -474,3 +474,55 @@ def test_a_milestone_without_its_reference_field_says_so() -> None:
         "unspecified",
         COMMON + "scod_months",
     )
+
+
+def everything_decided() -> Inputs:
+    """One decided value per field the optimiser rule reads, shaped so that every branch of
+    the rule writes its row."""
+    oc = optimizer_constraints
+    records: dict[str, Any] = {
+        oc.PEAK_WINDOW: {"hours_per_day": 4, "set_by": "procurer", "stretches": "multiple"},
+        oc.REC: {"applies_to": "all_non_re_energy"},
+        oc.CHARGING: {"re_only": True, "co_located_required": True, "regulation_reference": "r"},
+        oc.LINKED: {
+            "technology": "solar",
+            "multiple_of_contracted": 2,
+            "capacity_mw": 3000,
+            "acres_per_mw": 4,
+            "location": "in the state",
+            "stages": [{"months_from_loa": 3, "share_pct": 50, "documents": "land"}],
+        },
+        oc.TARIFF_SPLIT: {
+            "fixed_pct": 70,
+            "variable_pct": 30,
+            "merit_order_treatment": "merit_order_on_variable_charge",
+        },
+        oc.MIX: [{"source": "thermal", "treatment": "prohibited"}],
+        oc.LOCATION: "state_specific",
+        oc.SCOD_REFERENCE: "effective_date",
+        oc.FC_REFERENCE: "before_scod",
+        oc.SUPPLY_START: "2028-07-01",
+        oc.GREENSHOE_SSD: "2029-04-01",
+        oc.GREENSHOE_OFFER: "2028-01-31",
+        oc.STORAGE_MANDATORY: True,
+    }
+    return {path: decided(path, records.get(path, 42), span(1, "the clause")) for path in oc.INPUTS}
+
+
+def test_every_row_the_optimiser_rule_can_write_fits_the_tables_keys() -> None:
+    """The rule's subjects, units, periods and events are literals; the table's keys are
+    enums in the pack. A row outside them would fail validation on every tender that
+    reaches the rule (found by the independent review of rule v2, 2026-10-13)."""
+    from tender.services.packs import load_catalog
+
+    table = load_catalog().get("solar").schema.field(optimizer_constraints.FIELD)
+    keys = {key.name: key for key in table.keys or []}
+    derivation = optimizer_constraints.derive(everything_decided())
+    branches = {row.value["subject"] for row in derivation.rows}
+    assert len(branches) >= 30, f"the inputs do not reach every branch: {sorted(branches)}"
+    for row in derivation.rows:
+        for name, value in row.value.items():
+            assert name in keys, f"{row.value['subject']} writes a key the table lacks: {name}"
+            allowed = keys[name].enum_values
+            if allowed:
+                assert value in allowed, f"{row.value['subject']}.{name} = {value!r} not allowed"

@@ -289,14 +289,14 @@ fields:
     keys:
       id: {label: Id, type: text}
       kind: {label: Kind, type: enum, enum: [quantity, temporal, obligation]}
-      subject: {label: Subject, type: enum, enum: [traceable_green_share, non_re_share, cuf_annual, cuf_monthly, cuf_peak, peak_window_hours, contracted_capacity, greenshoe_capacity, linked_capacity_multiple, linked_capacity, linked_land_per_mw, non_re_tariff_fixed_share, non_re_tariff_variable_share, contract_term, storage_capacity, supply_start, supply_start_greenshoe, greenshoe_offer_deadline, greenshoe_ppa_signing, linked_capacity_documents, financial_closure, scod, rec_for_non_re_supply, bess_re_charged_only, bess_co_located, linked_capacity_installation, peak_window_set_by_procurer, non_re_merit_order_despatch, storage_mandatory, source_prohibited]}
+      subject: {label: Subject, type: enum, enum: [traceable_green_share, non_re_share, cuf_annual, cuf_monthly, cuf_peak, peak_window_hours, contracted_capacity, greenshoe_capacity, linked_capacity_multiple, linked_capacity, linked_land_per_mw, non_re_tariff_fixed_share, non_re_tariff_variable_share, contract_term, storage_capacity, supply_start, supply_start_greenshoe, greenshoe_offer_deadline, greenshoe_ppa_signing, linked_capacity_documents, financial_closure, scod, rec_for_non_re_supply, bess_re_charged_only, bess_co_located, linked_capacity_installation, peak_window_set_by_procurer, non_re_merit_order_despatch, storage_mandatory, source_prohibited, contracted_energy_capacity, project_capacity_min, project_capacity_max, min_commissioned_capacity, storage_power_capacity, storage_energy_capacity, storage_cycles_per_day, round_trip_efficiency, availability, assured_availability, location_constraint, ppa_signing]}
       comparator: {label: Comparator, type: enum, enum: [">=", "<=", "==", between]}
       value: {label: Value, type: decimal, min: -1000000000, max: 1000000000}
       value_max: {label: Upper value, type: decimal, min: -1000000000, max: 1000000000}
-      unit: {label: Unit, type: enum, enum: [percent_of_annual_energy, percent_of_monthly_energy, percent_of_peak_energy, percent_of_tariff, mw, mwh, multiple_of_contracted_mw, acres_per_mw, hours_per_day, years, months, days]}
+      unit: {label: Unit, type: enum, enum: [percent_of_annual_energy, percent_of_monthly_energy, percent_of_peak_energy, percent_of_tariff, mw, mwh, multiple_of_contracted_mw, acres_per_mw, hours_per_day, years, months, days, percent, cycles_per_day]}
       period: {label: Period, type: enum, enum: [annual, monthly, daily, peak_hours, contract_term]}
       on_date: {label: Date (ISO), type: text}
-      relative_to: {label: Relative to, type: enum, enum: [loa, ppa_signing, scod, supply_start, effective_date, greenshoe_offer]}
+      relative_to: {label: Relative to, type: enum, enum: [loa, ppa_signing, scod, supply_start, effective_date, greenshoe_offer, before_scod, unspecified]}
       offset_months: {label: Offset, type: decimal, unit: months, min: 0, max: 600}
       offset_days: {label: Offset, type: decimal, unit: days, min: 0, max: 3660}
       share_pct: {label: Share, type: percent, unit: percent, min: 0, max: 100}

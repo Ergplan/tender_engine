@@ -57,6 +57,12 @@ class Rule:
     # The record of the rows, for the reader: the key that names a row.
     row_key: str = "source"
     extra: dict[str, Any] = field(default_factory=dict)
+    # The fields each earlier version of the rule read, so that a table it wrote is
+    # judged current by those fields and not by the ones a later version added.
+    inputs_by_version: dict[str, tuple[str, ...]] = field(default_factory=dict)
+
+    def inputs_at(self, version: str) -> tuple[str, ...]:
+        return self.inputs_by_version.get(version, self.inputs)
 
 
 def clause_of(decided: Decided, keyword: str | None = None) -> str:

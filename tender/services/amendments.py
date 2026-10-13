@@ -123,7 +123,7 @@ def tender_amendments(
         for index, entry in enumerate(field.entries):
             if entry.version_no == 1 or entry.version_no not in changes:
                 continue
-            before = _before(field.entries[index - 1]) if index else None
+            before = _before(field.entries[:index])
             after = _value_of(entry)
             if before is None or before.value is None:
                 kind: ChangeKind = "added"
@@ -189,14 +189,21 @@ def _value_of(entry: ReviewEntry) -> Any:
     return candidate.value if candidate is not None else None
 
 
-def _before(entry: ReviewEntry) -> ChangeBefore:
-    approval = entry.state.approval
-    return ChangeBefore(
-        version_no=entry.version_no,
-        version_kind=entry.version_kind,
-        value=_value_of(entry),
-        decision=approval.decision if approval else None,
-    )
+def _before(earlier: list[ReviewEntry]) -> ChangeBefore | None:
+    """What stood before this version's reading: the latest earlier reading the reviewer
+    did not set aside. One set aside as not in its document never stood, so the reading
+    before it is what this version changes; none left, nothing stood before."""
+    for entry in reversed(earlier):
+        approval = entry.state.approval
+        if approval is not None and approval.decision == "not_in_document":
+            continue
+        return ChangeBefore(
+            version_no=entry.version_no,
+            version_kind=entry.version_kind,
+            value=_value_of(entry),
+            decision=approval.decision if approval else None,
+        )
+    return None
 
 
 def _sections_read(session: Session, tender: Tender) -> dict[int, list[str]]:

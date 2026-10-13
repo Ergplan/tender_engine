@@ -68,11 +68,15 @@ class ManifestFile:
     role: str
     issued_on: date | None
     # "latest": the file belongs to the tender's latest version, whatever its date (a
-    # published notice shows the dates as they stand after every amendment).
+    # published notice shows the dates as they stand after every amendment); a version
+    # number pins it to that version, so a later ingest does not carry it forward.
     attach_to: str | None = None
     # Where the file was taken from and when, from the manifest; None when it does not say.
     source: str | None = None
     retrieved_on: date | None = None
+    # The kind of the version an amending file opens, when it is not its role: an
+    # amendment the owner files as a corrigendum. None: the role is the kind.
+    kind: str | None = None
 
 
 @dataclass(frozen=True)
@@ -141,11 +145,12 @@ def read_manifests(root: Path, only: set[str] | None = None) -> list[Manifest]:
                 path=path.parent / item["file"],
                 role=item["role"],
                 issued_on=date.fromisoformat(item["issued_on"]) if item.get("issued_on") else None,
-                attach_to=item.get("attach_to"),
+                attach_to=str(item["attach_to"]) if item.get("attach_to") is not None else None,
                 source=item.get("source") or shared_source,
                 retrieved_on=date.fromisoformat(str(item["retrieved_on"]))
                 if item.get("retrieved_on")
                 else None,
+                kind=item.get("kind"),
             )
             for item in raw["files"]
         ]
@@ -167,8 +172,9 @@ def plan_versions(manifest: Manifest) -> list[PlannedVersion]:
     (anything that is not an amendment or clarification) that is undated or carries the
     earliest date. Each amendment or clarification after that is its own version, in date
     order; a base document issued later (a revised RfS, a revised annexure) joins the
-    version issued on the same date, or becomes an amendment version of its own."""
-    dated_files = [item for item in manifest.files if item.attach_to != "latest"]
+    version issued on the same date, or becomes an amendment version of its own. A file
+    with `attach_to` joins the version it names ("latest" or a number) instead."""
+    dated_files = [item for item in manifest.files if item.attach_to is None]
     base = [item for item in dated_files if item.role not in CHANGE_ROLES]
     dated = [item.issued_on for item in base if item.issued_on is not None]
     first_date = min(dated) if dated else None
@@ -188,12 +194,21 @@ def plan_versions(manifest: Manifest) -> list[PlannedVersion]:
     for item in later:
         latest = versions[-1]
         if item.role in CHANGE_ROLES:
-            versions.append(PlannedVersion(item.role, item.issued_on, [item]))
+            versions.append(PlannedVersion(item.kind or item.role, item.issued_on, [item]))
         elif latest.kind != "original" and latest.issued_on == item.issued_on:
             latest.files.append(item)
         else:
             versions.append(PlannedVersion("amendment", item.issued_on, [item]))
-    versions[-1].files.extend(item for item in manifest.files if item.attach_to == "latest")
+    for item in manifest.files:
+        if item.attach_to is None:
+            continue
+        number = len(versions) if item.attach_to == "latest" else int(item.attach_to)
+        if not 1 <= number <= len(versions):
+            raise ValueError(
+                f"{manifest.slug}: {item.path.name} attaches to version {number}, "
+                f"which the manifest does not plan"
+            )
+        versions[number - 1].files.append(item)
     return versions
 
 

@@ -155,6 +155,28 @@ Listed with a rationale: gold and report files are not laid out per tenant (a1):
 
 **Run 7** (on commit c8f6e11): no new code defect. The file-layout finding (a1) and the report claims repeat runs 3 to 6 and stand as listed there. One test gap noted, not closed: the named-run restriction is tested for another gold tender, not for a run of the same tender at another version (e7); recorded in KNOWN-GAPS. The loop ends here.
 
+### The addenda (2026-10-08 to 2026-10-13)
+
+Work added to the closed stage on your instructions — the derived sections, the amendment screen, the note and keys, accuracy by key, rule v2 and the scorer fix — was reviewed the same way over its own commits (`9cbd0e9^..HEAD`), with your instructions standing in for the stage prompt (`stage-4-artifacts/derived-sections-prompt.md`; `stage-4-artifacts/review-addendum-gpt-6.1-sol-runN.txt`). The gold records, scored results and the released schema snapshot are left out of the diff the reviewer sees (data, not code; 2.7 MB otherwise).
+
+**Addendum run 1** (on commit 5fff42b): three invariant findings, every endpoint tested, four audit notes, one trace note, ten report claims.
+
+Code defects found and fixed:
+
+- Rule v2 wrote subjects (`contracted_energy_capacity`, `project_capacity_min`, …), units (`percent`, `cycles_per_day`) and events (`unspecified`, `before_scod`) the optimiser table's key enums did not allow (e4): every v2 table would have failed validation. Fixed: the enums are widened; the commissioning milestone uses the existing `scod` subject; a test derives every branch of the rule from one decided value per input and checks every row against the table's keys. Widening on the released v3 needed `packs.compatible` (allowed values may grow on a released version, nothing else may change; DECISIONS), since a v4 for this alone would have put the v3 tables under `read_again` and hidden the six approved ones.
+- The amendment screen's "what stood before" took the immediately preceding reading even when the reviewer had set it aside as not in its document (e6). Fixed: the latest earlier reading that stands; none, and the field counts as added; test.
+- The guard on a stale derived table refused only approval; an edit or a set-aside on it would have been lost with the rewrite (e3). Fixed: approve, edit and set aside are refused while the table is not current or being written; the test covers the three.
+- The claim that the six reviewed tenders keep their v1 tables was not what the code did (e9): rule v2 widened the input set, so the hash of their inputs changed and all six tables read as not current (confirmed on the live database). Fixed: a table is current by the fields its own rule version read (`Rule.inputs_at`, `DerivedWriter._digest`); the five tenders whose inputs are decided are current again, `seci-cfd-i` waits for its v5 decisions; test.
+- Report wording corrected: the unsupported table is treated as a candidate whose value could not be located, not as a reviewable candidate without evidence (e2); the one computed row (the non-RE share as the complement of the green share) is named where "nothing is computed" was claimed (e5); a tender without a `supply_sources` reading still gets storage and linked-build rows from its other fields (e8); the feedback report's headline counts corrections, its detail lists fields with the most (e10, by design, stated).
+
+Not resolvable by code, listed with a rationale:
+
+- The unsupported table stores a value (all rows `not_addressed`) with no evidence (a1): by design, your rule of 2026-10-08; it is the invariant's second case (a value that could not be located: shown with the reason, never approvable), not a reviewable candidate without evidence, which `_add_candidate` refuses.
+- The flagged approval written under the reviewer's name when they decide an input of an approved table (a2): by design (DECISIONS 2026-10-08); it is the consequence of that reviewer's own decision, audited like any approval, their earlier rows untouched.
+- Candidate inserts, supersession and `ApprovalService.approve` audit outside the diff (a3, c1–c4): unchanged Stage 1 code; `core/services/extract.py` `_add_candidate` and `supersede` call `audit.record`, `core/services/approve.py` audits every approval, canonical fact and feedback row.
+- `make trace` (d): run after the fixes, no diff.
+- The fourteenth tender's ingestion, the NTPC portal findings and the NHPC review (e1, e7): statements a diff cannot prove; the manifests, the documents' `source_url` and the DECISIONS lines record them.
+
 ## Open questions
 
 1. Which of the corpus gaps should be ingested, and may the Ramagiri spreadsheets be converted to PDF for the parser, or should spreadsheet reading be built?
