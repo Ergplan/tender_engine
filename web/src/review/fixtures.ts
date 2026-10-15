@@ -81,11 +81,59 @@ function field(base: Partial<ReviewField>, entries: (f: Partial<ReviewField>) =>
     review_order: 0,
     decided: false,
     flagged: false,
+    in_scope: true,
     entries: built,
     current: built.length ? built.length - 1 : null,
     ...base,
   } as ReviewField;
 }
+
+/** A field decided on the original by Asha, as a round carries it forward. */
+function decidedByAsha(found: ReviewField, decision = "approved"): ReviewField {
+  const entry = found.entries[found.current ?? 0];
+  entry.state.approval = {
+    id: `a-${entry.state.candidate?.id ?? "x"}`,
+    candidate_id: entry.state.candidate?.id ?? "x",
+    decision,
+    final_value: null,
+    reviewer: "Asha Rao",
+    note: null,
+    decided_at: "2026-10-13T10:00:00Z",
+  };
+  return { ...found, decided: true, in_scope: false };
+}
+
+/** The fixture tender as round 2, opened by the amendment: the deadline it states is in
+ * scope, the three other fields carry Asha's decisions on the original forward. */
+export function makeRound(): TenderReview {
+  const review = makeReview();
+  const [deadline, prebid, emd, pbg] = review.fields;
+  const fields = [
+    deadline,
+    decidedByAsha(prebid, "not_in_document"),
+    decidedByAsha(emd),
+    decidedByAsha(pbg, "edited"),
+  ];
+  return {
+    ...review,
+    status: "in_review",
+    fields,
+    decided: 0,
+    total: 1,
+    required_undecided: 1,
+    can_complete: false,
+    round: { round_no: 2, from_version: 2, in_scope: 1, carried: 3 },
+  };
+}
+
+export const ROUND_SESSION: ReviewSession = {
+  tender_id: "t".repeat(32),
+  reviewer_name: "Asha Rao",
+  expires_at: "2026-11-14T00:00:00Z",
+  completed_at: null,
+  round_no: 2,
+  from_version: 2,
+};
 
 export function makeReview(): TenderReview {
   const fields: ReviewField[] = [
@@ -150,6 +198,8 @@ export const SESSION: ReviewSession = {
   reviewer_name: "Asha Rao",
   expires_at: "2026-11-04T00:00:00Z",
   completed_at: null,
+  round_no: 1,
+  from_version: null,
 };
 
 /** The amendments of the fixture tender: version 2 moves the bid deadline. */

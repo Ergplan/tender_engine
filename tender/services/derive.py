@@ -36,7 +36,7 @@ from tender.domain_packs.power import derivations
 from tender.domain_packs.power.derivations import Decided, Inputs, Rule
 from tender.models import Tender
 from tender.services.packs import Catalog, CompiledType
-from tender.services.review import TenderReview, tender_review
+from tender.services.review import ReviewEntry, ReviewField, TenderReview, tender_review
 from tender.services.summary import decided_field_value, inherited_span, reviewer_evidence
 from tender.services.tenders import JOB_KIND as AMENDMENT_JOB
 from tender.services.tenders import OBJECT_TYPE, TenderService
@@ -114,6 +114,24 @@ class DerivedWriter:
         found: Inputs = {}
         for item in review.fields:
             if item.field_path not in wanted or not item.decided:
+                continue
+            withdrawn = _withdrawn_entry(item)
+            if withdrawn is not None:
+                # The provision was withdrawn: the rule reads the removal itself, with the
+                # removing words as its evidence, and writes a typed row for it.
+                candidate = withdrawn.state.candidate
+                spans = (
+                    [s for s in candidate.evidence if s.char_start is not None] if candidate else []
+                )
+                found[item.field_path] = Decided(
+                    path=item.field_path,
+                    label=item.label,
+                    value=None,
+                    spans=spans,
+                    version_no=withdrawn.version_no,
+                    withdrawn=True,
+                    withdrawn_by=withdrawn.version_no,
+                )
                 continue
             value = decided_field_value(item, evidence)
             if value is None:
@@ -332,7 +350,7 @@ class DerivedWriter:
             rationale = (
                 f"Derived by {rule.module.rsplit('.', 1)[-1]} {rule.version}: {derivation.note}."
                 f"\n\nFrom: {labels}; each row names the field and the clause it rests on."
-                + (f"\n\nWithdrawn by amendment, so no row rests on it: {gone}." if gone else "")
+                + (f"\n\nWithdrawn by amendment, each a `withdrawn` row: {gone}." if gone else "")
                 + f"\n\n{HASH_HEADING}{digest}"
             )
             value = [row.value for row in derivation.rows]
@@ -446,18 +464,26 @@ class DerivedGuard:
             self._writer.queue_if_settled(session, tender.id, created_by=approval.reviewer)
 
 
+def _withdrawn_entry(item: ReviewField) -> ReviewEntry | None:
+    """The field's current entry when it is an approved `withdrawn` reading, else None."""
+    if item.current is None:
+        return None
+    entry = item.entries[item.current]
+    candidate, approval = entry.state.candidate, entry.state.approval
+    if candidate is None or approval is None:
+        return None
+    return entry if candidate.withdrawn and approval.decision == "approved" else None
+
+
 def _withdrawn_inputs(review: TenderReview, rule: Rule) -> list[str]:
-    """The fields the rule reads that stand withdrawn: an approved `withdrawn` reading is
-    the current entry. Labelled with the version that withdrew them."""
+    """The fields the rule reads that stand withdrawn, labelled with the version that
+    withdrew them (the rationale's line beside the table's typed row)."""
     found = []
     for item in review.fields:
-        if item.field_path not in rule.inputs or item.current is None:
+        if item.field_path not in rule.inputs:
             continue
-        entry = item.entries[item.current]
-        candidate, approval = entry.state.candidate, entry.state.approval
-        if candidate is None or approval is None:
-            continue
-        if candidate.withdrawn and approval.decision == "approved":
+        entry = _withdrawn_entry(item)
+        if entry is not None:
             found.append(f"{item.label} (withdrawn by v{entry.version_no})")
     return found
 

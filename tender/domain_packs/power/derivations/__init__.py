@@ -25,6 +25,11 @@ class Decided:
     value: Any
     spans: list[EvidenceView]
     version_no: int
+    # A later version withdrew the provision (an approved `withdrawn` reading is the
+    # current entry): value None, the spans the removing words, and the version that
+    # removed it. A rule writes a typed row for it rather than reading it as absent.
+    withdrawn: bool = False
+    withdrawn_by: int | None = None
 
 
 @dataclass(frozen=True)

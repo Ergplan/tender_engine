@@ -9,6 +9,7 @@ sections:
   re_rtc_profile:
     label: RE-RTC supply profile
     prompt: extract/re_rtc_profile
+    prompt_version: v2
     roles: [rfs, contractual, nit, ppa]
     section_kinds: [introduction_and_scope, technical_requirements, commercial_terms, penalties_and_remedies]
     keywords: [traceable green, round-the-clock, rtc, cuf, peak hours, greenshoe, green shoe, supply start date, solar power capacity, acres, land documents, fixed charge, variable charge, merit order, renewable energy certificate, accounting year]

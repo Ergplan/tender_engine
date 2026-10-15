@@ -33,6 +33,8 @@ The "Amendments" button in the header opens a second screen that lists, for each
 
 Complete review becomes available once every required field (marked with a red star) has a decision. After completing, the review can be read but no longer changed.
 
+When a corrigendum or amendment arrives on a tender you have already completed, you are not asked to review it again from the start. Once its pages have been read, a new link opens a round for you: the banner says which version opened it and how many fields it asks about; the fields that version touched are the ordinary cards; every other field appears as a compact row with its earlier decision and who made it when ("Carried forward · approved by … on … (v1 original)"), the keys pass over it, and "Review again" opens it should you want to change your mind. "Complete round N" needs only the fields in the round decided; your earlier decisions stay as they were.
+
 ## Structured fields
 
 Some fields come twice: once in words (EMD formula, Demand profile, Payment security mechanism) and once as numbers, labelled "structured". The structured field feeds a financial model, so it is checked number by number.

@@ -59,10 +59,20 @@ export function ReviewScreen({
   const container = useRef<HTMLDivElement>(null);
   const targetKey = useRef(0);
   const readOnly = session.completed_at !== null && session.completed_at !== undefined;
-  const order = useMemo(() => reviewOrder(review), [review]);
+  // In a round, the carried fields the reviewer opened to decide again.
+  const [expanded, setExpanded] = useState<Set<string>>(() => new Set());
   const byPath = useMemo(
     () => new Map(review.fields.map((field) => [field.field_path, field])),
     [review],
+  );
+  // The keys walk the fields the round asks about; a carried field joins once opened.
+  const order = useMemo(
+    () =>
+      reviewOrder(review).filter((path) => {
+        const field = byPath.get(path);
+        return !review.round || !field || field.in_scope || expanded.has(path);
+      }),
+    [byPath, expanded, review],
   );
 
   const show = useCallback((evidence: Evidence) => {
@@ -198,8 +208,13 @@ export function ReviewScreen({
       }));
   }, [activeEvidence, byPath, documentId, focused]);
 
+  // Counts come from the server: over the round's scope in a round, else every field.
   const undecided = review.total - review.decided;
   const minutes = minutesLeft(decisionTimes, undecided);
+  const round = review.round ?? null;
+  const openedBy = round?.from_version
+    ? review.versions.find((version) => version.version_no === round.from_version)
+    : undefined;
   // Fields a later version states, and how many of them are still to be decided there: the
   // fields the amendment screen lists, so not the summary and not the derived tables.
   const derivedPaths = (review.derived?.fields as string[] | undefined) ?? [];
@@ -287,16 +302,32 @@ export function ReviewScreen({
             disabled={!review.can_complete}
             title={
               review.can_complete
-                ? "Complete the review"
-                : `${review.required_undecided} required field(s) still need a decision`
+                ? round
+                  ? `Complete round ${round.round_no}`
+                  : "Complete the review"
+                : round
+                  ? `${review.required_undecided} required field(s) of this round still need a decision (${undecided} of ${review.total} in the round to go)`
+                  : `${review.required_undecided} required field(s) still need a decision`
             }
             className="shrink-0 rounded bg-slate-800 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700 disabled:cursor-not-allowed disabled:bg-slate-300"
             onClick={() => setConfirming(true)}
           >
-            Complete review
+            {round ? `Complete round ${round.round_no}` : "Complete review"}
           </button>
         )}
       </header>
+      {round && (
+        <p
+          data-testid="round-banner"
+          className="border-b border-sky-200 bg-sky-50 px-3 py-1 text-xs text-sky-900"
+          title="A later version reached this tender after its review: this round asks only about what it touched. The other fields keep your earlier decisions, each saying where it came from."
+        >
+          <span className="font-semibold">Round {round.round_no}</span>
+          {openedBy ? ` · opened by v${openedBy.version_no} ${openedBy.kind}` : ""} · {round.in_scope}{" "}
+          {round.in_scope === 1 ? "field" : "fields"} to decide · {round.carried} carried forward from your earlier
+          review
+        </p>
+      )}
       {!readOnly && <GuidePanel />}
       {notice && (
         <p role="alert" className="border-b border-red-200 bg-red-50 px-3 py-1 text-sm text-red-800">
@@ -313,6 +344,11 @@ export function ReviewScreen({
             readOnly={readOnly}
             documentName={(id) => documentName(review, id)}
             activeEvidence={activeEvidence}
+            expanded={expanded}
+            onExpand={(path) => {
+              setExpanded((before) => new Set([...before, path]));
+              focus(path);
+            }}
             onFocus={(path) => path !== focused && focus(path)}
             onMode={(path, next) => {
               if (path !== focused) focus(path, next);
@@ -353,9 +389,9 @@ export function ReviewScreen({
       {confirming && (
         <div className="fixed inset-0 z-30 flex items-center justify-center bg-slate-900/40" role="dialog" aria-modal="true">
           <div className="w-96 rounded bg-white p-4 shadow-lg">
-            <h2 className="text-base font-semibold">Complete this review?</h2>
+            <h2 className="text-base font-semibold">{round ? `Complete round ${round.round_no}?` : "Complete this review?"}</h2>
             <p className="mt-2 text-sm text-slate-700">
-              {review.decided} of {review.total} fields are decided
+              {review.decided} of {review.total} fields{round ? " in this round" : ""} are decided
               {review.fields.some((field) => field.flagged)
                 ? `, ${review.fields.filter((field) => field.flagged).length} flagged`
                 : ""}
@@ -366,7 +402,7 @@ export function ReviewScreen({
                 Keep reviewing
               </button>
               <button type="button" data-testid="confirm-complete" className="rounded bg-slate-800 px-3 py-1 text-sm font-medium text-white" onClick={() => void complete()}>
-                Complete review
+                {round ? `Complete round ${round.round_no}` : "Complete review"}
               </button>
             </div>
           </div>

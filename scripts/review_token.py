@@ -72,8 +72,13 @@ def listing(settings: Settings) -> list[str]:
                 if token.completed_at
                 else f"live until {token.expires_at:%Y-%m-%d}"
             )
+            scope = (
+                f"round {token.round_no} from v{token.from_version}"
+                if token.from_version
+                else f"round {token.round_no}"
+            )
             lines.append(
-                f"{tender.slug or tender.id}  {token.reviewer_name}  {state}  "
+                f"{tender.slug or tender.id}  {token.reviewer_name}  {scope}  {state}  "
                 f"{review_url(settings.public_base_url, token.token)}"
             )
     return lines

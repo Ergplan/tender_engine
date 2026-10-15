@@ -88,6 +88,8 @@ def get_review_session(
         reviewer_name=token.reviewer_name,
         expires_at=token.expires_at,
         completed_at=token.completed_at,
+        round_no=token.round_no,
+        from_version=token.from_version,
     )
 
 
@@ -100,14 +102,26 @@ def get_tender_review(
     catalog: CatalogDep,
     writer: SummaryWriterDep,
     deriver: DerivedWriterDep,
+    review_link: ReviewDep,
+    tenant_id: TenantDep,
 ) -> TenderReview:
     """The tender as the reviewer sees it: every field once, with what each version says
-    about it and the entry to decide (the latest version that states the field)."""
+    about it and the entry to decide (the latest version that states the field). Through
+    a review link that opens a round, the round's scope and counts."""
     try:
         tender = tenders.get(session, tender_id)
     except LookupError as exc:
         raise AppError("not_found", f"tender {tender_id} does not exist") from exc
-    review = reviews.tender_review(session, catalog, tenders, review_state, tender)
+    token = _token(session, tenant_id, review_link.token_id) if review_link else None
+    review = reviews.tender_review(
+        session,
+        catalog,
+        tenders,
+        review_state,
+        tender,
+        round_no=token.round_no if token else None,
+        from_version=token.from_version if token else None,
+    )
     state = writer.state(session, tender, review)
     review.summary = state.model_dump()
     review.derived = deriver.state(session, tender, review).model_dump()

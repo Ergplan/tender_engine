@@ -96,6 +96,10 @@ class ReviewSessionOut(BaseModel):
     expires_at: datetime
     # Set once the review is completed: it can then be read and no longer changed.
     completed_at: datetime | None
+    # The review round the link opens: 1 over the whole tender; a later round is opened by
+    # a version (from_version) and asks only about the fields it touched.
+    round_no: int = 1
+    from_version: int | None = None
 
 
 class SnapshotOut(BaseModel):

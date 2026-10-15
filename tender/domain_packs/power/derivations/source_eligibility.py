@@ -21,7 +21,7 @@ from tender.domain_packs.power.derivations import (
     records_of,
 )
 
-VERSION = "v1"
+VERSION = "v2"
 FIELD = "sector.power.common.source_eligibility"
 MIX = "sector.power.common.source_mix_rules"
 CHARGING = "sector.power.common.bess_charging_rule"
@@ -56,7 +56,13 @@ KEYWORDS = {
     "other": "source",
 }
 # When two clauses speak of one source the stricter stands.
-STRICTNESS = {"prohibited": 3, "required": 2, "allowed_with_limit": 1, "allowed": 0}
+STRICTNESS = {
+    "prohibited": 3,
+    "required": 2,
+    "allowed_with_limit": 1,
+    "allowed": 0,
+    "withdrawn": -1,
+}
 
 
 def _row(
@@ -128,9 +134,26 @@ def _stricter(candidate: Row, standing: Row | None) -> Row:
     )
 
 
+# The sources an input speaks of, for a withdrawal of it: the storage fields and the
+# charging rule speak of BESS; a withdrawn linked build obligation no longer names its
+# technology, so it is `other`; the mix rules speak of every source.
+SOURCES_OF_INPUT: dict[str, tuple[str, ...]] = {
+    STORAGE_MANDATORY: ("bess",),
+    STORAGE_PERMITTED: ("bess",),
+    CHARGING: ("bess",),
+    LINKED: ("other",),
+    MIX: SOURCES,
+}
+
+
 def derive(inputs: Inputs) -> Derivation:
     rows: dict[str, Row] = {}
     notes: list[str] = []
+    # A withdrawn input speaks of its sources no more; its branch sees no field, and the
+    # sources it spoke of read `withdrawn` unless a standing clause still gives them a
+    # status (then that stands, and the withdrawal is noted).
+    withdrawn = {path: d for path, d in inputs.items() if d.withdrawn}
+    inputs = {path: d for path, d in inputs.items() if not d.withdrawn}
 
     def take(row: Row) -> None:
         rows[row.value["source"]] = _stricter(row, rows.get(row.value["source"]))
@@ -250,6 +273,30 @@ def derive(inputs: Inputs) -> Derivation:
             )
         )
 
+    for path, decided in sorted(withdrawn.items()):
+        note = f"withdrawn by v{decided.withdrawn_by}"
+        for source in SOURCES_OF_INPUT.get(path, ()):
+            standing = rows.get(source)
+            if standing is None:
+                rows[source] = _row(
+                    source,
+                    "withdrawn",
+                    "stated",
+                    (path,),
+                    condition=note,
+                    clause=clause_of(decided),
+                )
+                continue
+            value = dict(standing.value)
+            value["condition"] = "; ".join(
+                v for v in (standing.value.get("condition"), f"{decided.label} {note}") if v
+            )
+            value["derived_from"] = ", ".join(dict.fromkeys([*standing.inputs, path]))
+            rows[source] = Row(
+                value=value, inputs=(*standing.inputs, path), inherited=standing.inherited
+            )
+        notes.append(f"{decided.label} withdrawn by v{decided.withdrawn_by}")
+
     ordered = []
     for source in SOURCES:
         ordered.append(rows.get(source) or _row(source, "not_addressed", "none", ()))
@@ -270,4 +317,5 @@ RULE = Rule(
     inputs=INPUTS,
     derive=derive,
     row_key="source",
+    inputs_by_version={"v1": INPUTS},
 )

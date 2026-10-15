@@ -903,3 +903,43 @@ def test_an_approval_keeps_the_reviewers_note_and_the_review_shows_it(
     assert db.scalar(select(Feedback).where(Feedback.field_path == EMD)) is None, (
         "a note is not a correction"
     )
+
+
+def test_a_round_link_scopes_the_review_to_what_its_version_touched(
+    client: TestClient, pipeline: Pipeline
+) -> None:
+    """A review link opened by a version (tender.services.rounds) says so in the session,
+    and the review it serves counts and flags the fields that version touched; a plain
+    link is round 1 over the whole tender."""
+    from tender.services.tokens import TokenService
+
+    tender = with_amendment(client, pipeline)
+    whole = link(client, tender["id"])
+    session = client.get("/api/v1/review-session", headers=as_reviewer(whole["token"]))
+    assert session.status_code == 200, session.text
+    assert (session.json()["round_no"], session.json()["from_version"]) == (1, None)
+    everything = review(client, tender["id"], whole["token"])
+    assert everything["round"] is None and all(f["in_scope"] for f in everything["fields"])
+
+    with pipeline.session_factory() as db:
+        row = db.get(Tender, tender["id"])
+        assert row is not None
+        token = (
+            TokenService(pipeline.settings.tenant_id)
+            .create(db, row, "Asha Rao", created_by="t", from_version=2)
+            .token
+        )
+    session = client.get("/api/v1/review-session", headers=as_reviewer(token))
+    assert (session.json()["round_no"], session.json()["from_version"]) == (2, 2)
+    scoped = review(client, tender["id"], token)
+    assert scoped["round"]["from_version"] == 2 and scoped["round"]["round_no"] == 2
+    in_scope = [f["field_path"] for f in scoped["fields"] if f["in_scope"]]
+    assert DEADLINE in in_scope and SUMMARY in in_scope
+    assert scoped["round"]["in_scope"] == len(in_scope) == scoped["total"]
+    assert scoped["round"]["carried"] == len(scoped["fields"]) - len(in_scope) > 0
+    assert (
+        client.get(
+            f"/api/v1/tenders/{tender['id']}/review", headers=as_reviewer(whole["token"])
+        ).status_code
+        == 410
+    ), "replaced"

@@ -20,10 +20,14 @@ from sqlalchemy.orm import Session
 from core.schemas import KeyDef
 from core.services import audit
 from core.services.review_state import FieldState, ReviewStateService
+from tender.domain_packs.power import derivations
 from tender.models import ReviewToken, Tender, TenderReviewSnapshot
 from tender.services.current_view import current_view
 from tender.services.packs import Catalog
 from tender.services.tenders import OBJECT_TYPE, TenderError, TenderService
+
+# The summary field, written from every field (tender.services.summary imports this module).
+SUMMARY_FIELD = "core.summary.plain_english_summary"
 
 VALUE_DECISIONS = ("approved", "edited")
 
@@ -73,6 +77,22 @@ class ReviewField(BaseModel):
     current: int | None
     decided: bool
     flagged: bool
+    # In a review round opened by a version: whether this field is one the round asks
+    # about (a version from `from_version` on states it, or a derived table reads such a
+    # field). Out of scope, the field carries its earlier decision forward and is shown
+    # with that provenance. Always true outside a round.
+    in_scope: bool = True
+
+
+class ReviewRound(BaseModel):
+    """The round a review link opens: from which version, and how much of the tender it
+    asks about."""
+
+    round_no: int
+    from_version: int | None
+    # Fields the round asks about, and fields carried forward with their decisions.
+    in_scope: int
+    carried: int
 
 
 class TenderReview(BaseModel):
@@ -84,10 +104,12 @@ class TenderReview(BaseModel):
     versions: list[ReviewVersion]
     sections: list[ReviewSection]
     fields: list[ReviewField]
+    # Counts over the round's scope when the review is a round, else over every field.
     decided: int
     total: int
     required_undecided: int
     can_complete: bool
+    round: ReviewRound | None = None
     # Where the summary stands (tender.services.summary.SummaryState); set by the route.
     summary: dict[str, Any] | None = None
     # Where the derived tables stand (tender.services.derive.DerivedState); set by the route.
@@ -100,7 +122,13 @@ def tender_review(
     tenders: TenderService,
     review_state: ReviewStateService,
     tender: Tender,
+    *,
+    round_no: int | None = None,
+    from_version: int | None = None,
 ) -> TenderReview:
+    """The tender as a reviewer sees it. With `from_version`, as a review round opened by
+    that version: the fields a version from it on states (or a derived table reading one)
+    are in scope and counted; the rest carry their earlier decisions forward."""
     compiled = catalog.get(tender.tender_type)
     entries: dict[str, list[ReviewEntry]] = {field.path: [] for field in compiled.fields}
     versions: list[ReviewVersion] = []
@@ -169,10 +197,34 @@ def tender_review(
                 flagged=approval is not None and approval.decision == "flagged",
             )
         )
+    round_info: ReviewRound | None = None
+    if from_version is not None:
+        touched = {
+            f.field_path for f in fields if any(e.version_no >= from_version for e in f.entries)
+        }
+        # A derived table is written again from the fields the round decides: in scope
+        # when its rule reads one of them. The summary likewise, from every field.
+        derived = {section.name for section in compiled.sections if section.derived}
+        for field in compiled.fields:
+            if field.section in derived:
+                rule = derivations.rule_for(field.path)
+                if touched & set(rule.inputs):
+                    touched.add(field.path)
+        if touched:
+            touched.add(SUMMARY_FIELD)
+        for item in fields:
+            item.in_scope = item.field_path in touched
+        round_info = ReviewRound(
+            round_no=round_no or 1,
+            from_version=from_version,
+            in_scope=sum(1 for f in fields if f.in_scope),
+            carried=sum(1 for f in fields if not f.in_scope),
+        )
+    counted = [f for f in fields if f.in_scope]
     # A required field no version has a candidate for cannot be decided and does not
     # hold the review back (docs/KNOWN-GAPS.md).
     required_undecided = sum(
-        1 for f in fields if f.required and not f.decided and f.current is not None
+        1 for f in counted if f.required and not f.decided and f.current is not None
     )
     return TenderReview(
         tender_id=tender.id,
@@ -186,10 +238,11 @@ def tender_review(
             for section in sorted(compiled.sections, key=lambda s: s.order)
         ],
         fields=fields,
-        decided=sum(1 for f in fields if f.decided),
-        total=len(fields),
+        decided=sum(1 for f in counted if f.decided),
+        total=len(counted),
         required_undecided=required_undecided,
-        can_complete=required_undecided == 0 and any(f.decided for f in fields),
+        can_complete=required_undecided == 0 and any(f.decided for f in counted),
+        round=round_info,
     )
 
 
@@ -230,7 +283,15 @@ def complete_review(
             "the summary is being written again from your decisions; complete the review "
             "once it is ready and decided"
         )
-    review = tender_review(session, catalog, tenders, review_state, tender)
+    review = tender_review(
+        session,
+        catalog,
+        tenders,
+        review_state,
+        tender,
+        round_no=token.round_no,
+        from_version=token.from_version,
+    )
     if not review.can_complete:
         raise TenderError(
             f"{review.required_undecided} required field(s) have no decision yet"
@@ -257,6 +318,9 @@ def complete_review(
         "total": review.total,
         "flagged": [f.field_path for f in review.fields if f.flagged],
         "view": view.model_dump(mode="json"),
+        # The round this completion closes: the whole tender (round 1, from_version null)
+        # or the fields a version from `from_version` on touched, the rest carried forward.
+        "round": review.round.model_dump() if review.round else None,
     }
     row = TenderReviewSnapshot(
         tenant_id=tender.tenant_id,

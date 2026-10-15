@@ -5,6 +5,7 @@ sections:
   gen_tech:
     label: Generation technology
     prompt: extract/gen_tech
+    prompt_version: v2
     roles: [rfs, contractual, nit, technical]
     section_kinds: [technical_requirements, introduction_and_scope, commercial_terms]
     keywords: [fuel, heat rate, design energy, capacity charge, fixed charge, availability, water, pumped, storage, two part]

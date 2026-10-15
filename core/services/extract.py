@@ -288,6 +288,9 @@ class ExtractService:
         unknown_overrides = sorted(set(overrides) - {group.name for group in schema.groups})
         if unknown_overrides:
             raise ExtractionError(f"schema {schema.name} has no group(s) {unknown_overrides}")
+        # The run's own version names the shared template the sections extend; it must be
+        # registered even where every section pins its own (an unknown version is a typo).
+        self._llm.prompt("extract", prompt_version)
         for group in _run_groups(schema, groups):
             self._llm.prompt(
                 group.prompt_name,

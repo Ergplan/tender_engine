@@ -2143,6 +2143,11 @@
             "title": "Help Text",
             "type": "string"
           },
+          "in_scope": {
+            "default": true,
+            "title": "In Scope",
+            "type": "boolean"
+          },
           "keys": {
             "anyOf": [
               {
@@ -2207,6 +2212,42 @@
         "title": "ReviewField",
         "type": "object"
       },
+      "ReviewRound": {
+        "description": "The round a review link opens: from which version, and how much of the tender it\nasks about.",
+        "properties": {
+          "carried": {
+            "title": "Carried",
+            "type": "integer"
+          },
+          "from_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "From Version"
+          },
+          "in_scope": {
+            "title": "In Scope",
+            "type": "integer"
+          },
+          "round_no": {
+            "title": "Round No",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "round_no",
+          "from_version",
+          "in_scope",
+          "carried"
+        ],
+        "title": "ReviewRound",
+        "type": "object"
+      },
       "ReviewSection": {
         "properties": {
           "label": {
@@ -2249,9 +2290,25 @@
             "title": "Expires At",
             "type": "string"
           },
+          "from_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "From Version"
+          },
           "reviewer_name": {
             "title": "Reviewer Name",
             "type": "string"
+          },
+          "round_no": {
+            "default": 1,
+            "title": "Round No",
+            "type": "integer"
           },
           "tender_id": {
             "title": "Tender Id",
@@ -3391,6 +3448,16 @@
           "required_undecided": {
             "title": "Required Undecided",
             "type": "integer"
+          },
+          "round": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ReviewRound"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "sections": {
             "items": {
@@ -5218,7 +5285,7 @@
     },
     "/api/v1/tenders/{tender_id}/review": {
       "get": {
-        "description": "The tender as the reviewer sees it: every field once, with what each version says\nabout it and the entry to decide (the latest version that states the field).",
+        "description": "The tender as the reviewer sees it: every field once, with what each version says\nabout it and the entry to decide (the latest version that states the field). Through\na review link that opens a round, the round's scope and counts.",
         "operationId": "get_tender_review_api_v1_tenders__tender_id__review_get",
         "parameters": [
           {

@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Any
 
-from sqlalchemy import DateTime, ForeignKey, String
+from sqlalchemy import DateTime, ForeignKey, Integer, String
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -21,6 +21,11 @@ class ReviewToken(IdMixin, TenantAuditMixin, Base):
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     revoked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    # A review round: the first link of a tender is round 1 over the whole tender; a round
+    # opened by a later version (from_version) asks only about the fields that version and
+    # the ones after it touched, the earlier decisions carrying forward.
+    round_no: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
+    from_version: Mapped[int | None] = mapped_column(Integer, nullable=True)
 
 
 class TenderReviewSnapshot(IdMixin, TenantAuditMixin, Base):

@@ -2,7 +2,7 @@ import { act, fireEvent, render, screen, waitFor, within } from "@testing-librar
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { ApiError, type ReviewApi, type TenderReview } from "../api/client";
-import { AMENDMENT_DOC, candidate, DOC, evidence, makeReview, SESSION, withdrawnCandidate } from "./fixtures";
+import { AMENDMENT_DOC, candidate, DOC, evidence, makeReview, makeRound, ROUND_SESSION, SESSION, withdrawnCandidate } from "./fixtures";
 import { ReviewScreen } from "./ReviewScreen";
 
 vi.mock("./pdfText", () => ({
@@ -665,5 +665,52 @@ describe("the way to the amendments", () => {
     render(<ReviewScreen api={fake.api} session={SESSION} initial={review} amendmentsHref="/review/x/amendments" onCompleted={vi.fn()} />);
     await screen.findAllByTestId("pdf-page");
     expect(screen.queryByTestId("amendments-link")).toBeNull();
+  });
+});
+
+describe("a review round opened by a version", () => {
+  it("says what the round asks about and carries the rest forward with its provenance", async () => {
+    await open(makeRound(), ROUND_SESSION);
+    expect(screen.getByTestId("round-banner")).toHaveTextContent(
+      "Round 2 · opened by v2 amendment · 1 field to decide · 3 carried forward from your earlier review",
+    );
+    expect(screen.getByTestId("progress")).toHaveTextContent("0 of 1 fields decided");
+    // The deadline the amendment states is an ordinary card; the three others are rows.
+    expect(card(DEADLINE)).toBeInTheDocument();
+    expect(within(card(DEADLINE)).getByTestId("approve")).toBeInTheDocument();
+    const carried = screen.getAllByTestId("carried");
+    expect(carried.map((row) => row.getAttribute("data-field"))).toEqual([PREBID, EMD, PBG]);
+    expect(within(carried[1]).getByTestId("carried-provenance")).toHaveTextContent(
+      "Carried forward · approved by Asha Rao on 13 Oct 2026 (v1 original)",
+    );
+    expect(within(carried[0]).getByTestId("carried-provenance")).toHaveTextContent("set aside as not in document");
+    expect(within(carried[1]).queryByTestId("approve")).toBeNull();
+    // Section counts are over the scope; the guarantees section is all carried.
+    const sections = screen.getAllByTestId("section-count");
+    expect(sections[0]).toHaveTextContent("0/1");
+    expect(sections[0]).toHaveTextContent("1 carried forward");
+    expect(sections[1]).toHaveTextContent("0/0");
+    expect(sections[1]).toHaveTextContent("2 carried forward");
+    // The complete control is the round's.
+    const complete = screen.getByTestId("complete-review");
+    expect(complete).toHaveTextContent("Complete round 2");
+    expect(complete).toBeDisabled();
+    expect(complete.title).toContain("1 required field(s) of this round");
+  });
+
+  it("walks the keys over the round's fields only, and opens a carried field on request", async () => {
+    await open(makeRound(), ROUND_SESSION);
+    fireEvent.keyDown(window, { key: "j" });
+    expect(card(DEADLINE).dataset.focused).toBe("yes");
+    fireEvent.keyDown(window, { key: "j" });
+    expect(card(DEADLINE).dataset.focused).toBe("yes");
+    expect(screen.getAllByTestId("carried")).toHaveLength(3);
+    const emdRow = screen.getAllByTestId("carried")[1];
+    fireEvent.click(within(emdRow).getByTestId("carried-expand"));
+    expect(screen.getAllByTestId("carried")).toHaveLength(2);
+    expect(card(EMD).dataset.focused).toBe("yes");
+    expect(within(card(EMD)).getByTestId("clear-decision")).toBeInTheDocument();
+    fireEvent.keyDown(window, { key: "k" });
+    expect(card(DEADLINE).dataset.focused).toBe("yes");
   });
 });

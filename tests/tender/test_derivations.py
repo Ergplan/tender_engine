@@ -206,7 +206,7 @@ def test_the_rules_are_registered_for_the_two_derived_fields() -> None:
         source_eligibility.FIELD,
         optimizer_constraints.FIELD,
     ]
-    assert rule_for(source_eligibility.FIELD).version == "v1"
+    assert rule_for(source_eligibility.FIELD).version == source_eligibility.VERSION == "v2"
     assert rule_for(optimizer_constraints.FIELD).module.endswith(".optimizer_constraints")
 
 
@@ -458,8 +458,8 @@ def test_phes_constraints_carry_energy_size_location_and_milestones_from_their_f
     assert all(row.value["basis"] == "stated" for row in derivation.rows)
     assert derivation.note == "11 constraint(s) from 12 decided field(s)"
     assert (
-        optimizer_constraints.VERSION == "v2"
-        and rule_for(optimizer_constraints.FIELD).version == "v2"
+        optimizer_constraints.VERSION == "v3"
+        and rule_for(optimizer_constraints.FIELD).version == "v3"
     )
 
 
@@ -506,7 +506,27 @@ def everything_decided() -> Inputs:
         oc.GREENSHOE_OFFER: "2028-01-31",
         oc.STORAGE_MANDATORY: True,
     }
-    return {path: decided(path, records.get(path, 42), span(1, "the clause")) for path in oc.INPUTS}
+    found = {
+        path: decided(path, records.get(path, 42), span(1, "the clause")) for path in oc.INPUTS
+    }
+    # One input withdrawn by a later version: its branch writes nothing, the table a
+    # `withdrawn` row under the same subject.
+    found[oc.AVAILABILITY_FLOOR] = withdrawn(
+        oc.AVAILABILITY_FLOOR, 5, "availability clause deleted"
+    )
+    return found
+
+
+def withdrawn(path: str, by: int, quote: str) -> Decided:
+    return Decided(
+        path=path,
+        label=path.rsplit(".", 1)[1],
+        value=None,
+        spans=[span(2, quote)],
+        version_no=by,
+        withdrawn=True,
+        withdrawn_by=by,
+    )
 
 
 def test_every_row_the_optimiser_rule_can_write_fits_the_tables_keys() -> None:
@@ -567,3 +587,61 @@ def test_of_two_limits_on_one_source_the_lower_stands_and_a_higher_status_beats_
     )
     rows = {r.value["source"]: r.value for r in source_eligibility.derive({MIX: prohibited}).rows}
     assert rows["thermal"]["status"] == "prohibited" and "limit_value" not in rows["thermal"]
+
+
+def test_a_withdrawn_input_is_a_typed_row_of_the_optimiser_table_not_an_absence() -> None:
+    """The owner's rule: a ceiling removed last week is told apart from one that never
+    existed. A withdrawn input constrains nothing and gets one `withdrawn` row under the
+    subject it would have constrained, with the removing words as its clause."""
+    oc = optimizer_constraints
+    capacity = "sector.power.common.total_capacity_mw"
+    tenure = "sector.power.common.ppa_tenure_years"
+    rows = oc.derive(
+        {
+            capacity: withdrawn(capacity, 5, "the contracted capacity clause stands deleted"),
+            tenure: decided(tenure, 25, span(1, "for a period of 25 years")),
+        }
+    )
+    by_subject = {row.value["subject"]: row for row in rows.rows}
+    assert set(by_subject) == {"contract_term", "contracted_capacity"}
+    gone = by_subject["contracted_capacity"]
+    assert (gone.value["kind"], gone.value["holds"], gone.value["condition"]) == (
+        "withdrawn",
+        False,
+        "withdrawn by v5",
+    )
+    assert (gone.value["basis"], gone.value["derived_from"]) == ("stated", capacity)
+    assert gone.value["clause"] == "p.2: \u201cthe contracted capacity clause stands deleted\u201d"
+    assert "value" not in gone.value and "unit" not in gone.value
+    assert rows.note == "2 constraint(s) from 2 decided field(s); 1 withdrawn by amendment"
+    assert oc.VERSION == "v3" and rule_for(oc.FIELD).inputs_at("v2") == oc.INPUTS
+    assert set(oc.SUBJECT_OF_INPUT) == set(oc.INPUTS)
+
+
+def test_a_withdrawn_storage_obligation_reads_bess_as_withdrawn_unless_a_clause_stands() -> None:
+    se = source_eligibility
+    gone = withdrawn(STORAGE_MANDATORY, 3, "the storage requirement is withdrawn")
+    rows = {r.value["source"]: r.value for r in se.derive({STORAGE_MANDATORY: gone}).rows}
+    assert (rows["bess"]["status"], rows["bess"]["basis"], rows["bess"]["condition"]) == (
+        "withdrawn",
+        "stated",
+        "withdrawn by v3",
+    )
+    assert rows["bess"]["clause"] == "p.2: \u201cthe storage requirement is withdrawn\u201d"
+    assert rows["bess"]["derived_from"] == STORAGE_MANDATORY
+    assert all(rows[s]["status"] == "not_addressed" for s in se.SOURCES if s != "bess")
+    assert se.derive({STORAGE_MANDATORY: gone}).note.endswith("storage_mandatory withdrawn by v3")
+    # A clause still naming BESS stands; the withdrawn charging rule is noted on it.
+    standing = decided(
+        MIX, [{"source": "bess", "treatment": "allowed"}], span(10, "storage is allowed")
+    )
+    rows = {
+        r.value["source"]: r.value
+        for r in se.derive(
+            {MIX: standing, CHARGING: withdrawn(CHARGING, 4, "charging rule deleted")}
+        ).rows
+    }
+    assert rows["bess"]["status"] == "allowed"
+    assert "bess_charging_rule withdrawn by v4" in rows["bess"]["condition"]
+    assert rows["bess"]["derived_from"] == f"{MIX}, {CHARGING}"
+    assert se.VERSION == "v2" and rule_for(se.FIELD).inputs_at("v1") == se.INPUTS

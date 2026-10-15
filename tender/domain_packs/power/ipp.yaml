@@ -5,6 +5,7 @@ sections:
   ipp_model_inputs:
     label: IPP model inputs
     prompt: extract/ipp_model_inputs
+    prompt_version: v2
     roles: [rfs, contractual, nit, ppa]
     section_kinds: [commercial_terms, technical_requirements, financial_security]
     keywords: [ceiling tariff, cuf, capacity utilisation, scheduled commissioning, ppa period, degradation, performance bank guarantee, ists charges, payment security]

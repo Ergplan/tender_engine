@@ -587,7 +587,8 @@ export interface paths {
         /**
          * Get Tender Review
          * @description The tender as the reviewer sees it: every field once, with what each version says
-         *     about it and the entry to decide (the latest version that states the field).
+         *     about it and the entry to decide (the latest version that states the field). Through
+         *     a review link that opens a round, the round's scope and counts.
          */
         get: operations["get_tender_review_api_v1_tenders__tender_id__review_get"];
         put?: never;
@@ -1437,6 +1438,11 @@ export interface components {
             flagged: boolean;
             /** Help Text */
             help_text: string;
+            /**
+             * In Scope
+             * @default true
+             */
+            in_scope: boolean;
             /** Keys */
             keys?: components["schemas"]["KeyDef"][] | null;
             /** Label */
@@ -1451,6 +1457,21 @@ export interface components {
             unit: string | null;
             /** Value Type */
             value_type: string;
+        };
+        /**
+         * ReviewRound
+         * @description The round a review link opens: from which version, and how much of the tender it
+         *     asks about.
+         */
+        ReviewRound: {
+            /** Carried */
+            carried: number;
+            /** From Version */
+            from_version: number | null;
+            /** In Scope */
+            in_scope: number;
+            /** Round No */
+            round_no: number;
         };
         /** ReviewSection */
         ReviewSection: {
@@ -1470,8 +1491,15 @@ export interface components {
              * Format: date-time
              */
             expires_at: string;
+            /** From Version */
+            from_version?: number | null;
             /** Reviewer Name */
             reviewer_name: string;
+            /**
+             * Round No
+             * @default 1
+             */
+            round_no: number;
             /** Tender Id */
             tender_id: string;
         };
@@ -1898,6 +1926,7 @@ export interface components {
             issuing_agency: string;
             /** Required Undecided */
             required_undecided: number;
+            round?: components["schemas"]["ReviewRound"] | null;
             /** Sections */
             sections: components["schemas"]["ReviewSection"][];
             /** Status */

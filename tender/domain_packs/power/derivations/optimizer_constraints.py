@@ -21,7 +21,7 @@ from tender.domain_packs.power.derivations import (
     records_of,
 )
 
-VERSION = "v2"
+VERSION = "v3"
 FIELD = "sector.power.common.optimizer_constraints"
 RTC = "sector.power.re_rtc."
 GREEN_MIN = RTC + "traceable_green_min_pct"
@@ -110,6 +110,46 @@ INPUTS = (
     ASSURED_AVAILABILITY,
 )
 
+# The subject each input's branch writes, so that a withdrawn input gets a typed row under
+# the subject it would have constrained (v3, 2026-10-15).
+SUBJECT_OF_INPUT = {
+    GREEN_MIN: "traceable_green_share",
+    REC: "rec_for_non_re_supply",
+    CUF_ANNUAL: "cuf_annual",
+    CUF_MONTHLY: "cuf_monthly",
+    CUF_PEAK: "cuf_peak",
+    PEAK_WINDOW: "peak_window_hours",
+    SUPPLY_START: "supply_start",
+    GREENSHOE_MW: "greenshoe_capacity",
+    GREENSHOE_OFFER: "greenshoe_offer_deadline",
+    GREENSHOE_SSD: "supply_start_greenshoe",
+    GREENSHOE_PPA_DAYS: "greenshoe_ppa_signing",
+    LINKED: "linked_capacity_installation",
+    TARIFF_SPLIT: "non_re_tariff_fixed_share",
+    CHARGING: "bess_re_charged_only",
+    MIX: "source_prohibited",
+    CAPACITY: "contracted_capacity",
+    TENURE: "contract_term",
+    STORAGE_MANDATORY: "storage_mandatory",
+    ENERGY: "contracted_energy_capacity",
+    MIN_BID: "project_capacity_min",
+    MAX_BID: "project_capacity_max",
+    MIN_COMMISSIONED: "min_commissioned_capacity",
+    LOCATION: "location_constraint",
+    SCOD_MONTHS: "scod",
+    SCOD_REFERENCE: "scod",
+    FC_MONTHS: "financial_closure",
+    FC_REFERENCE: "financial_closure",
+    PPA_WINDOW_DAYS: "ppa_signing",
+    STORAGE_MW: "storage_power_capacity",
+    STORAGE_MWH: "storage_energy_capacity",
+    CYCLES: "storage_cycles_per_day",
+    ROUND_TRIP: "round_trip_efficiency",
+    AVAILABILITY_FLOOR: "availability",
+    ASSURED_AVAILABILITY: "assured_availability",
+}
+assert set(SUBJECT_OF_INPUT) == set(INPUTS)
+
 
 class _Rows:
     def __init__(self) -> None:
@@ -145,6 +185,10 @@ def _number(value: Any) -> float | None:
 
 def derive(inputs: Inputs) -> Derivation:
     out = _Rows()
+    # A withdrawn input constrains nothing: its branch sees no field, and the table ends
+    # with one `withdrawn` row per removal.
+    withdrawn = {path: d for path, d in inputs.items() if d.withdrawn}
+    inputs = {path: d for path, d in inputs.items() if not d.withdrawn}
 
     green = inputs.get(GREEN_MIN)
     share = _number(green.value) if green else None
@@ -386,12 +430,20 @@ def derive(inputs: Inputs) -> Derivation:
                 holds=True, source=item["source"], condition=item.get("condition"),
             )  # fmt: skip
 
+    for path, decided in sorted(withdrawn.items()):
+        out.add(
+            "withdrawn", SUBJECT_OF_INPUT[path], decided, holds=False,
+            condition=f"withdrawn by v{decided.withdrawn_by}",
+        )  # fmt: skip
+
     fields_used = {p for row in out.rows for p in row.inputs}
     note = (
         f"{len(out.rows)} constraint(s) from {len(fields_used)} decided field(s)"
         if out.rows
         else "no decided field yields a constraint"
     )
+    if withdrawn:
+        note += f"; {len(withdrawn)} withdrawn by amendment"
     return Derivation(rows=out.rows, note=note)
 
 
@@ -402,5 +454,5 @@ RULE = Rule(
     inputs=INPUTS,
     derive=derive,
     row_key="id",
-    inputs_by_version={"v1": INPUTS_V1},
+    inputs_by_version={"v1": INPUTS_V1, "v2": INPUTS},
 )

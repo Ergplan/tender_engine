@@ -12,9 +12,10 @@ from core.llm.client import LLMClient
 from core.schemas import SchemaRegistry
 from core.services.extract import ExtractService
 from core.services.review_state import ReviewStateService
-from tender.services import amendment_map, derive, freshness, summary
+from tender.services import amendment_map, derive, freshness, rounds, summary
 from tender.services.packs import Catalog
 from tender.services.tenders import TenderService
+from tender.services.tokens import TokenService
 
 Handler = Callable[[Session, dict[str, Any]], None]
 
@@ -50,9 +51,14 @@ def tender_jobs(
         **freshness.job_handlers(checker, tenant_id, freshness_interval_days),
     }
 
+    opener = rounds.RoundOpener(
+        TenderService(catalog, extract, tenant_id), TokenService(tenant_id), tenant_id
+    )
+
     def after_validation(session: Session, extraction_run_id: str) -> None:
         writer.after_validation(session, extraction_run_id)
         deriver.after_validation(session, extraction_run_id)
+        opener.after_validation(session, extraction_run_id)
 
     return handlers, after_validation
 

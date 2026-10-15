@@ -42,6 +42,7 @@ export function fieldOf(change: AmendmentChange): ReviewField {
     current: 0,
     decided: change.decided,
     flagged: change.flagged,
+    in_scope: true,
   };
 }
 

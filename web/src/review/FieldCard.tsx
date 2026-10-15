@@ -190,6 +190,9 @@ export function FieldCard({
 }) {
   const entry = currentEntry(field);
   const candidate = entry?.state.candidate ?? null;
+  // A withdrawn reading shows as the removal unless the reviewer's edit gave the provision a value.
+  const removal =
+    !!candidate?.withdrawn && !(entry?.state.approval?.decision === "edited" && entry.state.approval.final_value != null);
   const element = useRef<HTMLDivElement>(null);
   const [note, setNote] = useState("");
   // A remark to go with Approve or Not in document, opened with "Add a note".
@@ -275,7 +278,7 @@ export function FieldCard({
           {caveat}
         </p>
       )}
-      {candidate?.withdrawn && (
+      {removal && (
         // The version removes the provision: no value to show, but what stood before it.
         <div data-testid="withdrawn" className="mt-0.5 rounded border border-red-200 bg-red-50 px-2 py-1 text-sm">
           <p className="font-medium text-red-800">Withdrawn by this version</p>
@@ -292,7 +295,7 @@ export function FieldCard({
           </p>
         </div>
       )}
-      {!candidate?.withdrawn && (
+      {!removal && (
         <div
           data-testid="field-value"
           className={"mt-0.5 text-sm text-slate-900 " + (long && !showAll ? "line-clamp-4" : "")}
@@ -486,14 +489,14 @@ export function FieldCard({
             disabled={blocker !== null}
             title={
               blocker ??
-              (candidate?.withdrawn
+              (removal
                 ? "Approve the removal: the earlier value will no longer apply (Enter)"
                 : "Approve (Enter)")
             }
             className={BUTTON + " border-green-600 bg-green-600 text-white hover:bg-green-700"}
             onClick={() => onDecide({ decision: "approved", ...withNote })}
           >
-            {candidate?.withdrawn ? "Approve removal" : "Approve"}
+            {removal ? "Approve removal" : "Approve"}
           </button>
           <button
             type="button"

@@ -81,3 +81,20 @@ under (e) for them is the "what changed" entries dated 2026-10-12 and 2026-10-13
 Standing rules that apply throughout: a reviewer's decision is the only source of a
 canonical value; the owner's approval rows are never changed by code; gold records are made
 only on the owner's word; no secret or review token appears in the repo.
+
+6. 2026-10-15, after the questions on the re-seed and the review count: "Order: withdrawn
+   first, review rounds second, schema v4 as one batch later. (1) withdrawn reading kind —
+   build it. 'Withdrawn by amendment' is a distinct state from 'not stated in document'
+   and from 'null', everywhere — candidate, canonical fact, API, published view, optimiser
+   constraints, source eligibility. A bidder must be able to tell a ceiling that never
+   existed from one removed last week. The review screen shows the prior value, the
+   amendment that removed it, and evidence from both sides, and the reviewer approves the
+   removal as a decision. Use the CfD-I tariff ceiling (clause 40.3, Amendment-03) as the
+   worked case. Fold in the EMD validity field from clause 17 of the same amendment.
+   (2) Review rounds opened by a new version: a round scoped to fields the version
+   touched, with earlier approvals carrying forward with their provenance, and the
+   reviewer asked only about what changed. (3) Schema v4 as one batch later." Then:
+   "make gold for the four and proceed with v4 now" (so v4 now holds the EMD validity
+   fields and the batch becomes v5), and "ingest the CnI-1 Amendment-01 and the Ramagiri
+   xlsx files", with the Ramagiri re-seed in date order chosen by the owner. The "draft
+   report" for these is the 2026-10-15 lines of DECISIONS, ARCHITECTURE and KNOWN-GAPS.

@@ -1,0 +1,63 @@
+reviewer: gpt-6.1-sol  input chars: 373648  tokens in/out: 97488/3278
+
+### (a) Non-negotiable invariants
+
+| Invariant | Assessment from the supplied diff |
+|---|---|
+| **The LLM never writes truth** | Upheld by the shown withdrawal path: extraction stores a candidate (`core/services/extract.py:390–400,852–857`); a withdrawn canonical fact is constructed in the approval handler (`core/services/approve.py:285–293`). The diff cannot establish that this is the repository’s only canonical writer. |
+| **Every value carries its evidence** | The new approval branch requires located evidence for a withdrawal (`core/services/approve.py:145–155`). Withdrawal validation retains the preceding evidence checks while skipping value-type checks (`core/services/validate.py:97–105`). Candidate creation rejects a raw candidate without spans (`core/services/extract.py:839–840`). Confidence capping and the complete ordinary-value evidence path are outside the supplied hunks. |
+| **The tender is a versioned object** | The projection selects canonical facts by version and treats an approved withdrawal as superseding the earlier value (`tender/services/current_view.py:72–103`). Re-seeding preserves existing versions and candidates rather than editing them (`scripts/ingest_tenders.py:448–492`). Actual version-creation implementation is not shown. |
+| **Candidates are immutable** | No new application path shown edits a candidate’s value or withdrawal flag. Approval writes the withdrawal flag on a new canonical fact instead (`core/services/approve.py:285–293`). Database enforcement of immutability, including protection of the newly added column, is not shown by `migrations/versions/0014_withdrawn.py:21–31`. |
+| **Validation is deterministic** | Upheld by the added Python branch: it records a withdrawal check and skips value coercion without calling a model (`core/services/validate.py:100–105`). The rest of the validator and status-update logic is outside the diff. |
+| **Everything is audited and tenant-scoped** | New list queries filter by tenant (`tender/services/tenders.py:112–120`; `tender/services/freshness.py:277–280`), and the candidate and canonical models retain `TenantAuditMixin` (`core/models/extraction.py:88–95`; `core/models/truth.py:85–90`). The canonical audit payload includes `withdrawn` (`core/services/approve.py:300–307`). The candidate insert’s audit call is not visible; see (c). |
+| **Feedback is stored, never auto-applied** | No runtime feedback reader or automatic prompt adaptation is added. The new prompt is a checked-in versioned file (`core/llm/prompts/extract/v2.md:1–27`). Feedback persistence itself is outside the supplied hunks. |
+| **API first** | The changed extraction request remains an API schema (`api/v1/schemas/tenders.py:51–56`), and withdrawal is exposed through response models (`core/services/review_state.py:61–62`; `tender/services/current_view.py:35–42`). No new intelligence endpoint or direct UI network access is added. Complete routing and middleware coverage cannot be established from this diff. |
+
+FINDINGS: 1
+1. `core/services/extract.py:856–857`: the shown candidate insert has no visible audit call. Auditing compliance is unverified, not a demonstrated absence in the complete function.
+
+### (b) Tests for added API endpoints
+
+No API endpoints are added in the supplied diff. Changes to request/response schemas and existing service behavior do not constitute new endpoints.
+
+FINDINGS: none
+
+### (c) Auditing of protected-table writes
+
+| Write shown | Audit evidence shown |
+|---|---|
+| Candidate insert, including `withdrawn`, at `core/services/extract.py:852–857` | No audit call appears in the supplied hunk. |
+| Canonical-fact insert, including `withdrawn`, at `core/services/approve.py:285–293` | The adjacent audit payload records the fact’s value, withdrawal flag, approval and object at `core/services/approve.py:300–307`. The audit-call invocation itself is outside the displayed context. |
+
+No additional application writes to `approval`, `tender_version` or `feedback` are shown. Calls to existing approval/version services in tests do not expose their underlying writes or audit calls. Migration 0014 changes table structure rather than adding an application write path.
+
+FINDINGS: 2
+1. `core/services/extract.py:856–857`: candidate insert auditing cannot be verified; no corresponding audit call is supplied.
+2. `core/services/approve.py:292–307`: the canonical insert has a corresponding audit payload, but the invocation is omitted, so its audit call cannot be fully verified.
+
+### (d) `make trace` reproducibility
+
+**Not verifiable from the inputs.** `make trace` already exists according to `docs/FIELD-TRACE.md:3`; therefore “not applicable” does not apply. Neither its implementation nor a regeneration result is supplied.
+
+The committed trace also retains old prompt versions for several sections while the report claims those sections now use new versions. For example, eligibility remains `v1`, connectivity remains `v1`, and RE-RTC remains `v1`, whereas the new prompt files extend `extract/v2`. This does not establish the command’s actual output, but prevents certifying the trace as current.
+
+FINDINGS: 1
+1. `docs/FIELD-TRACE.md:50–59,95–105,120–121`: retained prompt-version entries conflict with the “every section’s latest prompt” account in `docs/ARCHITECTURE.md:183`; no regeneration output is supplied to establish a clean `make trace`.
+
+### (e) Draft-report claims unsupported by the supplied code
+
+The report substitutes designated in Input 2 are assessed below. “Unsupported” includes operational statements for which the diff supplies no execution or data evidence; it does not necessarily mean false.
+
+FINDINGS: 12
+1. **Lossless spreadsheet content.** `docs/DECISIONS.md:158` says nothing is dropped except formatting and images. However, `core/services/spreadsheet.py:44–60` loads cached formula results rather than formulas and stops after 50 consecutive empty rows, potentially omitting subsequent populated rows. The lossless description in `docs/ARCHITECTURE.md:431` is consequently not established.
+2. **Actual corpus ingestion and extraction.** `docs/ARCHITECTURE.md:431,433` and `docs/DECISIONS.md:159–160` claim CnI-1 v3 was ingested/extracted and Ramagiri was re-seeded into the specified five-version sequence. No manifests, actual document records or execution artifacts are included. Synthetic tests establish capability, not those corpus operations.
+3. **Specific source-document conclusions.** `docs/DECISIONS.md:159` asserts the CnI amendment’s date, agency source, annexure correction, trial-run wording and absence of the deadline move, plus Ramagiri document dates. The source documents and manifests needed to establish these statements are absent.
+4. **Re-seed command builds the replacement tender.** `docs/ARCHITECTURE.md:433` and `docs/DECISIONS.md:160` describe `reseed` as rebuilding from the manifest. Its CLI branch only invokes `reseed`; that function supersedes the old tender and instructs the caller to ingest and extract separately (`scripts/ingest_tenders.py:445–492,741–742`). The test likewise performs a separate ingest.
+5. **Every superseded tender is excluded from every list.** `docs/DECISIONS.md:160` claims exclusion from “every list.” The diff establishes filtering only in `TenderService.all` and the freshness corpus query (`tender/services/tenders.py:112–120`; `tender/services/freshness.py:274–280`). Other listing paths are not supplied.
+6. **Complete withdrawal representation in derived tables.** `docs/DECISIONS.md:162` claims withdrawal is distinct everywhere, including derived tables. The implementation adds only a rationale string (`tender/services/derive.py:329–338,449–465`), not a typed withdrawal state, version and clause in derived rows. `docs/KNOWN-GAPS.md:94` expressly acknowledges that limitation.
+7. **Withdrawal UI reflects an edit that restores a value.** The broad end-to-end withdrawal account in `docs/ARCHITECTURE.md:343` and `docs/DECISIONS.md:162` says an edit can establish that the provision still stands. Backend behavior supports this, but `web/src/review/FieldCard.tsx:278–298` still renders “Withdrawn by this version” whenever the original candidate is withdrawn, even after such an edit.
+8. **Worked CfD-I extraction/removal operation.** `docs/ARCHITECTURE.md:343` and `docs/DECISIONS.md:162` describe CfD-I’s specific ceiling, clause, version and re-reading under v2. The backend test uses a synthetic EMD withdrawal, not that tender (`tests/tender/test_withdrawn.py:18–49`). No real CfD-I extraction or removal approval is supplied.
+9. **Every section’s YAML pin was raised.** `docs/ARCHITECTURE.md:183` and `docs/DECISIONS.md:163` claim all listed section pins were raised. The diff supplies new prompt files but no corresponding pin changes for documents, eligibility, identity, key dates, connectivity, generation, IPP, RE-RTC or supply sources. The run default changing to `v2` does not prove those explicit pin claims.
+10. **Released schema v4 artifact and full compatibility verification.** `docs/ARCHITECTURE.md:432` and `docs/DECISIONS.md:164` claim `released/v4.yaml` was written. No such artifact is in the diff. Version declarations and adjusted test expectations do not establish that file’s existence or a successful compatibility run.
+11. **Completed-review, gold and accuracy totals.** `docs/DECISIONS.md:165` claims 11 completed reviews, 11 owner-authorized gold records, 97% accuracy on 942 fields and 100% evidence accuracy on 634. No gold files, evaluation output or underlying records are supplied. Other report text repeats the figures but does not independently establish them.
+12. **Snapshot inventory and contents.** `docs/KNOWN-GAPS.md:95` claims the 11 held snapshots contain no standing withdrawal and that a later snapshot will carry the new fields. The diff shows backward-compatible summary rendering and a synthetic rendering test, but no actual snapshot inventory or snapshot-generation changes establishing those claims.

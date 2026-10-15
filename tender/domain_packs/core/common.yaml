@@ -21,18 +21,21 @@ sections:
   identity_and_scope:
     label: Identity and scope
     prompt: extract/identity_and_scope
+    prompt_version: v2
     roles: [rfs, contractual, nit]
     section_kinds: [cover_and_notice, introduction_and_scope]
     keywords: [rfs no, tender no, bid information sheet, capacity, delivery point, metering point, maximum capacity, minimum capacity]
   key_dates:
     label: Key dates
     prompt: extract/key_dates
+    prompt_version: v2
     roles: [rfs, contractual, nit]
     section_kinds: [cover_and_notice, dates_and_schedule]
     keywords: [pre-bid, bid submission, last date, techno-commercial bid, bid validity, validity of bid, letter of award, financial closure, scheduled commissioning, scheduled commencement, signing of ppa, ppa period, effective date]
   eligibility:
     label: Eligibility
     prompt: extract/eligibility
+    prompt_version: v2
     roles: [rfs, contractual, nit]
     section_kinds: [eligibility]
     keywords: [eligibility criteria, qualifying requirement, net worth, turnover, liquidity, consortium, technical eligibility, shareholding, lock-in, affiliate]
@@ -60,6 +63,7 @@ sections:
   documents:
     label: Documents
     prompt: extract/documents
+    prompt_version: v2
     roles: [rfs, contractual, nit]
     section_kinds: [table_of_contents, bidding_process]
     keywords: [documents to be submitted, covering letter, format 7, annexure, power purchase agreement, power sale agreement, draft agreement, checklist]

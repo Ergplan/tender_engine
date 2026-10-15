@@ -36,7 +36,7 @@ def test_rows_are_in_review_order_and_name_the_rules_of_a_field(catalog: Catalog
     assert "LLM summary_record v1 from the record (narrative: LLM summary v2)" in rows[0]
     deadline = next(row for row in rows if "`core.key_dates.bid_submission_deadline`" in row)
     assert "required_present" in deadline and "date_order" in deadline
-    assert "LLM extract/key_dates v1" in deadline and "date picker" in deadline
+    assert "LLM extract/key_dates v2" in deadline and "date picker" in deadline
     emd = next(row for row in rows if "`core.guarantees.emd_per_mw_inr`" in row)
     assert "emd_pbg_within_10x" in emd and "number with unit" in emd
     elements = next(row for row in rows if "`sector.power.transmission.elements`" in row)

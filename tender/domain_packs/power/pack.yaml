@@ -17,12 +17,14 @@ sections:
   connectivity_and_compliance:
     label: Connectivity and compliance
     prompt: extract/connectivity_and_compliance
+    prompt_version: v2
     roles: [rfs, contractual, nit]
     section_kinds: [connectivity_and_compliance, technical_requirements]
     keywords: [connectivity, general network access, gna, ists charges, waiver, pooling substation, transmission line, almm, domestic content, land, clearances, interconnection point]
   supply_sources:
     label: Supply sources
     prompt: extract/supply_sources
+    prompt_version: v2
     roles: [rfs, contractual, nit, ppa]
     section_kinds: [introduction_and_scope, technical_requirements, connectivity_and_compliance]
     keywords: [source of supply, any source, renewable energy certificate, rec, non-re, thermal, conventional, storage, battery, pumped storage, hydro, biomass, co-located, charged, exchange, market, traceable]
@@ -274,7 +276,7 @@ fields:
     help: "For each possible source of supply, whether the tender allows, limits, requires or prohibits it, or does not address it. `basis` says whether the row rests on a clause naming the source (stated) or on a general clause (inherited); a row with no clause behind it is not_addressed."
     keys:
       source: {label: Source, type: enum, enum: [solar, wind, hydro, biomass, bess, pumped_storage, thermal, market_purchase, other]}
-      status: {label: Status, type: enum, enum: [allowed, allowed_with_limit, required, prohibited, not_addressed]}
+      status: {label: Status, type: enum, enum: [allowed, allowed_with_limit, required, prohibited, not_addressed, withdrawn]}
       basis: {label: Basis, type: enum, enum: [stated, inherited, none]}
       limit_value: {label: Limit, type: decimal, min: 0, max: 100000}
       limit_unit: {label: Limit unit, type: enum, enum: [percent_of_annual_energy, percent_of_contracted_capacity, mw, mwh]}
@@ -288,7 +290,7 @@ fields:
     help: "The constraints an optimisation engine must satisfy, typed: a quantity with a comparator and unit, a date or a period from an event (temporal), or an obligation that holds or not. Each names the field it comes from and carries its evidence."
     keys:
       id: {label: Id, type: text}
-      kind: {label: Kind, type: enum, enum: [quantity, temporal, obligation]}
+      kind: {label: Kind, type: enum, enum: [quantity, temporal, obligation, withdrawn]}
       subject: {label: Subject, type: enum, enum: [traceable_green_share, non_re_share, cuf_annual, cuf_monthly, cuf_peak, peak_window_hours, contracted_capacity, greenshoe_capacity, linked_capacity_multiple, linked_capacity, linked_land_per_mw, non_re_tariff_fixed_share, non_re_tariff_variable_share, contract_term, storage_capacity, supply_start, supply_start_greenshoe, greenshoe_offer_deadline, greenshoe_ppa_signing, linked_capacity_documents, financial_closure, scod, rec_for_non_re_supply, bess_re_charged_only, bess_co_located, linked_capacity_installation, peak_window_set_by_procurer, non_re_merit_order_despatch, storage_mandatory, source_prohibited, contracted_energy_capacity, project_capacity_min, project_capacity_max, min_commissioned_capacity, storage_power_capacity, storage_energy_capacity, storage_cycles_per_day, round_trip_efficiency, availability, assured_availability, location_constraint, ppa_signing]}
       comparator: {label: Comparator, type: enum, enum: [">=", "<=", "==", between]}
       value: {label: Value, type: decimal, min: -1000000000, max: 1000000000}
