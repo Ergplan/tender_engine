@@ -274,7 +274,9 @@ class FreshnessChecker:
         results = [
             self.check(session, tender, pages.get(tender.slug or ""))
             for tender in session.scalars(
-                select(Tender).where(Tender.tenant_id == self._tenant_id).order_by(Tender.slug)
+                select(Tender)
+                .where(Tender.tenant_id == self._tenant_id, Tender.status != "superseded")
+                .order_by(Tender.slug)
             )
         ]
         listed_by: dict[str, set[str]] = {}

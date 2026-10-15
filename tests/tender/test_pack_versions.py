@@ -219,7 +219,7 @@ def test_signature_holds_type_unit_values_and_record_keys_only() -> None:
 
 def test_the_power_pack_reads_v1_with_one_declared_change(catalog: Catalog) -> None:
     for name, compiled in catalog.types.items():
-        assert compiled.reads_versions == ("v1", "v2"), name
+        assert compiled.reads_versions == ("v1", "v2", "v3"), name
         expected = (
             (("v1", ("sector.power.transmission.elements",)),) if name == "transmission" else ()
         )
@@ -230,7 +230,7 @@ def test_the_power_pack_would_not_load_without_its_declaration(catalog: Catalog)
     transmission = catalog.types["transmission"]
     with pytest.raises(PackError, match=r"not listed under read_again.*transmission.elements"):
         verify_versions(
-            PACKS_ROOT / "power", "transmission", "v3", ("v1",), {}, transmission.fields
+            PACKS_ROOT / "power", "transmission", "v4", ("v1",), {}, transmission.fields
         )
 
 

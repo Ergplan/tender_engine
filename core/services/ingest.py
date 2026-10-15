@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 
 from core.models import Document
 from core.services import jobs
+from core.services.spreadsheet import is_spreadsheet, render_pdf
 from core.storage import Storage
 
 
@@ -32,9 +33,15 @@ class IngestService:
         retrieved_on: date | None = None,
     ) -> tuple[Document, bool]:
         """Returns (document, created). An identical file returns the existing document;
-        provenance given for it fills what the existing document lacks, never overwrites."""
-        if not data.startswith(b"%PDF-"):
-            raise IngestError("the file is not a PDF")
+        provenance given for it fills what the existing document lacks, never overwrites.
+        A spreadsheet (.xlsx) is stored as its rendering to a text PDF
+        (`core.services.spreadsheet`); its sha256 and filename are the workbook's own."""
+        if is_spreadsheet(filename, data):
+            stored = render_pdf(data)
+        elif data.startswith(b"%PDF-"):
+            stored = data
+        else:
+            raise IngestError("the file is not a PDF or an .xlsx workbook")
         sha256 = hashlib.sha256(data).hexdigest()
         by_hash = select(Document).where(
             Document.tenant_id == self._tenant_id, Document.sha256 == sha256
@@ -44,7 +51,7 @@ class IngestService:
             if fill_provenance(existing, source_url, retrieved_on):
                 session.commit()
             return existing, False
-        key = self._storage.put(f"documents/{sha256}.pdf", data)
+        key = self._storage.put(f"documents/{sha256}.pdf", stored)
         document = Document(
             tenant_id=self._tenant_id,
             created_by=created_by,

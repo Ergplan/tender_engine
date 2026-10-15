@@ -13,6 +13,11 @@
               }
             ]
           },
+          "changes_decided": {
+            "default": false,
+            "title": "Changes Decided",
+            "type": "boolean"
+          },
           "decided": {
             "title": "Decided",
             "type": "boolean"
@@ -46,6 +51,14 @@
             "title": "Help Text",
             "type": "string"
           },
+          "impacts": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Impacts",
+            "type": "array"
+          },
           "is_current": {
             "title": "Is Current",
             "type": "boolean"
@@ -68,7 +81,8 @@
             "enum": [
               "added",
               "changed",
-              "restated"
+              "restated",
+              "removed"
             ],
             "title": "Kind",
             "type": "string"
@@ -173,6 +187,11 @@
           "kind": {
             "title": "Kind",
             "type": "string"
+          },
+          "removed": {
+            "default": 0,
+            "title": "Removed",
+            "type": "integer"
           },
           "restated": {
             "title": "Restated",
@@ -580,6 +599,11 @@
           },
           "value": {
             "title": "Value"
+          },
+          "withdrawn": {
+            "default": false,
+            "title": "Withdrawn",
+            "type": "boolean"
           }
         },
         "required": [
@@ -1533,6 +1557,25 @@
               }
             ],
             "title": "Version No"
+          },
+          "withdrawn": {
+            "default": false,
+            "title": "Withdrawn",
+            "type": "boolean"
+          },
+          "withdrawn_from_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Withdrawn From Version"
+          },
+          "withdrawn_value": {
+            "title": "Withdrawn Value"
           }
         },
         "required": [
@@ -3004,7 +3047,7 @@
             "type": "string"
           },
           "prompt_version": {
-            "default": "v1",
+            "default": "v2",
             "title": "Prompt Version",
             "type": "string"
           },

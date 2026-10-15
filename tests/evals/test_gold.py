@@ -160,3 +160,19 @@ def test_a_field_decided_on_an_earlier_version_keeps_its_decision_in_the_gold_re
     assert sum(1 for s in scores.values() if s.outcome == "missing") == 0, (
         "no decided field of version 1 reads as missing at version 2"
     )
+
+
+def test_a_superseded_tender_is_never_gold(
+    client: TestClient,
+    pipeline: Pipeline,
+    db,  # type: ignore[no-untyped-def]
+) -> None:
+    """Built again as a new tender: a review of the old document set is no gold for it,
+    even by its old slug."""
+    tender, _ = completed_review(client, pipeline)
+    row = db.scalars(select(Tender).where(Tender.id == tender["id"])).one()
+    assert build_gold(db, pipeline.catalog, row).tender_id == row.id
+    pipeline.tenders.supersede(db, row, created_by="t")
+    db.commit()
+    with pytest.raises(NoCompletedReview, match="superseded"):
+        build_gold(db, pipeline.catalog, row)

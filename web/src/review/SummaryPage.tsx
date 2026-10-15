@@ -15,6 +15,11 @@ type ViewField = {
   version_no: number | null;
   version_kind: string | null;
   evidence: { page_no?: number; kind?: string }[];
+  // The provision was withdrawn by `version_no`; the value it removed stood from
+  // `withdrawn_from_version`. Older snapshots carry none of these.
+  withdrawn?: boolean;
+  withdrawn_value?: unknown;
+  withdrawn_from_version?: number | null;
 };
 
 function download(name: string, data: unknown) {
@@ -97,6 +102,18 @@ export function SummaryPage({ api, tenderId, reviewHref }: {
                     <td className="py-1">
                       {!field.decided ? (
                         <span className="italic text-slate-400">not decided</span>
+                      ) : field.withdrawn ? (
+                        // Removed by an amendment: not a value that never existed.
+                        <span data-testid="withdrawn-field" className="text-red-800">
+                          Withdrawn by v{field.version_no} {field.version_kind}
+                          {field.withdrawn_value !== null && field.withdrawn_value !== undefined && (
+                            <>
+                              {" "}
+                              <del className="text-slate-500">{formatValue(field.withdrawn_value, field.value_type, field.unit)}</del>
+                              {field.withdrawn_from_version ? <span className="text-xs text-slate-500"> (stood from v{field.withdrawn_from_version})</span> : null}
+                            </>
+                          )}
+                        </span>
                       ) : field.value === null ? (
                         <span className="italic text-slate-500">not in document</span>
                       ) : (

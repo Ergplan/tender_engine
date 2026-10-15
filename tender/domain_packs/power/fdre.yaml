@@ -5,7 +5,7 @@ sections:
   fdre_profile:
     label: FDRE profile
     prompt: extract/fdre_profile
-    prompt_version: v2
+    prompt_version: v3
     roles: [rfs, contractual, nit]
     section_kinds: [technical_requirements, introduction_and_scope, penalties_and_remedies]
     keywords: [peak hours, demand profile, demand fulfilment, availability, firm and dispatchable, energy storage, excess energy, shortfall, capacity addition, component]

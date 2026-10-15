@@ -1,0 +1,2672 @@
+# Gold record of seci-fdre-rtc-v (fdre), reviewed by venture@aayuda.energy, completed 2026-10-14T12:33:44.363072+00:00; written by make gold on 2026-10-15T17:20:33+00:00. Never edited by hand.
+tenant_id: ergplan
+tender_id: 403b5218e8eb466792cfbcb51007acae
+slug: seci-fdre-rtc-v
+tender_type: fdre
+issuing_agency: SECI
+title: RfS for Supply of 1000 MW Firm and Dispatchable RE Round-the-Clock (FDRE-RTC / RTC-TM) Power from ISTS-Connected RE
+  Projects (SECI-FDRE-RTC-V)
+schema_version: v3
+reviewed_version: 5
+reviewer: venture@aayuda.energy
+completed_at: '2026-10-14T12:33:44.363072+00:00'
+snapshot_id: 36a02a52390141f3a111da11ab0f87e5
+made_at: '2026-10-15T17:20:33+00:00'
+fields:
+- field_path: core.summary.plain_english_summary
+  section: summary
+  value_type: long_text
+  required: true
+  decision: approved
+  final_value: 'What is procured: SECI is procuring 1000 MW of Firm and Dispatchable Renewable Energy Round-the-Clock (FDRE-RTC)
+    power from ISTS-connected renewable energy projects in India under tariff-based competitive bidding. [1][2][3][4][5] A
+    bidder may offer between 50 MW and 500 MW, and each project must include an energy storage system, with the components
+    of the project to be disclosed. [6][7][8][9][10][11]
+
+
+    Buyer and offtaker: Solar Energy Corporation of India Limited issues the tender and buys the power as an intermediary
+    procurer, selling it on at the PPA tariff plus its trading margin to Buying Entities (discoms), which must compulsorily
+    off-take scheduled power during Peak and Remaining Hours. [12][13][14] The Buying Entities are not named; their details
+    will be intimated later. [15] The Power Purchase Agreement runs for 25 years. [16]
+
+
+    Location: Projects may be located anywhere in India at locations chosen by the bidder at its own discretion, risk, cost
+    and responsibility, provided they connect to the ISTS. [17][18][19][20] The delivery point is the ISTS substation at 220
+    kV or above where the project''s power is injected (an InSTS/STU substation only if both the developer and the Buying
+    Entity agree), and metering is at that injection point. [21][22][23][24] The developer builds and pays for the transmission
+    line from the project up to and including the interconnection point, bearing all related charges and losses. [25][26]
+
+
+    Timeline: The RfS was issued on 10 March 2026, the pre-bid meeting was held on 19 March 2026, bids are due on 20 July
+    2026 and technical bids open on 23 July 2026, with the e-Reverse Auction date to be intimated to eligible bidders by email.
+    [27][28][29][30][31][32][33] Bids remain valid for 12 months. [34] Scheduled commissioning is 24 months from PPA signing,
+    with financial closure due 6 months before the scheduled commissioning date. [35][36]
+
+
+    Eligibility: A bidder quoting X MW must have commissioned in the last seven years, as owner or EPC contractor, either
+    one project of at least 4X/5 MW, two of at least X/2 MW each or three of at least 2X/5 MW each; under-construction projects
+    do not count. [37][38][39][40] Financial thresholds are a turnover of INR 40,000,000 (INR 4 crore) per MW, liquidity of
+    INR 8,000,000 (INR 80 lakh) per MW and net worth of INR 9,540,000 (INR 95.4 lakh) per MW. [41][42][43][44] Consortia may
+    bid and affiliate credentials may be used, but controlling shareholding may not change from bid submission until PPA execution,
+    and promoters may not cede control, nor may the shareholding in an SPV fall below 51%, until 1 year after the scheduled
+    commencement of supply date except with SECI''s prior approval. [45][46][47][48][49]
+
+
+    Money at risk: The EMD is Rs. 9,54,000 x S + 13,32,000 x W + 2,35,450 x E, valid for 12 months, and the PBG is Rs. 23,85,000
+    x S + 33,30,000 x W + 5,88,625 x E, submitted within 30 days of SECI''s invitation to sign the PPA, with delay charged
+    at Rs. 1000/MW/day plus GST on the unsigned capacity. [50][51][52][53][54][55][56][57] Bidders also pay success charges
+    of INR 100,000 (INR 1 lakh) per MW and a bid processing fee of INR 20,000. [58][59] SECI may encash the EMD if the selected
+    bidder fails to submit the PBG, success charge or proof of connectivity in time or fails to sign the PPA, and the PBG
+    is encashed pro-rata to capacity that has not commenced supply where supply is delayed beyond the scheduled or extended
+    date up to the 6-month termination deadline. [60][61][62][63]
+
+
+    Tariff or payment: The successful bidder is paid a fixed tariff under a 25-year PPA. [64][16] SECI backs payment with
+    a monthly unconditional, revolving and irrevocable Letter of Credit sized at 110% of estimated average monthly billing,
+    bills fall due 45 days after receipt, and late payment attracts a surcharge at SBI one-year MCLR plus 500 bps, rising
+    by 50 bps per month up to 3 percent above the base rate. [65][66][67][68][69][70][71][72] Change in law events after 7
+    days before the bid deadline are compensated through a monthly tariff adjustment under the Electricity (Timely Recovery
+    of Costs due to Change in Law) Rules, 2021. [73][74][75][76]
+
+
+    Obligations and penalties: The developer must schedule power day-ahead round the clock against the Contracted Capacity,
+    meeting a minimum Demand Fulfilment Ratio of 90% in each 15-minute block of the 6 Peak Hours chosen daily by the Buying
+    Entity, 50% to 60% in Solar Hours and 70% in Remaining Hours, using domestically manufactured ALMM List-I cells and modules.
+    [77][78][79][80][81][82][83][84][85][86][87][88] Shortfalls against the minimum DFR are added up time-block-wise and recovered
+    from the next monthly bill at 1.5 times the PPA tariff on the shortfall energy, and failing the minimum DFR for 2 consecutive
+    Contract Years is an Event of Default that reduces the obligation to the average achieved and triggers lump-sum damages
+    equal to 24 months or the balance PPA period, whichever is less. [89][90][91][92][93][94][95][96][97][98][99] Commencement
+    of supply may be delayed up to 6 months beyond the scheduled date with penalty and pro-rata PBG encashment, after which
+    the PPA may be terminated. [100][62][63]'
+  version_no: 5
+  evidence_pages:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  - 9
+  - 10
+  - 11
+  - 12
+  - 13
+  - 27
+  - 32
+  - 34
+  - 37
+  - 45
+  - 49
+  - 51
+  - 52
+  - 53
+  - 54
+  - 55
+  - 62
+  - 63
+  - 64
+  - 65
+  - 69
+  - 102
+  - 104
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T12:33:39.603484+00:00'
+  note: null
+  candidate:
+    id: f77e60e5123c4665be1a860e6924e4e7
+    value: 'What is procured: SECI is procuring 1000 MW of Firm and Dispatchable Renewable Energy Round-the-Clock (FDRE-RTC)
+      power from ISTS-connected renewable energy projects in India under tariff-based competitive bidding. [1][2][3][4][5]
+      A bidder may offer between 50 MW and 500 MW, and each project must include an energy storage system, with the components
+      of the project to be disclosed. [6][7][8][9][10][11]
+
+
+      Buyer and offtaker: Solar Energy Corporation of India Limited issues the tender and buys the power as an intermediary
+      procurer, selling it on at the PPA tariff plus its trading margin to Buying Entities (discoms), which must compulsorily
+      off-take scheduled power during Peak and Remaining Hours. [12][13][14] The Buying Entities are not named; their details
+      will be intimated later. [15] The Power Purchase Agreement runs for 25 years. [16]
+
+
+      Location: Projects may be located anywhere in India at locations chosen by the bidder at its own discretion, risk, cost
+      and responsibility, provided they connect to the ISTS. [17][18][19][20] The delivery point is the ISTS substation at
+      220 kV or above where the project''s power is injected (an InSTS/STU substation only if both the developer and the Buying
+      Entity agree), and metering is at that injection point. [21][22][23][24] The developer builds and pays for the transmission
+      line from the project up to and including the interconnection point, bearing all related charges and losses. [25][26]
+
+
+      Timeline: The RfS was issued on 10 March 2026, the pre-bid meeting was held on 19 March 2026, bids are due on 20 July
+      2026 and technical bids open on 23 July 2026, with the e-Reverse Auction date to be intimated to eligible bidders by
+      email. [27][28][29][30][31][32][33] Bids remain valid for 12 months. [34] Scheduled commissioning is 24 months from
+      PPA signing, with financial closure due 6 months before the scheduled commissioning date. [35][36]
+
+
+      Eligibility: A bidder quoting X MW must have commissioned in the last seven years, as owner or EPC contractor, either
+      one project of at least 4X/5 MW, two of at least X/2 MW each or three of at least 2X/5 MW each; under-construction projects
+      do not count. [37][38][39][40] Financial thresholds are a turnover of INR 40,000,000 (INR 4 crore) per MW, liquidity
+      of INR 8,000,000 (INR 80 lakh) per MW and net worth of INR 9,540,000 (INR 95.4 lakh) per MW. [41][42][43][44] Consortia
+      may bid and affiliate credentials may be used, but controlling shareholding may not change from bid submission until
+      PPA execution, and promoters may not cede control, nor may the shareholding in an SPV fall below 51%, until 1 year after
+      the scheduled commencement of supply date except with SECI''s prior approval. [45][46][47][48][49]
+
+
+      Money at risk: The EMD is Rs. 9,54,000 x S + 13,32,000 x W + 2,35,450 x E, valid for 12 months, and the PBG is Rs. 23,85,000
+      x S + 33,30,000 x W + 5,88,625 x E, submitted within 30 days of SECI''s invitation to sign the PPA, with delay charged
+      at Rs. 1000/MW/day plus GST on the unsigned capacity. [50][51][52][53][54][55][56][57] Bidders also pay success charges
+      of INR 100,000 (INR 1 lakh) per MW and a bid processing fee of INR 20,000. [58][59] SECI may encash the EMD if the selected
+      bidder fails to submit the PBG, success charge or proof of connectivity in time or fails to sign the PPA, and the PBG
+      is encashed pro-rata to capacity that has not commenced supply where supply is delayed beyond the scheduled or extended
+      date up to the 6-month termination deadline. [60][61][62][63]
+
+
+      Tariff or payment: The successful bidder is paid a fixed tariff under a 25-year PPA. [64][16] SECI backs payment with
+      a monthly unconditional, revolving and irrevocable Letter of Credit sized at 110% of estimated average monthly billing,
+      bills fall due 45 days after receipt, and late payment attracts a surcharge at SBI one-year MCLR plus 500 bps, rising
+      by 50 bps per month up to 3 percent above the base rate. [65][66][67][68][69][70][71][72] Change in law events after
+      7 days before the bid deadline are compensated through a monthly tariff adjustment under the Electricity (Timely Recovery
+      of Costs due to Change in Law) Rules, 2021. [73][74][75][76]
+
+
+      Obligations and penalties: The developer must schedule power day-ahead round the clock against the Contracted Capacity,
+      meeting a minimum Demand Fulfilment Ratio of 90% in each 15-minute block of the 6 Peak Hours chosen daily by the Buying
+      Entity, 50% to 60% in Solar Hours and 70% in Remaining Hours, using domestically manufactured ALMM List-I cells and
+      modules. [77][78][79][80][81][82][83][84][85][86][87][88] Shortfalls against the minimum DFR are added up time-block-wise
+      and recovered from the next monthly bill at 1.5 times the PPA tariff on the shortfall energy, and failing the minimum
+      DFR for 2 consecutive Contract Years is an Event of Default that reduces the obligation to the average achieved and
+      triggers lump-sum damages equal to 24 months or the balance PPA period, whichever is less. [89][90][91][92][93][94][95][96][97][98][99]
+      Commencement of supply may be delayed up to 6 months beyond the scheduled date with penalty and pro-rata PBG encashment,
+      after which the PPA may be terminated. [100][62][63]'
+    confidence: 0.88
+    prompt_name: summary_record
+    prompt_version: v1
+    pages:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
+    - 9
+    - 10
+    - 11
+    - 12
+    - 13
+    - 27
+    - 32
+    - 34
+    - 37
+    - 45
+    - 49
+    - 51
+    - 52
+    - 53
+    - 54
+    - 55
+    - 62
+    - 63
+    - 64
+    - 65
+    - 69
+    - 102
+    - 104
+- field_path: core.identity.tender_number
+  section: identity_and_scope
+  value_type: text
+  required: true
+  decision: approved
+  final_value: SECI/C&P/IPP/13/0020/25-26
+  version_no: 5
+  evidence_pages:
+  - 1
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T06:19:36.386888+00:00'
+  note: null
+  candidate:
+    id: 008d9ce4096c4084ab09c835ee9fc106
+    value: SECI/C&P/IPP/13/0020/25-26
+    confidence: 0.85
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 1
+- field_path: core.identity.issuing_agency
+  section: identity_and_scope
+  value_type: text
+  required: true
+  decision: approved
+  final_value: Solar Energy Corporation of India Limited
+  version_no: 5
+  evidence_pages:
+  - 1
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T06:19:38.482211+00:00'
+  note: null
+  candidate:
+    id: 5392787298a24fdd85f2bcdf07187f62
+    value: Solar Energy Corporation of India Limited
+    confidence: 0.9
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 1
+- field_path: core.identity.title
+  section: identity_and_scope
+  value_type: text
+  required: true
+  decision: approved
+  final_value: Request for Selection (RfS) Document for Selection of RE Power Developers for Supply of 1000 MW of Firm and
+    Dispatchable Renewable Energy Round-the-Clock (FDRE-RTC) Power from ISTS-connected Renewable Energy (RE) Power Projects
+    in India, under Tariff-based Competitive Bidding (SECI-FDRE-RTC-V)
+  version_no: 5
+  evidence_pages:
+  - 1
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T06:19:46.612037+00:00'
+  note: null
+  candidate:
+    id: 995d15d548074d438e46fa5124c22ee8
+    value: Request for Selection (RfS) Document for Selection of RE Power Developers for Supply of 1000 MW of Firm and Dispatchable
+      Renewable Energy Round-the-Clock (FDRE-RTC) Power from ISTS-connected Renewable Energy (RE) Power Projects in India,
+      under Tariff-based Competitive Bidding (SECI-FDRE-RTC-V)
+    confidence: 0.9
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 1
+- field_path: core.identity.procurement_mode
+  section: identity_and_scope
+  value_type: enum
+  required: false
+  decision: edited
+  final_value: single_stage_two_envelope
+  version_no: 1
+  evidence_pages:
+  - 7
+  - 10
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T06:20:17.637862+00:00'
+  note: null
+  candidate:
+    id: 3dbeb83cba8b45969d234fd48f414cb4
+    value: e_reverse_auction
+    confidence: 0.95
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 7
+    - 10
+- field_path: core.identity.portal
+  section: identity_and_scope
+  value_type: text
+  required: false
+  decision: approved
+  final_value: ISN-ETS portal (https://www.bharat-electronictender.com)
+  version_no: 1
+  evidence_pages:
+  - 5
+  - 7
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T06:20:22.048316+00:00'
+  note: null
+  candidate:
+    id: d151972461884597993554bbe0865edf
+    value: ISN-ETS portal (https://www.bharat-electronictender.com)
+    confidence: 0.95
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 5
+    - 7
+- field_path: core.identity.tender_type_as_stated
+  section: identity_and_scope
+  value_type: text
+  required: false
+  decision: approved
+  final_value: Firm and Dispatchable Renewable Energy Round-the-Clock (FDRE-RTC) Power
+  version_no: 5
+  evidence_pages:
+  - 1
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T06:20:24.867262+00:00'
+  note: null
+  candidate:
+    id: 03171b7bc5554774a20be6b471a06fd8
+    value: Firm and Dispatchable Renewable Energy Round-the-Clock (FDRE-RTC) Power
+    confidence: 0.85
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 1
+- field_path: sector.power.common.total_capacity_mw
+  section: identity_and_scope
+  value_type: mw
+  required: false
+  decision: approved
+  final_value: 1000
+  version_no: 5
+  evidence_pages:
+  - 1
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T06:22:24.172429+00:00'
+  note: null
+  candidate:
+    id: 48c5e07feb9d492c8746099f7cc94cd6
+    value: 1000.0
+    confidence: 0.7
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 1
+- field_path: sector.power.common.total_capacity_mwh
+  section: identity_and_scope
+  value_type: mwh
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T06:22:28.354395+00:00'
+  note: null
+  candidate:
+    id: 77d00fa375bc457d990882b18e0fb193
+    value: null
+    confidence: 0.0
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.min_bid_mw
+  section: identity_and_scope
+  value_type: mw
+  required: false
+  decision: edited
+  final_value: 50
+  version_no: 2
+  evidence_pages:
+  - 1
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T06:22:50.579367+00:00'
+  note: null
+  candidate:
+    id: f13934d059e2446f9a10b5fc1d436823
+    value: 50.0
+    confidence: 0.3
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 1
+- field_path: sector.power.common.max_bid_mw
+  section: identity_and_scope
+  value_type: mw
+  required: false
+  decision: edited
+  final_value: 500
+  version_no: 2
+  evidence_pages:
+  - 1
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T06:24:44.436155+00:00'
+  note: null
+  candidate:
+    id: 9222f3e0b27846b59496794f3614edeb
+    value: 500.0
+    confidence: 0.3
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 1
+- field_path: sector.power.common.max_projects_per_bidder
+  section: identity_and_scope
+  value_type: int
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T06:24:48.592891+00:00'
+  note: null
+  candidate:
+    id: 495e50a5348942b59fc4fefa2d35bfbd
+    value: null
+    confidence: 0.0
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.location_constraint
+  section: identity_and_scope
+  value_type: enum
+  required: false
+  decision: approved
+  final_value: ists_anywhere
+  version_no: 5
+  evidence_pages:
+  - 1
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T06:24:50.625513+00:00'
+  note: null
+  candidate:
+    id: 2f81311399d24eb4aff16a8aed020102
+    value: ists_anywhere
+    confidence: 0.5
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 1
+- field_path: sector.power.common.named_states_or_sites
+  section: identity_and_scope
+  value_type: list_text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T06:24:55.789262+00:00'
+  note: null
+  candidate:
+    id: f7fda28d76fe4709b88489317fd5bb1a
+    value: null
+    confidence: 0.0
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.delivery_point
+  section: identity_and_scope
+  value_type: text
+  required: false
+  decision: approved
+  final_value: ISTS substation at 220 kV or above where the power from the Project is injected (InSTS/STU substation only
+    if both RPD and Buying Entity agree)
+  version_no: 1
+  evidence_pages:
+  - 10
+  - 63
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T06:25:46.736223+00:00'
+  note: null
+  candidate:
+    id: 75d6edf1c9a1459898a6a353283f6c84
+    value: ISTS substation at 220 kV or above where the power from the Project is injected (InSTS/STU substation only if both
+      RPD and Buying Entity agree)
+    confidence: 0.93
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 10
+    - 63
+- field_path: sector.power.common.metering_point
+  section: identity_and_scope
+  value_type: text
+  required: false
+  decision: approved
+  final_value: At the interconnection/delivery point where power is injected into the ISTS (or InSTS/STU) substation; for
+    pooled projects, at the ISTS substation injection point
+  version_no: 1
+  evidence_pages:
+  - 63
+  - 65
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T06:25:48.748840+00:00'
+  note: null
+  candidate:
+    id: 45a2c1e55e6e413bb9fe5d7b61f79caf
+    value: At the interconnection/delivery point where power is injected into the ISTS (or InSTS/STU) substation; for pooled
+      projects, at the ISTS substation injection point
+    confidence: 0.93
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 63
+    - 65
+- field_path: core.key_dates.nit_date
+  section: key_dates
+  value_type: date
+  required: false
+  decision: approved
+  final_value: '2026-03-10'
+  version_no: 5
+  evidence_pages:
+  - 1
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T06:25:54.230070+00:00'
+  note: null
+  candidate:
+    id: 2bcfae98c99342288c73a07525fab6f0
+    value: '2026-03-10'
+    confidence: 0.9
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 1
+- field_path: core.key_dates.pre_bid_meeting_date
+  section: key_dates
+  value_type: date
+  required: false
+  decision: approved
+  final_value: '2026-03-19'
+  version_no: 5
+  evidence_pages:
+  - 1
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T06:25:58.112899+00:00'
+  note: null
+  candidate:
+    id: fce351b8dd584ac8a8a8606011411f66
+    value: '2026-03-19'
+    confidence: 0.95
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 1
+- field_path: core.key_dates.query_deadline
+  section: key_dates
+  value_type: date
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T06:28:24.081171+00:00'
+  note: null
+  candidate:
+    id: 66d9e06e8dbb443fa5fb1b0238ebea30
+    value: null
+    confidence: 0.0
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages: []
+- field_path: core.key_dates.bid_submission_deadline
+  section: key_dates
+  value_type: date
+  required: true
+  decision: approved
+  final_value: '2026-07-20'
+  version_no: 5
+  evidence_pages:
+  - 1
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T06:28:32.922831+00:00'
+  note: null
+  candidate:
+    id: a7767b7b53714bd7a13353e81f0ed8c6
+    value: '2026-07-20'
+    confidence: 0.95
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 1
+- field_path: core.key_dates.technical_opening_date
+  section: key_dates
+  value_type: date
+  required: false
+  decision: approved
+  final_value: '2026-07-23'
+  version_no: 5
+  evidence_pages:
+  - 1
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T06:28:35.588311+00:00'
+  note: null
+  candidate:
+    id: 9518f71c0efe48e88e9725b7e92f6869
+    value: '2026-07-23'
+    confidence: 0.8
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 1
+- field_path: core.key_dates.era_date
+  section: key_dates
+  value_type: date
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T06:28:38.501175+00:00'
+  note: null
+  candidate:
+    id: ca24e7d95e0a4cd0a53dd53ce396ed6a
+    value: null
+    confidence: 0.0
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages: []
+- field_path: core.key_dates.dates_deferred_note
+  section: key_dates
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: Pre-bid meeting date/time/venue, the offline & online bid submission deadline and the techno-commercial bid
+    opening are deferred to the NIT on the ISN-ETS portal (pre-bid also on SECI website). The e-Reverse Auction date and time
+    will be intimated to eligible bidders by email. No query deadline is printed.
+  version_no: 1
+  evidence_pages:
+  - 4
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T06:28:40.082638+00:00'
+  note: null
+  candidate:
+    id: 3da7f01b43e040cda01ca5b725b5e139
+    value: Pre-bid meeting date/time/venue, the offline & online bid submission deadline and the techno-commercial bid opening
+      are deferred to the NIT on the ISN-ETS portal (pre-bid also on SECI website). The e-Reverse Auction date and time will
+      be intimated to eligible bidders by email. No query deadline is printed.
+    confidence: 0.95
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 4
+- field_path: core.key_dates.bid_validity
+  section: key_dates
+  value_type: int
+  required: false
+  decision: approved
+  final_value: 12
+  version_no: 1
+  evidence_pages:
+  - 45
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T06:28:41.890245+00:00'
+  note: null
+  candidate:
+    id: a2612bdf5f1b4b1982b530b0be5f8c0a
+    value: 12
+    confidence: 0.95
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 45
+- field_path: core.key_dates.bid_validity_unit
+  section: key_dates
+  value_type: enum
+  required: false
+  decision: approved
+  final_value: months
+  version_no: 1
+  evidence_pages:
+  - 45
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T06:28:45.859775+00:00'
+  note: null
+  candidate:
+    id: e7bbd064f8b347a1b3ba18b427e566de
+    value: months
+    confidence: 0.95
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 45
+- field_path: core.key_dates.loa_timeline
+  section: key_dates
+  value_type: text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T08:19:30.369960+00:00'
+  note: null
+  candidate:
+    id: 085e2eccca344cafa8218345969f98a6
+    value: null
+    confidence: 0.0
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.ppa_signing_window_days
+  section: key_dates
+  value_type: int
+  required: false
+  decision: edited
+  final_value: 0
+  version_no: 1
+  evidence_pages:
+  - 34
+  - 35
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T08:20:20.650989+00:00'
+  note: null
+  candidate:
+    id: 08532628baab49a798663b7833cc35a5
+    value: 30
+    confidence: 0.5
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 34
+    - 35
+- field_path: sector.power.common.financial_closure_months
+  section: key_dates
+  value_type: duration_months
+  required: false
+  decision: approved
+  final_value: 6
+  version_no: 3
+  evidence_pages:
+  - 3
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T08:20:36.369823+00:00'
+  note: null
+  candidate:
+    id: 58677b0643dc489490ebd802bf7f4373
+    value: 6
+    confidence: 0.75
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 3
+- field_path: sector.power.common.financial_closure_reference
+  section: key_dates
+  value_type: enum
+  required: false
+  decision: approved
+  final_value: before_scod
+  version_no: 3
+  evidence_pages:
+  - 3
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T08:20:37.415948+00:00'
+  note: null
+  candidate:
+    id: 2fc3c898ddc74f23bf64509d6d1a8340
+    value: before_scod
+    confidence: 0.75
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 3
+- field_path: sector.power.common.scod_months
+  section: key_dates
+  value_type: duration_months
+  required: false
+  decision: approved
+  final_value: 24
+  version_no: 3
+  evidence_pages:
+  - 2
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T08:20:47.377768+00:00'
+  note: null
+  candidate:
+    id: a9e95d518c284034bf8e358453631a16
+    value: 24
+    confidence: 0.75
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 2
+- field_path: sector.power.common.scod_reference
+  section: key_dates
+  value_type: enum
+  required: false
+  decision: edited
+  final_value: ppa_signing
+  version_no: 3
+  evidence_pages:
+  - 2
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T08:20:56.293833+00:00'
+  note: null
+  candidate:
+    id: d7083fdf0ee84eeeb2f298dc53759344
+    value: effective_date
+    confidence: 0.75
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 2
+- field_path: sector.power.common.ppa_tenure_years
+  section: key_dates
+  value_type: int
+  required: false
+  decision: approved
+  final_value: 25
+  version_no: 1
+  evidence_pages:
+  - 34
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T08:24:38.078610+00:00'
+  note: null
+  candidate:
+    id: 18c16a304e4e4ab7ac3ba945a1e4a905
+    value: 25
+    confidence: 0.97
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 34
+- field_path: core.eligibility.technical_experience_requirement
+  section: eligibility
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: 'Amended Clause 34.3: a Bidder quoting ''X'' MW Contracted Capacity must have successfully commissioned (as
+    Project Owner or EPC Contractor), in the last seven years as on the bid submission deadline, either (i) a single Generating
+    Station/Power Project of not less than 4X/5 MW, or (ii) two of not less than X/2 MW each, or (iii) three of not less than
+    2X/5 MW each. Domestic and global experience count; commissioning certificate plus latest energy invoice (and EPC Contract
+    Agreement if as EPC contractor) must be submitted. For a Bidding Consortium the Lead Member must meet it; the Bidder/Lead
+    Member may rely on the technical capability of its Affiliate(s).'
+  version_no: 2
+  evidence_pages:
+  - 4
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T08:24:51.696043+00:00'
+  note: null
+  candidate:
+    id: e60fb58ac3ff4c77aaf0a82fc3fa0bd4
+    value: 'Amended Clause 34.3: a Bidder quoting ''X'' MW Contracted Capacity must have successfully commissioned (as Project
+      Owner or EPC Contractor), in the last seven years as on the bid submission deadline, either (i) a single Generating
+      Station/Power Project of not less than 4X/5 MW, or (ii) two of not less than X/2 MW each, or (iii) three of not less
+      than 2X/5 MW each. Domestic and global experience count; commissioning certificate plus latest energy invoice (and EPC
+      Contract Agreement if as EPC contractor) must be submitted. For a Bidding Consortium the Lead Member must meet it; the
+      Bidder/Lead Member may rely on the technical capability of its Affiliate(s).'
+    confidence: 0.9
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages:
+    - 4
+- field_path: core.eligibility.turnover_requirement_inr
+  section: eligibility
+  value_type: money_inr
+  required: false
+  decision: approved
+  final_value: 40000000
+  version_no: 1
+  evidence_pages:
+  - 52
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T08:25:00.172099+00:00'
+  note: null
+  candidate:
+    id: 0091c786b853404ab1df8f68cf08b41c
+    value: 40000000.0
+    confidence: 0.9
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages:
+    - 52
+- field_path: core.eligibility.turnover_basis
+  section: eligibility
+  value_type: enum
+  required: false
+  decision: approved
+  final_value: per_mw
+  version_no: 1
+  evidence_pages:
+  - 52
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T08:25:02.705612+00:00'
+  note: null
+  candidate:
+    id: 5b4ed34f7a1a488eaf3d50cc9b0d0951
+    value: per_mw
+    confidence: 0.9
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages:
+    - 52
+- field_path: core.eligibility.ebitda_requirement_inr
+  section: eligibility
+  value_type: money_inr
+  required: false
+  decision: null
+  final_value: null
+  version_no: null
+  evidence_pages: []
+  reviewer: null
+  decided_at: null
+  note: null
+  candidate: null
+- field_path: core.eligibility.ebitda_basis
+  section: eligibility
+  value_type: text
+  required: false
+  decision: null
+  final_value: null
+  version_no: null
+  evidence_pages: []
+  reviewer: null
+  decided_at: null
+  note: null
+  candidate: null
+- field_path: core.eligibility.min_single_station_mw
+  section: eligibility
+  value_type: mw
+  required: false
+  decision: null
+  final_value: null
+  version_no: null
+  evidence_pages: []
+  reviewer: null
+  decided_at: null
+  note: null
+  candidate: null
+- field_path: core.eligibility.min_continuous_operation_years
+  section: eligibility
+  value_type: decimal
+  required: false
+  decision: null
+  final_value: null
+  version_no: null
+  evidence_pages: []
+  reviewer: null
+  decided_at: null
+  note: null
+  candidate: null
+- field_path: core.eligibility.experience_period_end_date
+  section: eligibility
+  value_type: date
+  required: false
+  decision: null
+  final_value: null
+  version_no: null
+  evidence_pages: []
+  reviewer: null
+  decided_at: null
+  note: null
+  candidate: null
+- field_path: core.eligibility.liquidity_requirement_inr
+  section: eligibility
+  value_type: money_inr
+  required: false
+  decision: approved
+  final_value: 8000000
+  version_no: 1
+  evidence_pages:
+  - 52
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T08:25:45.699182+00:00'
+  note: null
+  candidate:
+    id: 6657f006184f461899a0781ce14378ce
+    value: 8000000.0
+    confidence: 0.8
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages:
+    - 52
+- field_path: core.eligibility.liquidity_basis
+  section: eligibility
+  value_type: enum
+  required: false
+  decision: approved
+  final_value: per_mw
+  version_no: 1
+  evidence_pages:
+  - 52
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T08:25:47.794814+00:00'
+  note: null
+  candidate:
+    id: 63c93ecf23b04d1f95b553edd6d6a255
+    value: per_mw
+    confidence: 0.9
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages:
+    - 52
+- field_path: core.eligibility.consortium_allowed
+  section: eligibility
+  value_type: bool
+  required: false
+  decision: approved
+  final_value: true
+  version_no: 2
+  evidence_pages:
+  - 4
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T08:25:49.958878+00:00'
+  note: null
+  candidate:
+    id: fb00428817534313af6c08276f46a3ff
+    value: true
+    confidence: 0.75
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages:
+    - 4
+- field_path: core.eligibility.max_consortium_members
+  section: eligibility
+  value_type: int
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T08:26:30.262544+00:00'
+  note: null
+  candidate:
+    id: d8cbabeb694147f2a0e7e33329869f9d
+    value: null
+    confidence: 0.0
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages: []
+- field_path: core.eligibility.parent_affiliate_credentials_allowed
+  section: eligibility
+  value_type: bool
+  required: false
+  decision: approved
+  final_value: true
+  version_no: 2
+  evidence_pages:
+  - 5
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T08:25:53.037457+00:00'
+  note: null
+  candidate:
+    id: b38107ab3c8f4494b6a53c019a5a5bc0
+    value: true
+    confidence: 0.85
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages:
+    - 5
+- field_path: core.eligibility.shareholding_lock_in
+  section: eligibility
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: No change in controlling shareholding of the Bidding Company/Consortium from bid submission until PPA execution.
+    Promoters shall not cede control (more than 50% voting shares or right to appoint majority directors) until 1 year after
+    SCSD; where executed through an SPV, the Successful Bidder's (or combined consortium members') shareholding in the SPV/Project
+    Company shall not fall below 51% at any time prior to 1 year after SCSD, except with prior SECI approval.
+  version_no: 1
+  evidence_pages:
+  - 37
+  - 49
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T08:25:56.707876+00:00'
+  note: null
+  candidate:
+    id: 31d5a39a1f7f4b87b1652797f9c892d7
+    value: No change in controlling shareholding of the Bidding Company/Consortium from bid submission until PPA execution.
+      Promoters shall not cede control (more than 50% voting shares or right to appoint majority directors) until 1 year after
+      SCSD; where executed through an SPV, the Successful Bidder's (or combined consortium members') shareholding in the SPV/Project
+      Company shall not fall below 51% at any time prior to 1 year after SCSD, except with prior SECI approval.
+    confidence: 0.92
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages:
+    - 37
+    - 49
+- field_path: sector.power.common.min_commissioned_mw
+  section: eligibility
+  value_type: mw
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T08:26:23.464644+00:00'
+  note: null
+  candidate:
+    id: d301a270b5844a588cf4fa8e308d5f3e
+    value: null
+    confidence: 0.0
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.under_construction_counts
+  section: eligibility
+  value_type: bool
+  required: false
+  decision: approved
+  final_value: false
+  version_no: 2
+  evidence_pages:
+  - 4
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T08:25:58.806543+00:00'
+  note: null
+  candidate:
+    id: d2c47fee93714d5aa0db25f1d15f6057
+    value: false
+    confidence: 0.6
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages:
+    - 4
+- field_path: sector.power.common.net_worth_per_mw_inr
+  section: eligibility
+  value_type: money_inr
+  required: false
+  decision: approved
+  final_value: 9540000
+  version_no: 1
+  evidence_pages:
+  - 51
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T08:26:04.049428+00:00'
+  note: null
+  candidate:
+    id: 0c3d67dbd6bf47ac9fc4c6e8eac74d08
+    value: 9540000.0
+    confidence: 0.4
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages:
+    - 51
+- field_path: core.guarantees.emd_per_mw_inr
+  section: guarantees
+  value_type: money_inr
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T08:26:16.105347+00:00'
+  note: null
+  candidate:
+    id: 1074a4f9ac3c44c29a3ec4aaf8143e33
+    value: null
+    confidence: 0.0
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages: []
+- field_path: core.guarantees.emd_formula
+  section: guarantees
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: EMD amount = Rs. [9,54,000 * S + 13,32,000 * W + 2,35,450 * E] (existing RfS Clause 16.1 as reproduced in this
+    clarification; SECI confirmed tender conditions remain unchanged)
+  version_no: 4
+  evidence_pages:
+  - 1
+  - 2
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T08:26:11.915484+00:00'
+  note: null
+  candidate:
+    id: 19727877b17c4b7198d134425e06c2e7
+    value: EMD amount = Rs. [9,54,000 * S + 13,32,000 * W + 2,35,450 * E] (existing RfS Clause 16.1 as reproduced in this
+      clarification; SECI confirmed tender conditions remain unchanged)
+    confidence: 0.5
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages:
+    - 1
+    - 2
+- field_path: core.guarantees.emd_structured
+  section: guarantees
+  value_type: record
+  required: false
+  decision: approved
+  final_value:
+    basis: per_component
+    cap_inr: null
+    cap_per: null
+    percent: null
+    components:
+    - per: mw
+      rate_inr: 968000
+      component: solar
+    - per: mw
+      rate_inr: 1368000
+      component: wind
+    - per: mwh
+      rate_inr: 240000
+      component: ess
+    percent_of: null
+    lump_sum_inr: null
+    rate_inr_per_mw: null
+  version_no: 3
+  evidence_pages:
+  - 3
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T08:27:43.724550+00:00'
+  note: null
+  candidate:
+    id: 8277f38b7d8040889bc0fd3fcce5f9aa
+    value:
+    - 'basis: per_component'
+    - 'components: component=solar; rate_inr=968000; per=mw'
+    - 'components: component=wind; rate_inr=1368000; per=mw'
+    - 'components: component=ess; rate_inr=240000; per=mwh'
+    confidence: 0.75
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages:
+    - 3
+- field_path: core.guarantees.emd_form
+  section: guarantees
+  value_type: enum
+  required: false
+  decision: edited
+  final_value: other
+  version_no: 1
+  evidence_pages:
+  - 4
+  - 28
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T08:28:06.744361+00:00'
+  note: null
+  candidate:
+    id: e3b2970b957e429cb5b7bab341158701
+    value: other
+    confidence: 0.95
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages:
+    - 4
+    - 28
+- field_path: core.guarantees.bid_security_instruments
+  section: guarantees
+  value_type: record_list
+  required: false
+  decision: null
+  final_value: null
+  version_no: null
+  evidence_pages: []
+  reviewer: null
+  decided_at: null
+  note: null
+  candidate: null
+- field_path: core.guarantees.pbg_instruments
+  section: guarantees
+  value_type: record_list
+  required: false
+  decision: null
+  final_value: null
+  version_no: null
+  evidence_pages: []
+  reviewer: null
+  decided_at: null
+  note: null
+  candidate: null
+- field_path: core.guarantees.pbg_per_mw_inr
+  section: guarantees
+  value_type: money_inr
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T08:28:12.499229+00:00'
+  note: null
+  candidate:
+    id: dfd0bed8d3d44b5c9f61bd4664311b76
+    value: null
+    confidence: 0.0
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages: []
+- field_path: core.guarantees.pbg_formula
+  section: guarantees
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: PBG amount = Rs. [23,85,000* S + 33,30,000* W + 5,88,625 * E] (existing RfS Clause 17.1 as reproduced in this
+    clarification; SECI confirmed tender conditions remain unchanged)
+  version_no: 4
+  evidence_pages:
+  - 1
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T08:28:18.271082+00:00'
+  note: null
+  candidate:
+    id: d554a4726e9b4c1cb3f4c7ccf1ac53e7
+    value: PBG amount = Rs. [23,85,000* S + 33,30,000* W + 5,88,625 * E] (existing RfS Clause 17.1 as reproduced in this clarification;
+      SECI confirmed tender conditions remain unchanged)
+    confidence: 0.5
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages:
+    - 1
+- field_path: core.guarantees.pbg_schedule
+  section: guarantees
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: PBG (along with 2nd instalment of Success Charges) to be submitted prior to PPA signing, within 30 days of
+    SECI's written intimation inviting the Successful Bidder for PPA signing; delay attracts charges @Rs. 1000/MW/day + GST
+    on the unsigned PPA capacity beyond the respective due date.
+  version_no: 5
+  evidence_pages:
+  - 5
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T08:28:37.666821+00:00'
+  note: null
+  candidate:
+    id: 789af94e478a45bf84b15145a67ade03
+    value: PBG (along with 2nd instalment of Success Charges) to be submitted prior to PPA signing, within 30 days of SECI's
+      written intimation inviting the Successful Bidder for PPA signing; delay attracts charges @Rs. 1000/MW/day + GST on
+      the unsigned PPA capacity beyond the respective due date.
+    confidence: 0.6
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages:
+    - 5
+- field_path: core.guarantees.pbg_structured
+  section: guarantees
+  value_type: record
+  required: false
+  decision: approved
+  final_value:
+    basis: null
+    cap_inr: null
+    cap_per: null
+    percent: null
+    components: null
+    percent_of: null
+    lump_sum_inr: null
+    rate_inr_per_mw: null
+    submitted_before: ppa_signing
+    valid_months_after_scod: null
+  version_no: 5
+  evidence_pages:
+  - 5
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T09:24:24.144392+00:00'
+  note: null
+  candidate:
+    id: e55b3aad7b34497b8967e2702099c652
+    value:
+    - 'submitted_before: ppa_signing'
+    confidence: 0.6
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages:
+    - 5
+- field_path: core.guarantees.success_charge_inr
+  section: guarantees
+  value_type: money_inr
+  required: false
+  decision: approved
+  final_value: 100000
+  version_no: 1
+  evidence_pages:
+  - 32
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T09:24:28.698714+00:00'
+  note: null
+  candidate:
+    id: e64ea4f92e524b8bbcd1d84962015a89
+    value: 100000.0
+    confidence: 0.95
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages:
+    - 32
+- field_path: core.guarantees.processing_fee_inr
+  section: guarantees
+  value_type: money_inr
+  required: false
+  decision: approved
+  final_value: 20000
+  version_no: 1
+  evidence_pages:
+  - 4
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T09:24:33.685444+00:00'
+  note: null
+  candidate:
+    id: 74bd10a3b2fc40eaa517d81220ac450a
+    value: 20000.0
+    confidence: 0.6
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages:
+    - 4
+- field_path: core.guarantees.bg_validity_months
+  section: guarantees
+  value_type: duration_months
+  required: false
+  decision: approved
+  final_value: 12
+  version_no: 1
+  evidence_pages:
+  - 27
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T09:24:35.113280+00:00'
+  note: null
+  candidate:
+    id: 283a1200472a4603ae6126a4bb436feb
+    value: 12
+    confidence: 0.95
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages:
+    - 27
+- field_path: core.guarantees.bg_release_conditions
+  section: guarantees
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: 'Amended Format 7.1 Clause 3: if the selected bidder fails to submit Bank Guarantee/POI/Surety Bond towards
+    PBG, Success charge, or a copy of in-principle/final grant of connectivity (Start Date on or before 31 December 2029 or
+    36 months from PPA Effective Date, whichever earlier) within the time in Clause Nos. 17, 18 and 20 of the RfS, and/or
+    fails to sign the PPA in time, SECI may encash the EMD and return the balance amount (if any) for the value of EMD pertaining
+    to unsuccessful capacity.'
+  version_no: 5
+  evidence_pages:
+  - 6
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T09:24:45.599394+00:00'
+  note: null
+  candidate:
+    id: 37e13c4525d246e095972c75db9b47bb
+    value: 'Amended Format 7.1 Clause 3: if the selected bidder fails to submit Bank Guarantee/POI/Surety Bond towards PBG,
+      Success charge, or a copy of in-principle/final grant of connectivity (Start Date on or before 31 December 2029 or 36
+      months from PPA Effective Date, whichever earlier) within the time in Clause Nos. 17, 18 and 20 of the RfS, and/or fails
+      to sign the PPA in time, SECI may encash the EMD and return the balance amount (if any) for the value of EMD pertaining
+      to unsuccessful capacity.'
+    confidence: 0.5
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages:
+    - 6
+- field_path: core.commercial.payment_security_mechanism
+  section: commercial
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: SECI provides the RPD a monthly unconditional, revolving and irrevocable Letter of Credit through a scheduled
+    bank, operative before the Due Date of the first Monthly Bill, with a 12-month term renewed annually, sized at 110% of
+    the estimated average monthly billing for the first Contract Year and 110% of the average monthly billing of the previous
+    Contract Year thereafter; LC costs are borne by SECI and the RPD may draw not more than once a Month after the Due Date.
+    SECI may also set up a payment security fund with a corpus from encashed PBG/POI and, where the RPD has opted for it,
+    a discount of Rs. 0.02/kWh in monthly billing in lieu of PSM charges. The Due Date is the 45th day after receipt of the
+    Monthly/Supplementary Bill.
+  version_no: 1
+  evidence_pages:
+  - 7
+  - 51
+  - 55
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T09:25:02.359592+00:00'
+  note: null
+  candidate:
+    id: c0c0d961269e412da031c9a4f24bdbe0
+    value: SECI provides the RPD a monthly unconditional, revolving and irrevocable Letter of Credit through a scheduled bank,
+      operative before the Due Date of the first Monthly Bill, with a 12-month term renewed annually, sized at 110% of the
+      estimated average monthly billing for the first Contract Year and 110% of the average monthly billing of the previous
+      Contract Year thereafter; LC costs are borne by SECI and the RPD may draw not more than once a Month after the Due Date.
+      SECI may also set up a payment security fund with a corpus from encashed PBG/POI and, where the RPD has opted for it,
+      a discount of Rs. 0.02/kWh in monthly billing in lieu of PSM charges. The Due Date is the 45th day after receipt of
+      the Monthly/Supplementary Bill.
+    confidence: 0.9
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages:
+    - 7
+    - 51
+    - 55
+- field_path: core.commercial.payment_security_structured
+  section: commercial
+  value_type: record
+  required: false
+  decision: approved
+  final_value:
+    lc_required: true
+    lc_revolving: true
+    psf_available: true
+    state_guarantee: null
+    payment_due_days: 45
+    lc_months_of_billing: 1.1
+    lc_drawable_after_days: null
+    psf_charge_inr_per_kwh: 0.02
+  version_no: 1
+  evidence_pages:
+  - 7
+  - 51
+  - 55
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T09:26:31.590290+00:00'
+  note: null
+  candidate:
+    id: 403844a43ed54d23be8b4c8daf0d491a
+    value:
+    - 'lc_required: yes'
+    - 'lc_months_of_billing: 1.1'
+    - 'lc_revolving: yes'
+    - 'psf_available: yes'
+    - 'psf_charge_inr_per_kwh: 0.02'
+    - 'payment_due_days: 45'
+    confidence: 0.8
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages:
+    - 7
+    - 51
+    - 55
+- field_path: core.commercial.change_in_law_clause
+  section: commercial
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: Change in Law means events occurring after the date 7 days prior to the bid submission deadline, including
+    enactment, amendment or repeal of any law leading to a change in cost requiring a tariff change, a change in interpretation
+    of law by a competent court, a change in any domestic tax (duty, levy, cess, charge or surcharge) by Central/State/UT
+    government, or a change in conditions of an approval or licence; it excludes changes in withholding tax on income/dividends,
+    changes in deviation settlement charges or frequency intervals, and events after the SCSD/extended SCSD that would not
+    have affected a timely commissioned project. On occurrence, the monthly tariff is adjusted and recovered under the Electricity
+    (Timely Recovery of Costs due to Change in Law) Rules, 2021 to restore the affected party to the same economic position,
+    with 21 days' prior notice, computation within 30 days, recovery from the next billing cycle via an annuity formula MT
+    = Y/X (X = (1/12) x Contracted Capacity MW x 8760 x 10 kWh; interest rate per CERC or SBI MCLR + 200 bps), over a maximum
+    of 180 months for non-recurring impacts or until the impact persists for recurring impacts, rounded to three decimals.
+    The Appropriate Commission verifies and adjusts within 60 days; any decrease in project cost must be passed on to SECI
+    and the Buying Entity, and relief is limited to Project Cost incurred up to commencement of supply or SCSD, in proportion
+    to capacity commissioned.
+  version_no: 1
+  evidence_pages:
+  - 62
+  - 63
+  - 64
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T09:46:11.228276+00:00'
+  note: null
+  candidate:
+    id: e4994122f0374fc8b7fe2b0e6fdf234a
+    value: Change in Law means events occurring after the date 7 days prior to the bid submission deadline, including enactment,
+      amendment or repeal of any law leading to a change in cost requiring a tariff change, a change in interpretation of
+      law by a competent court, a change in any domestic tax (duty, levy, cess, charge or surcharge) by Central/State/UT government,
+      or a change in conditions of an approval or licence; it excludes changes in withholding tax on income/dividends, changes
+      in deviation settlement charges or frequency intervals, and events after the SCSD/extended SCSD that would not have
+      affected a timely commissioned project. On occurrence, the monthly tariff is adjusted and recovered under the Electricity
+      (Timely Recovery of Costs due to Change in Law) Rules, 2021 to restore the affected party to the same economic position,
+      with 21 days' prior notice, computation within 30 days, recovery from the next billing cycle via an annuity formula
+      MT = Y/X (X = (1/12) x Contracted Capacity MW x 8760 x 10 kWh; interest rate per CERC or SBI MCLR + 200 bps), over a
+      maximum of 180 months for non-recurring impacts or until the impact persists for recurring impacts, rounded to three
+      decimals. The Appropriate Commission verifies and adjusts within 60 days; any decrease in project cost must be passed
+      on to SECI and the Buying Entity, and relief is limited to Project Cost incurred up to commencement of supply or SCSD,
+      in proportion to capacity commissioned.
+    confidence: 0.9
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages:
+    - 62
+    - 63
+    - 64
+- field_path: core.commercial.late_payment_surcharge
+  section: commercial
+  value_type: text
+  required: false
+  decision: approved
+  final_value: If SECI delays payment of a Monthly Bill beyond the Due Date, Late Payment Surcharge is payable on the outstanding
+    amount at the base rate (SBI one-year MCLR as on 1st April of the financial year plus five percent / 500 bps) for the
+    first month of default, increasing by 0.5 percent (50 bps) for every successive month of delay, capped at 3 percent above
+    the base rate; claimed via Supplementary Bill and paid subject to SECI receiving it from the Buying Entity under the PSA.
+  version_no: 1
+  evidence_pages:
+  - 53
+  - 54
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T09:46:14.149309+00:00'
+  note: null
+  candidate:
+    id: eb5ff136d9ba4b228e652cabf3d97ff8
+    value: If SECI delays payment of a Monthly Bill beyond the Due Date, Late Payment Surcharge is payable on the outstanding
+      amount at the base rate (SBI one-year MCLR as on 1st April of the financial year plus five percent / 500 bps) for the
+      first month of default, increasing by 0.5 percent (50 bps) for every successive month of delay, capped at 3 percent
+      above the base rate; claimed via Supplementary Bill and paid subject to SECI receiving it from the Buying Entity under
+      the PSA.
+    confidence: 0.92
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages:
+    - 53
+    - 54
+- field_path: core.commercial.termination_compensation
+  section: commercial
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: 'Amended PPA Article 13.3.5 (and PSA Article 3.2.7): where the RPD fails the minimum DFR for 2 consecutive
+    Contract Years, its minimum Peak, Solar and Remaining Hours DFR obligation is reduced to the average actually achieved
+    in the 2 default years and the RPD pays the Buying Entity(ies) lump-sum damages equivalent to 24 (twenty-four) months
+    or the balance PPA period, whichever is less, for the aggregate energy shortfall arising from the reduction in the DFR
+    obligation. On termination of the PPA in such cases and in other RPD default cases (except failure to commence supply
+    in time), the RPD pays damages equivalent to 24 (twenty-four) months or the balance PPA period, whichever is less, for
+    the aggregate energy corresponding to the minimum Peak, Solar and Remaining Hours DFR obligation. Compensation for Buying
+    Entity/SECI default is not addressed in this amendment.'
+  version_no: 5
+  evidence_pages:
+  - 9
+  - 11
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T09:46:19.386505+00:00'
+  note: null
+  candidate:
+    id: db311f65c32040438da08f1ec9fddc2d
+    value: 'Amended PPA Article 13.3.5 (and PSA Article 3.2.7): where the RPD fails the minimum DFR for 2 consecutive Contract
+      Years, its minimum Peak, Solar and Remaining Hours DFR obligation is reduced to the average actually achieved in the
+      2 default years and the RPD pays the Buying Entity(ies) lump-sum damages equivalent to 24 (twenty-four) months or the
+      balance PPA period, whichever is less, for the aggregate energy shortfall arising from the reduction in the DFR obligation.
+      On termination of the PPA in such cases and in other RPD default cases (except failure to commence supply in time),
+      the RPD pays damages equivalent to 24 (twenty-four) months or the balance PPA period, whichever is less, for the aggregate
+      energy corresponding to the minimum Peak, Solar and Remaining Hours DFR obligation. Compensation for Buying Entity/SECI
+      default is not addressed in this amendment.'
+    confidence: 0.7
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages:
+    - 9
+    - 11
+- field_path: core.commercial.offtaker
+  section: commercial
+  value_type: text
+  required: false
+  decision: approved
+  final_value: SECI (intermediary procurer, PPA tariff plus SECI's trading margin) selling to Buying Entities (discoms), which
+    must compulsorily off-take scheduled power during Peak and Remaining Hours
+  version_no: 5
+  evidence_pages:
+  - 3
+  - 4
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T09:46:22.847680+00:00'
+  note: null
+  candidate:
+    id: 96a76cade3f04574980fdc3c5780512f
+    value: SECI (intermediary procurer, PPA tariff plus SECI's trading margin) selling to Buying Entities (discoms), which
+      must compulsorily off-take scheduled power during Peak and Remaining Hours
+    confidence: 0.5
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages:
+    - 3
+    - 4
+- field_path: sector.power.common.tariff_ceiling_inr_per_kwh
+  section: commercial
+  value_type: decimal
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T09:46:28.673709+00:00'
+  note: null
+  candidate:
+    id: 1ee231c312ba447fa82f0e4f0023de71
+    value: null
+    confidence: 0.0
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages: []
+- field_path: sector.power.common.tariff_structure
+  section: commercial
+  value_type: enum
+  required: false
+  decision: approved
+  final_value: fixed
+  version_no: 1
+  evidence_pages:
+  - 49
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T09:46:30.460541+00:00'
+  note: null
+  candidate:
+    id: 705b206b3c4241e9a19f53fa4244ebfd
+    value: fixed
+    confidence: 0.92
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages:
+    - 49
+- field_path: sector.power.common.deemed_generation_clause
+  section: commercial
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: Under Article 4.10, for grid unavailability beyond 175 hours in a Contract Year (for reasons not attributable
+    to the RPD, with documentary evidence), Generation Compensation = Applicable Tariff x RE power (MW) offered but not scheduled
+    by the Buying Entity x 1000 x hours of grid unavailability, payable by the Buying Entity(ies) annually with no claim against
+    SECI. For reduced offtake by the Buying Entity (including non-dispatch under the LPS Rules 2022), the same formula applies
+    using hours of reduced off-take, with the table likewise referencing beyond 175 hours in a Contract Year; the RPD must
+    sell in the power exchange as price taker and 95% of the amount realized (after expenses) is adjusted monthly against
+    the compensation; payment is made with the energy bill of the successive month without trading margin. No compensation
+    for backdown due to grid security, equipment/personnel safety or Force Majeure.
+  version_no: 1
+  evidence_pages:
+  - 38
+  - 39
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T09:46:33.541613+00:00'
+  note: null
+  candidate:
+    id: 2564c30ff603445a80cdbc16e6d27db1
+    value: Under Article 4.10, for grid unavailability beyond 175 hours in a Contract Year (for reasons not attributable to
+      the RPD, with documentary evidence), Generation Compensation = Applicable Tariff x RE power (MW) offered but not scheduled
+      by the Buying Entity x 1000 x hours of grid unavailability, payable by the Buying Entity(ies) annually with no claim
+      against SECI. For reduced offtake by the Buying Entity (including non-dispatch under the LPS Rules 2022), the same formula
+      applies using hours of reduced off-take, with the table likewise referencing beyond 175 hours in a Contract Year; the
+      RPD must sell in the power exchange as price taker and 95% of the amount realized (after expenses) is adjusted monthly
+      against the compensation; payment is made with the energy bill of the successive month without trading margin. No compensation
+      for backdown due to grid security, equipment/personnel safety or Force Majeure.
+    confidence: 0.88
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages:
+    - 38
+    - 39
+- field_path: sector.power.common.deemed_generation_structured
+  section: commercial
+  value_type: record
+  required: false
+  decision: approved
+  final_value:
+    payer: Buying Entity(ies)
+    compensation_basis: full_tariff
+    compensation_pct_of_tariff: null
+    grid_threshold_hours_per_year: 175
+    exchange_sale_share_adjusted_pct: 95
+    backdown_threshold_hours_per_year: 175
+  version_no: 1
+  evidence_pages:
+  - 38
+  - 39
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T09:46:39.080190+00:00'
+  note: null
+  candidate:
+    id: 0381f86326e643d99055367c04c4d7b0
+    value:
+    - 'grid_threshold_hours_per_year: 175'
+    - 'backdown_threshold_hours_per_year: 175'
+    - 'compensation_basis: full_tariff'
+    - 'exchange_sale_share_adjusted_pct: 95'
+    - 'payer: Buying Entity(ies)'
+    confidence: 0.82
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages:
+    - 38
+    - 39
+- field_path: core.penalties.delay_ld_per_mw_per_day_inr
+  section: penalties
+  value_type: money_inr
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T12:31:46.867489+00:00'
+  note: null
+  candidate:
+    id: 0118b648f9ad44b5948c70177639481b
+    value: null
+    confidence: 0.0
+    prompt_name: extract/penalties
+    prompt_version: v3
+    pages: []
+- field_path: core.penalties.delay_ld_structured
+  section: penalties
+  value_type: record
+  required: false
+  decision: approved
+  final_value:
+    basis: pbg_encashment_per_day
+    pct_per_week: null
+    rate_inr_per_mw_per_day: null
+    pbg_encashed_over_months: 6
+    cap_pct_of_contract_price: null
+  version_no: 3
+  evidence_pages:
+  - 2
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T09:46:42.157471+00:00'
+  note: null
+  candidate:
+    id: 1ac5311699714e9b9ae8c7dc3114291f
+    value:
+    - 'basis: pbg_encashment_per_day'
+    - 'pbg_encashed_over_months: 6'
+    confidence: 0.6
+    prompt_name: extract/penalties
+    prompt_version: v3
+    pages:
+    - 2
+- field_path: core.penalties.max_scod_extension_months
+  section: penalties
+  value_type: duration_months
+  required: false
+  decision: approved
+  final_value: 6
+  version_no: 3
+  evidence_pages:
+  - 2
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T09:46:46.122231+00:00'
+  note: null
+  candidate:
+    id: cdd416e5af3b4e8697dc55c33fc57c41
+    value: 6
+    confidence: 0.85
+    prompt_name: extract/penalties
+    prompt_version: v3
+    pages:
+    - 2
+- field_path: core.penalties.shortfall_penalty_basis
+  section: penalties
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: 'Shortfall is measured against minimum Demand Fulfilment Ratio (DFR) requirements per 15-minute time-block:
+    min. DFR 90% of Contracted Capacity in Peak Hours, min. 50% (max. 60%) in Solar Hours and min. 70% in Remaining Hours.
+    DFR = power scheduled ÷ Contracted Capacity. Shortfalls in each time-block are added up, penalty calculated time-block-wise,
+    reconciled monthly and recovered from the subsequent monthly bill (calculated separately for each Buying Entity if mapped
+    to more than one). The revised Annexure-C/Schedule-4 illustration computes the penalty as 1.5 x PPA tariff x shortfall
+    energy (e.g. 1.5 x 4.0 x 412.5 MWh). Failure to maintain min. DFR for 2 consecutive Contract Years (excluding first) is
+    an Event of Default; DFR obligation is reduced to actual average achieved and RPD pays lump-sum damages equivalent to
+    24 months (or balance PPA period, whichever less) for the aggregate energy shortfall.'
+  version_no: 5
+  evidence_pages:
+  - 3
+  - 9
+  - 13
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T09:46:48.758484+00:00'
+  note: null
+  candidate:
+    id: 170588ae555f4cc1b5402be85642cde2
+    value: 'Shortfall is measured against minimum Demand Fulfilment Ratio (DFR) requirements per 15-minute time-block: min.
+      DFR 90% of Contracted Capacity in Peak Hours, min. 50% (max. 60%) in Solar Hours and min. 70% in Remaining Hours. DFR
+      = power scheduled ÷ Contracted Capacity. Shortfalls in each time-block are added up, penalty calculated time-block-wise,
+      reconciled monthly and recovered from the subsequent monthly bill (calculated separately for each Buying Entity if mapped
+      to more than one). The revised Annexure-C/Schedule-4 illustration computes the penalty as 1.5 x PPA tariff x shortfall
+      energy (e.g. 1.5 x 4.0 x 412.5 MWh). Failure to maintain min. DFR for 2 consecutive Contract Years (excluding first)
+      is an Event of Default; DFR obligation is reduced to actual average achieved and RPD pays lump-sum damages equivalent
+      to 24 months (or balance PPA period, whichever less) for the aggregate energy shortfall.'
+    confidence: 0.8
+    prompt_name: extract/penalties
+    prompt_version: v3
+    pages:
+    - 3
+    - 9
+    - 13
+- field_path: core.penalties.shortfall_rules
+  section: penalties
+  value_type: record_list
+  required: false
+  decision: approved
+  final_value:
+  - metric: peak_availability
+    measured: monthly
+    threshold_of: contracted_capacity
+    threshold_pct: 90
+    tolerance_pct: null
+    default_after_years: 2
+    penalty_multiple_of_tariff: 1.5
+    default_damages_months_of_tariff: 24
+  - metric: monthly_availability
+    measured: monthly
+    threshold_of: contracted_capacity
+    threshold_pct: 70
+    tolerance_pct: null
+    default_after_years: 2
+    penalty_multiple_of_tariff: 1.5
+    default_damages_months_of_tariff: 24
+  version_no: 2
+  evidence_pages:
+  - 2
+  - 12
+  - 16
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T12:31:55.207186+00:00'
+  note: null
+  candidate:
+    id: 25d7b7fbe40e454aa7d19d7ed56070ee
+    value:
+    - 'metric: peak_availability | threshold_pct: 90 | threshold_of: contracted_capacity | measured: monthly | penalty_multiple_of_tariff:
+      1.5 | default_after_years: 2 | default_damages_months_of_tariff: 24'
+    - 'metric: monthly_availability | threshold_pct: 70 | threshold_of: contracted_capacity | measured: monthly | penalty_multiple_of_tariff:
+      1.5 | default_after_years: 2 | default_damages_months_of_tariff: 24'
+    confidence: 0.6
+    prompt_name: extract/penalties
+    prompt_version: v3
+    pages:
+    - 2
+    - 12
+    - 16
+- field_path: core.penalties.pbg_encashment_triggers
+  section: penalties
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: 'Delay in commencement of power supply beyond the SCSD/extended SCSD (per Phase-I/II SCSD or for the full Project
+    Capacity, as applicable) until the deadline under Clause 9.2.b (6 months from the SCSD/extended SCSD): as part of the
+    penalty, the total PBG amount for the Project is encashed on a pro-rata basis and proportionate to the Contracted Capacity
+    that has not commenced supply of power.'
+  version_no: 3
+  evidence_pages:
+  - 2
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T10:00:39.322990+00:00'
+  note: null
+  candidate:
+    id: f04a634e60a14fd39aed650c3662b134
+    value: 'Delay in commencement of power supply beyond the SCSD/extended SCSD (per Phase-I/II SCSD or for the full Project
+      Capacity, as applicable) until the deadline under Clause 9.2.b (6 months from the SCSD/extended SCSD): as part of the
+      penalty, the total PBG amount for the Project is encashed on a pro-rata basis and proportionate to the Contracted Capacity
+      that has not commenced supply of power.'
+    confidence: 0.85
+    prompt_name: extract/penalties
+    prompt_version: v3
+    pages:
+    - 2
+- field_path: core.penalties.termination_delay_months
+  section: penalties
+  value_type: duration_months
+  required: false
+  decision: approved
+  final_value: 6
+  version_no: 3
+  evidence_pages:
+  - 2
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T12:10:46.403476+00:00'
+  note: null
+  candidate:
+    id: 5531281c7a7a45569aeb49a3cd41702e
+    value: 6
+    confidence: 0.55
+    prompt_name: extract/penalties
+    prompt_version: v3
+    pages:
+    - 2
+- field_path: sector.power.common.connectivity_responsibility
+  section: connectivity_and_compliance
+  value_type: enum
+  required: false
+  decision: approved
+  final_value: developer
+  version_no: 5
+  evidence_pages:
+  - 1
+  - 2
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T12:10:49.066880+00:00'
+  note: null
+  candidate:
+    id: 8ae093de3ca04999990a3496290330c6
+    value: developer
+    confidence: 0.8
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages:
+    - 1
+    - 2
+- field_path: sector.power.common.gna_requirement
+  section: connectivity_and_compliance
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: The Bidder must already hold in-principle/final grant of connectivity (Start Date of Connectivity on or before
+    31 December 2029) at the identified substation at bid submission (Format-7.1), and within 10 days of SECI's PPA-signing
+    invitation must submit a copy of in-principle/final grant of connectivity with Start Date on or before 31 December 2029
+    or 36 months from the PPA Effective Date, whichever is earlier. The RPD must follow GNA regulation timelines for connectivity;
+    if connectivity is revoked due to RPD non-compliance, capacity may not be off-taken and the RPD indemnifies SECI/Buying
+    Entity and bears non-performance penalties. Connectivity in the name of another entity may be used if allowed under GNA
+    regulations, with an undertaking from the connectivity grantee per Annexure-I.
+  version_no: 5
+  evidence_pages:
+  - 1
+  - 2
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T12:10:54.184055+00:00'
+  note: null
+  candidate:
+    id: 2ae71b92f8ad41a59e1123357fe3d11f
+    value: The Bidder must already hold in-principle/final grant of connectivity (Start Date of Connectivity on or before
+      31 December 2029) at the identified substation at bid submission (Format-7.1), and within 10 days of SECI's PPA-signing
+      invitation must submit a copy of in-principle/final grant of connectivity with Start Date on or before 31 December 2029
+      or 36 months from the PPA Effective Date, whichever is earlier. The RPD must follow GNA regulation timelines for connectivity;
+      if connectivity is revoked due to RPD non-compliance, capacity may not be off-taken and the RPD indemnifies SECI/Buying
+      Entity and bears non-performance penalties. Connectivity in the name of another entity may be used if allowed under
+      GNA regulations, with an undertaking from the connectivity grantee per Annexure-I.
+    confidence: 0.75
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages:
+    - 1
+    - 2
+- field_path: sector.power.common.ists_waiver_cutoff_date
+  section: connectivity_and_compliance
+  value_type: date
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T12:10:56.270559+00:00'
+  note: null
+  candidate:
+    id: 96ebccf6a245419d9e155710aa2a380d
+    value: null
+    confidence: 0.0
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.line_to_pooling_station_responsibility
+  section: connectivity_and_compliance
+  value_type: text
+  required: false
+  decision: approved
+  final_value: The RPD builds and pays for the transmission line from the Project up to and including the Interconnection
+    Point, bearing the entire cost of construction, wheeling, SLDC/scheduling, SOC, MOC, maintenance and losses (Clause 7.3).
+    Where projects share a pooling substation, the common transmission system to the ISTS substation is constructed and maintained
+    by the RPD(s), with line losses apportioned among the sharing RPDs based on monthly generation.
+  version_no: 1
+  evidence_pages:
+  - 13
+  - 65
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T12:10:57.982505+00:00'
+  note: null
+  candidate:
+    id: 28346e7e2dce4990a5844682198a0b65
+    value: The RPD builds and pays for the transmission line from the Project up to and including the Interconnection Point,
+      bearing the entire cost of construction, wheeling, SLDC/scheduling, SOC, MOC, maintenance and losses (Clause 7.3). Where
+      projects share a pooling substation, the common transmission system to the ISTS substation is constructed and maintained
+      by the RPD(s), with line losses apportioned among the sharing RPDs based on monthly generation.
+    confidence: 0.95
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages:
+    - 13
+    - 65
+- field_path: sector.power.common.almm_required
+  section: connectivity_and_compliance
+  value_type: bool
+  required: false
+  decision: approved
+  final_value: true
+  version_no: 1
+  evidence_pages:
+  - 102
+  - 104
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T12:31:07.717889+00:00'
+  note: null
+  candidate:
+    id: 49640d3757204899bcd4de2251cf126b
+    value: true
+    confidence: 0.8
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages:
+    - 102
+    - 104
+- field_path: sector.power.common.dcr_required
+  section: connectivity_and_compliance
+  value_type: bool
+  required: false
+  decision: approved
+  final_value: true
+  version_no: 2
+  evidence_pages:
+  - 6
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T12:11:02.165084+00:00'
+  note: null
+  candidate:
+    id: 2e36e4430d6348f58ccb5f157e06c6dc
+    value: true
+    confidence: 0.95
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages:
+    - 6
+- field_path: sector.power.common.local_content_rule
+  section: connectivity_and_compliance
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: It is mandatory to use both domestically manufactured solar PV Cells and domestically manufactured solar PV
+    modules; only module models and manufacturers in ALMM List-I (of solar PV modules) are eligible for use, as revised from
+    time to time.
+  version_no: 2
+  evidence_pages:
+  - 6
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T12:11:04.646309+00:00'
+  note: null
+  candidate:
+    id: 3684342447294f78b62001a59a014855
+    value: It is mandatory to use both domestically manufactured solar PV Cells and domestically manufactured solar PV modules;
+      only module models and manufacturers in ALMM List-I (of solar PV modules) are eligible for use, as revised from time
+      to time.
+    confidence: 0.9
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages:
+    - 6
+- field_path: sector.power.common.land_responsibility
+  section: connectivity_and_compliance
+  value_type: text
+  required: false
+  decision: approved
+  final_value: The RPD (RE Power Developer) identifies and arranges the land; Projects may be located anywhere in India at
+    locations chosen by the Bidder/RPD at its own discretion, risk, cost and responsibility.
+  version_no: 1
+  evidence_pages:
+  - 10
+  - 12
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T12:11:07.889858+00:00'
+  note: null
+  candidate:
+    id: be8ef4c593d8431ca6eb5181a14a1e3d
+    value: The RPD (RE Power Developer) identifies and arranges the land; Projects may be located anywhere in India at locations
+      chosen by the Bidder/RPD at its own discretion, risk, cost and responsibility.
+    confidence: 0.95
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages:
+    - 10
+    - 12
+- field_path: sector.power.common.clearances_responsibility
+  section: connectivity_and_compliance
+  value_type: text
+  required: false
+  decision: approved
+  final_value: The RPD (RE Power Developer) obtains all approvals, permits and clearances required for the Project and the
+    transmission network up to the Interconnection/Delivery Point, including those from State Government and local bodies
+    (NOC/environmental clearance, forest clearance, water approval, MoD clearance, GIB-related compliance and any other legally
+    required clearances), to be submitted to SECI prior to commencement of supply if sought.
+  version_no: 1
+  evidence_pages:
+  - 26
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T12:11:09.700291+00:00'
+  note: null
+  candidate:
+    id: e2b059747a3c487fa14116eb5d8097c9
+    value: The RPD (RE Power Developer) obtains all approvals, permits and clearances required for the Project and the transmission
+      network up to the Interconnection/Delivery Point, including those from State Government and local bodies (NOC/environmental
+      clearance, forest clearance, water approval, MoD clearance, GIB-related compliance and any other legally required clearances),
+      to be submitted to SECI prior to commencement of supply if sought.
+    confidence: 0.95
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages:
+    - 26
+- field_path: sector.power.common.source_mix_rules
+  section: supply_sources
+  value_type: record_list
+  required: false
+  decision: approved
+  final_value:
+  - source: bess
+    condition: ESS mandatory part of Project; ESS charged from a source other than RE power does not qualify as RE power
+    treatment: required
+    limit_unit: null
+    limit_value: null
+  - source: market_purchase
+    condition: RE power from green market sources/bilateral agreements
+    treatment: allowed_with_limit
+    limit_unit: percent_of_annual_energy
+    limit_value: 5
+  version_no: 4
+  evidence_pages:
+  - 1
+  - 2
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T12:11:12.135759+00:00'
+  note: null
+  candidate:
+    id: 2194155a21cb4d00ae53ed436c36e5fa
+    value:
+    - 'source: bess | treatment: required | condition: ESS mandatory part of Project; ESS charged from a source other than
+      RE power does not qualify as RE power'
+    - 'source: market_purchase | treatment: allowed_with_limit | limit_value: 5 | limit_unit: percent_of_annual_energy | condition:
+      RE power from green market sources/bilateral agreements'
+    confidence: 0.55
+    prompt_name: extract/supply_sources
+    prompt_version: v1
+    pages:
+    - 1
+    - 2
+- field_path: sector.power.common.bess_charging_rule
+  section: supply_sources
+  value_type: record
+  required: false
+  decision: approved
+  final_value:
+    re_only: true
+    co_located_required: null
+    regulation_reference: null
+  version_no: 4
+  evidence_pages:
+  - 2
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T12:11:15.267141+00:00'
+  note: null
+  candidate:
+    id: e2b83d66b696456b9daab6187167e3d0
+    value:
+    - 're_only: yes'
+    confidence: 0.55
+    prompt_name: extract/supply_sources
+    prompt_version: v1
+    pages:
+    - 2
+- field_path: core.documents.required_documents
+  section: documents
+  value_type: list_text
+  required: false
+  decision: approved
+  final_value:
+  - Copy of in-principle/ final grant of connectivity at the identified substation (Start Date of Connectivity on or before
+    31 December 2029), submitted at bid submission as part of Format-7.1
+  - Undertaking from the connectivity grantee as per Annexure-I (where connectivity is in the name of an entity other than
+    the Bidder), along with copy of in-principle/ final grant of connectivity, as part of Format-7.1
+  - Undertaking in Format-7.1 Covering Letter to submit copy of in-principle/ final grant of connectivity within 10 days of
+    invitation for PPA signing
+  - 'Post-selection: copy of in-principle/ final grant of connectivity within 10 days of PPA signing invitation'
+  - 'Post-selection: 2nd instalment of Success Charges and PBG prior to PPA signing, within 30 days of intimation'
+  version_no: 5
+  evidence_pages:
+  - 1
+  - 2
+  - 5
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T12:11:19.325218+00:00'
+  note: null
+  candidate:
+    id: aabd41088a0a49fda008148b5626d79e
+    value:
+    - Copy of in-principle/ final grant of connectivity at the identified substation (Start Date of Connectivity on or before
+      31 December 2029), submitted at bid submission as part of Format-7.1
+    - Undertaking from the connectivity grantee as per Annexure-I (where connectivity is in the name of an entity other than
+      the Bidder), along with copy of in-principle/ final grant of connectivity, as part of Format-7.1
+    - Undertaking in Format-7.1 Covering Letter to submit copy of in-principle/ final grant of connectivity within 10 days
+      of invitation for PPA signing
+    - 'Post-selection: copy of in-principle/ final grant of connectivity within 10 days of PPA signing invitation'
+    - 'Post-selection: 2nd instalment of Success Charges and PBG prior to PPA signing, within 30 days of intimation'
+    confidence: 0.6
+    prompt_name: extract/documents
+    prompt_version: v1
+    pages:
+    - 1
+    - 2
+    - 5
+- field_path: core.documents.annexure_formats
+  section: documents
+  value_type: list_text
+  required: false
+  decision: approved
+  final_value:
+  - 'Format-7.1: Covering Letter'
+  - 'Annexure-I: Undertaking from the connectivity grantee'
+  - 'Annexure – C (Revised): Illustration for Penalties Applicable Against Shortfall in Power Supply (Clause 8 of the RfS)'
+  version_no: 5
+  evidence_pages:
+  - 1
+  - 5
+  - 12
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T12:11:23.171650+00:00'
+  note: null
+  candidate:
+    id: 0ac26ba6e5ef4f3f9165438786087274
+    value:
+    - 'Format-7.1: Covering Letter'
+    - 'Annexure-I: Undertaking from the connectivity grantee'
+    - 'Annexure – C (Revised): Illustration for Penalties Applicable Against Shortfall in Power Supply (Clause 8 of the RfS)'
+    confidence: 0.55
+    prompt_name: extract/documents
+    prompt_version: v1
+    pages:
+    - 1
+    - 5
+    - 12
+- field_path: core.documents.draft_agreements_referenced
+  section: documents
+  value_type: list_text
+  required: false
+  decision: approved
+  final_value:
+  - Power Purchase Agreement (PPA)
+  - Power Sale Agreement (PSA)
+  version_no: 5
+  evidence_pages:
+  - 1
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T12:11:25.985922+00:00'
+  note: null
+  candidate:
+    id: c7a1f0d3658f4a6ca618e87157b39dd6
+    value:
+    - Power Purchase Agreement (PPA)
+    - Power Sale Agreement (PSA)
+    confidence: 0.6
+    prompt_name: extract/documents
+    prompt_version: v1
+    pages:
+    - 1
+- field_path: sector.power.fdre.demand_profile
+  section: fdre_profile
+  value_type: long_text
+  required: true
+  decision: approved
+  final_value: 'Round-the-Clock supply in power (MW) terms against the Contracted Capacity, scheduled day-ahead, with time-block-wise
+    (15-minute) Demand Fulfilment Ratios: minimum DFR of 90% in each time-block during Peak Hours; minimum 50% and maximum
+    60% in each time-block during Solar Hours; minimum 70% in each time-block during Remaining Hours (Non-Solar Hours other
+    than Peak Hours). DFR = scheduled power injection in the time-block ÷ Contracted Capacity, capped at 1. Buying Entities
+    must compulsorily off-take all power during Peak and Remaining Hours up to Contracted Capacity; excess during Solar Hours
+    above the 60% maximum DFR is dealt with under Clause 8.3.'
+  version_no: 5
+  evidence_pages:
+  - 2
+  - 3
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T12:11:31.930391+00:00'
+  note: null
+  candidate:
+    id: ca1d328a402d4a449d5971c581d3849a
+    value: 'Round-the-Clock supply in power (MW) terms against the Contracted Capacity, scheduled day-ahead, with time-block-wise
+      (15-minute) Demand Fulfilment Ratios: minimum DFR of 90% in each time-block during Peak Hours; minimum 50% and maximum
+      60% in each time-block during Solar Hours; minimum 70% in each time-block during Remaining Hours (Non-Solar Hours other
+      than Peak Hours). DFR = scheduled power injection in the time-block ÷ Contracted Capacity, capped at 1. Buying Entities
+      must compulsorily off-take all power during Peak and Remaining Hours up to Contracted Capacity; excess during Solar
+      Hours above the 60% maximum DFR is dealt with under Clause 8.3.'
+    confidence: 0.9
+    prompt_name: extract/fdre_profile
+    prompt_version: v2
+    pages:
+    - 2
+    - 3
+- field_path: sector.power.fdre.peak_window_definition
+  section: fdre_profile
+  value_type: text
+  required: false
+  decision: approved
+  final_value: Peak Hours are any 6 hours per day chosen by the Buying Entity, on a daily basis, between 18:00 Hrs of a day
+    and 10:00 Hrs of the subsequent day, intimated day-ahead; if no schedule is received, the preceding day's Peak Hours apply.
+    Solar Hours and Non-Solar Hours take the meaning assigned by GRID-INDIA under the GNA Regulations for the Project's State;
+    Remaining Hours are Non-Solar Hours outside Peak Hours.
+  version_no: 5
+  evidence_pages:
+  - 6
+  - 11
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T12:11:41.384983+00:00'
+  note: null
+  candidate:
+    id: 7cbed77bf5874da6a64b756967e1d8f2
+    value: Peak Hours are any 6 hours per day chosen by the Buying Entity, on a daily basis, between 18:00 Hrs of a day and
+      10:00 Hrs of the subsequent day, intimated day-ahead; if no schedule is received, the preceding day's Peak Hours apply.
+      Solar Hours and Non-Solar Hours take the meaning assigned by GRID-INDIA under the GNA Regulations for the Project's
+      State; Remaining Hours are Non-Solar Hours outside Peak Hours.
+    confidence: 0.85
+    prompt_name: extract/fdre_profile
+    prompt_version: v2
+    pages:
+    - 6
+    - 11
+- field_path: sector.power.fdre.assured_availability_percent
+  section: fdre_profile
+  value_type: percent
+  required: false
+  decision: approved
+  final_value: 90
+  version_no: 5
+  evidence_pages:
+  - 3
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T12:11:45.028721+00:00'
+  note: null
+  candidate:
+    id: 01e6b38e140b406799d44402dcbff276
+    value: 90.0
+    confidence: 0.8
+    prompt_name: extract/fdre_profile
+    prompt_version: v2
+    pages:
+    - 3
+- field_path: sector.power.fdre.firmness_definition
+  section: fdre_profile
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: The RfS is retitled as supply of Firm and Dispatchable Renewable Energy Round-the-Clock (FDRE-RTC) Power; firmness
+    is expressed as the obligation to schedule RE power day-ahead in a Round-the-Clock manner while maintaining minimum time-block-wise
+    Demand Fulfilment Ratios (90% Peak, 50-60% Solar, 70% Remaining Hours) against the Contracted Capacity, with penalties
+    for shortfall.
+  version_no: 5
+  evidence_pages:
+  - 1
+  - 2
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T12:11:49.567030+00:00'
+  note: null
+  candidate:
+    id: a0b674ad8d984c05a9869ec3514c09b9
+    value: The RfS is retitled as supply of Firm and Dispatchable Renewable Energy Round-the-Clock (FDRE-RTC) Power; firmness
+      is expressed as the obligation to schedule RE power day-ahead in a Round-the-Clock manner while maintaining minimum
+      time-block-wise Demand Fulfilment Ratios (90% Peak, 50-60% Solar, 70% Remaining Hours) against the Contracted Capacity,
+      with penalties for shortfall.
+    confidence: 0.5
+    prompt_name: extract/fdre_profile
+    prompt_version: v2
+    pages:
+    - 1
+    - 2
+- field_path: sector.power.fdre.availability_shortfall_penalty
+  section: fdre_profile
+  value_type: long_text
+  required: true
+  decision: approved
+  final_value: Shortfall in meeting the minimum DFR in each time-block during Peak, Solar and Remaining Hours is added up
+    time-block-wise, reconciled monthly and recovered from the subsequent monthly bill; where a project serves two or more
+    Buying Entities the penalty is computed separately per Buying Entity. The revised Annexure-C / Schedule-4 illustration
+    computes the monthly penalty as 1.5 x PPA tariff x shortfall energy (e.g. 1.5 x 4.0 x 412.5 MWh = INR 24.75 lakh). Failure
+    to maintain minimum DFR in every time-block during Peak, Solar and Remaining Hours for 2 consecutive Contract Years (excluding
+    the first) is an Event of Default; under Article 13.3.5 the DFR obligation is reduced to the average achieved and lump-sum
+    damages equal to 24 months or balance PPA period are payable.
+  version_no: 5
+  evidence_pages:
+  - 3
+  - 9
+  - 13
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T12:11:51.952967+00:00'
+  note: null
+  candidate:
+    id: f0d3f3ccaa4b40fca14613462863245d
+    value: Shortfall in meeting the minimum DFR in each time-block during Peak, Solar and Remaining Hours is added up time-block-wise,
+      reconciled monthly and recovered from the subsequent monthly bill; where a project serves two or more Buying Entities
+      the penalty is computed separately per Buying Entity. The revised Annexure-C / Schedule-4 illustration computes the
+      monthly penalty as 1.5 x PPA tariff x shortfall energy (e.g. 1.5 x 4.0 x 412.5 MWh = INR 24.75 lakh). Failure to maintain
+      minimum DFR in every time-block during Peak, Solar and Remaining Hours for 2 consecutive Contract Years (excluding the
+      first) is an Event of Default; under Article 13.3.5 the DFR obligation is reduced to the average achieved and lump-sum
+      damages equal to 24 months or balance PPA period are payable.
+    confidence: 0.85
+    prompt_name: extract/fdre_profile
+    prompt_version: v2
+    pages:
+    - 3
+    - 9
+    - 13
+- field_path: sector.power.fdre.storage_mandatory
+  section: fdre_profile
+  value_type: bool
+  required: false
+  decision: approved
+  final_value: true
+  version_no: 4
+  evidence_pages:
+  - 2
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T12:11:54.453459+00:00'
+  note: null
+  candidate:
+    id: 4aa15404f56140d789d3013ab2c6fc18
+    value: true
+    confidence: 0.6
+    prompt_name: extract/fdre_profile
+    prompt_version: v2
+    pages:
+    - 2
+- field_path: sector.power.fdre.excess_energy_price_inr_per_kwh
+  section: fdre_profile
+  value_type: decimal
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T12:11:56.315379+00:00'
+  note: null
+  candidate:
+    id: 1a150075da6a471f9841d754479a6a9c
+    value: null
+    confidence: 0.0
+    prompt_name: extract/fdre_profile
+    prompt_version: v2
+    pages: []
+- field_path: sector.power.fdre.component_disclosure_required
+  section: fdre_profile
+  value_type: bool
+  required: false
+  decision: approved
+  final_value: true
+  version_no: 1
+  evidence_pages:
+  - 11
+  - 69
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T12:11:57.858641+00:00'
+  note: null
+  candidate:
+    id: fb4b77cfffdd417283592b942a961a75
+    value: true
+    confidence: 0.85
+    prompt_name: extract/fdre_profile
+    prompt_version: v2
+    pages:
+    - 11
+    - 69
+- field_path: sector.power.fdre.shortfall_compensation_multiple
+  section: fdre_profile
+  value_type: decimal
+  required: false
+  decision: approved
+  final_value: 1.5
+  version_no: 5
+  evidence_pages:
+  - 13
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T12:12:00.887882+00:00'
+  note: null
+  candidate:
+    id: 1fb7bab5d0704aa0a37faa5ea349e250
+    value: 1.5
+    confidence: 0.85
+    prompt_name: extract/fdre_profile
+    prompt_version: v2
+    pages:
+    - 13
+- field_path: sector.power.fdre.capacity_addition_flexibility
+  section: fdre_profile
+  value_type: text
+  required: false
+  decision: approved
+  final_value: The Project configuration (identical to the connectivity 'installed capacity' under GNA Regulations) can be
+    changed until SCSD/extended SCSD; Project location and/or Delivery Point may be changed up to 12 months from the Effective
+    Date of PPA, provided the Start Date of connectivity at the new Delivery Point is on or before 31 December 2029 or 36
+    months from the Effective Date of PPA, whichever is earlier.
+  version_no: 5
+  evidence_pages:
+  - 6
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T12:12:32.727381+00:00'
+  note: null
+  candidate:
+    id: 1e815e12e8ae4d53b7ea91159d9d5818
+    value: The Project configuration (identical to the connectivity 'installed capacity' under GNA Regulations) can be changed
+      until SCSD/extended SCSD; Project location and/or Delivery Point may be changed up to 12 months from the Effective Date
+      of PPA, provided the Start Date of connectivity at the new Delivery Point is on or before 31 December 2029 or 36 months
+      from the Effective Date of PPA, whichever is earlier.
+    confidence: 0.8
+    prompt_name: extract/fdre_profile
+    prompt_version: v2
+    pages:
+    - 6
+- field_path: sector.power.fdre.excess_energy_structured
+  section: fdre_profile
+  value_type: record
+  required: false
+  decision: approved
+  final_value:
+    above: contracted_capacity
+    price_basis: ppa_tariff
+    pct_of_tariff: 50
+    fixed_inr_per_kwh: null
+    procurer_first_right: true
+  version_no: 5
+  evidence_pages:
+  - 4
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T12:12:34.888439+00:00'
+  note: null
+  candidate:
+    id: 40863717bbfb42768c15e3f7495d2ccb
+    value:
+    - 'above: contracted_capacity'
+    - 'price_basis: ppa_tariff'
+    - 'pct_of_tariff: 50'
+    - 'procurer_first_right: yes'
+    confidence: 0.7
+    prompt_name: extract/fdre_profile
+    prompt_version: v2
+    pages:
+    - 4
+- field_path: sector.power.fdre.demand_profile_structured
+  section: fdre_profile
+  value_type: record
+  required: false
+  decision: approved
+  final_value:
+    basis: rtc
+    peak_blocks:
+    - hours: 6
+      window_end: '10:00'
+      window_start: '18:00'
+    re_share_min_pct: null
+    cuf_band_lower_pct: null
+    cuf_band_upper_pct: null
+    peak_hours_per_day: 6
+    cuf_declared_min_pct: null
+    peak_hours_chosen_by: Buying Entity
+    peak_availability_pct: 90
+    external_sourcing_max_pct: null
+    peak_energy_kwh_per_mw_per_day: null
+  version_no: 5
+  evidence_pages:
+  - 2
+  - 3
+  - 11
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-14T12:12:38.672715+00:00'
+  note: null
+  candidate:
+    id: 433c75631096460db308881078f22e53
+    value:
+    - 'basis: rtc'
+    - 'peak_availability_pct: 90'
+    - 'peak_hours_per_day: 6'
+    - 'peak_hours_chosen_by: Buying Entity'
+    - 'peak_blocks: window_start=18:00; window_end=10:00; hours=6'
+    confidence: 0.8
+    prompt_name: extract/fdre_profile
+    prompt_version: v2
+    pages:
+    - 2
+    - 3
+    - 11

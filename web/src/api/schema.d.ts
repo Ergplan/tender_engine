@@ -714,6 +714,11 @@ export interface components {
         /** AmendmentChange */
         AmendmentChange: {
             before: components["schemas"]["ChangeBefore"] | null;
+            /**
+             * Changes Decided
+             * @default false
+             */
+            changes_decided: boolean;
             /** Decided */
             decided: boolean;
             entry: components["schemas"]["ReviewEntry"];
@@ -725,6 +730,11 @@ export interface components {
             flagged: boolean;
             /** Help Text */
             help_text: string;
+            /**
+             * Impacts
+             * @default []
+             */
+            impacts: string[];
             /** Is Current */
             is_current: boolean;
             /** Keys */
@@ -733,7 +743,7 @@ export interface components {
              * Kind
              * @enum {string}
              */
-            kind: "added" | "changed" | "restated";
+            kind: "added" | "changed" | "restated" | "removed";
             /** Label */
             label: string;
             /** Required */
@@ -765,6 +775,11 @@ export interface components {
             issued_on: string | null;
             /** Kind */
             kind: string;
+            /**
+             * Removed
+             * @default 0
+             */
+            removed: number;
             /** Restated */
             restated: number;
             /** Sections Read */
@@ -890,6 +905,11 @@ export interface components {
             validation: components["schemas"]["ValidationView"][];
             /** Value */
             value: unknown;
+            /**
+             * Withdrawn
+             * @default false
+             */
+            withdrawn: boolean;
         };
         /** CanonicalFactView */
         CanonicalFactView: {
@@ -1203,6 +1223,15 @@ export interface components {
             version_kind: string | null;
             /** Version No */
             version_no: number | null;
+            /**
+             * Withdrawn
+             * @default false
+             */
+            withdrawn: boolean;
+            /** Withdrawn From Version */
+            withdrawn_from_version?: number | null;
+            /** Withdrawn Value */
+            withdrawn_value?: unknown;
         };
         /** FreshnessOut */
         FreshnessOut: {
@@ -1761,7 +1790,7 @@ export interface components {
             mode: "sync" | "batch";
             /**
              * Prompt Version
-             * @default v1
+             * @default v2
              */
             prompt_version: string;
             /** Version No */

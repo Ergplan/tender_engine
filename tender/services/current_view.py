@@ -32,6 +32,12 @@ class FieldView(BaseModel):
     approval_id: str | None
     effective_at: datetime | None
     evidence: list[dict[str, Any]]
+    # The provision was withdrawn by `version_no`: no value stands. A ceiling that never
+    # existed (`decided` false, or a decided null) is told apart from one removed by an
+    # amendment, which keeps the value it removed and the version it stood from.
+    withdrawn: bool = False
+    withdrawn_value: Any = None
+    withdrawn_from_version: int | None = None
 
 
 class TenderView(BaseModel):
@@ -54,6 +60,7 @@ def current_view(session: Session, catalog: Catalog, tender: Tender) -> TenderVi
         )
     }
     chosen: dict[str, CanonicalFact] = {}
+    withdrawn_from: dict[str, CanonicalFact] = {}
     for current in session.scalars(
         select(CanonicalFact)
         .where(
@@ -65,12 +72,17 @@ def current_view(session: Session, catalog: Catalog, tender: Tender) -> TenderVi
         .order_by(CanonicalFact.object_version)
     ):
         earlier = chosen.get(current.field_path)
-        # A later version replaces the earlier fact only when it states a value.
-        if earlier is None or current.value is not None:
+        # A later version replaces the earlier fact when it states a value, or when it
+        # withdraws the provision: then the view holds no value and says which version
+        # withdrew it, and what stood before.
+        if earlier is None or current.value is not None or current.withdrawn:
             chosen[current.field_path] = current
+            if current.withdrawn and earlier is not None and not earlier.withdrawn:
+                withdrawn_from[current.field_path] = earlier
     fields = []
     for field in compiled.fields:
         fact: CanonicalFact | None = chosen.get(field.path)
+        before = withdrawn_from.get(field.path)
         fields.append(
             FieldView(
                 field_path=field.path,
@@ -86,6 +98,9 @@ def current_view(session: Session, catalog: Catalog, tender: Tender) -> TenderVi
                 approval_id=fact.approval_id if fact else None,
                 effective_at=fact.effective_at if fact else None,
                 evidence=fact.evidence if fact else [],
+                withdrawn=bool(fact and fact.withdrawn),
+                withdrawn_value=before.value if before else None,
+                withdrawn_from_version=before.object_version if before else None,
             )
         )
     return TenderView(

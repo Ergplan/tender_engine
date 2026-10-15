@@ -130,8 +130,11 @@ def tender_review(
             takes_part = (
                 candidate is not None
                 if version.version_no == 1
-                # A later version takes part only where it gives a value, or was decided.
-                else (candidate is not None and candidate.value is not None)
+                # A later version takes part only where it gives a value or withdraws the
+                # provision, or was decided.
+                else (
+                    candidate is not None and (candidate.value is not None or candidate.withdrawn)
+                )
                 or state_field.approval is not None
             )
             if takes_part:

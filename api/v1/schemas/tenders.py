@@ -50,7 +50,7 @@ class VersionOut(BaseModel):
 
 class TenderExtractRequest(BaseModel):
     version_no: int | None = None
-    prompt_version: str = "v1"
+    prompt_version: str = "v2"
     # batch: through the batch API, at half the price, when nobody waits for the result.
     mode: Literal["sync", "batch"] = "sync"
 

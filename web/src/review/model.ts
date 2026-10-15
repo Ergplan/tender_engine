@@ -25,7 +25,8 @@ export function hasLocatedEvidence(candidate: Candidate | null | undefined): boo
 export function approveBlocker(entry: ReviewEntry | null): string | null {
   const candidate = entry?.state.candidate;
   if (!candidate) return "There is no extracted value for this field.";
-  if (candidate.value === null || candidate.value === undefined)
+  // A withdrawal has no value to approve; the removal is what is approved, on its evidence.
+  if ((candidate.value === null || candidate.value === undefined) && !candidate.withdrawn)
     return "No value was found. Edit to enter one, or mark it not in document.";
   if (!hasLocatedEvidence(candidate))
     return "The quoted text was not found in the document. Edit and give the page and the text.";

@@ -85,6 +85,9 @@ class CanonicalFact(IdMixin, TenantAuditMixin, Base):
     )
     is_current: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     superseded_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    # The fact is that the provision was withdrawn by this version (value null, the
+    # evidence the removing words); the current view drops the earlier value and says so.
+    withdrawn: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
 
 
 class Feedback(IdMixin, TenantAuditMixin, Base):

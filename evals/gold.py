@@ -85,6 +85,9 @@ def build_gold(session: Session, catalog: Catalog, tender: Tender) -> GoldRecord
         .order_by(TenderReviewSnapshot.created_at.desc())
         .limit(1)
     )
+    if tender.status == "superseded":
+        # Built again as a new tender: a review of the old document set is no gold for it.
+        raise NoCompletedReview(f"{tender_key(tender)}: superseded; its review is not gold")
     if snapshot is None:
         raise NoCompletedReview(f"{tender_key(tender)}: no completed review; complete it first")
     compiled = catalog.get(tender.tender_type)

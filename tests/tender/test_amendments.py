@@ -118,6 +118,7 @@ def test_a_decision_before_the_amendment_shows_and_setting_it_aside_brings_the_o
         "what stood before is the reviewer's edit, not the model's reading"
     )
     assert change.kind == "changed" and change.is_current
+    assert change.changes_decided, "deciding this reading replaces the reviewer's own value"
 
     assert change.entry.state.candidate is not None
     pipeline.approvals.approve(
@@ -172,6 +173,8 @@ def test_a_restated_value_is_told_apart_from_a_changed_one(pipeline: Pipeline, d
     kinds = {c.field_path: c.kind for c in version.changes}
     assert kinds == {DEADLINE: "changed", EMD: "restated"}
     assert (version.changed, version.restated) == (1, 1)
+    # Impact cues: neither field was decided before, and no derived table reads them.
+    assert all(not c.changes_decided and c.impacts == [] for c in version.changes)
 
 
 def test_what_stood_before_skips_a_reading_set_aside_as_not_in_its_document(

@@ -43,6 +43,36 @@ describe("SummaryPage", () => {
     expect(screen.queryByTestId("approve")).toBeNull();
   });
 
+  it("tells a provision withdrawn by an amendment apart from one not in the document", async () => {
+    const ceiling = {
+      field_path: "d",
+      label: "Tariff ceiling",
+      section: "commercial",
+      value_type: "decimal",
+      unit: "INR per kWh",
+      decided: true,
+      value: null,
+      version_no: 5,
+      version_kind: "corrigendum",
+      evidence: [{ page_no: 4 }],
+      withdrawn: true,
+      withdrawn_value: 5.8,
+      withdrawn_from_version: 2,
+    };
+    const snapshot = {
+      ...SNAPSHOT,
+      snapshot: { ...SNAPSHOT.snapshot, view: { fields: [...SNAPSHOT.snapshot.view.fields, ceiling] } },
+    } as unknown as typeof SNAPSHOT;
+    const api = { snapshot: vi.fn(async () => snapshot) } as unknown as ReviewApi;
+    render(<SummaryPage api={api} tenderId="t1" reviewHref="/review/x" />);
+    await screen.findByText("Review completed");
+    const removed = screen.getByTestId("withdrawn-field");
+    expect(removed).toHaveTextContent("Withdrawn by v5 corrigendum");
+    expect(removed.querySelector("del")).toHaveTextContent("5.8");
+    expect(removed).toHaveTextContent("stood from v2");
+    expect(screen.getAllByText("not in document")).toHaveLength(1);
+  });
+
   it("says so when the review is not completed yet", async () => {
     const api = {
       snapshot: vi.fn(async () => {

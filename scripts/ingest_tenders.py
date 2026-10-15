@@ -13,6 +13,8 @@
   python -m scripts.ingest_tenders summarize [--only slug,slug] [--force]
   python -m scripts.ingest_tenders freshness [--root /work/tenders]
                                              [--out docs/reports/FRESHNESS-REPORT.md]
+  python -m scripts.ingest_tenders reseed --only slug   (a tender without decisions: its
+                                             versions and runs removed, then ingest again)
 
 `ingest` reads <root>/<type>/<slug>/manifest.yaml, creates each tender, groups its files
 into versions and uploads them; the worker parses and section-maps them. Each file's
@@ -37,13 +39,18 @@ from pathlib import Path
 from typing import Any
 
 import yaml
-from sqlalchemy import func, select
+from sqlalchemy import delete, func, select
 from sqlalchemy.orm import Session, sessionmaker
 
 from core.config import Settings
 from core.db import make_engine, make_session_factory
 from core.llm.client import LLMClient
-from core.models import Document, ExtractionRun, Job
+from core.models import (
+    Approval,
+    Document,
+    ExtractionRun,
+    Job,
+)
 from core.models.extraction import RECORD_MODES
 from core.services import jobs
 from core.services.extract import ExtractService
@@ -56,6 +63,7 @@ from tender.services.amendment_map import routing_records
 from tender.services.packs import Catalog, build_registry
 from tender.services.summary import SummaryWriter
 from tender.services.tenders import JOB_KIND, OBJECT_TYPE, TenderError, TenderService
+from tender.services.tokens import TokenService
 from tender.services.versioning import CHANGE_ROLES
 from tender.services.worker_jobs import summary_writer
 
@@ -437,6 +445,55 @@ def amendment_routing(
     return lines
 
 
+def reseed(services: Services, root: Path, only: set[str]) -> list[str]:
+    """Set a tender aside and build it again from its manifest, in date order (a document
+    found later that predates versions already held). Nothing is deleted: candidates and
+    evidence are immutable, so the old tender keeps its versions, runs and candidates
+    under a suffixed slug with status `superseded`, out of every list; its review links
+    are revoked and its pending jobs withdrawn. Refused for a tender with any decision:
+    those are the reviewer's. The new tender is then created by `ingest` with the
+    manifest's slug, its documents reused by sha256; run `extract` after it."""
+    if not only:
+        raise ValueError("reseed needs --only <slug>: it is never run over the whole set")
+    tenant_id = services.settings.tenant_id
+    tokens = TokenService(tenant_id)
+    lines = []
+    with services.session_factory() as session:
+        for slug in sorted(only):
+            tender = services.tenders.by_slug(session, slug)
+            if tender is None:
+                lines.append(f"{slug}: no such tender")
+                continue
+            decisions = session.scalar(
+                select(func.count())
+                .select_from(Approval)
+                .where(
+                    Approval.tenant_id == tenant_id,
+                    Approval.object_type == OBJECT_TYPE,
+                    Approval.object_id == tender.id,
+                )
+            )
+            if decisions:
+                lines.append(f"{slug}: refused, {decisions} decision(s) stand on it")
+                continue
+            withdrawn = session.execute(
+                delete(Job).where(
+                    Job.tenant_id == tenant_id,
+                    Job.status == "queued",
+                    Job.payload["tender_id"].astext == tender.id,
+                )
+            ).rowcount
+            revoked = tokens.revoke(session, tender, created_by=ACTOR)
+            versions = len(services.tenders.versions(session, tender))
+            new_slug = services.tenders.supersede(session, tender, created_by=ACTOR)
+            session.commit()
+            lines.append(
+                f"{slug}: superseded as {new_slug} ({versions} version(s) kept, "
+                f"{revoked} link(s) revoked, {withdrawn} job(s) withdrawn); now ingest and extract"
+            )
+    return lines
+
+
 def routing_report(services: Services) -> list[str]:
     """One line per recorded comparison of keyword routing with the full map."""
     lines = []
@@ -642,6 +699,7 @@ def main(argv: list[str]) -> int:
             "revalidate",
             "summarize",
             "freshness",
+            "reseed",
         ),
     )
     parser.add_argument("--root", type=Path, default=DEFAULT_ROOT)
@@ -680,6 +738,8 @@ def main(argv: list[str]) -> int:
     elif args.command == "freshness":
         out = args.out if args.out != DEFAULT_SUMMARY else DEFAULT_FRESHNESS
         print("\n".join(freshness_check(services, args.root, out)))
+    elif args.command == "reseed":
+        print("\n".join(reseed(services, args.root, only or set())))
     elif args.command == "wait":
         return 0 if wait(services, args.timeout) else 1
     else:

@@ -113,6 +113,22 @@ export function shownValue(field: ReviewField, entry: ReviewEntry | null): unkno
   return entry?.state.candidate?.value ?? null;
 }
 
+/** What stood for the field before this entry: the latest earlier reading as the reviewer
+ * left it (their edit, else the model's value), with its version tag. Null when none. */
+export function stoodBefore(field: ReviewField, entry: ReviewEntry | null): { value: unknown; tag: string } | null {
+  if (!entry) return null;
+  const at = field.entries.indexOf(entry);
+  for (let index = (at === -1 ? field.entries.length : at) - 1; index >= 0; index -= 1) {
+    const earlier = field.entries[index];
+    const approval = earlier.state.approval;
+    if (approval?.decision === "not_in_document") continue;
+    const value = approval?.decision === "edited" && approval.final_value != null ? approval.final_value : earlier.state.candidate?.value;
+    if (value === null || value === undefined) continue;
+    return { value, tag: `v${earlier.version_no} ${earlier.version_kind}` };
+  }
+  return null;
+}
+
 /** The decision on an entry in one line, or null when there is none standing. */
 export function decisionLine(entry: ReviewEntry, field: ReviewField): { text: string; tone: string } | null {
   const approval = entry.state.approval;
@@ -120,6 +136,8 @@ export function decisionLine(entry: ReviewEntry, field: ReviewField): { text: st
   const by = ` · ${approval.reviewer}`;
   // The reviewer's remark, kept with the decision.
   const remark = approval.note ? ` — ${approval.note}` : "";
+  if (approval.decision === "approved" && entry.state.candidate?.withdrawn)
+    return { text: `Removal approved${by}${remark}`, tone: "text-green-700" };
   if (approval.decision === "approved") return { text: `Approved${by}${remark}`, tone: "text-green-700" };
   if (approval.decision === "edited")
     return {
@@ -257,25 +275,44 @@ export function FieldCard({
           {caveat}
         </p>
       )}
-      <div
-        data-testid="field-value"
-        className={"mt-0.5 text-sm text-slate-900 " + (long && !showAll ? "line-clamp-4" : "")}
-      >
-        <Value
-          value={shownValue(field, entry ?? null)}
-          field={field}
-          active={activeNumber ? number(activeNumber) : null}
-          hint={(wanted) => {
-            const found = evidence.find((item) => number(item) === wanted);
-            if (!found) return `Evidence ${wanted}`;
-            return `${found.source ?? "Evidence"} · p. ${found.page_no}: “${found.quote.slice(0, 300)}”`;
-          }}
-          onMarker={(wanted) => {
-            const found = evidence.find((item) => number(item) === wanted);
-            if (found) onShowEvidence(found);
-          }}
-        />
-      </div>
+      {candidate?.withdrawn && (
+        // The version removes the provision: no value to show, but what stood before it.
+        <div data-testid="withdrawn" className="mt-0.5 rounded border border-red-200 bg-red-50 px-2 py-1 text-sm">
+          <p className="font-medium text-red-800">Withdrawn by this version</p>
+          <p className="text-xs text-slate-700">
+            {stoodBefore(field, entry) ? (
+              <>
+                Stood before: <del>{formatValue(stoodBefore(field, entry)!.value, field.value_type, field.unit)}</del>
+                {" "}
+                <span className="text-slate-500">({stoodBefore(field, entry)!.tag})</span> — no longer applies once the removal is approved.
+              </>
+            ) : (
+              "No earlier value was read for this field."
+            )}
+          </p>
+        </div>
+      )}
+      {!candidate?.withdrawn && (
+        <div
+          data-testid="field-value"
+          className={"mt-0.5 text-sm text-slate-900 " + (long && !showAll ? "line-clamp-4" : "")}
+        >
+          <Value
+            value={shownValue(field, entry ?? null)}
+            field={field}
+            active={activeNumber ? number(activeNumber) : null}
+            hint={(wanted) => {
+              const found = evidence.find((item) => number(item) === wanted);
+              if (!found) return `Evidence ${wanted}`;
+              return `${found.source ?? "Evidence"} · p. ${found.page_no}: “${found.quote.slice(0, 300)}”`;
+            }}
+            onMarker={(wanted) => {
+              const found = evidence.find((item) => number(item) === wanted);
+              if (found) onShowEvidence(found);
+            }}
+          />
+        </div>
+      )}
       {long && typeof candidate?.value === "string" && candidate.value.length > 280 && !focused && (
         <button
           type="button"
@@ -447,11 +484,16 @@ export function FieldCard({
             type="button"
             data-testid="approve"
             disabled={blocker !== null}
-            title={blocker ?? "Approve (Enter)"}
+            title={
+              blocker ??
+              (candidate?.withdrawn
+                ? "Approve the removal: the earlier value will no longer apply (Enter)"
+                : "Approve (Enter)")
+            }
             className={BUTTON + " border-green-600 bg-green-600 text-white hover:bg-green-700"}
             onClick={() => onDecide({ decision: "approved", ...withNote })}
           >
-            Approve
+            {candidate?.withdrawn ? "Approve removal" : "Approve"}
           </button>
           <button
             type="button"

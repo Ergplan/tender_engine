@@ -5,7 +5,7 @@ sections:
   solar_tech:
     label: Solar technology
     prompt: extract/solar_tech
-    prompt_version: v2
+    prompt_version: v3
     roles: [rfs, contractual, nit, technical]
     section_kinds: [technical_requirements]
     keywords: [almm, domestic content, cuf, capacity utilisation, degradation, repowering, augmentation, land]

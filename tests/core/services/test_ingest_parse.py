@@ -67,7 +67,67 @@ def test_provenance_is_stored_and_a_later_upload_fills_only_what_is_missing(
 def test_a_file_that_is_not_a_pdf_is_refused(pipeline: Pipeline, db: Session) -> None:
     with pytest.raises(IngestError, match="not a PDF"):
         pipeline.ingest.upload(db, filename="a.txt", data=b"hello", created_by="x")
+    with pytest.raises(IngestError, match="not a PDF"):
+        pipeline.ingest.upload(db, filename="a.xlsx", data=b"PK\x03\x04junk"[:3], created_by="x")
     assert db.scalar(select(func.count()).select_from(Document)) == 0
+
+
+def workbook(rows: list[list[object]], sheet: str = "Amendment1") -> bytes:
+    import io
+
+    import openpyxl
+
+    book = openpyxl.Workbook()
+    page = book.active
+    page.title = sheet
+    for row in rows:
+        page.append(row)
+    out = io.BytesIO()
+    book.save(out)
+    return out.getvalue()
+
+
+def test_a_spreadsheet_is_stored_as_a_text_pdf_under_its_own_hash_and_parses(
+    pipeline: Pipeline, db: Session
+) -> None:
+    """SECI posts amendments as workbooks: one sheet of clause, existing text, amended text.
+    The workbook is rendered to a text PDF for the parser; its own sha256 and filename
+    are kept, so the same workbook is one document and the freshness check matches it."""
+    import hashlib
+
+    from core.services.spreadsheet import render_pdf, workbook_lines
+
+    rows: list[list[object]] = [
+        ["SOLAR ENERGY CORPORATION OF INDIA LIMITED"],
+        ["No. SECI/C&P/OP/11/0002/26-27/Amendment-01", None, "Date: 28/07/2026"],
+        ["S. No.", "Clause No.", "Existing Clause", "Amended Clause"],
+        [1, "9(xi)", "15 days prior to the proposed date of trial run", "7 working days prior"],
+        [None, None, None, None],
+        [2, 21.2, "valid for 12 years", "valid for 15 years"],
+    ]
+    data = workbook(rows)
+    lines = workbook_lines(data)
+    assert lines[:2] == ["Sheet: Amendment1", ""]
+    assert "  C2: Date: 28/07/2026" in lines and "  D4: 7 working days prior" in lines
+    assert "  B6: 21.2" in lines, "a number is written as the cell shows it"
+    assert render_pdf(data) == render_pdf(data), "the same workbook renders to the same bytes"
+
+    document, created = pipeline.ingest.upload(
+        db, filename="Amendment-1_2.xlsx", data=data, created_by="x"
+    )
+    assert created and document.filename == "Amendment-1_2.xlsx"
+    assert document.sha256 == hashlib.sha256(data).hexdigest(), "the workbook's own hash"
+    stored = pipeline.storage.get(document.storage_path)
+    assert stored.startswith(b"%PDF-") and document.mime == "application/pdf"
+    again, created_again = pipeline.ingest.upload(
+        db, filename="copy.xlsx", data=data, created_by="y"
+    )
+    assert not created_again and again.id == document.id
+    ParseService(pipeline.storage, pipeline.settings).parse(db, document.id)
+    db.expire_all()
+    assert db.get(Document, document.id).status == "parsed"
+    text = "\n".join(db.scalars(select(Page.text).where(Page.document_id == document.id)))
+    assert "D4: 7 working days prior" in text and "Date: 28/07/2026" in text
 
 
 def test_parse_stores_text_aligned_boxes_and_a_render_per_page(

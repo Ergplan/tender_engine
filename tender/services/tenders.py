@@ -7,7 +7,7 @@ object_type='tender', object_id=tender.id, object_version=version_no.
 """
 
 from dataclasses import dataclass
-from datetime import date
+from datetime import UTC, date, datetime
 
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
@@ -109,14 +109,36 @@ class TenderService:
             select(Tender).where(Tender.slug == slug, Tender.tenant_id == self._tenant_id)
         )
 
-    def all(self, session: Session) -> list[Tender]:
+    def all(self, session: Session, *, include_superseded: bool = False) -> list[Tender]:
+        """The tenant's tenders in review order. A tender built again as a new one (status
+        `superseded`) is left out unless asked for."""
+        query = select(Tender).where(Tender.tenant_id == self._tenant_id)
+        if not include_superseded:
+            query = query.where(Tender.status != "superseded")
         return list(
-            session.scalars(
-                select(Tender)
-                .where(Tender.tenant_id == self._tenant_id)
-                .order_by(Tender.tender_type, Tender.created_at, Tender.id)
-            )
+            session.scalars(query.order_by(Tender.tender_type, Tender.created_at, Tender.id))
         )
+
+    def supersede(self, session: Session, tender: Tender, *, created_by: str) -> str:
+        """Set a tender aside so that its manifest can be ingested again as a new tender:
+        status `superseded`, its slug suffixed so the new tender may take it. Its versions,
+        runs and candidates stay as they are (candidates and evidence are immutable).
+        Returns the slug it now carries."""
+        before = {"slug": tender.slug, "status": tender.status}
+        tender.slug = f"{tender.slug}-superseded-{datetime.now(UTC):%Y%m%d}"
+        tender.status = "superseded"
+        session.flush()
+        audit.record(
+            session,
+            tenant_id=self._tenant_id,
+            actor=created_by,
+            action="supersede",
+            table_name="tender",
+            row_id=tender.id,
+            before=before,
+            after={"slug": tender.slug, "status": tender.status},
+        )
+        return tender.slug or ""
 
     def versions(self, session: Session, tender: Tender) -> list[VersionDocuments]:
         versions = list(
@@ -249,7 +271,7 @@ class TenderService:
         tender: Tender,
         *,
         version_no: int | None = None,
-        prompt_version: str = "v1",
+        prompt_version: str = "v2",
         created_by: str,
         groups: list[str] | None = None,
         is_fixture: bool = False,
@@ -340,7 +362,7 @@ class TenderService:
     def refresh_status(self, session: Session, tender: Tender) -> str:
         """ingested until every run of the tender is validated, then extracted; in_review
         once a reviewer has decided a field. reviewed and published are set in Stage 3."""
-        if tender.status in ("reviewed", "published"):
+        if tender.status in ("reviewed", "published", "superseded"):
             return tender.status
         decided = session.scalar(
             select(func.count())

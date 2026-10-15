@@ -99,13 +99,15 @@ class _Draft:
     quotes: list[tuple[int, EvidenceQuote]]
     chunk: list[int]
     call_log_id: str
+    # The document withdraws the provision: value None, the quotes the removing words.
+    withdrawn: bool = False
 
 
 def build_group_model(
     schema: ExtractionSchema, group: FieldGroup, schemas: SchemaRegistry
 ) -> type[BaseModel]:
     """The structured-output model for one group: every field REQUIRES value, confidence,
-    rationale and evidence."""
+    rationale and evidence; `withdrawn` says the pages remove the provision (extract/v2)."""
     make = cast(Any, create_model)
     field_models: dict[JsonKind, type[BaseModel]] = {}
     properties: dict[str, Any] = {}
@@ -118,6 +120,7 @@ def build_group_model(
                 confidence=(float, ...),
                 rationale=(str, ...),
                 evidence=(list[EvidenceQuote], ...),
+                withdrawn=(bool, False),
             )
         properties[field.key] = (field_models[kind], ...)
     return cast(type[BaseModel], make(f"Extract_{group.name}", **properties))
@@ -129,6 +132,7 @@ class SharedEntry(BaseModel):
     confidence: float
     rationale: str
     evidence: list[EvidenceQuote]
+    withdrawn: bool = False
 
 
 class SharedAnswer(BaseModel):
@@ -375,7 +379,8 @@ class ExtractService:
                         continue
                     for field in fields:
                         item = getattr(parsed, field.key)
-                        if item.value is None:
+                        withdrawn = bool(getattr(item, "withdrawn", False))
+                        if item.value is None and not withdrawn:
                             not_found[field.path].append(item.rationale)
                         else:
                             quotes = [
@@ -385,12 +390,14 @@ class ExtractService:
                             ]
                             drafts[field.path].append(
                                 _Draft(
-                                    value=item.value,
+                                    # A withdrawal carries no value, whatever was sent.
+                                    value=None if withdrawn else item.value,
                                     confidence=min(max(float(item.confidence), 0.0), 1.0),
                                     rationale=item.rationale,
                                     quotes=quotes,
                                     chunk=call.chunk,
                                     call_log_id=call_log_id,
+                                    withdrawn=withdrawn,
                                 )
                             )
                 done = self._done_fields(session, run, fields)
@@ -715,6 +722,7 @@ class ExtractService:
                 draft.chunk,
                 draft.call_log_id,
                 spans,
+                withdrawn=draft.withdrawn,
             )
 
     def record_candidate(
@@ -826,6 +834,7 @@ class ExtractService:
         call_log_id: str | None,
         spans: list[dict[str, Any]],
         prompt: tuple[str, str] | None = None,
+        withdrawn: bool = False,
     ) -> Candidate:
         if status == "raw" and not spans:
             raise AssertionError("a reviewable candidate must carry evidence")
@@ -843,6 +852,7 @@ class ExtractService:
             prompt_version=prompt[1] if prompt else _prompt_version(run, group),
             llm_call_log_id=call_log_id,
             window_pages=window,
+            withdrawn=withdrawn,
         )
         session.add(candidate)
         session.flush()

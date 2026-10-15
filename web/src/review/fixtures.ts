@@ -32,8 +32,21 @@ export function candidate(value: unknown, overrides: Partial<Candidate> = {}): C
     prompt_version: "v1",
     evidence: [evidence()],
     validation: [],
+    withdrawn: false,
     ...overrides,
   };
+}
+
+/** A reading that says the document withdraws the provision: no value, the removing words. */
+export function withdrawnCandidate(overrides: Partial<Candidate> = {}): Candidate {
+  return candidate(null, {
+    id: "c-withdrawn",
+    document_id: AMENDMENT_DOC,
+    rationale: "Clause 40.3 is amended; the ceiling of INR 5.80/kWh and the summary rejection are deleted.",
+    evidence: [evidence({ page_no: 4, document_id: AMENDMENT_DOC, quote: "The tariff has to be less than or equal to INR 5.80/kWh" })],
+    withdrawn: true,
+    ...overrides,
+  });
 }
 
 function entry(field: Partial<ReviewField>, found: Candidate | null, version = 1, kind = "original"): ReviewEntry {
@@ -174,11 +187,14 @@ export function makeAmendments(): TenderAmendments {
             decided: false,
             set_aside: false,
             flagged: false,
+            changes_decided: false,
+            impacts: [],
           },
         ],
         added: 0,
         changed: 1,
         restated: 0,
+        removed: 0,
         decided: 0,
         undecided: 1,
       },

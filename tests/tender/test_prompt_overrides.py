@@ -18,7 +18,7 @@ def test_an_override_reads_the_section_with_that_version(pipeline: Pipeline, db:
     own_runs = select(ExtractionRun.id).where(ExtractionRun.object_id == tender.id)
     first = list(db.scalars(select(Candidate).where(Candidate.extraction_run_id.in_(own_runs))))
     commercial = {c.field_path for c in first if c.prompt_name == "extract/commercial"}
-    assert commercial and {c.prompt_version for c in first if c.field_path in commercial} == {"v3"}
+    assert commercial and {c.prompt_version for c in first if c.field_path in commercial} == {"v4"}
     runs = pipeline.tenders.start_extraction(
         db,
         tender,

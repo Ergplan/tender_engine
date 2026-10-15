@@ -24,6 +24,7 @@ function keyOf(change: AmendmentChange): string {
 function countLine(version: AmendmentVersion): string {
   const parts = [];
   if (version.changed) parts.push(`${version.changed} changed`);
+  if (version.removed) parts.push(`${version.removed} removed`);
   if (version.added) parts.push(`${version.added} added`);
   if (version.restated) parts.push(`${version.restated} restated`);
   const what = parts.length ? parts.join(", ") : "no field stated";

@@ -88,6 +88,11 @@ class Candidate(IdMixin, TenantAuditMixin, Base):
         ForeignKey("llm_call_log.id"), nullable=True
     )
     window_pages: Mapped[list[int]] = mapped_column(JSONB, nullable=False)
+    # The document withdraws the provision (a later version deletes the clause, strikes
+    # the figure, says it no longer applies): value null, the evidence the removing
+    # words. Distinct from a value the pages do not state (status not_found, no
+    # evidence) and from a plain null.
+    withdrawn: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
 
 
 class EvidenceSpan(IdMixin, TenantAuditMixin, Base):

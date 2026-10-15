@@ -66,7 +66,7 @@ def test_upload_of_a_non_pdf_is_422_with_a_typed_error(client: TestClient) -> No
     response = client.post("/api/v1/documents", files={"file": ("a.txt", b"hello", "text/plain")})
     assert response.status_code == 422
     assert response.json()["error_type"] == "validation_failed"
-    assert response.json()["detail"] == "the file is not a PDF"
+    assert response.json()["detail"] == "the file is not a PDF or an .xlsx workbook"
 
 
 def test_upload_without_a_file_is_422(client: TestClient) -> None:

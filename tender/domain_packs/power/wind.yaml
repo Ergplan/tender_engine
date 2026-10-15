@@ -5,7 +5,7 @@ sections:
   wind_tech:
     label: Wind technology
     prompt: extract/wind_tech
-    prompt_version: v2
+    prompt_version: v3
     roles: [rfs, contractual, nit, technical]
     section_kinds: [technical_requirements]
     keywords: [rlmm, wind turbine, cuf, capacity utilisation, hub height, wind resource, type certificate]

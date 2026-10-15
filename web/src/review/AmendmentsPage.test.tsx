@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { ReviewApi, TenderAmendments } from "../api/client";
 import { AmendmentsPage } from "./AmendmentsPage";
-import { DOC, makeAmendments, makeReview, SESSION } from "./fixtures";
+import { DOC, makeAmendments, makeReview, SESSION, withdrawnCandidate } from "./fixtures";
 
 vi.mock("./pdfText", () => ({
   openPdf: async () => ({ renderPage: async () => undefined, drawPage: async () => undefined, close: () => undefined }),
@@ -157,5 +157,67 @@ describe("AmendmentsPage", () => {
     await open({ ...makeAmendments(), versions: [], untouched: 4 });
     expect(screen.getByTestId("no-amendments")).toHaveTextContent("only its original version");
     expect(screen.getByTestId("amendments-progress")).toHaveTextContent("0 fields stated by later versions");
+  });
+
+  it("shows what a change means: the delta or the word diff, and the impact cues", async () => {
+    const amendments = makeAmendments();
+    const [change] = amendments.versions[0].changes;
+    // A date: no number to subtract, two dates share no word, so only the cues show.
+    change.changes_decided = true;
+    change.impacts = ["Optimiser constraints"];
+    await open(amendments);
+    const detail = screen.getByTestId("change-detail");
+    expect(within(detail).queryByTestId("delta")).toBeNull();
+    expect(within(detail).queryByTestId("word-diff")).toBeNull();
+    expect(within(detail).getByTestId("impact")).toHaveTextContent(
+      "Impact: replaces a value you decided · required field · read by Optimiser constraints (written again from it)",
+    );
+  });
+
+  it("gives a numeric change its delta and a rewritten clause its word diff", async () => {
+    const amendments = makeAmendments();
+    const [change] = amendments.versions[0].changes;
+    change.value_type = "int";
+    change.unit = "years";
+    change.required = false;
+    change.before = { version_no: 1, version_kind: "original", value: 12, decision: null };
+    change.entry.state.candidate!.value = 15;
+    await open(amendments);
+    expect(screen.getByTestId("delta")).toHaveTextContent("12 years → 15 years (+3 (+25%))");
+    expect(screen.queryByTestId("impact")).toBeNull();
+
+    const rewritten = makeAmendments();
+    const [clause] = rewritten.versions[0].changes;
+    clause.value_type = "text";
+    clause.required = false;
+    clause.before = { version_no: 1, version_kind: "original", value: "The CfDAs shall be valid for 12 years from the SCD.", decision: null };
+    clause.entry.state.candidate!.value = "The CfDAs shall be valid for 15 years from the SCD.";
+    await open(rewritten);
+    const diff = screen.getByTestId("word-diff");
+    expect(within(diff).getByText("12")).toHaveProperty("tagName", "DEL");
+    expect(within(diff).getByText("15")).toHaveProperty("tagName", "INS");
+  });
+
+  it("shows a withdrawal as removed, with what stood before, and approves the removal", async () => {
+    const amendments = makeAmendments();
+    const version = amendments.versions[0];
+    const [change] = version.changes;
+    change.kind = "removed";
+    change.changes_decided = true;
+    change.before = { version_no: 1, version_kind: "original", value: "30.03.2026", decision: "approved" };
+    change.entry.state.candidate = withdrawnCandidate({ id: "c-deadline-2" });
+    version.changed = 0;
+    version.removed = 1;
+    const { calls } = await open(amendments);
+    expect(screen.getByTestId("change-kind")).toHaveTextContent("Removed");
+    expect(screen.getByTestId("version-count")).toHaveTextContent("1 removed");
+    expect(within(screen.getByTestId("after")).getByTestId("withdrawn")).toHaveTextContent("Withdrawn by this version");
+    expect(screen.getByTestId("before")).toHaveTextContent("30 Mar 2026");
+    expect(screen.getByTestId("impact")).toHaveTextContent("removes the value that stood before · a value you decided · required field");
+    const approve = screen.getByTestId("approve");
+    expect(approve).toBeEnabled();
+    expect(approve).toHaveTextContent("Approve removal");
+    fireEvent.click(approve);
+    await waitFor(() => expect(calls.decide).toHaveBeenCalledWith(expect.objectContaining({ candidate_id: "c-deadline-2", decision: "approved" })));
   });
 });

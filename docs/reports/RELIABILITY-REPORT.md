@@ -1,42 +1,45 @@
 # Reliability report
 
-Generated 2026-10-13 13:18 UTC by `python -m evals.report` (also `make report`). Every gold record scored against the candidates now in review at the version it was reviewed at. Accuracy is value accuracy: the candidate the reviewer saw against what they decided. Evidence accuracy asks whether the candidate cited a page the reviewer accepted. Long text is not scored by rule.
+Generated 2026-10-15 17:21 UTC by `python -m evals.report` (also `make report`). Every gold record scored against the candidates now in review at the version it was reviewed at. Accuracy is value accuracy: the candidate the reviewer saw against what they decided. Evidence accuracy asks whether the candidate cited a page the reviewer accepted. Long text is not scored by rule.
 
 ## Tenders reviewed
 
 | Type | In the set | Reviewed | Tenders |
 | --- | --- | --- | --- |
 | bess | 1 | 1 | seci-ess-iv |
-| epc | 2 | 0 | - |
-| fdre | 4 | 2 | nhpc-fdre-ii, seci-cfd-i |
+| epc | 3 | 1 | seci-gaya-60mw |
+| fdre | 4 | 4 | nhpc-fdre-ii, seci-cfd-i, seci-fdre-ix, seci-fdre-rtc-v |
 | generation | 1 | 1 | ntpc-phes-2000mw |
 | hybrid | 1 | 1 | ntpc-hybrid-03 |
-| re_rtc | 1 | 0 | - |
+| re_rtc | 1 | 1 | wbsedcl-re-rtc-2026-01 |
 | solar | 1 | 1 | seci-cni-1-700mw |
 | transmission | 1 | 0 | - |
 | wind | 2 | 1 | ntpc-rel-600mw-anantapur-wtg |
 
 ## Accuracy
 
-- Value accuracy: **98%** on 598 scored fields (588 correct); 80 long-text fields need human judgement.
-- Evidence accuracy: **100%** on 380 fields with a value and accepted pages (380 cited an accepted page). A right value from the wrong page counts as right above and wrong here.
+- Value accuracy: **97%** on 942 scored fields (918 correct); 144 long-text fields need human judgement.
+- Evidence accuracy: **100%** on 634 fields with a value and accepted pages (634 cited an accepted page). A right value from the wrong page counts as right above and wrong here.
 
 | Section | Accuracy | n | Evidence | Recommendation |
 | --- | --- | --- | --- | --- |
 | bess_performance | 100% | 15 | 100% | stable |
-| commercial | 100% | 54 | 100% | stable |
-| connectivity_and_compliance | 100% | 57 | 100% | stable |
-| documents | 95% | 21 | 100% | stable |
-| eligibility | 100% | 73 | 100% | stable |
-| fdre_profile | 100% | 18 | 100% | stable |
+| commercial | 100% | 78 | 100% | stable |
+| connectivity_and_compliance | 100% | 87 | 100% | stable |
+| documents | 97% | 33 | 100% | stable |
+| eligibility | 100% | 119 | 100% | stable |
+| epc_scope | 93% | 15 | 100% | stable |
+| fdre_profile | 100% | 36 | 100% | stable |
 | gen_tech | 100% | 7 | 100% | stable |
-| guarantees | 97% | 68 | 100% | stable |
+| guarantees | 98% | 105 | 100% | stable |
 | hybrid_mix | 100% | 8 | 100% | stable |
-| identity_and_scope | 96% | 105 | 100% | stable |
-| key_dates | 97% | 105 | 100% | stable |
-| penalties | 100% | 39 | 100% | stable |
+| identity_and_scope | 95% | 165 | 100% | stable |
+| key_dates | 96% | 164 | 100% | stable |
+| penalties | 97% | 59 | 100% | stable |
+| re_rtc_profile | 100% | 14 | 100% | stable |
 | solar_tech | 100% | 10 | 100% | stable |
-| supply_sources | 100% | 11 | 100% | stable |
+| summary | 0% | 2 | - | needs prompt work |
+| supply_sources | 100% | 18 | 100% | stable |
 | wind_tech | 100% | 7 | 100% | stable |
 
 ### By tender type
@@ -44,59 +47,65 @@ Generated 2026-10-13 13:18 UTC by `python -m evals.report` (also `make report`).
 | Type | Accuracy | n | Evidence |
 | --- | --- | --- | --- |
 | bess | 99% | 90 | 100% |
-| fdre | 98% | 159 | 100% |
+| epc | 98% | 87 | 100% |
+| fdre | 96% | 320 | 100% |
 | generation | 98% | 92 | 100% |
 | hybrid | 98% | 84 | 100% |
-| solar | 99% | 84 | 100% |
+| re_rtc | 98% | 95 | 100% |
+| solar | 98% | 85 | 100% |
 | wind | 99% | 89 | 100% |
 
 ## Fields below 90%
 
 | Field | Accuracy | n | Misses | What the misses look like |
 | --- | --- | --- | --- | --- |
-| `core.documents.draft_agreements_referenced` | 86% | 7 | 1 | wrong_value 1 |
-| `core.guarantees.emd_formula` | 75% | 4 | 1 | missing 1 |
-| `core.guarantees.pbg_formula` | 75% | 4 | 1 | missing 1 |
-| `core.identity.portal` | 86% | 7 | 1 | extra 1 |
-| `core.identity.procurement_mode` | 86% | 7 | 1 | wrong_value 1 |
-| `core.key_dates.loa_timeline` | 86% | 7 | 1 | missing 1 |
-| `core.key_dates.pre_bid_meeting_date` | 86% | 7 | 1 | missing 1 |
-| `sector.power.common.metering_point` | 86% | 7 | 1 | wrong_value 1 |
-| `sector.power.common.named_states_or_sites` | 86% | 7 | 1 | wrong_value 1 |
-| `sector.power.common.scod_reference` | 86% | 7 | 1 | wrong_value 1 |
+| `core.guarantees.emd_formula` | 80% | 5 | 1 | missing 1 |
+| `core.guarantees.pbg_formula` | 83% | 6 | 1 | missing 1 |
+| `core.identity.procurement_mode` | 55% | 11 | 5 | wrong_value 5; across agencies SECI, WBSEDCL |
+| `core.summary.plain_english_summary` | 0% | 2 | 2 | missing 2 |
+| `sector.power.common.named_states_or_sites` | 82% | 11 | 2 | wrong_value 2 |
+| `sector.power.common.ppa_signing_window_days` | 82% | 11 | 2 | wrong_value 2 |
+| `sector.power.common.scod_reference` | 73% | 11 | 3 | wrong_value 3; across agencies SECI, NTPC Renewable Energy Ltd |
+| `sector.power.epc.scope_matrix` | 0% | 1 | 1 | wrong_value 1 |
 
 ## Structured fields by key
 
 | Field | Key | Accuracy | n | Misses | What the misses look like |
 | --- | --- | --- | --- | --- | --- |
 | `core.commercial.payment_security_structured` | `lc_drawable_after_days` | 100% | 1 | 0 | - |
-| `core.commercial.payment_security_structured` | `lc_months_of_billing` | 100% | 1 | 0 | - |
-| `core.commercial.payment_security_structured` | `lc_required` | 100% | 3 | 0 | - |
-| `core.commercial.payment_security_structured` | `lc_revolving` | 100% | 3 | 0 | - |
-| `core.commercial.payment_security_structured` | `psf_available` | 100% | 4 | 0 | - |
-| `core.commercial.payment_security_structured` | `psf_charge_inr_per_kwh` | 100% | 2 | 0 | - |
-| `core.guarantees.emd_structured` | `basis` | 100% | 6 | 0 | - |
+| `core.commercial.payment_security_structured` | `lc_months_of_billing` | 100% | 3 | 0 | - |
+| `core.commercial.payment_security_structured` | `lc_required` | 100% | 6 | 0 | - |
+| `core.commercial.payment_security_structured` | `lc_revolving` | 100% | 6 | 0 | - |
+| `core.commercial.payment_security_structured` | `payment_due_days` | 100% | 2 | 0 | - |
+| `core.commercial.payment_security_structured` | `psf_available` | 100% | 6 | 0 | - |
+| `core.commercial.payment_security_structured` | `psf_charge_inr_per_kwh` | 100% | 4 | 0 | - |
+| `core.guarantees.bid_security_instruments` | `instrument` | 100% | 5 | 0 | - |
+| `core.guarantees.bid_security_instruments` | `issuer` | 100% | 5 | 0 | - |
+| `core.guarantees.emd_structured` | `basis` | 100% | 10 | 0 | - |
 | `core.guarantees.emd_structured` | `cap_inr` | 100% | 1 | 0 | - |
 | `core.guarantees.emd_structured` | `cap_per` | 100% | 1 | 0 | - |
-| `core.guarantees.emd_structured` | `components` | 100% | 2 | 0 | - |
-| `core.guarantees.emd_structured` | `lump_sum_inr` | 100% | 1 | 0 | - |
-| `core.guarantees.emd_structured` | `rate_inr_per_mw` | 100% | 3 | 0 | - |
-| `core.guarantees.pbg_structured` | `basis` | 100% | 5 | 0 | - |
-| `core.guarantees.pbg_structured` | `components` | 100% | 2 | 0 | - |
+| `core.guarantees.emd_structured` | `components` | 100% | 4 | 0 | - |
+| `core.guarantees.emd_structured` | `lump_sum_inr` | 100% | 2 | 0 | - |
+| `core.guarantees.emd_structured` | `rate_inr_per_mw` | 100% | 4 | 0 | - |
+| `core.guarantees.pbg_instruments` | `instrument` | 100% | 2 | 0 | - |
+| `core.guarantees.pbg_structured` | `basis` | 100% | 7 | 0 | - |
+| `core.guarantees.pbg_structured` | `components` | 100% | 3 | 0 | - |
 | `core.guarantees.pbg_structured` | `lump_sum_inr` | 100% | 1 | 0 | - |
-| `core.guarantees.pbg_structured` | `rate_inr_per_mw` | 100% | 2 | 0 | - |
-| `core.guarantees.pbg_structured` | `submitted_before` | 100% | 5 | 0 | - |
-| `core.guarantees.pbg_structured` | `valid_months_after_scod` | 100% | 5 | 0 | - |
-| `core.penalties.delay_ld_structured` | `basis` | 100% | 5 | 0 | - |
-| `core.penalties.delay_ld_structured` | `pbg_encashed_over_months` | 100% | 5 | 0 | - |
-| `core.penalties.shortfall_rules` | `default_after_years` | 100% | 2 | 0 | - |
-| `core.penalties.shortfall_rules` | `default_damages_months_of_tariff` | 100% | 3 | 0 | - |
-| `core.penalties.shortfall_rules` | `measured` | 100% | 5 | 0 | - |
-| `core.penalties.shortfall_rules` | `metric` | 100% | 6 | 0 | - |
-| `core.penalties.shortfall_rules` | `penalty_multiple_of_tariff` | 100% | 6 | 0 | - |
-| `core.penalties.shortfall_rules` | `threshold_of` | 100% | 5 | 0 | - |
-| `core.penalties.shortfall_rules` | `threshold_pct` | 100% | 6 | 0 | - |
-| `core.penalties.shortfall_rules` | `tolerance_pct` | 100% | 2 | 0 | - |
+| `core.guarantees.pbg_structured` | `rate_inr_per_mw` | 100% | 3 | 0 | - |
+| `core.guarantees.pbg_structured` | `submitted_before` | 100% | 8 | 0 | - |
+| `core.guarantees.pbg_structured` | `valid_months_after_scod` | 100% | 6 | 0 | - |
+| `core.penalties.delay_ld_structured` | `basis` | 100% | 8 | 0 | - |
+| `core.penalties.delay_ld_structured` | `cap_pct_of_contract_price` | 100% | 1 | 0 | - |
+| `core.penalties.delay_ld_structured` | `pbg_encashed_over_months` | 100% | 7 | 0 | - |
+| `core.penalties.delay_ld_structured` | `pct_per_week` | 100% | 1 | 0 | - |
+| `core.penalties.shortfall_rules` | `default_after_years` | 100% | 4 | 0 | - |
+| `core.penalties.shortfall_rules` | `default_damages_months_of_tariff` | 100% | 5 | 0 | - |
+| `core.penalties.shortfall_rules` | `measured` | 100% | 8 | 0 | - |
+| `core.penalties.shortfall_rules` | `metric` | 100% | 9 | 0 | - |
+| `core.penalties.shortfall_rules` | `penalty_multiple_of_tariff` | 100% | 9 | 0 | - |
+| `core.penalties.shortfall_rules` | `threshold_of` | 100% | 7 | 0 | - |
+| `core.penalties.shortfall_rules` | `threshold_pct` | 100% | 8 | 0 | - |
+| `core.penalties.shortfall_rules` | `tolerance_pct` | 100% | 3 | 0 | - |
 | `sector.power.bess.degradation_and_augmentation_structured` | `augmentation_at_cost_of` | 100% | 1 | 0 | - |
 | `sector.power.bess.degradation_and_augmentation_structured` | `augmentation_required` | 100% | 1 | 0 | - |
 | `sector.power.bess.degradation_and_augmentation_structured` | `basis` | 100% | 1 | 0 | - |
@@ -105,32 +114,46 @@ Generated 2026-10-13 13:18 UTC by `python -m evals.report` (also `make report`).
 | `sector.power.bess.degradation_and_augmentation_structured` | `schedule` | 100% | 1 | 0 | - |
 | `sector.power.bess.degradation_and_augmentation_structured` | `term_years` | 100% | 1 | 0 | - |
 | `sector.power.bess.degradation_and_augmentation_structured` | `year_1_end_pct` | 100% | 1 | 0 | - |
-| `sector.power.common.bess_charging_rule` | `co_located_required` | 100% | 1 | 0 | - |
-| `sector.power.common.bess_charging_rule` | `re_only` | 100% | 4 | 0 | - |
-| `sector.power.common.deemed_generation_structured` | `backdown_threshold_hours_per_year` | 100% | 2 | 0 | - |
-| `sector.power.common.deemed_generation_structured` | `compensation_basis` | 100% | 3 | 0 | - |
+| `sector.power.common.bess_charging_rule` | `co_located_required` | 100% | 3 | 0 | - |
+| `sector.power.common.bess_charging_rule` | `re_only` | 100% | 7 | 0 | - |
+| `sector.power.common.bess_charging_rule` | `regulation_reference` | 100% | 1 | 0 | - |
+| `sector.power.common.deemed_generation_structured` | `backdown_threshold_hours_per_year` | 100% | 4 | 0 | - |
+| `sector.power.common.deemed_generation_structured` | `compensation_basis` | 100% | 6 | 0 | - |
 | `sector.power.common.deemed_generation_structured` | `compensation_pct_of_tariff` | 100% | 1 | 0 | - |
-| `sector.power.common.deemed_generation_structured` | `exchange_sale_share_adjusted_pct` | 100% | 1 | 0 | - |
-| `sector.power.common.deemed_generation_structured` | `grid_threshold_hours_per_year` | 100% | 1 | 0 | - |
-| `sector.power.common.deemed_generation_structured` | `payer` | 100% | 3 | 0 | - |
-| `sector.power.common.source_mix_rules` | `condition` | 100% | 13 | 0 | - |
-| `sector.power.common.source_mix_rules` | `limit_unit` | 100% | 8 | 0 | - |
-| `sector.power.common.source_mix_rules` | `limit_value` | 100% | 8 | 0 | - |
-| `sector.power.common.source_mix_rules` | `source` | 100% | 13 | 0 | - |
-| `sector.power.common.source_mix_rules` | `treatment` | 100% | 13 | 0 | - |
-| `sector.power.fdre.demand_profile_structured` | `basis` | 100% | 1 | 0 | - |
+| `sector.power.common.deemed_generation_structured` | `exchange_sale_share_adjusted_pct` | 100% | 3 | 0 | - |
+| `sector.power.common.deemed_generation_structured` | `grid_threshold_hours_per_year` | 100% | 3 | 0 | - |
+| `sector.power.common.deemed_generation_structured` | `payer` | 100% | 6 | 0 | - |
+| `sector.power.common.source_mix_rules` | `condition` | 100% | 27 | 0 | - |
+| `sector.power.common.source_mix_rules` | `limit_unit` | 100% | 10 | 0 | - |
+| `sector.power.common.source_mix_rules` | `limit_value` | 100% | 10 | 0 | - |
+| `sector.power.common.source_mix_rules` | `source` | 100% | 27 | 0 | - |
+| `sector.power.common.source_mix_rules` | `treatment` | 100% | 27 | 0 | - |
+| `sector.power.epc.ld_performance_structured` | `annual_cap_pct` | 100% | 1 | 0 | - |
+| `sector.power.epc.ld_performance_structured` | `cap_basis` | 100% | 1 | 0 | - |
+| `sector.power.epc.ld_performance_structured` | `discount_rate_pct` | 100% | 1 | 0 | - |
+| `sector.power.epc.ld_performance_structured` | `horizon_years` | 100% | 1 | 0 | - |
+| `sector.power.epc.ld_performance_structured` | `ld_tariff_inr_per_kwh` | 100% | 1 | 0 | - |
+| `sector.power.epc.ld_performance_structured` | `metric` | 100% | 1 | 0 | - |
+| `sector.power.epc.milestone_payment_structured` | `against` | 100% | 4 | 0 | - |
+| `sector.power.epc.milestone_payment_structured` | `bg_required` | 100% | 1 | 0 | - |
+| `sector.power.epc.milestone_payment_structured` | `contract` | 100% | 4 | 0 | - |
+| `sector.power.epc.milestone_payment_structured` | `milestone` | 100% | 4 | 0 | - |
+| `sector.power.epc.milestone_payment_structured` | `pct_of_contract_price` | 100% | 3 | 0 | - |
+| `sector.power.fdre.demand_profile_structured` | `basis` | 100% | 3 | 0 | - |
 | `sector.power.fdre.demand_profile_structured` | `cuf_band_lower_pct` | 100% | 1 | 0 | - |
 | `sector.power.fdre.demand_profile_structured` | `cuf_band_upper_pct` | 100% | 1 | 0 | - |
 | `sector.power.fdre.demand_profile_structured` | `cuf_declared_min_pct` | 100% | 1 | 0 | - |
-| `sector.power.fdre.demand_profile_structured` | `external_sourcing_max_pct` | 100% | 2 | 0 | - |
-| `sector.power.fdre.demand_profile_structured` | `peak_availability_pct` | 100% | 1 | 0 | - |
-| `sector.power.fdre.demand_profile_structured` | `peak_blocks` | 100% | 1 | 0 | - |
-| `sector.power.fdre.demand_profile_structured` | `peak_hours_chosen_by` | 100% | 1 | 0 | - |
-| `sector.power.fdre.demand_profile_structured` | `peak_hours_per_day` | 100% | 1 | 0 | - |
-| `sector.power.fdre.demand_profile_structured` | `re_share_min_pct` | 100% | 2 | 0 | - |
-| `sector.power.fdre.excess_energy_structured` | `above` | 100% | 2 | 0 | - |
-| `sector.power.fdre.excess_energy_structured` | `price_basis` | 100% | 2 | 0 | - |
-| `sector.power.fdre.excess_energy_structured` | `procurer_first_right` | 100% | 1 | 0 | - |
+| `sector.power.fdre.demand_profile_structured` | `external_sourcing_max_pct` | 100% | 3 | 0 | - |
+| `sector.power.fdre.demand_profile_structured` | `peak_availability_pct` | 100% | 2 | 0 | - |
+| `sector.power.fdre.demand_profile_structured` | `peak_blocks` | 100% | 2 | 0 | - |
+| `sector.power.fdre.demand_profile_structured` | `peak_energy_kwh_per_mw_per_day` | 100% | 1 | 0 | - |
+| `sector.power.fdre.demand_profile_structured` | `peak_hours_chosen_by` | 100% | 3 | 0 | - |
+| `sector.power.fdre.demand_profile_structured` | `peak_hours_per_day` | 100% | 3 | 0 | - |
+| `sector.power.fdre.demand_profile_structured` | `re_share_min_pct` | 100% | 3 | 0 | - |
+| `sector.power.fdre.excess_energy_structured` | `above` | 100% | 4 | 0 | - |
+| `sector.power.fdre.excess_energy_structured` | `pct_of_tariff` | 100% | 1 | 0 | - |
+| `sector.power.fdre.excess_energy_structured` | `price_basis` | 100% | 4 | 0 | - |
+| `sector.power.fdre.excess_energy_structured` | `procurer_first_right` | 100% | 2 | 0 | - |
 | `sector.power.hybrid.cuf_terms` | `band_lower_pct_of_declared` | 100% | 1 | 0 | - |
 | `sector.power.hybrid.cuf_terms` | `band_upper_pct_of_declared` | 100% | 1 | 0 | - |
 | `sector.power.hybrid.cuf_terms` | `declared_min_pct` | 100% | 1 | 0 | - |
@@ -138,6 +161,20 @@ Generated 2026-10-13 13:18 UTC by `python -m evals.report` (also `make report`).
 | `sector.power.hybrid.excess_energy_structured` | `above` | 100% | 1 | 0 | - |
 | `sector.power.hybrid.excess_energy_structured` | `price_basis` | 100% | 1 | 0 | - |
 | `sector.power.hybrid.excess_energy_structured` | `procurer_first_right` | 100% | 1 | 0 | - |
+| `sector.power.re_rtc.linked_capacity_obligation` | `consequence` | 100% | 1 | 0 | - |
+| `sector.power.re_rtc.linked_capacity_obligation` | `location` | 100% | 1 | 0 | - |
+| `sector.power.re_rtc.linked_capacity_obligation` | `multiple_of_contracted` | 100% | 1 | 0 | - |
+| `sector.power.re_rtc.linked_capacity_obligation` | `stages` | 100% | 1 | 0 | - |
+| `sector.power.re_rtc.linked_capacity_obligation` | `technology` | 100% | 1 | 0 | - |
+| `sector.power.re_rtc.non_re_tariff_split` | `fixed_charge_payable_when_not_scheduled` | 100% | 1 | 0 | - |
+| `sector.power.re_rtc.non_re_tariff_split` | `fixed_pct` | 100% | 1 | 0 | - |
+| `sector.power.re_rtc.non_re_tariff_split` | `merit_order_treatment` | 100% | 1 | 0 | - |
+| `sector.power.re_rtc.non_re_tariff_split` | `variable_pct` | 100% | 1 | 0 | - |
+| `sector.power.re_rtc.peak_window` | `hours_per_day` | 100% | 1 | 0 | - |
+| `sector.power.re_rtc.peak_window` | `set_by` | 100% | 1 | 0 | - |
+| `sector.power.re_rtc.peak_window` | `stretches` | 100% | 1 | 0 | - |
+| `sector.power.re_rtc.rec_obligation` | `applies_to` | 100% | 1 | 0 | - |
+| `sector.power.re_rtc.rec_obligation` | `cost_borne_by` | 100% | 1 | 0 | - |
 | `sector.power.solar.cuf_terms` | `band_lower_pct_of_declared` | 100% | 1 | 0 | - |
 | `sector.power.solar.cuf_terms` | `band_upper_pct_of_declared` | 100% | 1 | 0 | - |
 | `sector.power.solar.cuf_terms` | `declared_min_pct` | 100% | 1 | 0 | - |
@@ -158,19 +195,24 @@ Generated 2026-10-13 13:18 UTC by `python -m evals.report` (also `make report`).
 | Tender | Reviewer | Sittings | Minutes deciding | Decisions | Completed |
 | --- | --- | --- | --- | --- | --- |
 | seci-ess-iv | venture@aayuda.energy | 1 | 23 | 107 | 2026-10-13 12:14 |
+| seci-gaya-60mw | venture@aayuda.energy | 1 | 45 | 102 | 2026-10-15 06:16 |
 | nhpc-fdre-ii | venture@aayuda.energy | 8 | 56 | 116 | 2026-10-06 12:48 |
 | seci-cfd-i | venture@aayuda.energy | 1 | 68 | 107 | 2026-10-13 10:32 |
+| seci-fdre-ix | venture@aayuda.energy | 2 | 55 | 100 | 2026-10-14 06:19 |
+| seci-fdre-rtc-v | venture@aayuda.energy | 6 | 41 | 106 | 2026-10-14 12:33 |
 | ntpc-phes-2000mw | venture@aayuda.energy | 2 | 36 | 105 | 2026-10-13 07:29 |
 | ntpc-hybrid-03 | venture@aayuda.energy | 3 | 76 | 117 | 2026-10-13 06:26 |
+| wbsedcl-re-rtc-2026-01 | venture@aayuda.energy | 1 | 24 | 114 | 2026-10-15 06:49 |
 | seci-cni-1-700mw | venture@aayuda.energy | 1 | 66 | 105 | 2026-10-13 11:44 |
 | ntpc-rel-600mw-anantapur-wtg | venture@aayuda.energy | 1 | 29 | 104 | 2026-10-13 08:55 |
 
 ## Stability bar for Stage 5
 
-**Not met.** Required-field value accuracy 100%.
+**Not met.** Required-field value accuracy 96%.
 
 At least 2 reviewed tenders for every type with 2 or more in the set (epc, fdre, wind); required-field value accuracy at least 90% across the last two prompt versions; no required field below 75%.
 
 - fewer than 2 reviewed tenders for: epc, wind
-- required-field accuracy by section prompt, last two versions seen: extract/bess_performance v2 100%; extract/hybrid_mix v2 100%; extract/identity_and_scope v1 100%; extract/key_dates v1 100%
+- required fields below 75%: 1
+- required-field accuracy by section prompt, last two versions seen: extract/bess_performance v2 100%; extract/hybrid_mix v2 100%; extract/identity_and_scope v1 100%; extract/key_dates v1 100%; extract/re_rtc_profile v1 100%
 

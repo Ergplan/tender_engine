@@ -5,7 +5,7 @@ sections:
   hybrid_mix:
     label: Hybrid mix
     prompt: extract/hybrid_mix
-    prompt_version: v2
+    prompt_version: v3
     roles: [rfs, contractual, nit, technical]
     section_kinds: [technical_requirements, introduction_and_scope]
     keywords: [hybrid, rated power capacity of one resource, 33%, cuf, capacity utilisation, storage, excess generation, oversizing]

@@ -326,10 +326,14 @@ class DerivedWriter:
                 for span in inputs[path].spans:
                     spans.append(inherited_span(span, len(spans) + 1))
             labels = ", ".join(inputs[path].label for path in used) or "no decided field"
+            # A field the rule reads that a later version withdrew: no row rests on it, and
+            # the table says so, as a withdrawal is not an absence.
+            gone = ", ".join(_withdrawn_inputs(review, rule))
             rationale = (
                 f"Derived by {rule.module.rsplit('.', 1)[-1]} {rule.version}: {derivation.note}."
                 f"\n\nFrom: {labels}; each row names the field and the clause it rests on."
-                f"\n\n{HASH_HEADING}{digest}"
+                + (f"\n\nWithdrawn by amendment, so no row rests on it: {gone}." if gone else "")
+                + f"\n\n{HASH_HEADING}{digest}"
             )
             value = [row.value for row in derivation.rows]
             if spans:
@@ -440,6 +444,22 @@ class DerivedGuard:
                 )
         if state.waiting_for == 0:
             self._writer.queue_if_settled(session, tender.id, created_by=approval.reviewer)
+
+
+def _withdrawn_inputs(review: TenderReview, rule: Rule) -> list[str]:
+    """The fields the rule reads that stand withdrawn: an approved `withdrawn` reading is
+    the current entry. Labelled with the version that withdrew them."""
+    found = []
+    for item in review.fields:
+        if item.field_path not in rule.inputs or item.current is None:
+            continue
+        entry = item.entries[item.current]
+        candidate, approval = entry.state.candidate, entry.state.approval
+        if candidate is None or approval is None:
+            continue
+        if candidate.withdrawn and approval.decision == "approved":
+            found.append(f"{item.label} (withdrawn by v{entry.version_no})")
+    return found
 
 
 def job_handlers(writer: DerivedWriter) -> dict[str, Callable[[Session, dict[str, Any]], None]]:

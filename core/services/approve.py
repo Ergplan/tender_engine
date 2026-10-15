@@ -142,7 +142,18 @@ class ApprovalService:
                 candidate_value = self._schemas.value_types.coerce(candidate.value, field)
             except ValueError:
                 candidate_value = None
-        if decision == "approved":
+        if decision == "approved" and candidate.withdrawn:
+            # Approving a withdrawal: the decision is that the provision no longer applies.
+            # It needs the removing words located like any value, and carries no value.
+            if final_value is not None:
+                raise ApprovalError("a withdrawal carries no value; use decision 'edited'")
+            if not self._has_located_evidence(session, candidate):
+                raise ApprovalError(
+                    "the words that withdraw the provision were not located in the document; "
+                    "use decision 'edited' and give the page and the quoted text"
+                )
+            final: Any = None
+        elif decision == "approved":
             if candidate.value is None:
                 raise ApprovalError("there is no value to approve; edit it or mark it not found")
             if candidate_value is None:
@@ -157,7 +168,7 @@ class ApprovalService:
                     "the evidence for this value was not located in the document; use decision "
                     "'edited' and give the page and the quoted text that state the value"
                 )
-            final: Any = candidate_value
+            final = candidate_value
         elif decision == "edited":
             if final_value is None:
                 raise ApprovalError("an edit needs a value")
@@ -274,6 +285,9 @@ class ApprovalService:
                 ),
                 effective_at=now,
                 is_current=True,
+                # Approving a withdrawal makes the removal the fact; an edit with a value
+                # says the provision stands after all.
+                withdrawn=candidate.withdrawn and decision == "approved",
             )
             session.add(fact)
             session.flush()
@@ -286,6 +300,7 @@ class ApprovalService:
                 after={
                     "field_path": fact.field_path,
                     "value": fact.value,
+                    "withdrawn": fact.withdrawn,
                     "approval_id": approval.id,
                     "object": [fact.object_type, fact.object_id, fact.object_version],
                 },

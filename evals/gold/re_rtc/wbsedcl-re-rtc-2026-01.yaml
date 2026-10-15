@@ -1,0 +1,2875 @@
+# Gold record of wbsedcl-re-rtc-2026-01 (re_rtc), reviewed by venture@aayuda.energy, completed 2026-10-15T06:49:01.711230+00:00; written by make gold on 2026-10-15T17:21:37+00:00. Never edited by hand.
+tenant_id: ergplan
+tender_id: 45e8c282ac42433292b4d33f78daedcd
+slug: wbsedcl-re-rtc-2026-01
+tender_type: re_rtc
+issuing_agency: WBSEDCL
+title: RfQ and RfP for Procurement of 1500 MW with 500 MW Greenshoe RE RTC power for a period of 25 years (minimum 51% traceable
+  green power, balance from any source with RECs)
+schema_version: v3
+reviewed_version: 1
+reviewer: venture@aayuda.energy
+completed_at: '2026-10-15T06:49:01.711230+00:00'
+snapshot_id: 66ca5132971e4f888c5d51d0f1fc8148
+made_at: '2026-10-15T17:21:37+00:00'
+fields:
+- field_path: core.summary.plain_english_summary
+  section: summary
+  value_type: long_text
+  required: true
+  decision: approved
+  final_value: 'What is procured: WBSEDCL is procuring 1500 MW of round-the-clock renewable (RE RTC) power under tariff-based
+    competitive bidding, with a 500 MW greenshoe option, for a period of 25 years; each bid must be for exactly 1500 MW (minimum
+    and maximum bid capacity both 1500 MW). [1][2][3][4][5][6][7][8] At least 51 percent of the annual supply must be Traceable
+    Green Power, meaning green power from solar, wind, hydro or biomass projects including power supplied through storage
+    such as PSP or BESS, with the balance from other sources covered by RECs so that the supply is fully green. [9][10][11][12][13]
+    The 500 MW greenshoe capacity is to be offered by 31 August 2027 at the same tariff as the base capacity. [3][8][14][15]
+
+
+    Buyer and offtaker: The tender is issued by West Bengal State Electricity Distribution Company Ltd. (WBSEDCL), which is
+    also the Procurer and offtaker of the power. [16][17][18] The PPA for the 500 MW greenshoe capacity is signed within 30
+    days of the offer. [19]
+
+
+    Location: Projects may be located anywhere in India connected to the ISTS system, with the mandatory solar capacity interconnected
+    at the LV side of a CTU substation. [20][21][22] The delivery and metering point is the single or multiple points where
+    power from the projects is injected into the LV side of the ISTS substation connecting them to the ISTS system. [23][24][25]
+    All transmission charges and losses beyond the delivery point, including GNA/ISTS charges and ISTS losses, are borne by
+    the Procurer. [26][27][28][29]
+
+
+    Timeline: The tender was issued on 23 September 2026, queries are due by 5 October 2026, the pre-bid meeting is on 7 October
+    2026, bids are due by 27 October 2026, technical bids open on 2 November 2026 and the e-reverse auction is on 6 November
+    2026, though the query deadline and bidding schedule are deferred to the Schedule of Bidding Process and the bid due date
+    and time to the TCIL portal. [30][31][32][33][34][35][36][37][38][39][40] The Letter of Award is scheduled for 20.11.2026
+    and bids must remain valid for 180 days. [41][42][43] Supply is to start on 1 July 2028, and greenshoe supply on 1 April
+    2029. [4][44]
+
+
+    Eligibility: A bidder must have constructed, commissioned, owned and operated at least one single power generating station
+    of at least 1200 MW installed capacity, operated continuously for five years ending 31 March 2026; under-construction
+    projects do not count, and credentials of Associates or Affiliates may be used. [45][46][47][48][49][50][51] Financially,
+    the bidder needs turnover of INR 10000000 (INR 1 crore) per MW, EBITDA of INR 5000000 (INR 50 lakh) per MW of the capacity
+    it is willing to bid at the close of the preceding financial year, and net worth of INR 5000000 (INR 50 lakh) per MW.
+    [52][53][54][55] ALMM compliance is required, and a change in control of the bidder or the affiliate whose credentials
+    were used can lead to disqualification, LOA withdrawal or PPA termination with forfeiture of security. [56][57]
+
+
+    Money at risk: The earnest money deposit (bid security) is INR 100000 (INR 1 lakh) per MW, valid for 6 months and submitted
+    7 days before the bid due date as DD, BG, eBG, insurance surety bond or POI, alongside a non-refundable bid processing
+    fee of INR 1200000 (INR 12 lakh) plus 18 percent GST and a bidding document fee of Rs 23,600 including GST. [58][59][60][61][62][63][64][65][66][67][68][69]
+    Unsuccessful bidders are refunded without interest within 60 days of the bid due date; the selected bidder''s bid security
+    is held until it signs the PPA and furnishes a performance bank guarantee of INR 2000000 (INR 20 lakh) per MW before PPA
+    signing (and separately for the 500 MW greenshoe capacity before its PPA), with PBG release conditions not stated. [70][71][72][73][74]
+    Bid or performance security is encashed per day proportionate to capacity not commenced for delay beyond the scheduled
+    supply date up to 6 months, and forfeited for failure to submit land and CTU connectivity documents for 50 percent of
+    LOA capacity within 3 months and the balance within 6 months, for a change in control after PPA signing but before the
+    Appointed Date, or for unmet qualification conditions or misrepresentation. [75][76][77][78]
+
+
+    Tariff or payment: The successful bidder is paid a fixed tariff, quoted exclusive of transmission charges and losses at
+    the delivery point, under a PPA with a tenure of 25 years. [1][7][79][80][81][82][26][27][28] The Procurer must provide,
+    at least 30 days before the scheduled supply date of each phase, a weekly revolving irrevocable letter of credit for the
+    Minimum Monthly Payment (30 percent of 3 months'' tariff on the Minimum Supply Obligation), monthly invoices are payable
+    within 30 days of receipt, and delayed payments are recovered under the applicable Ministry of Power rules with interest
+    compounding at quarterly rests. [83][84][85][86][87][88][89] Changes in law after the bid date with an aggregate effect
+    above 0.1 percent of annual tariff are compensated through tariff adjustment under the 2021 Change in Law Rules, and if
+    the Procurer does not despatch power offered at the delivery point it pays the applicable tariff (only the 70 percent
+    fixed charge for non-RE power), with any exchange sale gains shared 50:50. [90][91][92][93][94][95][96][97][98][99]
+
+
+    Obligations and penalties: The supplier must deliver at least 80 percent CUF annually, 70 percent CUF monthly and 90 percent
+    CUF during the 4 daily peak hours, with at least 51 percent of annual supply from Traceable Green Power, and must furnish
+    binding land documents at a minimum of 4 acres per MW and CTU connectivity documents for the solar capacity within 3 and
+    6 months of LOA. [26][27][28][100][101][9][10][102][80][103] A shortfall attracts liquidated damages equal to the higher
+    of 100 percent of the Applicable LD Tariff (the 70 percent fixed charge) on units short of the monthly, annual or peak-hour
+    CUF thresholds, or 400 percent of the applicable tariff on the shortfall against the 51 percent green share, computed
+    cumulatively on an annual basis and deductible from tariff payable. [104][105][106][107][108][109][110] Delay in commencing
+    supply is penalised by PBG encashment for up to 6 months, after which the PPA may be terminated, and termination for supplier
+    default requires a termination payment equal to 100 percent of the tariff on the Minimum Supply Obligation for 24 months,
+    payable within 15 days with interest at 3 percent above the Bank Rate on delay. [111][112][113][89][114][115][75][76][77][78][116][117]'
+  version_no: 1
+  evidence_pages:
+  - 1
+  - 5
+  - 8
+  - 10
+  - 11
+  - 12
+  - 13
+  - 14
+  - 15
+  - 16
+  - 17
+  - 18
+  - 19
+  - 23
+  - 24
+  - 28
+  - 29
+  - 32
+  - 33
+  - 34
+  - 37
+  - 38
+  - 45
+  - 46
+  - 47
+  - 48
+  - 50
+  - 51
+  - 52
+  - 53
+  - 55
+  - 56
+  - 58
+  - 61
+  - 62
+  - 67
+  - 71
+  - 73
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:48:51.848993+00:00'
+  note: null
+  candidate:
+    id: ded47f9abea84da69db0ff2c28fb1432
+    value: 'What is procured: WBSEDCL is procuring 1500 MW of round-the-clock renewable (RE RTC) power under tariff-based
+      competitive bidding, with a 500 MW greenshoe option, for a period of 25 years; each bid must be for exactly 1500 MW
+      (minimum and maximum bid capacity both 1500 MW). [1][2][3][4][5][6][7][8] At least 51 percent of the annual supply must
+      be Traceable Green Power, meaning green power from solar, wind, hydro or biomass projects including power supplied through
+      storage such as PSP or BESS, with the balance from other sources covered by RECs so that the supply is fully green.
+      [9][10][11][12][13] The 500 MW greenshoe capacity is to be offered by 31 August 2027 at the same tariff as the base
+      capacity. [3][8][14][15]
+
+
+      Buyer and offtaker: The tender is issued by West Bengal State Electricity Distribution Company Ltd. (WBSEDCL), which
+      is also the Procurer and offtaker of the power. [16][17][18] The PPA for the 500 MW greenshoe capacity is signed within
+      30 days of the offer. [19]
+
+
+      Location: Projects may be located anywhere in India connected to the ISTS system, with the mandatory solar capacity
+      interconnected at the LV side of a CTU substation. [20][21][22] The delivery and metering point is the single or multiple
+      points where power from the projects is injected into the LV side of the ISTS substation connecting them to the ISTS
+      system. [23][24][25] All transmission charges and losses beyond the delivery point, including GNA/ISTS charges and ISTS
+      losses, are borne by the Procurer. [26][27][28][29]
+
+
+      Timeline: The tender was issued on 23 September 2026, queries are due by 5 October 2026, the pre-bid meeting is on 7
+      October 2026, bids are due by 27 October 2026, technical bids open on 2 November 2026 and the e-reverse auction is on
+      6 November 2026, though the query deadline and bidding schedule are deferred to the Schedule of Bidding Process and
+      the bid due date and time to the TCIL portal. [30][31][32][33][34][35][36][37][38][39][40] The Letter of Award is scheduled
+      for 20.11.2026 and bids must remain valid for 180 days. [41][42][43] Supply is to start on 1 July 2028, and greenshoe
+      supply on 1 April 2029. [4][44]
+
+
+      Eligibility: A bidder must have constructed, commissioned, owned and operated at least one single power generating station
+      of at least 1200 MW installed capacity, operated continuously for five years ending 31 March 2026; under-construction
+      projects do not count, and credentials of Associates or Affiliates may be used. [45][46][47][48][49][50][51] Financially,
+      the bidder needs turnover of INR 10000000 (INR 1 crore) per MW, EBITDA of INR 5000000 (INR 50 lakh) per MW of the capacity
+      it is willing to bid at the close of the preceding financial year, and net worth of INR 5000000 (INR 50 lakh) per MW.
+      [52][53][54][55] ALMM compliance is required, and a change in control of the bidder or the affiliate whose credentials
+      were used can lead to disqualification, LOA withdrawal or PPA termination with forfeiture of security. [56][57]
+
+
+      Money at risk: The earnest money deposit (bid security) is INR 100000 (INR 1 lakh) per MW, valid for 6 months and submitted
+      7 days before the bid due date as DD, BG, eBG, insurance surety bond or POI, alongside a non-refundable bid processing
+      fee of INR 1200000 (INR 12 lakh) plus 18 percent GST and a bidding document fee of Rs 23,600 including GST. [58][59][60][61][62][63][64][65][66][67][68][69]
+      Unsuccessful bidders are refunded without interest within 60 days of the bid due date; the selected bidder''s bid security
+      is held until it signs the PPA and furnishes a performance bank guarantee of INR 2000000 (INR 20 lakh) per MW before
+      PPA signing (and separately for the 500 MW greenshoe capacity before its PPA), with PBG release conditions not stated.
+      [70][71][72][73][74] Bid or performance security is encashed per day proportionate to capacity not commenced for delay
+      beyond the scheduled supply date up to 6 months, and forfeited for failure to submit land and CTU connectivity documents
+      for 50 percent of LOA capacity within 3 months and the balance within 6 months, for a change in control after PPA signing
+      but before the Appointed Date, or for unmet qualification conditions or misrepresentation. [75][76][77][78]
+
+
+      Tariff or payment: The successful bidder is paid a fixed tariff, quoted exclusive of transmission charges and losses
+      at the delivery point, under a PPA with a tenure of 25 years. [1][7][79][80][81][82][26][27][28] The Procurer must provide,
+      at least 30 days before the scheduled supply date of each phase, a weekly revolving irrevocable letter of credit for
+      the Minimum Monthly Payment (30 percent of 3 months'' tariff on the Minimum Supply Obligation), monthly invoices are
+      payable within 30 days of receipt, and delayed payments are recovered under the applicable Ministry of Power rules with
+      interest compounding at quarterly rests. [83][84][85][86][87][88][89] Changes in law after the bid date with an aggregate
+      effect above 0.1 percent of annual tariff are compensated through tariff adjustment under the 2021 Change in Law Rules,
+      and if the Procurer does not despatch power offered at the delivery point it pays the applicable tariff (only the 70
+      percent fixed charge for non-RE power), with any exchange sale gains shared 50:50. [90][91][92][93][94][95][96][97][98][99]
+
+
+      Obligations and penalties: The supplier must deliver at least 80 percent CUF annually, 70 percent CUF monthly and 90
+      percent CUF during the 4 daily peak hours, with at least 51 percent of annual supply from Traceable Green Power, and
+      must furnish binding land documents at a minimum of 4 acres per MW and CTU connectivity documents for the solar capacity
+      within 3 and 6 months of LOA. [26][27][28][100][101][9][10][102][80][103] A shortfall attracts liquidated damages equal
+      to the higher of 100 percent of the Applicable LD Tariff (the 70 percent fixed charge) on units short of the monthly,
+      annual or peak-hour CUF thresholds, or 400 percent of the applicable tariff on the shortfall against the 51 percent
+      green share, computed cumulatively on an annual basis and deductible from tariff payable. [104][105][106][107][108][109][110]
+      Delay in commencing supply is penalised by PBG encashment for up to 6 months, after which the PPA may be terminated,
+      and termination for supplier default requires a termination payment equal to 100 percent of the tariff on the Minimum
+      Supply Obligation for 24 months, payable within 15 days with interest at 3 percent above the Bank Rate on delay. [111][112][113][89][114][115][75][76][77][78][116][117]'
+    confidence: 0.86
+    prompt_name: summary_record
+    prompt_version: v1
+    pages:
+    - 1
+    - 5
+    - 8
+    - 10
+    - 11
+    - 12
+    - 13
+    - 14
+    - 15
+    - 16
+    - 17
+    - 18
+    - 19
+    - 23
+    - 24
+    - 28
+    - 29
+    - 32
+    - 33
+    - 34
+    - 37
+    - 38
+    - 45
+    - 46
+    - 47
+    - 48
+    - 50
+    - 51
+    - 52
+    - 53
+    - 55
+    - 56
+    - 58
+    - 61
+    - 62
+    - 67
+    - 71
+    - 73
+- field_path: core.identity.tender_number
+  section: identity_and_scope
+  value_type: text
+  required: true
+  decision: approved
+  final_value: WBSEDCL/PT&P/RE-RTC/2026/01
+  version_no: 1
+  evidence_pages:
+  - 1
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:24:51.577450+00:00'
+  note: null
+  candidate:
+    id: 3f51539cb46946559d07dc489f5d85e0
+    value: WBSEDCL/PT&P/RE-RTC/2026/01
+    confidence: 0.95
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 1
+- field_path: core.identity.issuing_agency
+  section: identity_and_scope
+  value_type: text
+  required: true
+  decision: approved
+  final_value: West Bengal State Electricity Distribution Company Ltd. (WBSEDCL)
+  version_no: 1
+  evidence_pages:
+  - 45
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:24:58.546382+00:00'
+  note: null
+  candidate:
+    id: db45f53e1fe34d098b5953a83a60665b
+    value: West Bengal State Electricity Distribution Company Ltd. (WBSEDCL)
+    confidence: 0.95
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 45
+- field_path: core.identity.title
+  section: identity_and_scope
+  value_type: text
+  required: true
+  decision: approved
+  final_value: Request For Qualification For Procurement of 1500 MW with 500 MW Greenshoe RE RTC power for a period of 25
+    years
+  version_no: 1
+  evidence_pages:
+  - 1
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:25:01.169562+00:00'
+  note: null
+  candidate:
+    id: 142aba778bbc4da68994659c92680db2
+    value: Request For Qualification For Procurement of 1500 MW with 500 MW Greenshoe RE RTC power for a period of 25 years
+    confidence: 0.95
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 1
+- field_path: core.identity.procurement_mode
+  section: identity_and_scope
+  value_type: enum
+  required: false
+  decision: edited
+  final_value: single_stage_two_envelope
+  version_no: 1
+  evidence_pages:
+  - 5
+  - 13
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:25:08.595579+00:00'
+  note: null
+  candidate:
+    id: 8ac3c256f86c4ee09ead5035fcb3ee7b
+    value: e_reverse_auction
+    confidence: 0.9
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 5
+    - 13
+- field_path: core.identity.portal
+  section: identity_and_scope
+  value_type: text
+  required: false
+  decision: approved
+  final_value: TCIL ETS Portal (https://www.tcil-electronictender.com)
+  version_no: 1
+  evidence_pages:
+  - 7
+  - 13
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:25:11.477845+00:00'
+  note: null
+  candidate:
+    id: 08ec6241a0034bae92d4b098d924cb1e
+    value: TCIL ETS Portal (https://www.tcil-electronictender.com)
+    confidence: 0.9
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 7
+    - 13
+- field_path: core.identity.tender_type_as_stated
+  section: identity_and_scope
+  value_type: text
+  required: false
+  decision: approved
+  final_value: Round The Clock (RTC) RE Power with greenshoe option, under Tariff-based Competitive Bidding
+  version_no: 1
+  evidence_pages:
+  - 5
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:25:14.458061+00:00'
+  note: null
+  candidate:
+    id: ee7933d1201f42ac8c76ec5edae9f0ef
+    value: Round The Clock (RTC) RE Power with greenshoe option, under Tariff-based Competitive Bidding
+    confidence: 0.85
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 5
+- field_path: sector.power.common.total_capacity_mw
+  section: identity_and_scope
+  value_type: mw
+  required: false
+  decision: approved
+  final_value: 1500
+  version_no: 1
+  evidence_pages:
+  - 45
+  - 61
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:25:22.665599+00:00'
+  note: null
+  candidate:
+    id: ccfb7ab2172b49adbf7723997dd80bcb
+    value: 1500.0
+    confidence: 0.8
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 45
+    - 61
+- field_path: sector.power.common.total_capacity_mwh
+  section: identity_and_scope
+  value_type: mwh
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:25:31.246873+00:00'
+  note: null
+  candidate:
+    id: c84f7f19f575405aa30f72fb939c016c
+    value: null
+    confidence: 0.0
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.min_bid_mw
+  section: identity_and_scope
+  value_type: mw
+  required: false
+  decision: approved
+  final_value: 1500
+  version_no: 1
+  evidence_pages:
+  - 12
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:25:37.531235+00:00'
+  note: null
+  candidate:
+    id: 0a289454724a45f48c9a5aca19bd1fe4
+    value: 1500.0
+    confidence: 0.6
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 12
+- field_path: sector.power.common.max_bid_mw
+  section: identity_and_scope
+  value_type: mw
+  required: false
+  decision: approved
+  final_value: 1500
+  version_no: 1
+  evidence_pages:
+  - 12
+  - 15
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:25:53.599717+00:00'
+  note: null
+  candidate:
+    id: 8582ffc550c04f498e3a9dde37dd535b
+    value: 1500.0
+    confidence: 0.6
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 12
+    - 15
+- field_path: sector.power.common.max_projects_per_bidder
+  section: identity_and_scope
+  value_type: int
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:25:57.792340+00:00'
+  note: null
+  candidate:
+    id: d3934f3b95764b798d2a809f39e58b68
+    value: null
+    confidence: 0.0
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.location_constraint
+  section: identity_and_scope
+  value_type: enum
+  required: false
+  decision: approved
+  final_value: ists_anywhere
+  version_no: 1
+  evidence_pages:
+  - 11
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:25:58.897079+00:00'
+  note: null
+  candidate:
+    id: a315c2a694994968b25e34879dc7c30d
+    value: ists_anywhere
+    confidence: 0.75
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 11
+- field_path: sector.power.common.named_states_or_sites
+  section: identity_and_scope
+  value_type: list_text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:26:00.935858+00:00'
+  note: null
+  candidate:
+    id: 6beba8ae0e34478d94937fedf3c78fc3
+    value: null
+    confidence: 0.0
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.delivery_point
+  section: identity_and_scope
+  value_type: text
+  required: false
+  decision: approved
+  final_value: Single / multiple points where the power from the Project(s) is injected into the LV side of the ISTS substation
+    connecting such Project(s) to the ISTS system
+  version_no: 1
+  evidence_pages:
+  - 8
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:26:03.679716+00:00'
+  note: null
+  candidate:
+    id: a55baa0cfddf40f0918a84ceeaf312e9
+    value: Single / multiple points where the power from the Project(s) is injected into the LV side of the ISTS substation
+      connecting such Project(s) to the ISTS system
+    confidence: 0.9
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 8
+- field_path: sector.power.common.metering_point
+  section: identity_and_scope
+  value_type: text
+  required: false
+  decision: approved
+  final_value: At the Interconnection Point / Delivery Point (LV side of the ISTS substation)
+  version_no: 1
+  evidence_pages:
+  - 8
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:26:06.263778+00:00'
+  note: null
+  candidate:
+    id: e6d81f1dcb5a47f999d4c184f0c30e97
+    value: At the Interconnection Point / Delivery Point (LV side of the ISTS substation)
+    confidence: 0.9
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 8
+- field_path: core.key_dates.nit_date
+  section: key_dates
+  value_type: date
+  required: false
+  decision: approved
+  final_value: '2026-09-23'
+  version_no: 1
+  evidence_pages:
+  - 1
+  - 16
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:26:13.897996+00:00'
+  note: null
+  candidate:
+    id: bdbab29241c34f5f9df46a9e5b5829e8
+    value: '2026-09-23'
+    confidence: 0.95
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 1
+    - 16
+- field_path: core.key_dates.pre_bid_meeting_date
+  section: key_dates
+  value_type: date
+  required: false
+  decision: approved
+  final_value: '2026-10-07'
+  version_no: 1
+  evidence_pages:
+  - 16
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:26:28.298942+00:00'
+  note: null
+  candidate:
+    id: 86215c0fa38543f1a4410c1774cddfb2
+    value: '2026-10-07'
+    confidence: 0.95
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 16
+- field_path: core.key_dates.query_deadline
+  section: key_dates
+  value_type: date
+  required: false
+  decision: approved
+  final_value: '2026-10-05'
+  version_no: 1
+  evidence_pages:
+  - 16
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:26:33.664868+00:00'
+  note: null
+  candidate:
+    id: 5e3de6695c054c1ab67320f917a63068
+    value: '2026-10-05'
+    confidence: 0.93
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 16
+- field_path: core.key_dates.bid_submission_deadline
+  section: key_dates
+  value_type: date
+  required: true
+  decision: approved
+  final_value: '2026-10-27'
+  version_no: 1
+  evidence_pages:
+  - 16
+  - 24
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:26:37.641662+00:00'
+  note: null
+  candidate:
+    id: bb301a863c684dcfb079bd30c20eb4ba
+    value: '2026-10-27'
+    confidence: 0.95
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 16
+    - 24
+- field_path: core.key_dates.technical_opening_date
+  section: key_dates
+  value_type: date
+  required: false
+  decision: approved
+  final_value: '2026-11-02'
+  version_no: 1
+  evidence_pages:
+  - 16
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:26:49.230498+00:00'
+  note: null
+  candidate:
+    id: e1eb8e65788041819bb86fbd392818af
+    value: '2026-11-02'
+    confidence: 0.93
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 16
+- field_path: core.key_dates.era_date
+  section: key_dates
+  value_type: date
+  required: false
+  decision: approved
+  final_value: '2026-11-06'
+  version_no: 1
+  evidence_pages:
+  - 16
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:26:52.135563+00:00'
+  note: null
+  candidate:
+    id: 58d3935aca2543299fa1d44d9340da5e
+    value: '2026-11-06'
+    confidence: 0.92
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 16
+- field_path: core.key_dates.dates_deferred_note
+  section: key_dates
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: Query deadline and the bidding schedule are deferred to the Schedule of Bidding Process in Clause 1.3 of the
+    RFQ (Section A, not attached); the Bid Due Date and time are deferred to the TCIL Portal; the e-RA timing is relative
+    (within 120 minutes of opening of RFP bids).
+  version_no: 1
+  evidence_pages:
+  - 53
+  - 55
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:27:16.486489+00:00'
+  note: null
+  candidate:
+    id: c01dc5f83fa7443c8f8df285c794e634
+    value: Query deadline and the bidding schedule are deferred to the Schedule of Bidding Process in Clause 1.3 of the RFQ
+      (Section A, not attached); the Bid Due Date and time are deferred to the TCIL Portal; the e-RA timing is relative (within
+      120 minutes of opening of RFP bids).
+    confidence: 0.85
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 53
+    - 55
+- field_path: core.key_dates.bid_validity
+  section: key_dates
+  value_type: int
+  required: false
+  decision: approved
+  final_value: 180
+  version_no: 1
+  evidence_pages:
+  - 46
+  - 56
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:27:27.152173+00:00'
+  note: null
+  candidate:
+    id: f9a5c252063e41b3a37715eb74a7f60e
+    value: 180
+    confidence: 0.95
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 46
+    - 56
+- field_path: core.key_dates.bid_validity_unit
+  section: key_dates
+  value_type: enum
+  required: false
+  decision: approved
+  final_value: days
+  version_no: 1
+  evidence_pages:
+  - 56
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:27:28.686356+00:00'
+  note: null
+  candidate:
+    id: ad53b41ac96f412a9d39a0d5a3e536d6
+    value: days
+    confidence: 0.95
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 56
+- field_path: core.key_dates.loa_timeline
+  section: key_dates
+  value_type: text
+  required: false
+  decision: approved
+  final_value: Placement of LOA scheduled on 20.11.2026 as per the schedule of bidding process (clause 1.3)
+  version_no: 1
+  evidence_pages:
+  - 16
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:27:33.212653+00:00'
+  note: null
+  candidate:
+    id: 5ea1720563ea4e12ad0656fb48480131
+    value: Placement of LOA scheduled on 20.11.2026 as per the schedule of bidding process (clause 1.3)
+    confidence: 0.88
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 16
+- field_path: sector.power.common.ppa_signing_window_days
+  section: key_dates
+  value_type: int
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:27:36.134492+00:00'
+  note: null
+  candidate:
+    id: d6846d137af04d27ba38a61e4a0ee213
+    value: null
+    confidence: 0.0
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.financial_closure_months
+  section: key_dates
+  value_type: duration_months
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:27:37.404959+00:00'
+  note: null
+  candidate:
+    id: f10803e84b5c4d9dbf1d427d9dea170f
+    value: null
+    confidence: 0.0
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.financial_closure_reference
+  section: key_dates
+  value_type: enum
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:27:38.298124+00:00'
+  note: null
+  candidate:
+    id: c93ba8ec93a342adbf3b76c64a9a0300
+    value: null
+    confidence: 0.0
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.scod_months
+  section: key_dates
+  value_type: duration_months
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:27:41.200786+00:00'
+  note: null
+  candidate:
+    id: 7d403569f2ea49518f2392a188dd7a10
+    value: null
+    confidence: 0.0
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.scod_reference
+  section: key_dates
+  value_type: enum
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:27:42.149839+00:00'
+  note: null
+  candidate:
+    id: e4b4efc036254331b613511ac0477099
+    value: null
+    confidence: 0.0
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.ppa_tenure_years
+  section: key_dates
+  value_type: int
+  required: false
+  decision: approved
+  final_value: 25
+  version_no: 1
+  evidence_pages:
+  - 1
+  - 10
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:27:45.993267+00:00'
+  note: null
+  candidate:
+    id: accfa8f5f2094a85a6ad249c948cbba9
+    value: 25
+    confidence: 0.97
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 1
+    - 10
+- field_path: core.eligibility.technical_experience_requirement
+  section: eligibility
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: The Bidder must have experience in construction, commissioning, owning and operating at least one single power
+    generating station with an installed capacity of at least 1200 MW, and must have operated it for a continuous five-year
+    period ending 31.03.2026; stations developed and operated under PPP, BOO, BOLT, BOOT, BOT, DBFOO or similar basis count.
+    Credentials of Associate(s)/Affiliate(s) may be used. Clause 3.2.1 restates this as at least one single independent power
+    plant/generating station (IPP) of at least 1200 MW.
+  version_no: 1
+  evidence_pages:
+  - 17
+  - 28
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:27:52.220591+00:00'
+  note: null
+  candidate:
+    id: 475b5b76954d4e5eba101c151c3aa83e
+    value: The Bidder must have experience in construction, commissioning, owning and operating at least one single power
+      generating station with an installed capacity of at least 1200 MW, and must have operated it for a continuous five-year
+      period ending 31.03.2026; stations developed and operated under PPP, BOO, BOLT, BOOT, BOT, DBFOO or similar basis count.
+      Credentials of Associate(s)/Affiliate(s) may be used. Clause 3.2.1 restates this as at least one single independent
+      power plant/generating station (IPP) of at least 1200 MW.
+    confidence: 0.95
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages:
+    - 17
+    - 28
+- field_path: core.eligibility.turnover_requirement_inr
+  section: eligibility
+  value_type: money_inr
+  required: false
+  decision: approved
+  final_value: 10000000
+  version_no: 1
+  evidence_pages:
+  - 17
+  - 18
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:28:02.574818+00:00'
+  note: null
+  candidate:
+    id: c0ca0958c1944d9683760b249d8f2ac4
+    value: 10000000.0
+    confidence: 0.95
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages:
+    - 17
+    - 18
+- field_path: core.eligibility.turnover_basis
+  section: eligibility
+  value_type: enum
+  required: false
+  decision: approved
+  final_value: per_mw
+  version_no: 1
+  evidence_pages:
+  - 17
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:28:04.851449+00:00'
+  note: null
+  candidate:
+    id: 3a91929e826a4ae5985f455a9962b127
+    value: per_mw
+    confidence: 0.95
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages:
+    - 17
+- field_path: core.eligibility.ebitda_requirement_inr
+  section: eligibility
+  value_type: money_inr
+  required: false
+  decision: approved
+  final_value: 5000000
+  version_no: 1
+  evidence_pages:
+  - 18
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:28:12.337039+00:00'
+  note: null
+  candidate:
+    id: 5f304276f4c2495382b1a2485b545253
+    value: 5000000.0
+    confidence: 0.95
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages:
+    - 18
+- field_path: core.eligibility.ebitda_basis
+  section: eligibility
+  value_type: text
+  required: false
+  decision: approved
+  final_value: per MW of the capacity the Bidder is willing to bid, at the close of the preceding financial year
+  version_no: 1
+  evidence_pages:
+  - 18
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:29:47.431482+00:00'
+  note: null
+  candidate:
+    id: 388cd241658e45ef8e327e0048ff9e19
+    value: per MW of the capacity the Bidder is willing to bid, at the close of the preceding financial year
+    confidence: 0.95
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages:
+    - 18
+- field_path: core.eligibility.min_single_station_mw
+  section: eligibility
+  value_type: mw
+  required: false
+  decision: approved
+  final_value: 1200
+  version_no: 1
+  evidence_pages:
+  - 17
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:30:00.113756+00:00'
+  note: null
+  candidate:
+    id: ababf4c13b2d4c52aecb8446779c3f87
+    value: 1200.0
+    confidence: 0.95
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages:
+    - 17
+- field_path: core.eligibility.min_continuous_operation_years
+  section: eligibility
+  value_type: decimal
+  required: false
+  decision: approved
+  final_value: 5
+  version_no: 1
+  evidence_pages:
+  - 17
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:30:04.732740+00:00'
+  note: null
+  candidate:
+    id: 787eae08697241c5af7eb36f092e0085
+    value: 5.0
+    confidence: 0.95
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages:
+    - 17
+- field_path: core.eligibility.experience_period_end_date
+  section: eligibility
+  value_type: date
+  required: false
+  decision: approved
+  final_value: '2026-03-31'
+  version_no: 1
+  evidence_pages:
+  - 17
+  - 28
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:30:09.449954+00:00'
+  note: null
+  candidate:
+    id: 5fea72c312f246fb8b0c97451a0a91c8
+    value: '2026-03-31'
+    confidence: 0.95
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages:
+    - 17
+    - 28
+- field_path: core.eligibility.liquidity_requirement_inr
+  section: eligibility
+  value_type: money_inr
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:30:11.549363+00:00'
+  note: null
+  candidate:
+    id: 74908b78e1d5493fbc5ebeb15c94f3e3
+    value: null
+    confidence: 0.0
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages: []
+- field_path: core.eligibility.liquidity_basis
+  section: eligibility
+  value_type: enum
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:30:12.596430+00:00'
+  note: null
+  candidate:
+    id: 7038740ff4c6411bbbbadb83ce7b6e91
+    value: null
+    confidence: 0.0
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages: []
+- field_path: core.eligibility.consortium_allowed
+  section: eligibility
+  value_type: bool
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:30:14.422605+00:00'
+  note: null
+  candidate:
+    id: bd5e4f3117f34e13979cb9e7e4c07638
+    value: null
+    confidence: 0.0
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages: []
+- field_path: core.eligibility.max_consortium_members
+  section: eligibility
+  value_type: int
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:30:16.077107+00:00'
+  note: null
+  candidate:
+    id: 932a89a4a59e4991b1135598a294dac8
+    value: null
+    confidence: 0.0
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages: []
+- field_path: core.eligibility.parent_affiliate_credentials_allowed
+  section: eligibility
+  value_type: bool
+  required: false
+  decision: approved
+  final_value: true
+  version_no: 1
+  evidence_pages:
+  - 18
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:30:17.942452+00:00'
+  note: null
+  candidate:
+    id: f470a2ba589c489cabcbe5817500b374
+    value: true
+    confidence: 0.95
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages:
+    - 18
+- field_path: core.eligibility.shareholding_lock_in
+  section: eligibility
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: No minimum shareholding percentage or lock-in period is stated in the attached pages. Clause 2.2 only provides
+    that a change in control of the Bidder/Affiliate/Associate whose capacity was used for qualification, if before PPA signing,
+    may lead to disqualification or LOA withdrawal, and if after PPA signing but before the Appointed Date is deemed a breach
+    of the PPA leading to termination and forfeiture of Bid/Performance Security; internal restructuring under common promoter
+    control with no change in ultimate control is exempt.
+  version_no: 1
+  evidence_pages:
+  - 50
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:30:21.543412+00:00'
+  note: null
+  candidate:
+    id: c31a0cf744464afd8cf0c37e24949ac6
+    value: No minimum shareholding percentage or lock-in period is stated in the attached pages. Clause 2.2 only provides
+      that a change in control of the Bidder/Affiliate/Associate whose capacity was used for qualification, if before PPA
+      signing, may lead to disqualification or LOA withdrawal, and if after PPA signing but before the Appointed Date is deemed
+      a breach of the PPA leading to termination and forfeiture of Bid/Performance Security; internal restructuring under
+      common promoter control with no change in ultimate control is exempt.
+    confidence: 0.4
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages:
+    - 50
+- field_path: sector.power.common.min_commissioned_mw
+  section: eligibility
+  value_type: mw
+  required: false
+  decision: approved
+  final_value: 1200
+  version_no: 1
+  evidence_pages:
+  - 17
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:30:24.656248+00:00'
+  note: null
+  candidate:
+    id: 50e199e2aa9b4345b02eccdfca753eca
+    value: 1200.0
+    confidence: 0.6
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages:
+    - 17
+- field_path: sector.power.common.under_construction_counts
+  section: eligibility
+  value_type: bool
+  required: false
+  decision: approved
+  final_value: false
+  version_no: 1
+  evidence_pages:
+  - 17
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:30:28.413762+00:00'
+  note: null
+  candidate:
+    id: f4bc60a4818b474186e21306fd43ec28
+    value: false
+    confidence: 0.6
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages:
+    - 17
+- field_path: sector.power.common.net_worth_per_mw_inr
+  section: eligibility
+  value_type: money_inr
+  required: false
+  decision: approved
+  final_value: 5000000
+  version_no: 1
+  evidence_pages:
+  - 17
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:30:32.035099+00:00'
+  note: null
+  candidate:
+    id: 4e2f79f65128405baa8ee00d1f4f2046
+    value: 5000000.0
+    confidence: 0.95
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages:
+    - 17
+- field_path: core.guarantees.emd_per_mw_inr
+  section: guarantees
+  value_type: money_inr
+  required: false
+  decision: approved
+  final_value: 100000
+  version_no: 1
+  evidence_pages:
+  - 5
+  - 14
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:30:43.196181+00:00'
+  note: null
+  candidate:
+    id: bb5f61c7c64d4128ab8cd85494ec5926
+    value: 100000.0
+    confidence: 0.95
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages:
+    - 5
+    - 14
+- field_path: core.guarantees.emd_formula
+  section: guarantees
+  value_type: long_text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:33:57.606799+00:00'
+  note: null
+  candidate:
+    id: a4fd2a0ea04a434388a9e652c4803fb1
+    value: null
+    confidence: 0.0
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages: []
+- field_path: core.guarantees.emd_structured
+  section: guarantees
+  value_type: record
+  required: false
+  decision: approved
+  final_value:
+    basis: per_mw
+    cap_inr: null
+    cap_per: null
+    percent: null
+    components: null
+    percent_of: null
+    lump_sum_inr: null
+    rate_inr_per_mw: 100000
+  version_no: 1
+  evidence_pages:
+  - 5
+  - 14
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:33:58.726249+00:00'
+  note: null
+  candidate:
+    id: ab4fdee6d91840c4a24bace2345b1755
+    value:
+    - 'basis: per_mw'
+    - 'rate_inr_per_mw: 100000'
+    confidence: 0.95
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages:
+    - 5
+    - 14
+- field_path: core.guarantees.emd_form
+  section: guarantees
+  value_type: enum
+  required: false
+  decision: approved
+  final_value: other
+  version_no: 1
+  evidence_pages:
+  - 46
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:34:00.287899+00:00'
+  note: null
+  candidate:
+    id: af87e751986341d3b7fe8fd846c856b0
+    value: other
+    confidence: 0.9
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages:
+    - 46
+- field_path: core.guarantees.bid_security_instruments
+  section: guarantees
+  value_type: record_list
+  required: false
+  decision: approved
+  final_value:
+  - issuer: nationalized bank or Scheduled Bank in India (foreign bank BG needs confirmation by a nationalized bank in India)
+    instrument: bank_guarantee
+  - issuer: nationalized bank or Scheduled Bank in India
+    instrument: e_bank_guarantee
+  - issuer: Insurer as per IRDAI guidelines
+    instrument: insurance_surety_bond
+  - issuer: IREDA, Power Finance Corporation Limited or REC Limited
+    instrument: payment_on_order_instrument
+  - issuer: Scheduled Bank in India, payable to WBSEDCL at Kolkata
+    instrument: demand_draft
+  version_no: 1
+  evidence_pages:
+  - 57
+  - 58
+  - 70
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:34:01.990326+00:00'
+  note: null
+  candidate:
+    id: e815899d155e438bb3a7148c67d806cd
+    value:
+    - 'instrument: bank_guarantee | issuer: nationalized bank or Scheduled Bank in India (foreign bank BG needs confirmation
+      by a nationalized bank in India)'
+    - 'instrument: e_bank_guarantee | issuer: nationalized bank or Scheduled Bank in India'
+    - 'instrument: insurance_surety_bond | issuer: Insurer as per IRDAI guidelines'
+    - 'instrument: payment_on_order_instrument | issuer: IREDA, Power Finance Corporation Limited or REC Limited'
+    - 'instrument: demand_draft | issuer: Scheduled Bank in India, payable to WBSEDCL at Kolkata'
+    confidence: 0.9
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages:
+    - 57
+    - 58
+    - 70
+- field_path: core.guarantees.pbg_instruments
+  section: guarantees
+  value_type: record_list
+  required: false
+  decision: approved
+  final_value:
+  - issuer: null
+    instrument: bank_guarantee
+  - issuer: null
+    instrument: payment_on_order_instrument
+  version_no: 1
+  evidence_pages:
+  - 5
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:34:04.439801+00:00'
+  note: null
+  candidate:
+    id: 3e85ba99817c420ebeed58db3bf83af1
+    value:
+    - 'instrument: bank_guarantee'
+    - 'instrument: payment_on_order_instrument'
+    confidence: 0.85
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages:
+    - 5
+- field_path: core.guarantees.pbg_per_mw_inr
+  section: guarantees
+  value_type: money_inr
+  required: false
+  decision: approved
+  final_value: 2000000
+  version_no: 1
+  evidence_pages:
+  - 5
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:34:19.106989+00:00'
+  note: null
+  candidate:
+    id: 35903fd040e6418598c17459c17e31e5
+    value: 2000000.0
+    confidence: 0.9
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages:
+    - 5
+- field_path: core.guarantees.pbg_formula
+  section: guarantees
+  value_type: long_text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:34:21.256551+00:00'
+  note: null
+  candidate:
+    id: 085dffe80ae44b92b4a32976fcb1458d
+    value: null
+    confidence: 0.0
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages: []
+- field_path: core.guarantees.pbg_schedule
+  section: guarantees
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: PBG of Rs 20,00,000 per MW to be submitted by the selected bidder prior to signing of the PPA; for the 500
+    MW Greenshoe Supply Capacity, Performance Security is to be provided prior to execution of the PPA for the Greenshoe Supply
+    Capacity.
+  version_no: 1
+  evidence_pages:
+  - 5
+  - 10
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:34:22.360418+00:00'
+  note: null
+  candidate:
+    id: 399eaa600c694cf8a6f17e6b7365e88a
+    value: PBG of Rs 20,00,000 per MW to be submitted by the selected bidder prior to signing of the PPA; for the 500 MW Greenshoe
+      Supply Capacity, Performance Security is to be provided prior to execution of the PPA for the Greenshoe Supply Capacity.
+    confidence: 0.85
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages:
+    - 5
+    - 10
+- field_path: core.guarantees.pbg_structured
+  section: guarantees
+  value_type: record
+  required: false
+  decision: approved
+  final_value:
+    basis: per_mw
+    cap_inr: null
+    cap_per: null
+    percent: null
+    components: null
+    percent_of: null
+    lump_sum_inr: null
+    rate_inr_per_mw: 2000000
+    submitted_before: ppa_signing
+    valid_months_after_scod: null
+  version_no: 1
+  evidence_pages:
+  - 5
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:34:37.895353+00:00'
+  note: null
+  candidate:
+    id: 6f78c3a0fb454699bf5f3a18cf6b1766
+    value:
+    - 'basis: per_mw'
+    - 'rate_inr_per_mw: 2000000'
+    - 'submitted_before: ppa_signing'
+    confidence: 0.85
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages:
+    - 5
+- field_path: core.guarantees.success_charge_inr
+  section: guarantees
+  value_type: money_inr
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:34:39.806504+00:00'
+  note: null
+  candidate:
+    id: 04d4278b0769467b85ebb7498f2fa980
+    value: null
+    confidence: 0.0
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages: []
+- field_path: core.guarantees.processing_fee_inr
+  section: guarantees
+  value_type: money_inr
+  required: false
+  decision: approved
+  final_value: 1200000
+  version_no: 1
+  evidence_pages:
+  - 5
+  - 12
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:34:42.975888+00:00'
+  note: null
+  candidate:
+    id: 9e40f86d70d84c42bb889834925bbe42
+    value: 1200000.0
+    confidence: 0.9
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages:
+    - 5
+    - 12
+- field_path: core.guarantees.bg_validity_months
+  section: guarantees
+  value_type: duration_months
+  required: false
+  decision: approved
+  final_value: 6
+  version_no: 1
+  evidence_pages:
+  - 46
+  - 71
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:34:56.006640+00:00'
+  note: null
+  candidate:
+    id: 0dfaf0b38e1e42c9bab75464ade3638d
+    value: 6
+    confidence: 0.85
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages:
+    - 46
+    - 71
+- field_path: core.guarantees.bg_release_conditions
+  section: guarantees
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: 'EMD: refundable to unsuccessful Bidders without interest as promptly as possible on acceptance of the Selected
+    Bidder''s Bid or on cancellation of the bidding process, and in any case within 60 days from the Bid Due Date (demand
+    draft refunds by account payee demand draft). The Selected Bidder''s Bid Security is retained till it provides the Performance
+    Security under the PPA and is returned, without interest, upon the Supplier signing the PPA and furnishing the Performance
+    Security; at the Selected Bidder''s option it may be adjusted against the Performance Security. PBG release conditions
+    are not stated in these pages.'
+  version_no: 1
+  evidence_pages:
+  - 46
+  - 58
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:35:06.278648+00:00'
+  note: null
+  candidate:
+    id: 687e1f1e41fa402d881b1b90eaca9138
+    value: 'EMD: refundable to unsuccessful Bidders without interest as promptly as possible on acceptance of the Selected
+      Bidder''s Bid or on cancellation of the bidding process, and in any case within 60 days from the Bid Due Date (demand
+      draft refunds by account payee demand draft). The Selected Bidder''s Bid Security is retained till it provides the Performance
+      Security under the PPA and is returned, without interest, upon the Supplier signing the PPA and furnishing the Performance
+      Security; at the Selected Bidder''s option it may be adjusted against the Performance Security. PBG release conditions
+      are not stated in these pages.'
+    confidence: 0.85
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages:
+    - 46
+    - 58
+- field_path: core.commercial.payment_security_mechanism
+  section: commercial
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: Procurer must, at least 30 days before the SSD of each Phase, provide an unconditional, weekly revolving and
+    irrevocable letter of credit (from any nationalized bank, costs borne by Procurer) for the Minimum Monthly Payment, defined
+    as 30% of the 3 months Tariff payable against the Supply Capacity computed on the Minimum Supply Obligation on annual
+    basis, revised yearly. If the LC cannot be opened the Distribution Company may pay in advance an amount equal to the weekly
+    bill (estimated or previous 6 months' average); the alternate payment security mechanism of the MoP order dated 17.07.2019
+    also applies. Default escrow account is omitted; on termination 35% of 3 months Tariff (Maximum Monthly Payment) is appropriated
+    monthly until the Termination Payment is discharged. Monthly invoices are payable within 30 days of receipt.
+  version_no: 1
+  evidence_pages:
+  - 34
+  - 37
+  - 38
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:35:09.872816+00:00'
+  note: null
+  candidate:
+    id: c732562e977d4c15b772efd761525bb3
+    value: Procurer must, at least 30 days before the SSD of each Phase, provide an unconditional, weekly revolving and irrevocable
+      letter of credit (from any nationalized bank, costs borne by Procurer) for the Minimum Monthly Payment, defined as 30%
+      of the 3 months Tariff payable against the Supply Capacity computed on the Minimum Supply Obligation on annual basis,
+      revised yearly. If the LC cannot be opened the Distribution Company may pay in advance an amount equal to the weekly
+      bill (estimated or previous 6 months' average); the alternate payment security mechanism of the MoP order dated 17.07.2019
+      also applies. Default escrow account is omitted; on termination 35% of 3 months Tariff (Maximum Monthly Payment) is
+      appropriated monthly until the Termination Payment is discharged. Monthly invoices are payable within 30 days of receipt.
+    confidence: 0.85
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages:
+    - 34
+    - 37
+    - 38
+- field_path: core.commercial.payment_security_structured
+  section: commercial
+  value_type: record
+  required: false
+  decision: approved
+  final_value:
+    lc_required: true
+    lc_revolving: true
+    psf_available: null
+    state_guarantee: null
+    payment_due_days: 30
+    lc_months_of_billing: null
+    lc_drawable_after_days: null
+    psf_charge_inr_per_kwh: null
+  version_no: 1
+  evidence_pages:
+  - 34
+  - 37
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:35:12.804461+00:00'
+  note: null
+  candidate:
+    id: 6dc30e89afe544d4a2d5ff342f917468
+    value:
+    - 'lc_required: yes'
+    - 'lc_revolving: yes'
+    - 'payment_due_days: 30'
+    confidence: 0.75
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages:
+    - 34
+    - 37
+- field_path: core.commercial.change_in_law_clause
+  section: commercial
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: 'Change in Law means, after the Bid Date, the enactment, amendment, modification or repeal of any Applicable
+    Law, commencement of a law not yet in effect at Bid Date, a final binding change in judicial interpretation, any change
+    in Tax rates with direct effect on the Project or supply of power, or a change in Applicable Permits (other than for Supplier
+    default) that changes cost; changes in withholding tax on income or dividends are excluded. Where the aggregate financial
+    effect exceeds 0.1% of 100% of Tariff payable in any Accounting Year, the monthly tariff is adjusted under the Electricity
+    (Timely Recovery of Costs due to Change in Law) Rules, 2021 to restore the affected party to the same economic position:
+    21 days'' prior notice, computation furnished within 30 days of the event or expiry of the notice (whichever is later),
+    recovery from the next billing cycle as one-time, monthly or per-unit charges in the Monthly Invoice. Non-recurring impacts
+    are converted to a monthly tariff modification MT = Y/X (annuity over up to 180 months at the CERC loan interest rate,
+    or SBI MCLR + 200 bps), trued up annually, rounded to three decimals; the Appropriate Commission verifies and adjusts
+    within 60 days of receiving documents filed within 30 days.'
+  version_no: 1
+  evidence_pages:
+  - 55
+  - 56
+  - 67
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:35:19.835073+00:00'
+  note: null
+  candidate:
+    id: c84952c045f242bf8d21d88bc5e69358
+    value: 'Change in Law means, after the Bid Date, the enactment, amendment, modification or repeal of any Applicable Law,
+      commencement of a law not yet in effect at Bid Date, a final binding change in judicial interpretation, any change in
+      Tax rates with direct effect on the Project or supply of power, or a change in Applicable Permits (other than for Supplier
+      default) that changes cost; changes in withholding tax on income or dividends are excluded. Where the aggregate financial
+      effect exceeds 0.1% of 100% of Tariff payable in any Accounting Year, the monthly tariff is adjusted under the Electricity
+      (Timely Recovery of Costs due to Change in Law) Rules, 2021 to restore the affected party to the same economic position:
+      21 days'' prior notice, computation furnished within 30 days of the event or expiry of the notice (whichever is later),
+      recovery from the next billing cycle as one-time, monthly or per-unit charges in the Monthly Invoice. Non-recurring
+      impacts are converted to a monthly tariff modification MT = Y/X (annuity over up to 180 months at the CERC loan interest
+      rate, or SBI MCLR + 200 bps), trued up annually, rounded to three decimals; the Appropriate Commission verifies and
+      adjusts within 60 days of receiving documents filed within 30 days.'
+    confidence: 0.9
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages:
+    - 55
+    - 56
+    - 67
+- field_path: core.commercial.late_payment_surcharge
+  section: commercial
+  value_type: text
+  required: false
+  decision: approved
+  final_value: Payments delayed beyond the period set in the Agreement are recovered in accordance with the applicable rules
+    issued by the Ministry of Power, as amended from time to time (Clause 25.4); interest under the Agreement accrues daily
+    and compounds at quarterly rests (Clause 25.3). Delayed Termination Payment bears interest at 3% above the Bank Rate.
+  version_no: 1
+  evidence_pages:
+  - 52
+  - 62
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:35:22.456331+00:00'
+  note: null
+  candidate:
+    id: 8bf7a7c65e78481b92284002b3172ccc
+    value: Payments delayed beyond the period set in the Agreement are recovered in accordance with the applicable rules issued
+      by the Ministry of Power, as amended from time to time (Clause 25.4); interest under the Agreement accrues daily and
+      compounds at quarterly rests (Clause 25.3). Delayed Termination Payment bears interest at 3% above the Bank Rate.
+    confidence: 0.6
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages:
+    - 52
+    - 62
+- field_path: core.commercial.termination_compensation
+  section: commercial
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: On termination for Supplier Default, the Supplier pays the Procurer a Termination Payment equal to 100% of
+    the Tariff that would have been due and payable for the Minimum Supply Obligation for 24 months as if the Supply Capacity
+    were supplied for 24 months from the date of Termination, in addition to other payments due on default. On termination
+    for Procurer Default, the Procurer pays the Supplier the same amount (100% of Tariff for Minimum Supply Obligation for
+    24 months). Termination Payment is due within 15 days of demand; delay bears interest at 3% above the Bank Rate, delay
+    not to exceed 90 days, and it is a full and final settlement of all claims. On termination for Force Majeure (natural
+    or non-natural, after 365 days), the Supplier is eligible only for undisputed payments under outstanding Monthly Invoices
+    before the Force Majeure Event. Article 18 compensation for breach is Omitted.
+  version_no: 1
+  evidence_pages:
+  - 47
+  - 51
+  - 52
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:35:23.778670+00:00'
+  note: null
+  candidate:
+    id: c7bf13f4bcea4ab19f9f7c4a4b7a54e0
+    value: On termination for Supplier Default, the Supplier pays the Procurer a Termination Payment equal to 100% of the
+      Tariff that would have been due and payable for the Minimum Supply Obligation for 24 months as if the Supply Capacity
+      were supplied for 24 months from the date of Termination, in addition to other payments due on default. On termination
+      for Procurer Default, the Procurer pays the Supplier the same amount (100% of Tariff for Minimum Supply Obligation for
+      24 months). Termination Payment is due within 15 days of demand; delay bears interest at 3% above the Bank Rate, delay
+      not to exceed 90 days, and it is a full and final settlement of all claims. On termination for Force Majeure (natural
+      or non-natural, after 365 days), the Supplier is eligible only for undisputed payments under outstanding Monthly Invoices
+      before the Force Majeure Event. Article 18 compensation for breach is Omitted.
+    confidence: 0.9
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages:
+    - 47
+    - 51
+    - 52
+- field_path: core.commercial.offtaker
+  section: commercial
+  value_type: text
+  required: false
+  decision: approved
+  final_value: West Bengal State Electricity Distribution Company Ltd. (WBSEDCL)
+  version_no: 1
+  evidence_pages:
+  - 5
+  - 10
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:35:25.599628+00:00'
+  note: null
+  candidate:
+    id: f0cf3df29d0b48499ceca51dea3e5ce8
+    value: West Bengal State Electricity Distribution Company Ltd. (WBSEDCL)
+    confidence: 0.95
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages:
+    - 5
+    - 10
+- field_path: sector.power.common.tariff_ceiling_inr_per_kwh
+  section: commercial
+  value_type: decimal
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:42:30.275097+00:00'
+  note: null
+  candidate:
+    id: 51ad36d09eaf4e1d8294b3b4a3131f3b
+    value: null
+    confidence: 0.0
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages: []
+- field_path: sector.power.common.tariff_structure
+  section: commercial
+  value_type: enum
+  required: false
+  decision: approved
+  final_value: fixed
+  version_no: 1
+  evidence_pages:
+  - 10
+  - 15
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:35:27.228050+00:00'
+  note: null
+  candidate:
+    id: 9d8838f76a1c407ca7a5eff7111eaeee
+    value: fixed
+    confidence: 0.45
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages:
+    - 10
+    - 15
+- field_path: sector.power.common.deemed_generation_clause
+  section: commercial
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: If the Procurer does not buy/despatch electricity made Available/offered/Scheduled at the Delivery Point, it
+    pays the Supplier for the un-requisitioned power at the Applicable Tariff; for un-requisitioned non-RE power only the
+    Fixed Charge component (70% of Applicable Tariff) is payable. The Supplier may sell such power on the power exchange without
+    NOC; revenue (net of expenses and, for non-RE, the Variable Charge) is first adjusted against the Procurer's Tariff liability
+    and any remaining gain is shared 50:50. Shortfall caused by non-availability of inter/intra state transmission or offtake
+    constraints (including GNA non-availability) not attributable to the Supplier is deemed supplied per the declared schedule
+    and counted as Tariff liability of the Procurer. No hours threshold is stated.
+  version_no: 1
+  evidence_pages:
+  - 29
+  - 32
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:35:28.779857+00:00'
+  note: null
+  candidate:
+    id: b74376fbc648447987bde2c7905c79a5
+    value: If the Procurer does not buy/despatch electricity made Available/offered/Scheduled at the Delivery Point, it pays
+      the Supplier for the un-requisitioned power at the Applicable Tariff; for un-requisitioned non-RE power only the Fixed
+      Charge component (70% of Applicable Tariff) is payable. The Supplier may sell such power on the power exchange without
+      NOC; revenue (net of expenses and, for non-RE, the Variable Charge) is first adjusted against the Procurer's Tariff
+      liability and any remaining gain is shared 50:50. Shortfall caused by non-availability of inter/intra state transmission
+      or offtake constraints (including GNA non-availability) not attributable to the Supplier is deemed supplied per the
+      declared schedule and counted as Tariff liability of the Procurer. No hours threshold is stated.
+    confidence: 0.8
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages:
+    - 29
+    - 32
+- field_path: sector.power.common.deemed_generation_structured
+  section: commercial
+  value_type: record
+  required: false
+  decision: approved
+  final_value:
+    payer: Procurer
+    compensation_basis: full_tariff
+    compensation_pct_of_tariff: null
+    grid_threshold_hours_per_year: null
+    exchange_sale_share_adjusted_pct: null
+    backdown_threshold_hours_per_year: null
+  version_no: 1
+  evidence_pages:
+  - 29
+  - 32
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:35:31.459686+00:00'
+  note: null
+  candidate:
+    id: bed484ca174f4856a31e3767e27fb80c
+    value:
+    - 'compensation_basis: full_tariff'
+    - 'payer: Procurer'
+    confidence: 0.7
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages:
+    - 29
+    - 32
+- field_path: core.penalties.delay_ld_per_mw_per_day_inr
+  section: penalties
+  value_type: money_inr
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:48:03.740526+00:00'
+  note: null
+  candidate:
+    id: 24e79c307dea4e5eb4d89412c98a2bac
+    value: null
+    confidence: 0.0
+    prompt_name: extract/penalties
+    prompt_version: v3
+    pages: []
+- field_path: core.penalties.delay_ld_structured
+  section: penalties
+  value_type: record
+  required: false
+  decision: approved
+  final_value:
+    basis: pbg_encashment_per_day
+    pct_per_week: null
+    rate_inr_per_mw_per_day: null
+    pbg_encashed_over_months: 6
+    cap_pct_of_contract_price: null
+  version_no: 1
+  evidence_pages:
+  - 61
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:35:33.258198+00:00'
+  note: null
+  candidate:
+    id: 2c7309f34c824184ad5f9f3b859feefd
+    value:
+    - 'basis: pbg_encashment_per_day'
+    - 'pbg_encashed_over_months: 6'
+    confidence: 0.85
+    prompt_name: extract/penalties
+    prompt_version: v3
+    pages:
+    - 61
+- field_path: core.penalties.max_scod_extension_months
+  section: penalties
+  value_type: duration_months
+  required: false
+  decision: approved
+  final_value: 6
+  version_no: 1
+  evidence_pages:
+  - 28
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:35:34.208529+00:00'
+  note: null
+  candidate:
+    id: fbf9ea4c265d4cd6927b16dafb17d84d
+    value: 6
+    confidence: 0.9
+    prompt_name: extract/penalties
+    prompt_version: v3
+    pages:
+    - 28
+- field_path: core.penalties.shortfall_penalty_basis
+  section: penalties
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: 'If the Supplier fails to supply the Supply Capacity in accordance with Clause 5.1.2 (minimum 80% CUF annually,
+    minimum 70% CUF monthly, minimum 90% CUF during 4 daily Peak Hours, and minimum 51% from Traceable Green Power), save
+    in Force Majeure, Liquidated Damages are payable equal to the higher of four amounts computed cumulatively on an annual
+    basis: (i) 100% of the Applicable LD Tariff on units short of 70% monthly CUF; (ii) 100% of the Applicable LD Tariff on
+    units short of 80% annual CUF; (iii) 100% of the Applicable LD Tariff on units short of 90% CUF on monthly basis for Peak
+    Hours (4 Hours Daily); (iv) 400% of the Applicable LD Tariff on the shortfall against minimum 51% annual supply from Traceable
+    Green Power. The Applicable LD Tariff is the Applicable Tariff for (iv) and the Fixed Charge (70% of the Applicable Tariff)
+    for the other cases. Power the Procurer does not buy/despatch (Clauses 10.2 and 11.4.3) is not counted as shortfall. Damages
+    may be deducted from Tariff payable (Clause 11.9.5).'
+  version_no: 1
+  evidence_pages:
+  - 33
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:35:35.743095+00:00'
+  note: null
+  candidate:
+    id: 8592ae9a6da14240a0ebe0797dd62e99
+    value: 'If the Supplier fails to supply the Supply Capacity in accordance with Clause 5.1.2 (minimum 80% CUF annually,
+      minimum 70% CUF monthly, minimum 90% CUF during 4 daily Peak Hours, and minimum 51% from Traceable Green Power), save
+      in Force Majeure, Liquidated Damages are payable equal to the higher of four amounts computed cumulatively on an annual
+      basis: (i) 100% of the Applicable LD Tariff on units short of 70% monthly CUF; (ii) 100% of the Applicable LD Tariff
+      on units short of 80% annual CUF; (iii) 100% of the Applicable LD Tariff on units short of 90% CUF on monthly basis
+      for Peak Hours (4 Hours Daily); (iv) 400% of the Applicable LD Tariff on the shortfall against minimum 51% annual supply
+      from Traceable Green Power. The Applicable LD Tariff is the Applicable Tariff for (iv) and the Fixed Charge (70% of
+      the Applicable Tariff) for the other cases. Power the Procurer does not buy/despatch (Clauses 10.2 and 11.4.3) is not
+      counted as shortfall. Damages may be deducted from Tariff payable (Clause 11.9.5).'
+    confidence: 0.85
+    prompt_name: extract/penalties
+    prompt_version: v3
+    pages:
+    - 33
+- field_path: core.penalties.shortfall_rules
+  section: penalties
+  value_type: record_list
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages:
+  - 33
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:46:32.833679+00:00'
+  note: null
+  candidate:
+    id: 7c6fcff646e8451c9acc3a55cf7f8696
+    value:
+    - 'metric: monthly_availability | threshold_pct: 70 | measured: monthly | penalty_multiple_of_tariff: 0.7'
+    - 'metric: annual_cuf | threshold_pct: 80 | measured: annual | penalty_multiple_of_tariff: 0.7'
+    - 'metric: peak_availability | threshold_pct: 90 | measured: monthly | penalty_multiple_of_tariff: 0.7'
+    - 'threshold_pct: 51 | measured: annual | penalty_multiple_of_tariff: 4'
+    confidence: 0.65
+    prompt_name: extract/penalties
+    prompt_version: v3
+    pages:
+    - 33
+- field_path: core.penalties.pbg_encashment_triggers
+  section: penalties
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: '(1) Delay in commencement of power supply beyond the applicable SSD of each phase up to 6 months: the total
+    PBG amount is encashed on a per-day basis proportionate to the Supply Capacity not commenced (Clause 5.1.5). (2) Failure
+    to submit binding land documents and CTU connectivity documents for 50% of LOA capacity within 3 months and the balance
+    50% within 6 months of LOA: LOA may be annulled, PPA terminated and Bid Security or Performance Security encashed (Clause
+    1.1.9). (3) Change in control after signing of PPA but before the Appointed Date: deemed breach, PPA liable to termination
+    and Bid Security or Performance Security forfeited as Damages (Clause 2.2). (4) Qualification conditions not met or material
+    misrepresentation found at any time, including after PPA execution: termination and forfeiture of Bid Security or Performance
+    Security as Damages (Clause 2.5.3).'
+  version_no: 1
+  evidence_pages:
+  - 48
+  - 50
+  - 52
+  - 61
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:37:01.654164+00:00'
+  note: null
+  candidate:
+    id: a1174ec6757d4397bd8095c90846d574
+    value: '(1) Delay in commencement of power supply beyond the applicable SSD of each phase up to 6 months: the total PBG
+      amount is encashed on a per-day basis proportionate to the Supply Capacity not commenced (Clause 5.1.5). (2) Failure
+      to submit binding land documents and CTU connectivity documents for 50% of LOA capacity within 3 months and the balance
+      50% within 6 months of LOA: LOA may be annulled, PPA terminated and Bid Security or Performance Security encashed (Clause
+      1.1.9). (3) Change in control after signing of PPA but before the Appointed Date: deemed breach, PPA liable to termination
+      and Bid Security or Performance Security forfeited as Damages (Clause 2.2). (4) Qualification conditions not met or
+      material misrepresentation found at any time, including after PPA execution: termination and forfeiture of Bid Security
+      or Performance Security as Damages (Clause 2.5.3).'
+    confidence: 0.85
+    prompt_name: extract/penalties
+    prompt_version: v3
+    pages:
+    - 48
+    - 50
+    - 52
+    - 61
+- field_path: core.penalties.termination_delay_months
+  section: penalties
+  value_type: duration_months
+  required: false
+  decision: approved
+  final_value: 6
+  version_no: 1
+  evidence_pages:
+  - 28
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:37:05.222653+00:00'
+  note: null
+  candidate:
+    id: adea44015e654156b0e31859049f8ff5
+    value: 6
+    confidence: 0.9
+    prompt_name: extract/penalties
+    prompt_version: v3
+    pages:
+    - 28
+- field_path: sector.power.common.connectivity_responsibility
+  section: connectivity_and_compliance
+  value_type: enum
+  required: false
+  decision: approved
+  final_value: developer
+  version_no: 1
+  evidence_pages:
+  - 48
+  - 62
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:38:56.924909+00:00'
+  note: null
+  candidate:
+    id: b22789978bd245f6b791bd436ee2977d
+    value: developer
+    confidence: 0.8
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages:
+    - 48
+    - 62
+- field_path: sector.power.common.gna_requirement
+  section: connectivity_and_compliance
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: Tariff is quoted exclusive of transmission charges and losses at the Delivery Point; all transmission charges
+    and losses beyond the Delivery Point, including GNA/ISTS charges and ISTS losses, are borne by the Procurer. The Selected
+    Bidder must submit relevant CTU connectivity documents for the Solar Power Capacity (50% of LOA capacity within 3 months
+    and balance 50% within 6 months of LOA), with land eligible for RE development having CTU connectivity for the relevant
+    RE capacity; failing this the LOA can be annulled and Bid Security/Performance Security encashed.
+  version_no: 1
+  evidence_pages:
+  - 47
+  - 48
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:38:54.356963+00:00'
+  note: null
+  candidate:
+    id: 7741ef2c90e64ab098db70b84f024aff
+    value: Tariff is quoted exclusive of transmission charges and losses at the Delivery Point; all transmission charges and
+      losses beyond the Delivery Point, including GNA/ISTS charges and ISTS losses, are borne by the Procurer. The Selected
+      Bidder must submit relevant CTU connectivity documents for the Solar Power Capacity (50% of LOA capacity within 3 months
+      and balance 50% within 6 months of LOA), with land eligible for RE development having CTU connectivity for the relevant
+      RE capacity; failing this the LOA can be annulled and Bid Security/Performance Security encashed.
+    confidence: 0.8
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages:
+    - 47
+    - 48
+- field_path: sector.power.common.ists_waiver_cutoff_date
+  section: connectivity_and_compliance
+  value_type: date
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:38:59.154238+00:00'
+  note: null
+  candidate:
+    id: eaf361286cc9466aa4b46b1d61637ce6
+    value: null
+    confidence: 0.0
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.line_to_pooling_station_responsibility
+  section: connectivity_and_compliance
+  value_type: text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:39:00.153870+00:00'
+  note: null
+  candidate:
+    id: 61fdda7874f246d588651b3f50511800
+    value: null
+    confidence: 0.0
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.almm_required
+  section: connectivity_and_compliance
+  value_type: bool
+  required: false
+  decision: approved
+  final_value: true
+  version_no: 1
+  evidence_pages:
+  - 34
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:39:04.006400+00:00'
+  note: null
+  candidate:
+    id: 5a2e486c215d423c9b6c43477dfc395e
+    value: true
+    confidence: 0.55
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages:
+    - 34
+- field_path: sector.power.common.dcr_required
+  section: connectivity_and_compliance
+  value_type: bool
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:39:05.490768+00:00'
+  note: null
+  candidate:
+    id: 4a18126a13c34d6bbe19b256c7d39567
+    value: null
+    confidence: 0.0
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.local_content_rule
+  section: connectivity_and_compliance
+  value_type: long_text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:39:06.513583+00:00'
+  note: null
+  candidate:
+    id: 83b88ce53b5143879dcfda480653975e
+    value: null
+    confidence: 0.0
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.land_responsibility
+  section: connectivity_and_compliance
+  value_type: text
+  required: false
+  decision: approved
+  final_value: 'Selected Bidder (developer), in its own name or that of its Affiliates: must submit binding land documents
+    (Solar Park allocation, Government land lease or ownership documents) at a minimum of 4 Acres/MW for the Solar Power Capacity'
+  version_no: 1
+  evidence_pages:
+  - 48
+  - 62
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:39:08.993387+00:00'
+  note: null
+  candidate:
+    id: 626e2ccbded1452bbdec97cce2c1f76b
+    value: 'Selected Bidder (developer), in its own name or that of its Affiliates: must submit binding land documents (Solar
+      Park allocation, Government land lease or ownership documents) at a minimum of 4 Acres/MW for the Solar Power Capacity'
+    confidence: 0.85
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages:
+    - 48
+    - 62
+- field_path: sector.power.common.clearances_responsibility
+  section: connectivity_and_compliance
+  value_type: text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:39:10.755909+00:00'
+  note: null
+  candidate:
+    id: d12ae6eaab1343479cd995eb5445cd29
+    value: null
+    confidence: 0.0
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.source_mix_rules
+  section: supply_sources
+  value_type: record_list
+  required: false
+  decision: approved
+  final_value:
+  - source: solar
+    condition: green power from RE projects counted toward the 51% Traceable Green Power obligation
+    treatment: allowed
+    limit_unit: null
+    limit_value: null
+  - source: wind
+    condition: green power from RE projects counted toward the 51% Traceable Green Power obligation
+    treatment: allowed
+    limit_unit: null
+    limit_value: null
+  - source: hydro
+    condition: green power from RE projects counted toward the 51% Traceable Green Power obligation
+    treatment: allowed
+    limit_unit: null
+    limit_value: null
+  - source: biomass
+    condition: green power from RE projects counted toward the 51% Traceable Green Power obligation
+    treatment: allowed
+    limit_unit: null
+    limit_value: null
+  - source: bess
+    condition: green power from RE projects supplied by using storage counts as Traceable Green Power
+    treatment: allowed
+    limit_unit: null
+    limit_value: null
+  - source: pumped_storage
+    condition: green power from RE projects supplied by using storage counts as Traceable Green Power
+    treatment: allowed
+    limit_unit: null
+    limit_value: null
+  - source: any_non_re
+    condition: balance power supply through alternate sources
+    treatment: allowed
+    limit_unit: null
+    limit_value: null
+  version_no: 1
+  evidence_pages:
+  - 71
+  - 73
+  - 90
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:39:16.657888+00:00'
+  note: null
+  candidate:
+    id: dba08afe09a84f6aa1863fc178896b10
+    value:
+    - 'source: solar | treatment: allowed | condition: green power from RE projects counted toward the 51% Traceable Green
+      Power obligation'
+    - 'source: wind | treatment: allowed | condition: green power from RE projects counted toward the 51% Traceable Green
+      Power obligation'
+    - 'source: hydro | treatment: allowed | condition: green power from RE projects counted toward the 51% Traceable Green
+      Power obligation'
+    - 'source: biomass | treatment: allowed | condition: green power from RE projects counted toward the 51% Traceable Green
+      Power obligation'
+    - 'source: bess | treatment: allowed | condition: green power from RE projects supplied by using storage counts as Traceable
+      Green Power'
+    - 'source: pumped_storage | treatment: allowed | condition: green power from RE projects supplied by using storage counts
+      as Traceable Green Power'
+    - 'source: any_non_re | treatment: allowed | condition: balance power supply through alternate sources'
+    confidence: 0.6
+    prompt_name: extract/supply_sources
+    prompt_version: v1
+    pages:
+    - 71
+    - 73
+    - 90
+- field_path: sector.power.common.bess_charging_rule
+  section: supply_sources
+  value_type: record
+  required: false
+  decision: approved
+  final_value:
+    re_only: true
+    co_located_required: true
+    regulation_reference: CERC Sharing Regulations
+  version_no: 1
+  evidence_pages:
+  - 11
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:39:20.693313+00:00'
+  note: null
+  candidate:
+    id: fd9f704098164f5aa625b019bc9e37be
+    value:
+    - 're_only: yes'
+    - 'co_located_required: yes'
+    - 'regulation_reference: CERC Sharing Regulations'
+    confidence: 0.9
+    prompt_name: extract/supply_sources
+    prompt_version: v1
+    pages:
+    - 11
+- field_path: core.documents.required_documents
+  section: documents
+  value_type: list_text
+  required: false
+  decision: approved
+  final_value:
+  - Application in the prescribed format (Appendix-I) along with Annexes and supporting documents
+  - Power of Attorney for digitally signing the Application (format at Appendix-II)
+  - Copy of Memorandum and Articles of Association
+  - Copies of Bidder's duly audited balance sheet and profit and loss account for the preceding three years
+  - Annual Reports of the Bidder for the last 3 financial years
+  - Certificate(s) from statutory auditors stating the power stations constructed, commissioned, owned and operated by the
+    Bidder or its Associate(s)/Affiliate(s) (Technical Capacity)
+  - Certificate(s) from statutory auditors specifying net worth, turnover and EBITDA and the net worth methodology (Financial
+    Capacity)
+  - Non-refundable Bidding Document Fee (Rs 23,600 incl. GST) and attested copy of payment receipt
+  - Non-refundable Bid Processing Fee (Rs 12 lakh + 18% GST) and attested copy of payment receipt
+  - Earnest Money Deposit / Bid Security of Rs 1,00,000 per MW (DD/BG/eBG/Insurance Surety Bond/POI), submitted 7 days prior
+    to Bid Due Date
+  - Statement of Legal Capacity (Annex-IV of Appendix-I)
+  - Particulars of the Bidder (Annex-I), Technical Capacity (Annex-II) and Financial Capacity (Annex-III) of Appendix-I
+  - Hard copies of all original documents sent to the Chief Engineer (PT&P), WBSEDCL
+  - Any other specific requirement that may be specified by the Procurer
+  version_no: 1
+  evidence_pages:
+  - 13
+  - 18
+  - 23
+  - 28
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:39:23.741761+00:00'
+  note: null
+  candidate:
+    id: d5c45d6547c84f5e93a96c89e32bf372
+    value:
+    - Application in the prescribed format (Appendix-I) along with Annexes and supporting documents
+    - Power of Attorney for digitally signing the Application (format at Appendix-II)
+    - Copy of Memorandum and Articles of Association
+    - Copies of Bidder's duly audited balance sheet and profit and loss account for the preceding three years
+    - Annual Reports of the Bidder for the last 3 financial years
+    - Certificate(s) from statutory auditors stating the power stations constructed, commissioned, owned and operated by the
+      Bidder or its Associate(s)/Affiliate(s) (Technical Capacity)
+    - Certificate(s) from statutory auditors specifying net worth, turnover and EBITDA and the net worth methodology (Financial
+      Capacity)
+    - Non-refundable Bidding Document Fee (Rs 23,600 incl. GST) and attested copy of payment receipt
+    - Non-refundable Bid Processing Fee (Rs 12 lakh + 18% GST) and attested copy of payment receipt
+    - Earnest Money Deposit / Bid Security of Rs 1,00,000 per MW (DD/BG/eBG/Insurance Surety Bond/POI), submitted 7 days prior
+      to Bid Due Date
+    - Statement of Legal Capacity (Annex-IV of Appendix-I)
+    - Particulars of the Bidder (Annex-I), Technical Capacity (Annex-II) and Financial Capacity (Annex-III) of Appendix-I
+    - Hard copies of all original documents sent to the Chief Engineer (PT&P), WBSEDCL
+    - Any other specific requirement that may be specified by the Procurer
+    confidence: 0.85
+    prompt_name: extract/documents
+    prompt_version: v1
+    pages:
+    - 13
+    - 18
+    - 23
+    - 28
+- field_path: core.documents.annexure_formats
+  section: documents
+  value_type: list_text
+  required: false
+  decision: approved
+  final_value:
+  - 'Appendix I: Letter Comprising the Application for Qualification to be uploaded during e-Tender'
+  - 'Appendix II: Power of Attorney for signing of Application'
+  - 'Appendix III: List of Application-specific Provisions'
+  - 'Annex-I: Particulars of the Bidder'
+  - 'Annex-II: Technical Capacity of the Bidder (including Certificate from the Auditor regarding Projects)'
+  - 'Annex-III: Financial Capacity of the Bidder'
+  - 'Annex-IV: Statement of Legal Capacity'
+  version_no: 1
+  evidence_pages:
+  - 21
+  - 33
+  - 35
+  - 38
+  - 40
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:39:26.772889+00:00'
+  note: null
+  candidate:
+    id: 4670a71bd97f41d0b7b6307f8cda8f2a
+    value:
+    - 'Appendix I: Letter Comprising the Application for Qualification to be uploaded during e-Tender'
+    - 'Appendix II: Power of Attorney for signing of Application'
+    - 'Appendix III: List of Application-specific Provisions'
+    - 'Annex-I: Particulars of the Bidder'
+    - 'Annex-II: Technical Capacity of the Bidder (including Certificate from the Auditor regarding Projects)'
+    - 'Annex-III: Financial Capacity of the Bidder'
+    - 'Annex-IV: Statement of Legal Capacity'
+    confidence: 0.8
+    prompt_name: extract/documents
+    prompt_version: v1
+    pages:
+    - 21
+    - 33
+    - 35
+    - 38
+    - 40
+- field_path: core.documents.draft_agreements_referenced
+  section: documents
+  value_type: list_text
+  required: false
+  decision: approved
+  final_value:
+  - Draft Power Purchase Agreement (PPA) / Agreement for Procurement of Power, forming part of the Bidding Documents and deemed
+    part of the Bid
+  - Letter of Award (LOA) issued to the Selected Bidder, to be acknowledged within 7 working days
+  version_no: 1
+  evidence_pages:
+  - 46
+  - 56
+  - 70
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:39:28.196035+00:00'
+  note: null
+  candidate:
+    id: 8b5e06fe1f634662bb9cad7c218d13f4
+    value:
+    - Draft Power Purchase Agreement (PPA) / Agreement for Procurement of Power, forming part of the Bidding Documents and
+      deemed part of the Bid
+    - Letter of Award (LOA) issued to the Selected Bidder, to be acknowledged within 7 working days
+    confidence: 0.85
+    prompt_name: extract/documents
+    prompt_version: v1
+    pages:
+    - 46
+    - 56
+    - 70
+- field_path: sector.power.re_rtc.traceable_green_min_pct
+  section: re_rtc_profile
+  value_type: percent
+  required: true
+  decision: approved
+  final_value: 51
+  version_no: 1
+  evidence_pages:
+  - 19
+  - 29
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:39:31.107717+00:00'
+  note: null
+  candidate:
+    id: c1f52e6e6a0c4207b729e4f9d961a671
+    value: 51.0
+    confidence: 0.95
+    prompt_name: extract/re_rtc_profile
+    prompt_version: v1
+    pages:
+    - 19
+    - 29
+- field_path: sector.power.re_rtc.traceable_green_definition
+  section: re_rtc_profile
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: Traceable Green Power means the supply of green power from RE projects (Solar, Wind, Hydro, Biomass,) including
+    any such power supplied by using storage (PSP, BESS). The methodology for computation of Traceable Green Power is specified
+    at Schedule-G.
+  version_no: 1
+  evidence_pages:
+  - 73
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:39:33.408635+00:00'
+  note: null
+  candidate:
+    id: b23ec37fd7604d16ab46e6925b2f4f8b
+    value: Traceable Green Power means the supply of green power from RE projects (Solar, Wind, Hydro, Biomass,) including
+      any such power supplied by using storage (PSP, BESS). The methodology for computation of Traceable Green Power is specified
+      at Schedule-G.
+    confidence: 0.95
+    prompt_name: extract/re_rtc_profile
+    prompt_version: v1
+    pages:
+    - 73
+- field_path: sector.power.re_rtc.rec_obligation
+  section: re_rtc_profile
+  value_type: record
+  required: false
+  decision: approved
+  final_value:
+    rec_type: null
+    applies_to: all_non_re_energy
+    cost_borne_by: supplier
+  version_no: 1
+  evidence_pages:
+  - 11
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:39:35.776338+00:00'
+  note: null
+  candidate:
+    id: c2ea605cf2bf4fe1969d50293ae5febf
+    value:
+    - 'applies_to: all_non_re_energy'
+    - 'cost_borne_by: supplier'
+    confidence: 0.85
+    prompt_name: extract/re_rtc_profile
+    prompt_version: v1
+    pages:
+    - 11
+- field_path: sector.power.re_rtc.cuf_annual_min_pct
+  section: re_rtc_profile
+  value_type: percent
+  required: true
+  decision: approved
+  final_value: 80
+  version_no: 1
+  evidence_pages:
+  - 10
+  - 15
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:39:37.077775+00:00'
+  note: null
+  candidate:
+    id: 37ebbea6f53b4fd48df0a6ed58e0abce
+    value: 80.0
+    confidence: 0.95
+    prompt_name: extract/re_rtc_profile
+    prompt_version: v1
+    pages:
+    - 10
+    - 15
+- field_path: sector.power.re_rtc.cuf_monthly_min_pct
+  section: re_rtc_profile
+  value_type: percent
+  required: true
+  decision: approved
+  final_value: 70
+  version_no: 1
+  evidence_pages:
+  - 10
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:39:39.059861+00:00'
+  note: null
+  candidate:
+    id: 8d62d61d454b4f4d926b419aa2efd3df
+    value: 70.0
+    confidence: 0.95
+    prompt_name: extract/re_rtc_profile
+    prompt_version: v1
+    pages:
+    - 10
+- field_path: sector.power.re_rtc.cuf_peak_min_pct
+  section: re_rtc_profile
+  value_type: percent
+  required: true
+  decision: approved
+  final_value: 90
+  version_no: 1
+  evidence_pages:
+  - 10
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:39:40.041107+00:00'
+  note: null
+  candidate:
+    id: fb0a5860e9414d2ba3af291d0bde1811
+    value: 90.0
+    confidence: 0.95
+    prompt_name: extract/re_rtc_profile
+    prompt_version: v1
+    pages:
+    - 10
+- field_path: sector.power.re_rtc.peak_window
+  section: re_rtc_profile
+  value_type: record
+  required: false
+  decision: approved
+  final_value:
+    notice: null
+    set_by: procurer
+    stretches: procurer_discretion
+    hours_per_day: 4
+  version_no: 1
+  evidence_pages:
+  - 19
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:39:41.977132+00:00'
+  note: null
+  candidate:
+    id: c923d1a5d66e4fe7b0c9cf512b46f6fb
+    value:
+    - 'hours_per_day: 4'
+    - 'stretches: procurer_discretion'
+    - 'set_by: procurer'
+    confidence: 0.9
+    prompt_name: extract/re_rtc_profile
+    prompt_version: v1
+    pages:
+    - 19
+- field_path: sector.power.re_rtc.cuf_shortfall_penalty
+  section: re_rtc_profile
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: 'Liquidated Damages payable by the Supplier (save Force Majeure), being the higher of four amounts computed
+    cumulatively on an annual basis: (i) 100% of the Applicable LD Tariff for units short of the 70% monthly CUF; (ii) 100%
+    of the Applicable LD Tariff for units short of the 80% annual CUF; (iii) 100% of the Applicable LD Tariff for units short
+    of the 90% CUF in Peak Hours (4 hours daily) on a monthly basis; (iv) 400% of the Applicable LD Tariff for shortfall in
+    the 51% annual Traceable Green Power share. Applicable LD Tariff is the Applicable Tariff for (iv) and the Fixed Charge
+    (70% of Applicable Tariff) for (i)-(iii). Power not despatched by the Procurer under Clauses 10.2 and 11.4.3 is not counted
+    as shortfall.'
+  version_no: 1
+  evidence_pages:
+  - 33
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:39:44.693375+00:00'
+  note: null
+  candidate:
+    id: 1a16a77359ff4723be4dbfd89a50e220
+    value: 'Liquidated Damages payable by the Supplier (save Force Majeure), being the higher of four amounts computed cumulatively
+      on an annual basis: (i) 100% of the Applicable LD Tariff for units short of the 70% monthly CUF; (ii) 100% of the Applicable
+      LD Tariff for units short of the 80% annual CUF; (iii) 100% of the Applicable LD Tariff for units short of the 90% CUF
+      in Peak Hours (4 hours daily) on a monthly basis; (iv) 400% of the Applicable LD Tariff for shortfall in the 51% annual
+      Traceable Green Power share. Applicable LD Tariff is the Applicable Tariff for (iv) and the Fixed Charge (70% of Applicable
+      Tariff) for (i)-(iii). Power not despatched by the Procurer under Clauses 10.2 and 11.4.3 is not counted as shortfall.'
+    confidence: 0.9
+    prompt_name: extract/re_rtc_profile
+    prompt_version: v1
+    pages:
+    - 33
+- field_path: sector.power.re_rtc.supply_start_date
+  section: re_rtc_profile
+  value_type: date
+  required: true
+  decision: approved
+  final_value: '2028-07-01'
+  version_no: 1
+  evidence_pages:
+  - 61
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:39:46.278631+00:00'
+  note: null
+  candidate:
+    id: d9c179e938ce4e64b3826aeaf905de0d
+    value: '2028-07-01'
+    confidence: 0.95
+    prompt_name: extract/re_rtc_profile
+    prompt_version: v1
+    pages:
+    - 61
+- field_path: sector.power.re_rtc.greenshoe_capacity_mw
+  section: re_rtc_profile
+  value_type: mw
+  required: false
+  decision: approved
+  final_value: 500
+  version_no: 1
+  evidence_pages:
+  - 45
+  - 61
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:39:47.524912+00:00'
+  note: null
+  candidate:
+    id: f3a755add65e4297ade40e669c737374
+    value: 500.0
+    confidence: 0.95
+    prompt_name: extract/re_rtc_profile
+    prompt_version: v1
+    pages:
+    - 45
+    - 61
+- field_path: sector.power.re_rtc.greenshoe_exercise_deadline
+  section: re_rtc_profile
+  value_type: date
+  required: false
+  decision: approved
+  final_value: '2027-08-31'
+  version_no: 1
+  evidence_pages:
+  - 10
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:39:49.392049+00:00'
+  note: null
+  candidate:
+    id: a75d791f32a7445fb5e51330450618b5
+    value: '2027-08-31'
+    confidence: 0.85
+    prompt_name: extract/re_rtc_profile
+    prompt_version: v1
+    pages:
+    - 10
+- field_path: sector.power.re_rtc.greenshoe_ssd
+  section: re_rtc_profile
+  value_type: date
+  required: false
+  decision: approved
+  final_value: '2029-04-01'
+  version_no: 1
+  evidence_pages:
+  - 18
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:39:50.892253+00:00'
+  note: null
+  candidate:
+    id: e6fcc6d209944cf8865101abcd1c1d36
+    value: '2029-04-01'
+    confidence: 0.95
+    prompt_name: extract/re_rtc_profile
+    prompt_version: v1
+    pages:
+    - 18
+- field_path: sector.power.re_rtc.greenshoe_tariff_basis
+  section: re_rtc_profile
+  value_type: enum
+  required: false
+  decision: approved
+  final_value: same_as_base
+  version_no: 1
+  evidence_pages:
+  - 10
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:39:52.123791+00:00'
+  note: null
+  candidate:
+    id: 9b5ee5d2a5894c789b9aabc00310b0f4
+    value: same_as_base
+    confidence: 0.95
+    prompt_name: extract/re_rtc_profile
+    prompt_version: v1
+    pages:
+    - 10
+- field_path: sector.power.re_rtc.greenshoe_ppa_signing_days
+  section: re_rtc_profile
+  value_type: int
+  required: false
+  decision: approved
+  final_value: 30
+  version_no: 1
+  evidence_pages:
+  - 10
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:39:54.157634+00:00'
+  note: null
+  candidate:
+    id: bf0c9d463b684d1bab9c6c248dc0f48c
+    value: 30
+    confidence: 0.95
+    prompt_name: extract/re_rtc_profile
+    prompt_version: v1
+    pages:
+    - 10
+- field_path: sector.power.re_rtc.linked_capacity_obligation
+  section: re_rtc_profile
+  value_type: record
+  required: false
+  decision: approved
+  final_value:
+    stages:
+    - documents: both
+      share_pct: 50
+      months_from_loa: 3
+    - documents: both
+      share_pct: 50
+      months_from_loa: 6
+    location: anywhere in India, interconnected on LV side of ISTS network; may be owned by Bidder, Affiliate(s) or SPV(s)
+    technology: solar
+    capacity_mw: null
+    consequence: For the 3-month milestone (Condition Precedent 4.1.3(g)), Performance Security or EMD may be encashed in
+      full without further time and the Procurer may terminate; for the 6-month milestone (5.1.3) the Performance Security
+      may be encashed and no additional cure period applies
+    acres_per_mw: null
+    multiple_of_contracted: 2
+  version_no: 1
+  evidence_pages:
+  - 17
+  - 19
+  - 20
+  - 21
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:39:56.992236+00:00'
+  note: null
+  candidate:
+    id: 7c2a09a8d9b7441f8fc07da79913e7a3
+    value:
+    - 'technology: solar'
+    - 'multiple_of_contracted: 2'
+    - 'location: anywhere in India, interconnected on LV side of ISTS network; may be owned by Bidder, Affiliate(s) or SPV(s)'
+    - 'stages: share_pct=50; months_from_loa=3; documents=both'
+    - 'stages: share_pct=50; months_from_loa=6; documents=both'
+    - 'consequence: For the 3-month milestone (Condition Precedent 4.1.3(g)), Performance Security or EMD may be encashed
+      in full without further time and the Procurer may terminate; for the 6-month milestone (5.1.3) the Performance Security
+      may be encashed and no additional cure period applies'
+    confidence: 0.85
+    prompt_name: extract/re_rtc_profile
+    prompt_version: v1
+    pages:
+    - 17
+    - 19
+    - 20
+    - 21
+- field_path: sector.power.re_rtc.non_re_tariff_split
+  section: re_rtc_profile
+  value_type: record
+  required: false
+  decision: approved
+  final_value:
+    fixed_pct: 70
+    variable_pct: 30
+    merit_order_treatment: merit_order_on_variable_charge
+    fixed_charge_payable_when_not_scheduled: true
+  version_no: 1
+  evidence_pages:
+  - 29
+  - 32
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T06:39:58.796284+00:00'
+  note: null
+  candidate:
+    id: a53921e8d6b243c2b5b16fcc8919142b
+    value:
+    - 'fixed_pct: 70'
+    - 'variable_pct: 30'
+    - 'merit_order_treatment: merit_order_on_variable_charge'
+    - 'fixed_charge_payable_when_not_scheduled: yes'
+    confidence: 0.85
+    prompt_name: extract/re_rtc_profile
+    prompt_version: v1
+    pages:
+    - 29
+    - 32

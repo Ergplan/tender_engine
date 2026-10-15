@@ -97,6 +97,11 @@ class ValidationService:
                 checks.append(("evidence_not_located", False, message))
             else:
                 checks.append(("evidence_not_located", False, f"evidence not located on {pages}"))
+            if candidate.withdrawn:
+                # No value to type or bound: the finding is the removal, and its evidence
+                # (the removing words) is what the checks above hold it to.
+                checks.append(("withdrawn", True, "the document withdraws the provision"))
+                continue
             try:
                 value = self._schemas.value_types.coerce(candidate.value, field)
             except ValueError as exc:

@@ -17,7 +17,9 @@ TENDER_TYPES = (
     "ipp",
     "re_rtc",
 )
-TENDER_STATUSES = ("ingested", "extracted", "in_review", "reviewed", "published")
+# superseded: built again as a new tender (its documents in date order); kept, with its
+# candidates and runs, out of every list.
+TENDER_STATUSES = ("ingested", "extracted", "in_review", "reviewed", "published", "superseded")
 VERSION_KINDS = ("original", "corrigendum", "amendment", "clarification")
 DOCUMENT_ROLES = (
     "rfs",

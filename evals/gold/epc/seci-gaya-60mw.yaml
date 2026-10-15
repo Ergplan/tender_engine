@@ -1,0 +1,2824 @@
+# Gold record of seci-gaya-60mw (epc), reviewed by venture@aayuda.energy, completed 2026-10-15T06:16:42.960905+00:00; written by make gold on 2026-10-15T17:21:04+00:00. Never edited by hand.
+tenant_id: ergplan
+tender_id: bf991789fc384b2080e438d7b9fe9c54
+slug: seci-gaya-60mw
+tender_type: epc
+issuing_agency: SECI
+title: Tender for Design, Engineering, Supply, Construction, Erection, Testing, Commissioning and O&M of ISTS-Connected 60
+  MW (AC) Solar PV Power Plant at Gaya, Bihar
+schema_version: v3
+reviewed_version: 1
+reviewer: venture@aayuda.energy
+completed_at: '2026-10-15T06:16:42.960905+00:00'
+snapshot_id: b2e0df7f75d540c9b17a1e607269f182
+made_at: '2026-10-15T17:21:04+00:00'
+fields:
+- field_path: core.summary.plain_english_summary
+  section: summary
+  value_type: long_text
+  required: true
+  decision: approved
+  final_value: 'What is procured: SECI is procuring, on an EPC/LSTK (lump sum turnkey) basis, the design, engineering, supply,
+    construction, erection, testing, commissioning and O&M of an ISTS-connected 60 MW (AC) solar PV power plant at Gaya, Bihar,
+    India. [1][2][3][4][5] The scope matrix covers module mounting structures, inverters, cabling, inverter duty transformers,
+    33 kV switchgear, a 33/132 kV plant pooling substation (80 MVA), a 132 kV transmission line to the interconnecting substation,
+    SCADA, civil works and comprehensive O&M including security for 5 years, with the O&M period stated as 60 months. [6][7][8][9][10][11][12][13][14][15][16][17][18][19][20][21][22][23][24][25][26][27]
+    No storage (MWh) capacity is stated on the pages read; the detailed scope sits in Section VII, which is not attached.
+    [28]
+
+
+    Buyer and offtaker: The tender (number SECI/C&P/OP/11/0007/26-27) is issued by Solar Energy Corporation of India Limited,
+    which as Owner/Employer under the EPC and O&M contract awards the contract and takes the works. [29][30][31][32][33][4][34]
+    The Owner finances the package through domestic funding and its own resources. [35]
+
+
+    Location: The location is a named site: a ground-based solar PV plant to be implemented at Gaya, Bihar, India. [36][37]
+    The Contractor''s scope includes the interconnecting transmission system to the interconnecting substation including right
+    of way for the transmission line, with connectivity responsibility shared and the Owner taking the connectivity permission.
+    [38][39][40][41][42][43] The exact site is defined in the Scope of Work under Technical Specifications and in the SCC,
+    which are not among the pages read. [44]
+
+
+    Timeline: The tender was issued on 30 September 2026, the pre-bid meeting is on 16 October 2026, the bid submission deadline
+    is 12 November 2026 and technical bids open on 17 November 2026. [29][30][45][46][47] The last date for queries and the
+    e-Reverse Auction date are not printed on the notice page and would have to come from the tender document (RfS) on the
+    ETS portal. [48][49] The record does not state the time for completion or commissioning period.
+
+
+    Eligibility: Bidders may qualify by one of three routes: EPC turnkey execution of ground-mounted grid-connected solar
+    PV plants of cumulative capacity not less than 30 MW in the last seven years plus at least 2 grid-connected solar PV projects
+    of individual capacity 6 MW or above; the same capacities as a Developer; or a single project of INR 160.90 crore or more
+    in power, steel, oil and gas, infrastructure or other process industry in the last seven years plus at least one 33 kV
+    or above electrical substation, with reference plants in satisfactory operation for at least six months before the bid
+    deadline and under-construction projects not counting. [50][51][52][53] The turnover requirement is INR 965,400,000 (INR
+    96.54 crore) and the liquidity requirement is INR 536,300,000 (INR 53.63 crore), both stated as absolute amounts. [54][55]
+    Consortia of up to 3 members are allowed and parent or affiliate credentials may be used. [56][57][58][59][60]
+
+
+    Money at risk: The EMD is a lump sum of INR 6,43,60,000.00 (INR 64,360,000), valid for 7 months and submitted as a BG,
+    payment on order instrument or insurance surety bond, with a bid processing fee of INR 25,000. [61][62][63][64][65][66][67][68][69]
+    The Contract Performance Security must be furnished within 30 days of the Notification of Award/Letter of Intent/Letter
+    of Award against both the EPC/LSTK and O&M contracts; delay attracts interest at 1.25% per month and the Owner may cancel
+    the award and forfeit 100% of the EMD if it is not submitted within 45 days. [70][71] The security may be forfeited for
+    any default under the tender or contract, encashed for generation shortfall in the O&M period (to be restored within 03
+    months), used to recover sums due to the Owner, or forfeited for corrupt or fraudulent practices, and is released without
+    interest not later than 75 days after completion of the 5-year O&M period. [72][73][74][75][76][77][78][79][80]
+
+
+    Tariff or payment: The bidder quotes a lumpsum turnkey Total Contract Price across Schedule 1 (plant and mandatory spares,
+    inclusive of GST) and Schedule 2 (freight, design, civil, installation and other services, inclusive of GST), plus yearly
+    O&M charges for five years quoted at a minimum of 1.5% per year (7.5% over five years) of the Schedule 1 and 2 total;
+    bids are evaluated on total project cost including GST. [81][82][83][84][85][86][87][88][89] An optional interest-free
+    advance of 10% of the Contract Value is paid against an Advance Bank Guarantee of 110%, then 50% against dispatch from
+    the manufacturer''s works and 20% against receipt and acceptance at site; civil works are paid 85% progressively, 10%
+    on commissioning and 5% on Operational Acceptance, and O&M is paid quarterly over 5 years. [90][91][92][93][94][95][96][97][98]
+    Changes in law from seven days before bid submission adjust the Contract Price and/or Time for Completion, and on termination
+    for the Owner''s convenience the Contractor is paid for supplies executed plus removal, sub-contractor and site protection
+    costs. [99][100][101][102][103][104][105]
+
+
+    Obligations and penalties: The Contractor must supply modules and cells through Class-I Local Suppliers with ALMM List-I
+    modules using ALMM List-II cells, obtain all permits and clearances with all fees to its account, and carry a 12-month
+    defect liability period plus the stated equipment warranties and 60 months of O&M. [106][107][108][109][110][111][41][42][43][38][112][113][114][115][116][117][118][119][120][26][27]
+    Delay LD is 0.5% per week of the Contract Price for the whole of the facilities up to a maximum of 5%, after which the
+    Owner may terminate or execute the work at the Contractor''s risk and cost. [121][122] A shortfall at the operational
+    target generation test costs LD equal to the NPV of the shortfall in cash flow over 25 years at Rs. 3.60 per kWh and a
+    discount rate of 8.39% (capped at the operation acceptance milestone amount), and during O&M the annual LD is the generation
+    shortfall times Rs 3.60 per unit up to 5% of the revenue from target generation, recovered first from O&M payments up
+    to 25% of Annual Contract Value and then from the Contract Performance Security. [78][123][124][125][126][127][128][129]'
+  version_no: 1
+  evidence_pages:
+  - 1
+  - 5
+  - 6
+  - 7
+  - 8
+  - 10
+  - 11
+  - 12
+  - 13
+  - 14
+  - 15
+  - 16
+  - 17
+  - 18
+  - 20
+  - 22
+  - 24
+  - 25
+  - 26
+  - 29
+  - 32
+  - 37
+  - 43
+  - 51
+  - 54
+  - 56
+  - 60
+  - 66
+  - 67
+  - 80
+  - 81
+  - 82
+  - 83
+  - 86
+  - 102
+  - 104
+  - 111
+  - 119
+  - 120
+  - 121
+  - 122
+  - 123
+  - 126
+  - 129
+  - 132
+  - 133
+  - 140
+  - 148
+  - 162
+  - 164
+  - 205
+  - 206
+  - 207
+  - 208
+  - 211
+  - 212
+  - 281
+  - 302
+  - 306
+  - 336
+  - 337
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:53:54.322169+00:00'
+  note: null
+  candidate:
+    id: cf0b7342551f40b89d2c27560f4c105b
+    value: 'What is procured: SECI is procuring, on an EPC/LSTK (lump sum turnkey) basis, the design, engineering, supply,
+      construction, erection, testing, commissioning and O&M of an ISTS-connected 60 MW (AC) solar PV power plant at Gaya,
+      Bihar, India. [1][2][3][4][5] The scope matrix covers module mounting structures, inverters, cabling, inverter duty
+      transformers, 33 kV switchgear, a 33/132 kV plant pooling substation (80 MVA), a 132 kV transmission line to the interconnecting
+      substation, SCADA, civil works and comprehensive O&M including security for 5 years, with the O&M period stated as 60
+      months. [6][7][8][9][10][11][12][13][14][15][16][17][18][19][20][21][22][23][24][25][26][27] No storage (MWh) capacity
+      is stated on the pages read; the detailed scope sits in Section VII, which is not attached. [28]
+
+
+      Buyer and offtaker: The tender (number SECI/C&P/OP/11/0007/26-27) is issued by Solar Energy Corporation of India Limited,
+      which as Owner/Employer under the EPC and O&M contract awards the contract and takes the works. [29][30][31][32][33][4][34]
+      The Owner finances the package through domestic funding and its own resources. [35]
+
+
+      Location: The location is a named site: a ground-based solar PV plant to be implemented at Gaya, Bihar, India. [36][37]
+      The Contractor''s scope includes the interconnecting transmission system to the interconnecting substation including
+      right of way for the transmission line, with connectivity responsibility shared and the Owner taking the connectivity
+      permission. [38][39][40][41][42][43] The exact site is defined in the Scope of Work under Technical Specifications and
+      in the SCC, which are not among the pages read. [44]
+
+
+      Timeline: The tender was issued on 30 September 2026, the pre-bid meeting is on 16 October 2026, the bid submission
+      deadline is 12 November 2026 and technical bids open on 17 November 2026. [29][30][45][46][47] The last date for queries
+      and the e-Reverse Auction date are not printed on the notice page and would have to come from the tender document (RfS)
+      on the ETS portal. [48][49] The record does not state the time for completion or commissioning period.
+
+
+      Eligibility: Bidders may qualify by one of three routes: EPC turnkey execution of ground-mounted grid-connected solar
+      PV plants of cumulative capacity not less than 30 MW in the last seven years plus at least 2 grid-connected solar PV
+      projects of individual capacity 6 MW or above; the same capacities as a Developer; or a single project of INR 160.90
+      crore or more in power, steel, oil and gas, infrastructure or other process industry in the last seven years plus at
+      least one 33 kV or above electrical substation, with reference plants in satisfactory operation for at least six months
+      before the bid deadline and under-construction projects not counting. [50][51][52][53] The turnover requirement is INR
+      965,400,000 (INR 96.54 crore) and the liquidity requirement is INR 536,300,000 (INR 53.63 crore), both stated as absolute
+      amounts. [54][55] Consortia of up to 3 members are allowed and parent or affiliate credentials may be used. [56][57][58][59][60]
+
+
+      Money at risk: The EMD is a lump sum of INR 6,43,60,000.00 (INR 64,360,000), valid for 7 months and submitted as a BG,
+      payment on order instrument or insurance surety bond, with a bid processing fee of INR 25,000. [61][62][63][64][65][66][67][68][69]
+      The Contract Performance Security must be furnished within 30 days of the Notification of Award/Letter of Intent/Letter
+      of Award against both the EPC/LSTK and O&M contracts; delay attracts interest at 1.25% per month and the Owner may cancel
+      the award and forfeit 100% of the EMD if it is not submitted within 45 days. [70][71] The security may be forfeited
+      for any default under the tender or contract, encashed for generation shortfall in the O&M period (to be restored within
+      03 months), used to recover sums due to the Owner, or forfeited for corrupt or fraudulent practices, and is released
+      without interest not later than 75 days after completion of the 5-year O&M period. [72][73][74][75][76][77][78][79][80]
+
+
+      Tariff or payment: The bidder quotes a lumpsum turnkey Total Contract Price across Schedule 1 (plant and mandatory spares,
+      inclusive of GST) and Schedule 2 (freight, design, civil, installation and other services, inclusive of GST), plus yearly
+      O&M charges for five years quoted at a minimum of 1.5% per year (7.5% over five years) of the Schedule 1 and 2 total;
+      bids are evaluated on total project cost including GST. [81][82][83][84][85][86][87][88][89] An optional interest-free
+      advance of 10% of the Contract Value is paid against an Advance Bank Guarantee of 110%, then 50% against dispatch from
+      the manufacturer''s works and 20% against receipt and acceptance at site; civil works are paid 85% progressively, 10%
+      on commissioning and 5% on Operational Acceptance, and O&M is paid quarterly over 5 years. [90][91][92][93][94][95][96][97][98]
+      Changes in law from seven days before bid submission adjust the Contract Price and/or Time for Completion, and on termination
+      for the Owner''s convenience the Contractor is paid for supplies executed plus removal, sub-contractor and site protection
+      costs. [99][100][101][102][103][104][105]
+
+
+      Obligations and penalties: The Contractor must supply modules and cells through Class-I Local Suppliers with ALMM List-I
+      modules using ALMM List-II cells, obtain all permits and clearances with all fees to its account, and carry a 12-month
+      defect liability period plus the stated equipment warranties and 60 months of O&M. [106][107][108][109][110][111][41][42][43][38][112][113][114][115][116][117][118][119][120][26][27]
+      Delay LD is 0.5% per week of the Contract Price for the whole of the facilities up to a maximum of 5%, after which the
+      Owner may terminate or execute the work at the Contractor''s risk and cost. [121][122] A shortfall at the operational
+      target generation test costs LD equal to the NPV of the shortfall in cash flow over 25 years at Rs. 3.60 per kWh and
+      a discount rate of 8.39% (capped at the operation acceptance milestone amount), and during O&M the annual LD is the
+      generation shortfall times Rs 3.60 per unit up to 5% of the revenue from target generation, recovered first from O&M
+      payments up to 25% of Annual Contract Value and then from the Contract Performance Security. [78][123][124][125][126][127][128][129]'
+    confidence: 0.86
+    prompt_name: summary_record
+    prompt_version: v1
+    pages:
+    - 1
+    - 5
+    - 6
+    - 7
+    - 8
+    - 10
+    - 11
+    - 12
+    - 13
+    - 14
+    - 15
+    - 16
+    - 17
+    - 18
+    - 20
+    - 22
+    - 24
+    - 25
+    - 26
+    - 29
+    - 32
+    - 37
+    - 43
+    - 51
+    - 54
+    - 56
+    - 60
+    - 66
+    - 67
+    - 80
+    - 81
+    - 82
+    - 83
+    - 86
+    - 102
+    - 104
+    - 111
+    - 119
+    - 120
+    - 121
+    - 122
+    - 123
+    - 126
+    - 129
+    - 132
+    - 133
+    - 140
+    - 148
+    - 162
+    - 164
+    - 205
+    - 206
+    - 207
+    - 208
+    - 211
+    - 212
+    - 281
+    - 302
+    - 306
+    - 336
+    - 337
+- field_path: core.identity.tender_number
+  section: identity_and_scope
+  value_type: text
+  required: true
+  decision: approved
+  final_value: SECI/C&P/OP/11/0007/26-27
+  version_no: 1
+  evidence_pages:
+  - 1
+  - 10
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:08:56.170650+00:00'
+  note: null
+  candidate:
+    id: 016b9e5a728a4dcb8629a23518c49f9d
+    value: SECI/C&P/OP/11/0007/26-27
+    confidence: 0.98
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 1
+    - 10
+- field_path: core.identity.issuing_agency
+  section: identity_and_scope
+  value_type: text
+  required: true
+  decision: approved
+  final_value: Solar Energy Corporation of India Limited
+  version_no: 1
+  evidence_pages:
+  - 1
+  - 5
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:08:58.790850+00:00'
+  note: null
+  candidate:
+    id: 7a084e95fade4916b94d4282fa1c8c39
+    value: Solar Energy Corporation of India Limited
+    confidence: 0.97
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 1
+    - 5
+- field_path: core.identity.title
+  section: identity_and_scope
+  value_type: text
+  required: true
+  decision: approved
+  final_value: Tender for Design, Engineering, Supply, Construction, Erection, Testing, Commissioning and O&M of ISTS-Connected
+    60 MW (AC) Solar PV Power Plant at Gaya, Bihar, India
+  version_no: 1
+  evidence_pages:
+  - 1
+  - 5
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:09:08.003883+00:00'
+  note: null
+  candidate:
+    id: 328ab0ea6fc04cd5a8e26cb48b9c5626
+    value: Tender for Design, Engineering, Supply, Construction, Erection, Testing, Commissioning and O&M of ISTS-Connected
+      60 MW (AC) Solar PV Power Plant at Gaya, Bihar, India
+    confidence: 0.95
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 1
+    - 5
+- field_path: core.identity.procurement_mode
+  section: identity_and_scope
+  value_type: enum
+  required: false
+  decision: edited
+  final_value: single_stage_two_envelope
+  version_no: 1
+  evidence_pages:
+  - 5
+  - 8
+  - 10
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:09:14.519052+00:00'
+  note: null
+  candidate:
+    id: 7c9b682339f14d35a382e2e29626be81
+    value: e_reverse_auction
+    confidence: 0.95
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 5
+    - 8
+    - 10
+- field_path: core.identity.portal
+  section: identity_and_scope
+  value_type: text
+  required: false
+  decision: approved
+  final_value: ISN-ETS portal, https://www.bharat-electronictender.com
+  version_no: 1
+  evidence_pages:
+  - 7
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:52:56.053182+00:00'
+  note: null
+  candidate:
+    id: 5f4b60dc4d0a4a86b92750f4196bd5d0
+    value: ISN-ETS portal, https://www.bharat-electronictender.com
+    confidence: 0.95
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 7
+- field_path: core.identity.tender_type_as_stated
+  section: identity_and_scope
+  value_type: text
+  required: false
+  decision: approved
+  final_value: EPC / LSTK (Lump Sum Turnkey) – Design, Engineering, Supply, Construction, Erection, Testing, Commissioning
+    and O&M of ISTS-Connected Solar PV Power Plant
+  version_no: 1
+  evidence_pages:
+  - 8
+  - 12
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:09:18.354219+00:00'
+  note: null
+  candidate:
+    id: b0a71175b75e44e2943acdbde0e5cd86
+    value: EPC / LSTK (Lump Sum Turnkey) – Design, Engineering, Supply, Construction, Erection, Testing, Commissioning and
+      O&M of ISTS-Connected Solar PV Power Plant
+    confidence: 0.85
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 8
+    - 12
+- field_path: sector.power.common.total_capacity_mw
+  section: identity_and_scope
+  value_type: mw
+  required: false
+  decision: approved
+  final_value: 60
+  version_no: 1
+  evidence_pages:
+  - 1
+  - 8
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:09:29.557987+00:00'
+  note: null
+  candidate:
+    id: 39e231a58bb94b5696f21ed2468be76e
+    value: 60.0
+    confidence: 0.95
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 1
+    - 8
+- field_path: sector.power.common.total_capacity_mwh
+  section: identity_and_scope
+  value_type: mwh
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:10:10.297028+00:00'
+  note: null
+  candidate:
+    id: 65f679dad02042bd90a5e174df7537b1
+    value: null
+    confidence: 0.0
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.min_bid_mw
+  section: identity_and_scope
+  value_type: mw
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:10:13.075978+00:00'
+  note: null
+  candidate:
+    id: 1963f70f31834670a0f54f09234c3745
+    value: null
+    confidence: 0.0
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.max_bid_mw
+  section: identity_and_scope
+  value_type: mw
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:10:15.333071+00:00'
+  note: null
+  candidate:
+    id: 4f43eafb6e2748e395ec070480b409ba
+    value: null
+    confidence: 0.0
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.max_projects_per_bidder
+  section: identity_and_scope
+  value_type: int
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:10:17.123149+00:00'
+  note: null
+  candidate:
+    id: a13814e73cb7433f8352026478639bff
+    value: null
+    confidence: 0.0
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.location_constraint
+  section: identity_and_scope
+  value_type: enum
+  required: false
+  decision: approved
+  final_value: named_site
+  version_no: 1
+  evidence_pages:
+  - 5
+  - 8
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:10:37.144537+00:00'
+  note: null
+  candidate:
+    id: bb5e8fd605ba4ae1abf611a7dcc5ccb0
+    value: named_site
+    confidence: 0.9
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 5
+    - 8
+- field_path: sector.power.common.named_states_or_sites
+  section: identity_and_scope
+  value_type: list_text
+  required: false
+  decision: approved
+  final_value:
+  - Gaya, Bihar, India
+  version_no: 1
+  evidence_pages:
+  - 5
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:10:45.221184+00:00'
+  note: null
+  candidate:
+    id: 68de49a47c354c99a133ecd07accdfb5
+    value:
+    - Gaya, Bihar, India
+    confidence: 0.9
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages:
+    - 5
+- field_path: sector.power.common.delivery_point
+  section: identity_and_scope
+  value_type: text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:10:47.490608+00:00'
+  note: null
+  candidate:
+    id: 0a859adbf7a540fdb32cad2a0934c24a
+    value: null
+    confidence: 0.0
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.metering_point
+  section: identity_and_scope
+  value_type: text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:10:50.665183+00:00'
+  note: null
+  candidate:
+    id: 03330152cfde4c0294b142ee12844c37
+    value: null
+    confidence: 0.0
+    prompt_name: extract/identity_and_scope
+    prompt_version: v1
+    pages: []
+- field_path: core.key_dates.nit_date
+  section: key_dates
+  value_type: date
+  required: false
+  decision: approved
+  final_value: '2026-09-30'
+  version_no: 1
+  evidence_pages:
+  - 1
+  - 10
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:11:03.046771+00:00'
+  note: null
+  candidate:
+    id: f7fff5337a5c4392addc5338e1a2b67e
+    value: '2026-09-30'
+    confidence: 0.95
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 1
+    - 10
+- field_path: core.key_dates.pre_bid_meeting_date
+  section: key_dates
+  value_type: date
+  required: false
+  decision: approved
+  final_value: '2026-10-16'
+  version_no: 1
+  evidence_pages:
+  - 1
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:11:13.362270+00:00'
+  note: null
+  candidate:
+    id: 60750a6d839f481cbb462d9d11602fb2
+    value: '2026-10-16'
+    confidence: 0.95
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 1
+- field_path: core.key_dates.query_deadline
+  section: key_dates
+  value_type: date
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:11:16.157865+00:00'
+  note: null
+  candidate:
+    id: a81996d5793e467daf1cc94d36569143
+    value: null
+    confidence: 0.0
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages: []
+- field_path: core.key_dates.bid_submission_deadline
+  section: key_dates
+  value_type: date
+  required: true
+  decision: approved
+  final_value: '2026-11-12'
+  version_no: 1
+  evidence_pages:
+  - 1
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:11:26.475864+00:00'
+  note: null
+  candidate:
+    id: 7df8009410b044d39fde119fa66a5340
+    value: '2026-11-12'
+    confidence: 0.95
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 1
+- field_path: core.key_dates.technical_opening_date
+  section: key_dates
+  value_type: date
+  required: false
+  decision: approved
+  final_value: '2026-11-17'
+  version_no: 1
+  evidence_pages:
+  - 1
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:11:37.481531+00:00'
+  note: null
+  candidate:
+    id: 2e863a9e7fda4d16bba5a3a6d5f29a8c
+    value: '2026-11-17'
+    confidence: 0.75
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 1
+- field_path: core.key_dates.era_date
+  section: key_dates
+  value_type: date
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:11:41.094915+00:00'
+  note: null
+  candidate:
+    id: a57b86e85a554a03bde41c80522460dc
+    value: null
+    confidence: 0.0
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages: []
+- field_path: core.key_dates.dates_deferred_note
+  section: key_dates
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: The notice page does not print a last date for queries or an e-Reverse Auction date, although the tender type
+    states an e-Reverse Auction will be held; these dates would have to come from the tender document (RfS) on the ETS portal.
+    EMD and PBG are also deferred 'As per Tender document'.
+  version_no: 1
+  evidence_pages:
+  - 1
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:12:06.874210+00:00'
+  note: null
+  candidate:
+    id: cefb9ba2cbb944c395467b0766e8d38a
+    value: The notice page does not print a last date for queries or an e-Reverse Auction date, although the tender type states
+      an e-Reverse Auction will be held; these dates would have to come from the tender document (RfS) on the ETS portal.
+      EMD and PBG are also deferred 'As per Tender document'.
+    confidence: 0.4
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages:
+    - 1
+- field_path: core.key_dates.bid_validity
+  section: key_dates
+  value_type: int
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:12:16.170360+00:00'
+  note: null
+  candidate:
+    id: 097ce71656f04127b2a027e55df41008
+    value: null
+    confidence: 0.0
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages: []
+- field_path: core.key_dates.bid_validity_unit
+  section: key_dates
+  value_type: enum
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:12:23.276014+00:00'
+  note: null
+  candidate:
+    id: 10da2b54557641a19ed7002d9f5714fd
+    value: null
+    confidence: 0.0
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages: []
+- field_path: core.key_dates.loa_timeline
+  section: key_dates
+  value_type: text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:12:24.309136+00:00'
+  note: null
+  candidate:
+    id: 896dfd1d5659460b860e76cae5931546
+    value: null
+    confidence: 0.0
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.ppa_signing_window_days
+  section: key_dates
+  value_type: int
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:12:25.186533+00:00'
+  note: null
+  candidate:
+    id: 1949725bd896464a8c3d12dbdd493b26
+    value: null
+    confidence: 0.0
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.financial_closure_months
+  section: key_dates
+  value_type: duration_months
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:12:27.763848+00:00'
+  note: null
+  candidate:
+    id: 0b35ebf58f964080ad3cfe9790574ae5
+    value: null
+    confidence: 0.0
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.financial_closure_reference
+  section: key_dates
+  value_type: enum
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:12:29.028445+00:00'
+  note: null
+  candidate:
+    id: 1fd189de34124d0bb0cfdd4868f8b8ef
+    value: null
+    confidence: 0.0
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.scod_months
+  section: key_dates
+  value_type: duration_months
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:12:33.499887+00:00'
+  note: null
+  candidate:
+    id: 05d518dd0e834de6915e68cf45a75fd6
+    value: null
+    confidence: 0.0
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.scod_reference
+  section: key_dates
+  value_type: enum
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:12:34.794107+00:00'
+  note: null
+  candidate:
+    id: f87130f844044bc58deb6b1827e3211b
+    value: null
+    confidence: 0.0
+    prompt_name: extract/key_dates
+    prompt_version: v1
+    pages: []
+- field_path: core.eligibility.technical_experience_requirement
+  section: eligibility
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: 'Three alternative qualifying routes. Route I: EPC turnkey execution (design, supply, installation, commissioning)
+    of ground-mounted grid-connected solar PV plants of cumulative capacity not less than 30 MW in the last seven years, AND
+    at least 2 grid-connected solar PV projects of individual capacity 6 MW or above; Route II: same capacities (30 MW cumulative
+    AND 2 projects of 6 MW or above) as a Developer; Route III: executed a project in power/steel/oil & gas/infrastructure
+    or other process industry of value INR 160.90 Crore or more in a single project in last seven years AND at least one 33
+    kV or above electrical substation. In all routes the reference plants/projects must have been in satisfactory operation
+    for at least six months prior to the last date of bid submission.'
+  version_no: 1
+  evidence_pages:
+  - 81
+  - 82
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:12:56.375792+00:00'
+  note: null
+  candidate:
+    id: 2384ed9e35af428ea386e3879dd89a08
+    value: 'Three alternative qualifying routes. Route I: EPC turnkey execution (design, supply, installation, commissioning)
+      of ground-mounted grid-connected solar PV plants of cumulative capacity not less than 30 MW in the last seven years,
+      AND at least 2 grid-connected solar PV projects of individual capacity 6 MW or above; Route II: same capacities (30
+      MW cumulative AND 2 projects of 6 MW or above) as a Developer; Route III: executed a project in power/steel/oil & gas/infrastructure
+      or other process industry of value INR 160.90 Crore or more in a single project in last seven years AND at least one
+      33 kV or above electrical substation. In all routes the reference plants/projects must have been in satisfactory operation
+      for at least six months prior to the last date of bid submission.'
+    confidence: 0.9
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages:
+    - 81
+    - 82
+- field_path: core.eligibility.turnover_requirement_inr
+  section: eligibility
+  value_type: money_inr
+  required: false
+  decision: approved
+  final_value: 965400000
+  version_no: 1
+  evidence_pages:
+  - 83
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:13:11.498826+00:00'
+  note: null
+  candidate:
+    id: 21323f341a9e4b2eb2319f4d42a56e86
+    value: 965400000.0
+    confidence: 0.92
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages:
+    - 83
+- field_path: core.eligibility.turnover_basis
+  section: eligibility
+  value_type: enum
+  required: false
+  decision: approved
+  final_value: absolute
+  version_no: 1
+  evidence_pages:
+  - 83
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:13:54.234995+00:00'
+  note: null
+  candidate:
+    id: e4ac86dacd274857a91b1bd4f58d1f2c
+    value: absolute
+    confidence: 0.92
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages:
+    - 83
+- field_path: core.eligibility.ebitda_requirement_inr
+  section: eligibility
+  value_type: money_inr
+  required: false
+  decision: null
+  final_value: null
+  version_no: null
+  evidence_pages: []
+  reviewer: null
+  decided_at: null
+  note: null
+  candidate: null
+- field_path: core.eligibility.ebitda_basis
+  section: eligibility
+  value_type: text
+  required: false
+  decision: null
+  final_value: null
+  version_no: null
+  evidence_pages: []
+  reviewer: null
+  decided_at: null
+  note: null
+  candidate: null
+- field_path: core.eligibility.min_single_station_mw
+  section: eligibility
+  value_type: mw
+  required: false
+  decision: null
+  final_value: null
+  version_no: null
+  evidence_pages: []
+  reviewer: null
+  decided_at: null
+  note: null
+  candidate: null
+- field_path: core.eligibility.min_continuous_operation_years
+  section: eligibility
+  value_type: decimal
+  required: false
+  decision: null
+  final_value: null
+  version_no: null
+  evidence_pages: []
+  reviewer: null
+  decided_at: null
+  note: null
+  candidate: null
+- field_path: core.eligibility.experience_period_end_date
+  section: eligibility
+  value_type: date
+  required: false
+  decision: null
+  final_value: null
+  version_no: null
+  evidence_pages: []
+  reviewer: null
+  decided_at: null
+  note: null
+  candidate: null
+- field_path: core.eligibility.liquidity_requirement_inr
+  section: eligibility
+  value_type: money_inr
+  required: false
+  decision: approved
+  final_value: 536300000
+  version_no: 1
+  evidence_pages:
+  - 83
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:14:11.896699+00:00'
+  note: null
+  candidate:
+    id: c6d08381753e44258c8ce297786c9406
+    value: 536300000.0
+    confidence: 0.88
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages:
+    - 83
+- field_path: core.eligibility.liquidity_basis
+  section: eligibility
+  value_type: enum
+  required: false
+  decision: approved
+  final_value: absolute
+  version_no: 1
+  evidence_pages:
+  - 83
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:14:20.710767+00:00'
+  note: null
+  candidate:
+    id: 00b559711d6b4f43a5e16bd1ce08bbb6
+    value: absolute
+    confidence: 0.9
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages:
+    - 83
+- field_path: core.eligibility.consortium_allowed
+  section: eligibility
+  value_type: bool
+  required: false
+  decision: approved
+  final_value: true
+  version_no: 1
+  evidence_pages:
+  - 18
+  - 66
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:14:39.172411+00:00'
+  note: null
+  candidate:
+    id: 062e20e39f4c44ac95f1b6ae0f92398d
+    value: true
+    confidence: 0.95
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages:
+    - 18
+    - 66
+- field_path: core.eligibility.max_consortium_members
+  section: eligibility
+  value_type: int
+  required: false
+  decision: approved
+  final_value: 3
+  version_no: 1
+  evidence_pages:
+  - 80
+  - 86
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:14:47.472209+00:00'
+  note: null
+  candidate:
+    id: 213d9155c4a441f8a38027e454b50743
+    value: 3
+    confidence: 0.95
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages:
+    - 80
+    - 86
+- field_path: core.eligibility.parent_affiliate_credentials_allowed
+  section: eligibility
+  value_type: bool
+  required: false
+  decision: approved
+  final_value: true
+  version_no: 1
+  evidence_pages:
+  - 83
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:15:20.833990+00:00'
+  note: null
+  candidate:
+    id: f2923bf9246e466da8513eba31b6c619
+    value: true
+    confidence: 0.95
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages:
+    - 83
+- field_path: core.eligibility.shareholding_lock_in
+  section: eligibility
+  value_type: long_text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:15:23.273539+00:00'
+  note: null
+  candidate:
+    id: 6318823aaf1d432889454ceb085a9d67
+    value: null
+    confidence: 0.0
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.min_commissioned_mw
+  section: eligibility
+  value_type: mw
+  required: false
+  decision: approved
+  final_value: 30
+  version_no: 1
+  evidence_pages:
+  - 81
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:15:26.241356+00:00'
+  note: null
+  candidate:
+    id: d9185fa4f8834c97a05043865781eb59
+    value: 30.0
+    confidence: 0.85
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages:
+    - 81
+- field_path: sector.power.common.under_construction_counts
+  section: eligibility
+  value_type: bool
+  required: false
+  decision: approved
+  final_value: false
+  version_no: 1
+  evidence_pages:
+  - 81
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:15:38.303097+00:00'
+  note: null
+  candidate:
+    id: 3f8b62ff1b1d41009f86fb54dac92966
+    value: false
+    confidence: 0.9
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages:
+    - 81
+- field_path: sector.power.common.net_worth_per_mw_inr
+  section: eligibility
+  value_type: money_inr
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:15:39.955900+00:00'
+  note: null
+  candidate:
+    id: 6356feced4954bccb95a35891bc80eb3
+    value: null
+    confidence: 0.0
+    prompt_name: extract/eligibility
+    prompt_version: v1
+    pages: []
+- field_path: core.guarantees.emd_per_mw_inr
+  section: guarantees
+  value_type: money_inr
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:15:42.751432+00:00'
+  note: null
+  candidate:
+    id: 7256f6aebcf24ae9bceb9361a2ee309d
+    value: null
+    confidence: 0.0
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages: []
+- field_path: core.guarantees.emd_formula
+  section: guarantees
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: Lump sum EMD of INR 6,43,60,000.00 (Indian Rupees Six Crore Forty-Three Lakh Sixty Thousand only), i.e. INR
+    64,360,000.
+  version_no: 1
+  evidence_pages:
+  - 10
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:15:50.526809+00:00'
+  note: null
+  candidate:
+    id: c67a71e0801d436a956cdf55646428c1
+    value: Lump sum EMD of INR 6,43,60,000.00 (Indian Rupees Six Crore Forty-Three Lakh Sixty Thousand only), i.e. INR 64,360,000.
+    confidence: 0.95
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages:
+    - 10
+- field_path: core.guarantees.emd_structured
+  section: guarantees
+  value_type: record
+  required: false
+  decision: approved
+  final_value:
+    basis: lump_sum
+    cap_inr: null
+    cap_per: null
+    percent: null
+    components: null
+    percent_of: null
+    lump_sum_inr: 64360000
+    rate_inr_per_mw: null
+  version_no: 1
+  evidence_pages:
+  - 10
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:15:56.195478+00:00'
+  note: null
+  candidate:
+    id: 929d67288ae24ec78b1eb4051c6a063d
+    value:
+    - 'basis: lump_sum'
+    - 'lump_sum_inr: 64360000'
+    confidence: 0.95
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages:
+    - 10
+- field_path: core.guarantees.emd_form
+  section: guarantees
+  value_type: enum
+  required: false
+  decision: approved
+  final_value: other
+  version_no: 1
+  evidence_pages:
+  - 28
+  - 67
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:16:15.612098+00:00'
+  note: null
+  candidate:
+    id: 6628157d74634bb885049d3ac8d74c5e
+    value: other
+    confidence: 0.9
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages:
+    - 28
+    - 67
+- field_path: core.guarantees.bid_security_instruments
+  section: guarantees
+  value_type: record_list
+  required: false
+  decision: null
+  final_value: null
+  version_no: null
+  evidence_pages: []
+  reviewer: null
+  decided_at: null
+  note: null
+  candidate: null
+- field_path: core.guarantees.pbg_instruments
+  section: guarantees
+  value_type: record_list
+  required: false
+  decision: null
+  final_value: null
+  version_no: null
+  evidence_pages: []
+  reviewer: null
+  decided_at: null
+  note: null
+  candidate: null
+- field_path: core.guarantees.pbg_per_mw_inr
+  section: guarantees
+  value_type: money_inr
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:16:19.191704+00:00'
+  note: null
+  candidate:
+    id: 197b4c105ceb49239959efe5b01066e2
+    value: null
+    confidence: 0.0
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages: []
+- field_path: core.guarantees.pbg_formula
+  section: guarantees
+  value_type: long_text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:16:20.451004+00:00'
+  note: null
+  candidate:
+    id: 0bdd4c2b658e4065855e795c0063a495
+    value: null
+    confidence: 0.0
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages: []
+- field_path: core.guarantees.pbg_schedule
+  section: guarantees
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: Contract Performance Security to be furnished within 30 (Thirty) days from issuance of the Notification of
+    Award/ Letter of Intent/ Letter of Award, against both the EPC/LSTK contract and the O&M contract; delay beyond 30 days
+    attracts interest @ 1.25% per month, and Owner may cancel the award and forfeit 100% of EMD if not submitted within 45
+    (Forty-five) days from issuance of NOA/LOI/LOA. Part Security not accepted.
+  version_no: 1
+  evidence_pages:
+  - 121
+  - 122
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:16:43.439642+00:00'
+  note: null
+  candidate:
+    id: 5e92e186abad43d0bb13b981e25febe1
+    value: Contract Performance Security to be furnished within 30 (Thirty) days from issuance of the Notification of Award/
+      Letter of Intent/ Letter of Award, against both the EPC/LSTK contract and the O&M contract; delay beyond 30 days attracts
+      interest @ 1.25% per month, and Owner may cancel the award and forfeit 100% of EMD if not submitted within 45 (Forty-five)
+      days from issuance of NOA/LOI/LOA. Part Security not accepted.
+    confidence: 0.85
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages:
+    - 121
+    - 122
+- field_path: core.guarantees.pbg_structured
+  section: guarantees
+  value_type: record
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:16:45.452343+00:00'
+  note: null
+  candidate:
+    id: 2becf974f77b48da88fe83e281ef9647
+    value: null
+    confidence: 0.0
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages: []
+- field_path: core.guarantees.success_charge_inr
+  section: guarantees
+  value_type: money_inr
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:16:53.589197+00:00'
+  note: null
+  candidate:
+    id: 773b75ff90f0437bbe9482909fad03b2
+    value: null
+    confidence: 0.0
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages: []
+- field_path: core.guarantees.processing_fee_inr
+  section: guarantees
+  value_type: money_inr
+  required: false
+  decision: approved
+  final_value: 25000
+  version_no: 1
+  evidence_pages:
+  - 10
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:16:58.769279+00:00'
+  note: null
+  candidate:
+    id: 829dd6ccc5e8457da15403b8415c18db
+    value: 25000.0
+    confidence: 0.95
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages:
+    - 10
+- field_path: core.guarantees.bg_validity_months
+  section: guarantees
+  value_type: duration_months
+  required: false
+  decision: approved
+  final_value: 7
+  version_no: 1
+  evidence_pages:
+  - 29
+  - 67
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:17:05.681996+00:00'
+  note: null
+  candidate:
+    id: 17723e5511d940bda09e21ab0d78049e
+    value: 7
+    confidence: 0.5
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages:
+    - 29
+    - 67
+- field_path: core.guarantees.bg_release_conditions
+  section: guarantees
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: EMD of unsuccessful bidders disqualified at techno-commercial evaluation, e-RA shortlisting or during/after
+    e-RA is returned not later than 30 days of their disqualification. The successful (L1) bidder's EMD is discharged upon
+    signing the Contract Agreement and furnishing the Performance Security duly vetted by the Bank. EMD is also returned if
+    the tender is cancelled or if NTP is not issued within 90 days of NOA/CA (in which case EMD/PBG as applicable is released).
+    Contract Performance Security is released without interest not later than 75 days after successful completion of the complete
+    5-year O&M period, subject to approval and acceptance of the O&M deliverables.
+  version_no: 1
+  evidence_pages:
+  - 29
+  - 102
+  - 206
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:17:41.506496+00:00'
+  note: null
+  candidate:
+    id: 624530297ec541cdbf7d7205f74673e7
+    value: EMD of unsuccessful bidders disqualified at techno-commercial evaluation, e-RA shortlisting or during/after e-RA
+      is returned not later than 30 days of their disqualification. The successful (L1) bidder's EMD is discharged upon signing
+      the Contract Agreement and furnishing the Performance Security duly vetted by the Bank. EMD is also returned if the
+      tender is cancelled or if NTP is not issued within 90 days of NOA/CA (in which case EMD/PBG as applicable is released).
+      Contract Performance Security is released without interest not later than 75 days after successful completion of the
+      complete 5-year O&M period, subject to approval and acceptance of the O&M deliverables.
+    confidence: 0.85
+    prompt_name: extract/guarantees
+    prompt_version: v2
+    pages:
+    - 29
+    - 102
+    - 206
+- field_path: core.commercial.payment_security_mechanism
+  section: commercial
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: No letter of credit, payment security fund or state guarantee for the Contractor is stated in the attached
+    pages; this is an EPC contract and the SCC only states payment milestones and Owner-side security. An optional interest-free
+    advance of 10% of the Contract Value is paid against an Advance Bank Guarantee of 110% of the advance amount (in addition
+    to the Contract Performance Security), reducible pro-rata to a cumulative maximum of 90%. Thereafter 50% is paid against
+    dispatch of material from the manufacturer's works and 20% on pro-rata basis against supply, receipt and acceptance of
+    materials at site; if the advance is not availed, the 10% is paid with the receipt-at-site milestone.
+  version_no: 1
+  evidence_pages:
+  - 208
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:17:57.760990+00:00'
+  note: null
+  candidate:
+    id: 42dde675297c498da53f09150ed49758
+    value: No letter of credit, payment security fund or state guarantee for the Contractor is stated in the attached pages;
+      this is an EPC contract and the SCC only states payment milestones and Owner-side security. An optional interest-free
+      advance of 10% of the Contract Value is paid against an Advance Bank Guarantee of 110% of the advance amount (in addition
+      to the Contract Performance Security), reducible pro-rata to a cumulative maximum of 90%. Thereafter 50% is paid against
+      dispatch of material from the manufacturer's works and 20% on pro-rata basis against supply, receipt and acceptance
+      of materials at site; if the advance is not availed, the 10% is paid with the receipt-at-site milestone.
+    confidence: 0.4
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages:
+    - 208
+- field_path: core.commercial.payment_security_structured
+  section: commercial
+  value_type: record
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:17:59.141682+00:00'
+  note: null
+  candidate:
+    id: 3b5972566fbe4929b007a285e49d37b3
+    value: null
+    confidence: 0.0
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages: []
+- field_path: core.commercial.change_in_law_clause
+  section: commercial
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: 'GCC Clause 51.1: if after the date seven (7) days prior to bid submission any law, regulation, ordinance,
+    order or by-law in the country of the Site is enacted, changed or repealed (including changes in interpretation and any
+    change in rates of Taxes, duties and cess or any new tax applicable for setting up the project) that affects the Contractor''s
+    costs and/or Time for Completion, the Contract Price is correspondingly increased or decreased and/or the Time for Completion
+    reasonably adjusted; the Contractor must forward supporting documents within 15 days of the enactment. Adjustments are
+    restricted to direct transactions between the PMC and Contractor and bought-out items dispatched directly from sub-vendor''s
+    works to Site, are not paid separately if already covered by price adjustment provisions, and any tax increase beyond
+    the contractual completion period is to the Contractor''s account while decreases pass to the Owner. Change in Law excludes
+    changes in corporate income tax, withholding tax on income or dividends, and regulatory measures by the Appropriate Commission.'
+  version_no: 1
+  evidence_pages:
+  - 148
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:18:32.897127+00:00'
+  note: null
+  candidate:
+    id: a69d624cf6c5439da371b8953542a16d
+    value: 'GCC Clause 51.1: if after the date seven (7) days prior to bid submission any law, regulation, ordinance, order
+      or by-law in the country of the Site is enacted, changed or repealed (including changes in interpretation and any change
+      in rates of Taxes, duties and cess or any new tax applicable for setting up the project) that affects the Contractor''s
+      costs and/or Time for Completion, the Contract Price is correspondingly increased or decreased and/or the Time for Completion
+      reasonably adjusted; the Contractor must forward supporting documents within 15 days of the enactment. Adjustments are
+      restricted to direct transactions between the PMC and Contractor and bought-out items dispatched directly from sub-vendor''s
+      works to Site, are not paid separately if already covered by price adjustment provisions, and any tax increase beyond
+      the contractual completion period is to the Contractor''s account while decreases pass to the Owner. Change in Law excludes
+      changes in corporate income tax, withholding tax on income or dividends, and regulatory measures by the Appropriate
+      Commission.'
+    confidence: 0.9
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages:
+    - 148
+- field_path: core.commercial.late_payment_surcharge
+  section: commercial
+  value_type: text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:18:39.494667+00:00'
+  note: null
+  candidate:
+    id: 1f04ad46e3a44fe1888cd0b2d69887a3
+    value: null
+    confidence: 0.0
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages: []
+- field_path: core.commercial.termination_compensation
+  section: commercial
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: 'Termination for Owner''s convenience (GCC 25.1): the Owner pays the Contract Price attributable to supplies
+    executed up to termination, reasonable costs of removing equipment and repatriating personnel, amounts payable to sub-contractors
+    including cancellation charges, and costs of protecting the supplies and leaving the site clean and safe. Termination
+    for Contractor''s default (GCC 25.2): the Contractor is paid the Contract Price attributable to supplies executed, the
+    value of unused Plant on site and protection costs, less sums due to the Owner; if that sum plus the Owner''s cost of
+    completing exceeds the Contract Price, the Contractor is liable for the excess. Under GCC 22.2 the Contract Performance
+    Security is liable to forfeiture and the Owner may recover excess cost; under GCC 20.2 risk-and-cost execution may be
+    recovered irrespective of the LD cap.'
+  version_no: 1
+  evidence_pages:
+  - 120
+  - 123
+  - 126
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:18:53.347929+00:00'
+  note: null
+  candidate:
+    id: 78c918be4955483785228de5eb755393
+    value: 'Termination for Owner''s convenience (GCC 25.1): the Owner pays the Contract Price attributable to supplies executed
+      up to termination, reasonable costs of removing equipment and repatriating personnel, amounts payable to sub-contractors
+      including cancellation charges, and costs of protecting the supplies and leaving the site clean and safe. Termination
+      for Contractor''s default (GCC 25.2): the Contractor is paid the Contract Price attributable to supplies executed, the
+      value of unused Plant on site and protection costs, less sums due to the Owner; if that sum plus the Owner''s cost of
+      completing exceeds the Contract Price, the Contractor is liable for the excess. Under GCC 22.2 the Contract Performance
+      Security is liable to forfeiture and the Owner may recover excess cost; under GCC 20.2 risk-and-cost execution may be
+      recovered irrespective of the LD cap.'
+    confidence: 0.8
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages:
+    - 120
+    - 123
+    - 126
+- field_path: core.commercial.offtaker
+  section: commercial
+  value_type: text
+  required: false
+  decision: approved
+  final_value: Solar Energy Corporation of India Limited (SECI), as Owner/Employer under the EPC and O&M contract
+  version_no: 1
+  evidence_pages:
+  - 12
+  - 32
+  - 129
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:19:08.896001+00:00'
+  note: null
+  candidate:
+    id: f3f3451d0b0e48cebc837b8c0e16e537
+    value: Solar Energy Corporation of India Limited (SECI), as Owner/Employer under the EPC and O&M contract
+    confidence: 0.7
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages:
+    - 12
+    - 32
+    - 129
+- field_path: sector.power.common.tariff_structure
+  section: commercial
+  value_type: enum
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:19:12.731323+00:00'
+  note: null
+  candidate:
+    id: 211bcad1a0a1434e98773c22913838e0
+    value: null
+    confidence: 0.0
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages: []
+- field_path: sector.power.common.deemed_generation_clause
+  section: commercial
+  value_type: long_text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:19:13.608655+00:00'
+  note: null
+  candidate:
+    id: 2c29ce20bd5342afbe6fa56517f837f8
+    value: null
+    confidence: 0.0
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages: []
+- field_path: sector.power.common.deemed_generation_structured
+  section: commercial
+  value_type: record
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:19:15.097327+00:00'
+  note: null
+  candidate:
+    id: 938f007493454cac8f4a3434dbe40e31
+    value: null
+    confidence: 0.0
+    prompt_name: extract/commercial
+    prompt_version: v3
+    pages: []
+- field_path: core.penalties.delay_ld_per_mw_per_day_inr
+  section: penalties
+  value_type: money_inr
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:19:18.727107+00:00'
+  note: null
+  candidate:
+    id: 197530d9f0224f3aa89c35dda9dbcc6b
+    value: null
+    confidence: 0.0
+    prompt_name: extract/penalties
+    prompt_version: v3
+    pages: []
+- field_path: core.penalties.delay_ld_structured
+  section: penalties
+  value_type: record
+  required: false
+  decision: approved
+  final_value:
+    basis: pct_of_contract_price_per_week
+    pct_per_week: 0.5
+    rate_inr_per_mw_per_day: null
+    pbg_encashed_over_months: null
+    cap_pct_of_contract_price: 5
+  version_no: 1
+  evidence_pages:
+  - 119
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:19:47.526522+00:00'
+  note: null
+  candidate:
+    id: 9b6a2b233a8b43d9921caa70628063eb
+    value:
+    - 'basis: pct_of_contract_price_per_week'
+    - 'pct_per_week: 0.5'
+    - 'cap_pct_of_contract_price: 5'
+    confidence: 0.9
+    prompt_name: extract/penalties
+    prompt_version: v3
+    pages:
+    - 119
+- field_path: core.penalties.max_scod_extension_months
+  section: penalties
+  value_type: duration_months
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:20:22.100017+00:00'
+  note: null
+  candidate:
+    id: a48deb21007f41bebbea32876509f5c4
+    value: null
+    confidence: 0.0
+    prompt_name: extract/penalties
+    prompt_version: v3
+    pages: []
+- field_path: core.penalties.shortfall_penalty_basis
+  section: penalties
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: Shortfall in generation during the O&M period is recovered by encashing the Contract Performance Security (sized
+    at 10% x INR 3.60/kWh x Annual Generation in kWh); if encashed, the Contractor must restore the security within 03 months.
+    For functional/performance guarantee shortfall, the Owner may reject equipment, terminate, or accept after levy of liquidated
+    damages per SCC provisions (rate not in attached pages).
+  version_no: 1
+  evidence_pages:
+  - 140
+  - 205
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:20:37.149270+00:00'
+  note: null
+  candidate:
+    id: c23d638b35eb4328ad040890ac1c24d8
+    value: Shortfall in generation during the O&M period is recovered by encashing the Contract Performance Security (sized
+      at 10% x INR 3.60/kWh x Annual Generation in kWh); if encashed, the Contractor must restore the security within 03 months.
+      For functional/performance guarantee shortfall, the Owner may reject equipment, terminate, or accept after levy of liquidated
+      damages per SCC provisions (rate not in attached pages).
+    confidence: 0.4
+    prompt_name: extract/penalties
+    prompt_version: v3
+    pages:
+    - 140
+    - 205
+- field_path: core.penalties.shortfall_rules
+  section: penalties
+  value_type: record_list
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:20:40.969260+00:00'
+  note: null
+  candidate:
+    id: 8dd2340e5d084709adb2e1829b5891e8
+    value: null
+    confidence: 0.0
+    prompt_name: extract/penalties
+    prompt_version: v3
+    pages: []
+- field_path: core.penalties.pbg_encashment_triggers
+  section: penalties
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: 'Contract Performance Security may be forfeited/encashed for: (1) any default or failure of the Contractor
+    to comply with any Obligation under the Tender Document and/or Contract Agreement (entire CPS forfeited); (2) shortfall
+    in generation during the O&M period (security or part thereof encashed, to be restored within 03 months); (3) recovery
+    of any compensation or other sums payable by the Contractor to the Owner under the Contract; (4) corrupt/fraudulent/collusive/coercive
+    practices found during execution or during DLP/Warranty/O&M period, leading to termination and forfeiture of CPS.'
+  version_no: 1
+  evidence_pages:
+  - 51
+  - 123
+  - 205
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:21:30.117111+00:00'
+  note: null
+  candidate:
+    id: c18ad4fef95a43b79d501dba0a176137
+    value: 'Contract Performance Security may be forfeited/encashed for: (1) any default or failure of the Contractor to comply
+      with any Obligation under the Tender Document and/or Contract Agreement (entire CPS forfeited); (2) shortfall in generation
+      during the O&M period (security or part thereof encashed, to be restored within 03 months); (3) recovery of any compensation
+      or other sums payable by the Contractor to the Owner under the Contract; (4) corrupt/fraudulent/collusive/coercive practices
+      found during execution or during DLP/Warranty/O&M period, leading to termination and forfeiture of CPS.'
+    confidence: 0.8
+    prompt_name: extract/penalties
+    prompt_version: v3
+    pages:
+    - 51
+    - 123
+    - 205
+- field_path: core.penalties.termination_delay_months
+  section: penalties
+  value_type: duration_months
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:21:32.519354+00:00'
+  note: null
+  candidate:
+    id: f6b375c9f379485ca8e867249b9478fe
+    value: null
+    confidence: 0.0
+    prompt_name: extract/penalties
+    prompt_version: v3
+    pages: []
+- field_path: sector.power.common.connectivity_responsibility
+  section: connectivity_and_compliance
+  value_type: enum
+  required: false
+  decision: approved
+  final_value: shared
+  version_no: 1
+  evidence_pages:
+  - 207
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:22:20.828795+00:00'
+  note: null
+  candidate:
+    id: 2d81c47256ac4f109c7868e85eee2224
+    value: shared
+    confidence: 0.6
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages:
+    - 207
+- field_path: sector.power.common.gna_requirement
+  section: connectivity_and_compliance
+  value_type: long_text
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:22:24.692125+00:00'
+  note: null
+  candidate:
+    id: 21d19d6b13be4eb09bdc0624ec62da62
+    value: null
+    confidence: 0.0
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.ists_waiver_cutoff_date
+  section: connectivity_and_compliance
+  value_type: date
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:22:26.201633+00:00'
+  note: null
+  candidate:
+    id: 5f52f2c41db24a46ab3e278c0daba0c4
+    value: null
+    confidence: 0.0
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages: []
+- field_path: sector.power.common.line_to_pooling_station_responsibility
+  section: connectivity_and_compliance
+  value_type: text
+  required: false
+  decision: approved
+  final_value: 'Contractor: scope under GCC 32.1.1 includes the interconnecting transmission system including Right of Way
+    for the transmission line; related CTUIL/CEA permissions, ROW and all fees are also the Contractor''s per SCC.'
+  version_no: 1
+  evidence_pages:
+  - 132
+  - 207
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:22:47.693523+00:00'
+  note: null
+  candidate:
+    id: 96af478a91cf40b58359b477d2560421
+    value: 'Contractor: scope under GCC 32.1.1 includes the interconnecting transmission system including Right of Way for
+      the transmission line; related CTUIL/CEA permissions, ROW and all fees are also the Contractor''s per SCC.'
+    confidence: 0.8
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages:
+    - 132
+    - 207
+- field_path: sector.power.common.almm_required
+  section: connectivity_and_compliance
+  value_type: bool
+  required: false
+  decision: approved
+  final_value: true
+  version_no: 1
+  evidence_pages:
+  - 6
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:23:07.615675+00:00'
+  note: null
+  candidate:
+    id: 73fbb240fd394e60b63cad0a14026ae4
+    value: true
+    confidence: 0.95
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages:
+    - 6
+- field_path: sector.power.common.dcr_required
+  section: connectivity_and_compliance
+  value_type: bool
+  required: false
+  decision: approved
+  final_value: true
+  version_no: 1
+  evidence_pages:
+  - 6
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:23:16.623436+00:00'
+  note: null
+  candidate:
+    id: 5f1de8806f284c7e940b322a1e07316b
+    value: true
+    confidence: 0.95
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages:
+    - 6
+- field_path: sector.power.common.local_content_rule
+  section: connectivity_and_compliance
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: Solar modules and cells must be supplied through Class-I Local Suppliers only (local content equal to or more
+    than 50% as defined under the Make in India orders). Additionally, both cells and modules must be made in India; for crystalline
+    silicon, all process steps from wafers to final module assembly must be performed in India, modules from ALMM List-I manufacturers
+    using cells from ALMM List-II (MNRE Order No. 283/59/2024-GRID SOLAR).
+  version_no: 1
+  evidence_pages:
+  - 6
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:23:35.620546+00:00'
+  note: null
+  candidate:
+    id: e1b19bd677694d6faeb7153639ec142d
+    value: Solar modules and cells must be supplied through Class-I Local Suppliers only (local content equal to or more than
+      50% as defined under the Make in India orders). Additionally, both cells and modules must be made in India; for crystalline
+      silicon, all process steps from wafers to final module assembly must be performed in India, modules from ALMM List-I
+      manufacturers using cells from ALMM List-II (MNRE Order No. 283/59/2024-GRID SOLAR).
+    confidence: 0.85
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages:
+    - 6
+- field_path: sector.power.common.land_responsibility
+  section: connectivity_and_compliance
+  value_type: text
+  required: false
+  decision: approved
+  final_value: Project land is identified/provided by the Owner; the Contractor grades/levels it. Owner at its discretion
+    makes land available near site for Contractor's temporary field office, godowns and workshops; no land is provided for
+    residential accommodation.
+  version_no: 1
+  evidence_pages:
+  - 106
+  - 132
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:24:42.514970+00:00'
+  note: null
+  candidate:
+    id: 7b02507f12574c9aba8b203c4b8a5e82
+    value: Project land is identified/provided by the Owner; the Contractor grades/levels it. Owner at its discretion makes
+      land available near site for Contractor's temporary field office, godowns and workshops; no land is provided for residential
+      accommodation.
+    confidence: 0.5
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages:
+    - 106
+    - 132
+- field_path: sector.power.common.clearances_responsibility
+  section: connectivity_and_compliance
+  value_type: text
+  required: false
+  decision: approved
+  final_value: Contractor obtains all permits, approvals and licenses (on behalf of and in the Owner's name for plant set-up/operation;
+    in its own name for contract performance incl. ROW and transmission lines), coordinates with state/central agencies, and
+    seeks GOI exemptions; Owner only takes the connectivity permission and supplies Owner-side documents. Per SCC, all fees
+    including statutory and supervision charges are borne by the Contractor.
+  version_no: 1
+  evidence_pages:
+  - 132
+  - 133
+  - 207
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:25:35.818086+00:00'
+  note: null
+  candidate:
+    id: bc341a190e734f879a915dd69346cf62
+    value: Contractor obtains all permits, approvals and licenses (on behalf of and in the Owner's name for plant set-up/operation;
+      in its own name for contract performance incl. ROW and transmission lines), coordinates with state/central agencies,
+      and seeks GOI exemptions; Owner only takes the connectivity permission and supplies Owner-side documents. Per SCC, all
+      fees including statutory and supervision charges are borne by the Contractor.
+    confidence: 0.85
+    prompt_name: extract/connectivity_and_compliance
+    prompt_version: v1
+    pages:
+    - 132
+    - 133
+    - 207
+- field_path: sector.power.common.source_mix_rules
+  section: supply_sources
+  value_type: record_list
+  required: false
+  decision: null
+  final_value: null
+  version_no: null
+  evidence_pages: []
+  reviewer: null
+  decided_at: null
+  note: null
+  candidate: null
+- field_path: sector.power.common.bess_charging_rule
+  section: supply_sources
+  value_type: record
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:25:41.756021+00:00'
+  note: null
+  candidate:
+    id: 5412ae432ccb40a98109de2ebe8799b1
+    value: null
+    confidence: 0.0
+    prompt_name: extract/supply_sources
+    prompt_version: v1
+    pages: []
+- field_path: core.documents.required_documents
+  section: documents
+  value_type: list_text
+  required: false
+  decision: approved
+  final_value:
+  - Covering Letter on Bidder's Letterhead (in Original) as per Format-1
+  - Bidder's General Information as per Format-2
+  - EMD in form of BG/POI/Surety Bond in original as per Format-3/4/5 (in case of MSE, a valid UDYAM registration certificate)
+  - Copy of Board Resolution of the Company
+  - Power of Attorney for authorized signatory on non-judicial stamp paper as per Format-6
+  - Passphrase to decrypt the Bid-Parts (Techno-Commercial and Financial) in separate sealed envelopes
+  - No Deviation Confirmation as per Format-7
+  - Bidder's Declaration regarding Banning, Liquidation, court receivership etc. as per Format-8
+  - Declaration regarding procurement of Solar Inverters & Solar Modules from class-I local suppliers as per Format-9
+  - Bidders Experience as per Format-10
+  - Disclosure for ALMM I and II compliance as per Format-11
+  - Chartered Accountant certificate for financial capability of the bidder as per Format-12
+  - Restriction on Procurement from Certain Countries as per Format-13
+  - E-Banking Format as per Format-14
+  - Shareholding Certificate as per Format-15
+  - Joint Undertaking by the Indian Bidder and the Firm as per Format-16
+  - Integrity Pact as per Format-17 (signed and sealed)
+  - 'In case of Consortium/JV: Consortium/JV Agreements as per Format-18/20 and Power of Attorney as per Format-19/21'
+  - Electronic Form of the bid for First Envelope (Techno-Commercial) on ISN-ETS portal
+  - Certificate of Incorporation, Article of Association and Memorandum of Association
+  - Documents in accordance with the Qualifying Requirements (QR) establishing qualification
+  - Documents showing annual turnover for the required financial years (annual reports, profit and loss account, net worth
+    etc.) with information as per Format F-10
+  - 'Tender Document: first and last pages of original tender and all pages of amendments, sealed and signed/digitally signed
+    by Authorized Signatory'
+  - Electronic Form of the bid for Second Envelope (Price Part) on ISN-ETS portal
+  - Main Price Bid comprising Schedule No 1, 2, 3 & 4 of the Price Schedule (Section VIII, SOR), duly completed, sealed and
+    signed
+  - Tender Processing Fee (non-refundable) via NEFT/RTGS or Demand Draft/Banker's Cheque, submitted along with the bid
+  - Copy of GST Registration Certificate or GST provisional certificate
+  - MSE registration certificate (DIC/NSIC/Udyog Aadhaar) for exemption from Tender Processing Fee and EMD, if applicable
+  version_no: 1
+  evidence_pages:
+  - 22
+  - 24
+  - 26
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:26:07.977300+00:00'
+  note: null
+  candidate:
+    id: c9f3412f75c8454cb8c4ef09cd4f008b
+    value:
+    - Covering Letter on Bidder's Letterhead (in Original) as per Format-1
+    - Bidder's General Information as per Format-2
+    - EMD in form of BG/POI/Surety Bond in original as per Format-3/4/5 (in case of MSE, a valid UDYAM registration certificate)
+    - Copy of Board Resolution of the Company
+    - Power of Attorney for authorized signatory on non-judicial stamp paper as per Format-6
+    - Passphrase to decrypt the Bid-Parts (Techno-Commercial and Financial) in separate sealed envelopes
+    - No Deviation Confirmation as per Format-7
+    - Bidder's Declaration regarding Banning, Liquidation, court receivership etc. as per Format-8
+    - Declaration regarding procurement of Solar Inverters & Solar Modules from class-I local suppliers as per Format-9
+    - Bidders Experience as per Format-10
+    - Disclosure for ALMM I and II compliance as per Format-11
+    - Chartered Accountant certificate for financial capability of the bidder as per Format-12
+    - Restriction on Procurement from Certain Countries as per Format-13
+    - E-Banking Format as per Format-14
+    - Shareholding Certificate as per Format-15
+    - Joint Undertaking by the Indian Bidder and the Firm as per Format-16
+    - Integrity Pact as per Format-17 (signed and sealed)
+    - 'In case of Consortium/JV: Consortium/JV Agreements as per Format-18/20 and Power of Attorney as per Format-19/21'
+    - Electronic Form of the bid for First Envelope (Techno-Commercial) on ISN-ETS portal
+    - Certificate of Incorporation, Article of Association and Memorandum of Association
+    - Documents in accordance with the Qualifying Requirements (QR) establishing qualification
+    - Documents showing annual turnover for the required financial years (annual reports, profit and loss account, net worth
+      etc.) with information as per Format F-10
+    - 'Tender Document: first and last pages of original tender and all pages of amendments, sealed and signed/digitally signed
+      by Authorized Signatory'
+    - Electronic Form of the bid for Second Envelope (Price Part) on ISN-ETS portal
+    - Main Price Bid comprising Schedule No 1, 2, 3 & 4 of the Price Schedule (Section VIII, SOR), duly completed, sealed
+      and signed
+    - Tender Processing Fee (non-refundable) via NEFT/RTGS or Demand Draft/Banker's Cheque, submitted along with the bid
+    - Copy of GST Registration Certificate or GST provisional certificate
+    - MSE registration certificate (DIC/NSIC/Udyog Aadhaar) for exemption from Tender Processing Fee and EMD, if applicable
+    confidence: 0.85
+    prompt_name: extract/documents
+    prompt_version: v1
+    pages:
+    - 22
+    - 24
+    - 26
+- field_path: core.documents.annexure_formats
+  section: documents
+  value_type: list_text
+  required: false
+  decision: approved
+  final_value:
+  - 'F-1: Covering Letter'
+  - 'F-2: Bidder''s General Information'
+  - 'F-3: Proforma of "Bank Guarantee" for "Earnest Money Deposit (EMD)"'
+  - 'F-4: Format of Payment on Order Instrument in lieu of BG towards EMD'
+  - 'F-5: Format of Insurance Surety Bond towards EMD'
+  - 'F-6: Power of Attorney for Bidding Company'
+  - 'F-7: No Deviation Confirmation'
+  - 'F-8: Declaration regarding Banning and Liquidation, Court Receivership etc.'
+  - 'F-9: Declaration regarding the Procurement of Solar Inverters & Solar Modules from Class I Local Suppliers'
+  - 'F-10: Bidder''s Experience'
+  - 'F-11: Format for Disclosure for ALMM I and II Compliance'
+  - 'F-12: Format of Chartered Accountant Certificate for Financial Capability of the Bidder'
+  - 'F-13: Format for "Restriction on Procurement from Certain Countries"'
+  - 'F-14: E-Banking Format'
+  - 'F-15: Shareholding Certificate'
+  - 'F-16: Form of Undertaking by Bidder and the Firm'
+  - 'F-17: Integrity Pact'
+  - 'F-18: Format for Joint Venture Agreement'
+  - 'F-19: Format for Power of Attorney for Joint Venture Agreement'
+  - 'F-20: Format for Consortium Agreement'
+  - 'F-21: Format for Power of Attorney for Consortium Agreement'
+  - 'F-22: Format for Contract Performance Bank Security'
+  - 'F-23: Format of Payment on Order Instrument in lieu of BG'
+  - 'Annexure to Bid Data Sheet (BDS): Qualifying Requirements'
+  - 'Annexure-A: Undertaking on bug and malware-free software/firmware (cyber security)'
+  version_no: 1
+  evidence_pages:
+  - 217
+  - 285
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:27:05.644103+00:00'
+  note: null
+  candidate:
+    id: c6c2efe7339c460ea405923f2106d396
+    value:
+    - 'F-1: Covering Letter'
+    - 'F-2: Bidder''s General Information'
+    - 'F-3: Proforma of "Bank Guarantee" for "Earnest Money Deposit (EMD)"'
+    - 'F-4: Format of Payment on Order Instrument in lieu of BG towards EMD'
+    - 'F-5: Format of Insurance Surety Bond towards EMD'
+    - 'F-6: Power of Attorney for Bidding Company'
+    - 'F-7: No Deviation Confirmation'
+    - 'F-8: Declaration regarding Banning and Liquidation, Court Receivership etc.'
+    - 'F-9: Declaration regarding the Procurement of Solar Inverters & Solar Modules from Class I Local Suppliers'
+    - 'F-10: Bidder''s Experience'
+    - 'F-11: Format for Disclosure for ALMM I and II Compliance'
+    - 'F-12: Format of Chartered Accountant Certificate for Financial Capability of the Bidder'
+    - 'F-13: Format for "Restriction on Procurement from Certain Countries"'
+    - 'F-14: E-Banking Format'
+    - 'F-15: Shareholding Certificate'
+    - 'F-16: Form of Undertaking by Bidder and the Firm'
+    - 'F-17: Integrity Pact'
+    - 'F-18: Format for Joint Venture Agreement'
+    - 'F-19: Format for Power of Attorney for Joint Venture Agreement'
+    - 'F-20: Format for Consortium Agreement'
+    - 'F-21: Format for Power of Attorney for Consortium Agreement'
+    - 'F-22: Format for Contract Performance Bank Security'
+    - 'F-23: Format of Payment on Order Instrument in lieu of BG'
+    - 'Annexure to Bid Data Sheet (BDS): Qualifying Requirements'
+    - 'Annexure-A: Undertaking on bug and malware-free software/firmware (cyber security)'
+    confidence: 0.85
+    prompt_name: extract/documents
+    prompt_version: v1
+    pages:
+    - 217
+    - 285
+- field_path: core.documents.draft_agreements_referenced
+  section: documents
+  value_type: list_text
+  required: false
+  decision: approved
+  final_value:
+  - Contract Agreement (to be executed with Owner within 30 days of Notification of Award on non-judicial stamp paper)
+  - Integrity Pact (Format-17, to be signed and sealed by bidder; forms part of Owner Contracts)
+  - Consortium/JV Agreement (Format-18/20, in case of Consortium/JV)
+  version_no: 1
+  evidence_pages:
+  - 24
+  - 45
+  - 46
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:28:01.740830+00:00'
+  note: null
+  candidate:
+    id: ae46a877ae5449bb9ecb73108d7ae7f8
+    value:
+    - Contract Agreement (to be executed with Owner within 30 days of Notification of Award on non-judicial stamp paper)
+    - Integrity Pact (Format-17, to be signed and sealed by bidder; forms part of Owner Contracts)
+    - Consortium/JV Agreement (Format-18/20, in case of Consortium/JV)
+    confidence: 0.75
+    prompt_name: extract/documents
+    prompt_version: v1
+    pages:
+    - 24
+    - 45
+    - 46
+- field_path: sector.power.epc.scope_matrix
+  section: epc_scope
+  value_type: record_list
+  required: false
+  decision: approved
+  final_value:
+  - om: 'yes'
+    item: Solar PV Modules
+    supply: 'no'
+    erection: 'yes'
+    commissioning: 'yes'
+  - om: 'yes'
+    item: Module Mounting Structure (MMS)
+    supply: 'yes'
+    erection: 'yes'
+    commissioning: 'yes'
+  - om: 'yes'
+    item: Power Conditioning Units (Central / String Inverter)
+    supply: 'yes'
+    erection: 'yes'
+    commissioning: 'yes'
+  - om: 'yes'
+    item: Solar and DC cables (PV Modules to SMB / PCU)
+    supply: 'yes'
+    erection: 'yes'
+    commissioning: 'yes'
+  - om: 'yes'
+    item: Inverter duty transformers incl. fire protection
+    supply: 'yes'
+    erection: 'yes'
+    commissioning: 'yes'
+  - om: 'yes'
+    item: 33 kV Switchgear panels / outdoor yard
+    supply: 'yes'
+    erection: 'yes'
+    commissioning: 'yes'
+  - om: 'yes'
+    item: 33/132 kV Plant Pooling Substation (80 MVA)
+    supply: 'yes'
+    erection: 'yes'
+    commissioning: 'yes'
+  - om: 'yes'
+    item: 132 kV transmission line to Interconnecting Substation incl. OPGW
+    supply: 'yes'
+    erection: 'yes'
+    commissioning: 'yes'
+  - om: 'yes'
+    item: SCADA and Power Plant Controller
+    supply: 'yes'
+    erection: 'yes'
+    commissioning: 'yes'
+  - om: 'yes'
+    item: Weather Monitoring Station / AWS
+    supply: 'yes'
+    erection: 'yes'
+    commissioning: 'yes'
+  - om: 'yes'
+    item: Civil works (survey, grading, foundations, roads, drainage, buildings, fencing)
+    supply: 'yes'
+    erection: 'yes'
+    commissioning: 'yes'
+  - om: 'yes'
+    item: Comprehensive O&M incl. security for 5 years
+    supply: 'no'
+    erection: 'no'
+    commissioning: 'no'
+  version_no: 1
+  evidence_pages:
+  - 7
+  - 11
+  - 12
+  - 13
+  - 14
+  - 15
+  - 16
+  - 17
+  - 20
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:32:33.850163+00:00'
+  note: null
+  candidate:
+    id: 7c7c0d4be96843bdb09943add0ffdd8c
+    value:
+    - 'item: Solar PV Modules | supply: no | erection: yes | commissioning: yes | om: yes'
+    - 'item: Module Mounting Structure (MMS) | supply: yes | erection: yes | commissioning: yes | om: yes'
+    - 'item: Power Conditioning Units (Central / String Inverter) | supply: yes | erection: yes | commissioning: yes | om:
+      yes'
+    - 'item: Solar and DC cables (PV Modules to SMB / PCU) | supply: yes | erection: yes | commissioning: yes | om: yes'
+    - 'item: Inverter duty transformers incl. fire protection | supply: yes | erection: yes | commissioning: yes | om: yes'
+    - 'item: 33 kV Switchgear panels / outdoor yard | supply: yes | erection: yes | commissioning: yes | om: yes'
+    - 'item: 33/132 kV Plant Pooling Substation (80 MVA) | supply: yes | erection: yes | commissioning: yes | om: yes'
+    - 'item: 132 kV transmission line to Interconnecting Substation incl. OPGW | supply: yes | erection: yes | commissioning:
+      yes | om: yes'
+    - 'item: SCADA and Power Plant Controller | supply: yes | erection: yes | commissioning: yes | om: yes'
+    - 'item: Weather Monitoring Station / AWS | supply: yes | erection: yes | commissioning: yes | om: yes'
+    - 'item: Civil works (survey, grading, foundations, roads, drainage, buildings, fencing) | supply: yes | erection: yes
+      | commissioning: yes | om: yes'
+    - 'item: Comprehensive O&M incl. security for 5 years | supply: no | erection: no | commissioning: no | om: yes'
+    confidence: 0.7
+    prompt_name: extract/epc_scope
+    prompt_version: v2
+    pages:
+    - 7
+    - 11
+    - 12
+    - 13
+    - 14
+    - 15
+    - 16
+    - 17
+    - 20
+- field_path: sector.power.epc.boq_structure
+  section: epc_scope
+  value_type: text
+  required: false
+  decision: approved
+  final_value: No item-rate bill of quantities; the bidder quotes a lumpsum turnkey Total Contract Price with a Schedule of
+    Breakup of Lumpsum Prices used only for Evaluated Bid Value assessment and progressive payments. The Contractor's obligation
+    is not limited to the quantities indicated in the breakup and total payment is restricted to the lumpsum Contract Price.
+  version_no: 1
+  evidence_pages:
+  - 302
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:32:49.094197+00:00'
+  note: null
+  candidate:
+    id: 909ed8e62e604dd6a2dd7e4a3f7cb86a
+    value: No item-rate bill of quantities; the bidder quotes a lumpsum turnkey Total Contract Price with a Schedule of Breakup
+      of Lumpsum Prices used only for Evaluated Bid Value assessment and progressive payments. The Contractor's obligation
+      is not limited to the quantities indicated in the breakup and total payment is restricted to the lumpsum Contract Price.
+    confidence: 0.5
+    prompt_name: extract/epc_scope
+    prompt_version: v2
+    pages:
+    - 302
+- field_path: sector.power.epc.price_schedule_structure
+  section: epc_scope
+  value_type: text
+  required: false
+  decision: approved
+  final_value: 'Schedule No. 1: Plant and Mandatory Spare Parts Supplied from Within the Employer''s Country (inclusive of
+    GST); Schedule No. 2: Freight, Design, Civil & Installation and Other Services (inclusive of GST); plus yearly absolute
+    O&M charges inclusive of GST for five years (OM-1 to OM-5), to be quoted as minimum 1.5% per year (7.5% for five years)
+    of the total quoted price of Schedules 1 and 2.'
+  version_no: 1
+  evidence_pages:
+  - 212
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:33:37.289657+00:00'
+  note: null
+  candidate:
+    id: 259762b8345546bd91bd82a0d5d74d7c
+    value: 'Schedule No. 1: Plant and Mandatory Spare Parts Supplied from Within the Employer''s Country (inclusive of GST);
+      Schedule No. 2: Freight, Design, Civil & Installation and Other Services (inclusive of GST); plus yearly absolute O&M
+      charges inclusive of GST for five years (OM-1 to OM-5), to be quoted as minimum 1.5% per year (7.5% for five years)
+      of the total quoted price of Schedules 1 and 2.'
+    confidence: 0.75
+    prompt_name: extract/epc_scope
+    prompt_version: v2
+    pages:
+    - 212
+- field_path: sector.power.epc.supply_service_split
+  section: epc_scope
+  value_type: bool
+  required: false
+  decision: approved
+  final_value: true
+  version_no: 1
+  evidence_pages:
+  - 211
+  - 212
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:34:13.988904+00:00'
+  note: null
+  candidate:
+    id: 3c64162c0b5e46c2a1b5a70710655149
+    value: true
+    confidence: 0.8
+    prompt_name: extract/epc_scope
+    prompt_version: v2
+    pages:
+    - 211
+    - 212
+- field_path: sector.power.epc.milestone_payment_schedule
+  section: epc_scope
+  value_type: long_text
+  required: false
+  decision: approved
+  final_value: 'Civil & Allied works portion of the First Contract: 85% of the total price of Civil Works paid progressively
+    on Project Manager/EIC certification of work completed/milestones achieved after quality check clearance; 10% against
+    successful commissioning of the plant pro rata for capacity commissioned; final 5% against submission of a BG of equivalent
+    amount and Operational Acceptance pursuant to successful O&M Target Generation Test including all as-built drawings and
+    O&M manual (BG valid 18 months from issuance). Second Contract (O&M): payment released quarterly at the end of every quarter
+    for each year for 5 years (OM-1 to OM-5), with O&M penalties deducted from quarterly payments first and then from the
+    Contract Performance Security. Any shortfall of O&M charges below 7.5% is retained from Schedule No. 1 payments on receipt
+    of equipment and paid pro rata on completion of O&M.'
+  version_no: 1
+  evidence_pages:
+  - 211
+  - 212
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:34:27.225228+00:00'
+  note: null
+  candidate:
+    id: 6ef43cf900444248a3e666ec10e7f444
+    value: 'Civil & Allied works portion of the First Contract: 85% of the total price of Civil Works paid progressively on
+      Project Manager/EIC certification of work completed/milestones achieved after quality check clearance; 10% against successful
+      commissioning of the plant pro rata for capacity commissioned; final 5% against submission of a BG of equivalent amount
+      and Operational Acceptance pursuant to successful O&M Target Generation Test including all as-built drawings and O&M
+      manual (BG valid 18 months from issuance). Second Contract (O&M): payment released quarterly at the end of every quarter
+      for each year for 5 years (OM-1 to OM-5), with O&M penalties deducted from quarterly payments first and then from the
+      Contract Performance Security. Any shortfall of O&M charges below 7.5% is retained from Schedule No. 1 payments on receipt
+      of equipment and paid pro rata on completion of O&M.'
+    confidence: 0.55
+    prompt_name: extract/epc_scope
+    prompt_version: v2
+    pages:
+    - 211
+    - 212
+- field_path: sector.power.epc.retention_percent
+  section: epc_scope
+  value_type: percent
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:34:32.055306+00:00'
+  note: null
+  candidate:
+    id: 24d31355b4844313b44645d43598ade4
+    value: null
+    confidence: 0.0
+    prompt_name: extract/epc_scope
+    prompt_version: v2
+    pages: []
+- field_path: sector.power.epc.defect_liability_months
+  section: epc_scope
+  value_type: duration_months
+  required: false
+  decision: approved
+  final_value: 12
+  version_no: 1
+  evidence_pages:
+  - 162
+  - 164
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:34:59.082771+00:00'
+  note: null
+  candidate:
+    id: b91b1ace774f4b5d96a3d4d0669cfaf0
+    value: 12
+    confidence: 0.9
+    prompt_name: extract/epc_scope
+    prompt_version: v2
+    pages:
+    - 162
+    - 164
+- field_path: sector.power.epc.performance_ratio_guarantee_percent
+  section: epc_scope
+  value_type: percent
+  required: false
+  decision: not_in_document
+  final_value: null
+  version_no: 1
+  evidence_pages: []
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:35:02.456989+00:00'
+  note: null
+  candidate:
+    id: 44e1bb7faadf442288ef434530ca4701
+    value: null
+    confidence: 0.0
+    prompt_name: extract/epc_scope
+    prompt_version: v2
+    pages: []
+- field_path: sector.power.epc.ld_delay
+  section: epc_scope
+  value_type: text
+  required: false
+  decision: approved
+  final_value: 0.5% per week of the Contract Price for the whole of the facilities, subject to a maximum of 5% of the Contract
+    Price for the whole of the facilities (GCC 20.1); on reaching the maximum LD the Owner may terminate or get the work executed
+    at Contractor's risk and cost.
+  version_no: 1
+  evidence_pages:
+  - 119
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:44:06.724589+00:00'
+  note: null
+  candidate:
+    id: bc4e92575c1644e0bb8377d7a9b27481
+    value: 0.5% per week of the Contract Price for the whole of the facilities, subject to a maximum of 5% of the Contract
+      Price for the whole of the facilities (GCC 20.1); on reaching the maximum LD the Owner may terminate or get the work
+      executed at Contractor's risk and cost.
+    confidence: 0.9
+    prompt_name: extract/epc_scope
+    prompt_version: v2
+    pages:
+    - 119
+- field_path: sector.power.epc.ld_performance
+  section: epc_scope
+  value_type: text
+  required: false
+  decision: approved
+  final_value: 'OTGT shortfall (OTF<1): LD equal to the NPV of the estimated shortfall in cash flow over 25 years at a tariff
+    of Rs. 3.60 per kWh and discount rate of 8.39%, cumulative LD limited to the ''operation acceptance'' milestone amount.
+    During O&M: annual LD = shortfall (GTN - GN) x Rs 3.60 per unit, subject to a maximum of 5% of the revenue from the Target
+    Generation GTN at the ceiling tariff of Rs 3.60/unit; recovery first from O&M payments up to 25% of Annual Contract Value,
+    balance from Bank Guarantee.'
+  version_no: 1
+  evidence_pages:
+  - 281
+  - 336
+  - 337
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:44:08.238718+00:00'
+  note: null
+  candidate:
+    id: 46459e6a0272456baf8c54fc0ee6c27d
+    value: 'OTGT shortfall (OTF<1): LD equal to the NPV of the estimated shortfall in cash flow over 25 years at a tariff
+      of Rs. 3.60 per kWh and discount rate of 8.39%, cumulative LD limited to the ''operation acceptance'' milestone amount.
+      During O&M: annual LD = shortfall (GTN - GN) x Rs 3.60 per unit, subject to a maximum of 5% of the revenue from the
+      Target Generation GTN at the ceiling tariff of Rs 3.60/unit; recovery first from O&M payments up to 25% of Annual Contract
+      Value, balance from Bank Guarantee.'
+    confidence: 0.85
+    prompt_name: extract/epc_scope
+    prompt_version: v2
+    pages:
+    - 281
+    - 336
+    - 337
+- field_path: sector.power.epc.warranty_terms
+  section: epc_scope
+  value_type: text
+  required: false
+  decision: approved
+  final_value: 'Equipment warranties against material/manufacturing defects and workmanship from date of supply: transformers
+    5 years; HT panel 2 years; AC cables 1 year; SVG 5 years; Harmonic Filter components 5 years; LT switchgear 1 year; UPS
+    5 years and batteries 2 years; batteries and battery charger 2 years; PMU system 5 years; control and relay panel 5 years;
+    substation equipment 2 years; luminaires 2 years. Under O&M, all repairs/replacements warranted for the entire O&M term;
+    latent defects within 2 years of O&M commencement covered for 5 years after warranty expiry.'
+  version_no: 1
+  evidence_pages:
+  - 43
+  - 54
+  - 56
+  - 60
+  - 67
+  - 111
+  - 306
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:44:11.288462+00:00'
+  note: null
+  candidate:
+    id: 758f4a56617d4d109b30b9d84295a68f
+    value: 'Equipment warranties against material/manufacturing defects and workmanship from date of supply: transformers
+      5 years; HT panel 2 years; AC cables 1 year; SVG 5 years; Harmonic Filter components 5 years; LT switchgear 1 year;
+      UPS 5 years and batteries 2 years; batteries and battery charger 2 years; PMU system 5 years; control and relay panel
+      5 years; substation equipment 2 years; luminaires 2 years. Under O&M, all repairs/replacements warranted for the entire
+      O&M term; latent defects within 2 years of O&M commencement covered for 5 years after warranty expiry.'
+    confidence: 0.85
+    prompt_name: extract/epc_scope
+    prompt_version: v2
+    pages:
+    - 43
+    - 54
+    - 56
+    - 60
+    - 67
+    - 111
+    - 306
+- field_path: sector.power.epc.drawing_approval_cycle
+  section: epc_scope
+  value_type: text
+  required: false
+  decision: approved
+  final_value: Contractor must incorporate modifications/corrections notified by the Engineer-in-Charge/Project Manager and
+    resubmit drawings for approval within the next 7 working days; drawings requiring approval must be approved before manufacture/construction/fabrication.
+    The Project Manager's own review period (GCC 53.3.2 onwards) is on a page not attached.
+  version_no: 1
+  evidence_pages:
+  - 151
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:44:13.779256+00:00'
+  note: null
+  candidate:
+    id: 62d02a96c3444d4bbdd3351cb888306d
+    value: Contractor must incorporate modifications/corrections notified by the Engineer-in-Charge/Project Manager and resubmit
+      drawings for approval within the next 7 working days; drawings requiring approval must be approved before manufacture/construction/fabrication.
+      The Project Manager's own review period (GCC 53.3.2 onwards) is on a page not attached.
+    confidence: 0.4
+    prompt_name: extract/epc_scope
+    prompt_version: v2
+    pages:
+    - 151
+- field_path: sector.power.epc.taxes_duties_treatment
+  section: epc_scope
+  value_type: text
+  required: false
+  decision: approved
+  final_value: Quoted prices must clearly indicate GST components (Centre and state) as per the SOR formats; prices are firm
+    and fixed until completion. Any variation in rates of taxes/duties/levies, or new/abolished taxes during performance (Change
+    in Law, events from 7 days prior to bid submission deadline), results in an equitable adjustment of the Contract Price,
+    computed against the base taxes and duties column of the SOR/PS. Bids are evaluated on total project cost including GST.
+  version_no: 1
+  evidence_pages:
+  - 25
+  - 37
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:44:15.947281+00:00'
+  note: null
+  candidate:
+    id: ea120ae58d9f4401b3a4aad15622da01
+    value: Quoted prices must clearly indicate GST components (Centre and state) as per the SOR formats; prices are firm and
+      fixed until completion. Any variation in rates of taxes/duties/levies, or new/abolished taxes during performance (Change
+      in Law, events from 7 days prior to bid submission deadline), results in an equitable adjustment of the Contract Price,
+      computed against the base taxes and duties column of the SOR/PS. Bids are evaluated on total project cost including
+      GST.
+    confidence: 0.75
+    prompt_name: extract/epc_scope
+    prompt_version: v2
+    pages:
+    - 25
+    - 37
+- field_path: sector.power.epc.om_period_months
+  section: epc_scope
+  value_type: duration_months
+  required: false
+  decision: approved
+  final_value: 60
+  version_no: 1
+  evidence_pages:
+  - 8
+  - 22
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:44:22.693775+00:00'
+  note: null
+  candidate:
+    id: dad886ab2d084ee098d5ce4362876f9d
+    value: 60
+    confidence: 0.95
+    prompt_name: extract/epc_scope
+    prompt_version: v2
+    pages:
+    - 8
+    - 22
+- field_path: sector.power.epc.milestone_payment_structured
+  section: epc_scope
+  value_type: record_list
+  required: false
+  decision: approved
+  final_value:
+  - against: certification by Project Manager/Engineer-in-Charge of quantum of work completed/milestones achieved after clearance
+      of quality check points
+    contract: civil
+    milestone: Civil works progress payment
+    bg_required: null
+    pct_of_contract_price: 85
+  - against: successful commissioning of the plant pro rata for capacity commissioned
+    contract: civil
+    milestone: Civil works on commissioning
+    bg_required: null
+    pct_of_contract_price: 10
+  - against: submission of BG of equivalent amount and Operational Acceptance pursuant to successful O&M Target Generation
+      Test including all as-built drawings and O&M manual
+    contract: civil
+    milestone: Civil works final payment
+    bg_required: true
+    pct_of_contract_price: 5
+  - against: end of every quarter for each year of O&M
+    contract: om
+    milestone: Quarterly O&M payments for 5 years (OM-1 to OM-5)
+    bg_required: null
+    pct_of_contract_price: null
+  version_no: 1
+  evidence_pages:
+  - 211
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:52:28.240048+00:00'
+  note: null
+  candidate:
+    id: a5fa3c842bf44a3d86c13dc9a8fef144
+    value:
+    - 'milestone: Civil works progress payment | contract: civil | pct_of_contract_price: 85 | against: certification by Project
+      Manager/Engineer-in-Charge of quantum of work completed/milestones achieved after clearance of quality check points'
+    - 'milestone: Civil works on commissioning | contract: civil | pct_of_contract_price: 10 | against: successful commissioning
+      of the plant pro rata for capacity commissioned'
+    - 'milestone: Civil works final payment | contract: civil | pct_of_contract_price: 5 | against: submission of BG of equivalent
+      amount and Operational Acceptance pursuant to successful O&M Target Generation Test including all as-built drawings
+      and O&M manual | bg_required: yes'
+    - 'milestone: Quarterly O&M payments for 5 years (OM-1 to OM-5) | contract: om | against: end of every quarter for each
+      year of O&M'
+    confidence: 0.55
+    prompt_name: extract/epc_scope
+    prompt_version: v2
+    pages:
+    - 211
+- field_path: sector.power.epc.ld_performance_structured
+  section: epc_scope
+  value_type: record
+  required: false
+  decision: approved
+  final_value:
+    metric: generation
+    cap_basis: revenue from the Target Generation (GTN) at ceiling tariff Rs 3.60 per unit; OTGT LD additionally capped at
+      the operation acceptance milestone amount
+    horizon_years: 25
+    annual_cap_pct: 5
+    discount_rate_pct: 8.39
+    ld_tariff_inr_per_kwh: 3.6
+  version_no: 1
+  evidence_pages:
+  - 281
+  - 336
+  reviewer: venture@aayuda.energy
+  decided_at: '2026-10-15T05:52:30.291547+00:00'
+  note: null
+  candidate:
+    id: 3dc03fb49c644f5ababa24b9897922a1
+    value:
+    - 'metric: generation'
+    - 'ld_tariff_inr_per_kwh: 3.60'
+    - 'discount_rate_pct: 8.39'
+    - 'horizon_years: 25'
+    - 'annual_cap_pct: 5'
+    - 'cap_basis: revenue from the Target Generation (GTN) at ceiling tariff Rs 3.60 per unit; OTGT LD additionally capped
+      at the operation acceptance milestone amount'
+    confidence: 0.8
+    prompt_name: extract/epc_scope
+    prompt_version: v2
+    pages:
+    - 281
+    - 336

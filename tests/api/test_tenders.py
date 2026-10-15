@@ -311,7 +311,7 @@ def test_full_tender_flow_with_an_amendment_through_the_http_api(
 def test_schema_endpoint_returns_the_compiled_field_list(client: TestClient) -> None:
     body = client.get("/api/v1/schemas/tender/fdre").json()
     assert (body["tender_type"], body["pack"]) == ("fdre", "power")
-    assert (body["schema_name"], body["schema_version"]) == ("tender.fdre", "v3")
+    assert (body["schema_name"], body["schema_version"]) == ("tender.fdre", "v4")
     assert [section["name"] for section in body["sections"]][-1] == "fdre_profile"
     assert body["sections"][0] == {
         "derived": False,

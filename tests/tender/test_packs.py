@@ -87,15 +87,16 @@ def test_schemas_register_with_core_as_tender_type_v2_once(catalog: Catalog) -> 
     names = set(registry.names())
     # Every type at the current version; the earlier versions too, for the types that
     # existed then (re_rtc arrived with v3).
-    assert {(f"tender.{name}", "v3") for name in TENDER_TYPES} <= names
+    assert {(f"tender.{name}", "v4") for name in TENDER_TYPES} <= names
     assert {
         (f"tender.{name}", version)
         for name in TENDER_TYPES
         if name != "re_rtc"
-        for version in ("v1", "v2")
+        for version in ("v1", "v2", "v3")
     } <= names
+    assert ("tender.re_rtc", "v3") in names, "re_rtc arrived with v3"
     built.register(registry)  # a second registration is a no-op, not an error
-    schema = registry.get("tender.fdre", "v3")
+    schema = registry.get("tender.fdre", "v4")
     assert schema.cross_field_rules == [
         "date_order",
         "emd_pbg_within_10x",
@@ -344,18 +345,20 @@ def test_every_type_has_its_structured_fields_beside_the_prose(catalog: Catalog)
         for field in compiled.fields:
             if field.keys and field.section not in V3_SECTIONS:
                 # Commercial and penalties were tightened once more (v3): a number must
-                # be printed in the field's own quotes and is never computed.
-                expected = "v3" if field.section in ("commercial", "penalties") else "v2"
+                # be printed in the field's own quotes and is never computed. Every group
+                # prompt moved up one with the shared template's withdrawal rule
+                # (extract/v2, 2026-10-15).
+                expected = "v4" if field.section in ("commercial", "penalties") else "v3"
                 assert groups[field.section].prompt_version == expected, field.path
 
 
-def test_schema_v3_also_reads_the_runs_of_v1_and_v2(catalog: Catalog) -> None:
+def test_schema_v4_also_reads_the_runs_of_v1_v2_and_v3(catalog: Catalog) -> None:
     registry = SchemaRegistry()
     catalog.register(registry)
     for compiled in catalog.types.values():
-        assert compiled.schema.version == "v3" and compiled.reads_versions == ("v1", "v2")
-        if compiled.tender_type == "re_rtc":
-            continue  # new in v3: nothing earlier to read
-        for version in ("v1", "v2"):
+        assert compiled.schema.version == "v4" and compiled.reads_versions == ("v1", "v2", "v3")
+        # re_rtc arrived with v3: nothing earlier than that to read.
+        earliest = ("v3",) if compiled.tender_type == "re_rtc" else ("v1", "v2", "v3")
+        for version in earliest:
             earlier = registry.get(compiled.schema.name, version)
             assert earlier.fields == compiled.schema.fields

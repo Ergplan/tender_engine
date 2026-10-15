@@ -2,7 +2,7 @@ import { act, fireEvent, render, screen, waitFor, within } from "@testing-librar
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { ApiError, type ReviewApi, type TenderReview } from "../api/client";
-import { AMENDMENT_DOC, candidate, DOC, evidence, makeReview, SESSION } from "./fixtures";
+import { AMENDMENT_DOC, candidate, DOC, evidence, makeReview, SESSION, withdrawnCandidate } from "./fixtures";
 import { ReviewScreen } from "./ReviewScreen";
 
 vi.mock("./pdfText", () => ({
@@ -114,6 +114,60 @@ function withSummary() {
   review.summary = { waiting_for: 0, current: true, being_written: false };
   return review;
 }
+
+/** The fixture tender where version 2 withdraws the EMD per MW instead of restating it. */
+function withWithdrawal() {
+  const review = makeReview();
+  const emd = review.fields.find((f) => f.field_path === "core.guarantees.emd_inr_per_mw")!;
+  emd.entries[0].state.approval = {
+    id: "a-emd-1",
+    candidate_id: "c-emd",
+    decision: "approved",
+    final_value: null,
+    reviewer: "Asha Rao",
+    note: null,
+    decided_at: "2026-10-04T10:00:00Z",
+  };
+  emd.entries.push({
+    version_no: 2,
+    version_kind: "amendment",
+    state: { ...emd.entries[0].state, candidate: withdrawnCandidate(), approval: null },
+  });
+  emd.current = 1;
+  emd.decided = false;
+  return review;
+}
+
+describe("a withdrawn reading", () => {
+  it("says the version withdraws the provision, shows what stood before, and approves the removal", async () => {
+    const { calls } = await open(withWithdrawal());
+    const emd = card("core.guarantees.emd_inr_per_mw");
+    const notice = within(emd).getByTestId("withdrawn");
+    expect(notice).toHaveTextContent("Withdrawn by this version");
+    expect(notice).toHaveTextContent("Stood before:");
+    expect(notice.querySelector("del")).not.toBeNull();
+    expect(notice).toHaveTextContent("(v1 original)");
+    expect(within(emd).queryByText("No value found")).toBeNull();
+    expect(within(emd).getByTestId("version-tag")).toHaveTextContent("v2 amendment");
+    // The removing words are its evidence (beside v1's own chip on the earlier line), and
+    // the removal can be approved on them.
+    expect(within(emd).getAllByTestId("evidence-chip")).toHaveLength(2);
+    const approve = within(emd).getByTestId("approve");
+    expect(approve).toBeEnabled();
+    expect(approve).toHaveTextContent("Approve removal");
+    expect(approve).toHaveAttribute("title", expect.stringContaining("no longer apply"));
+    fireEvent.click(approve);
+    await waitFor(() => expect(calls.decide).toHaveBeenCalledWith(expect.objectContaining({ candidate_id: "c-withdrawn", decision: "approved" })));
+    await waitFor(() => expect(within(card("core.guarantees.emd_inr_per_mw")).getByTestId("decision")).toHaveTextContent("Removal approved · Asha Rao"));
+  });
+
+  it("keeps the no-value blocker for a reading that is merely absent", async () => {
+    await open();
+    const prebid = card("core.key_dates.pre_bid_meeting_date");
+    expect(within(prebid).queryByTestId("withdrawn")).toBeNull();
+    expect(within(prebid).getByTestId("approve")).toBeDisabled();
+  });
+});
 
 describe("what the reviewer sees", () => {
   it("shows the tender, the reviewer, progress and a disabled Complete button", async () => {

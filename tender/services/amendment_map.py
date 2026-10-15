@@ -27,6 +27,8 @@ from tender.services.versioning import plan_groups
 
 log = logging.getLogger("tender.amendment_map")
 PROMPT_NAME = "amendment_map"
+# The map's own prompt; `prompt_version` on a plan is the version the extraction runs read with.
+MAP_PROMPT_VERSION = "v1"
 ACTION = "amendment_routing"
 ACTOR = "amendment_map"
 
@@ -57,7 +59,6 @@ class AmendmentMapper:
         compiled: CompiledType,
         document: Document,
         base: Document | None,
-        prompt_version: str = "v1",
         is_fixture: bool = False,
     ) -> list[MappedChange]:
         """One model call over the whole amending document. Changes that name a section
@@ -93,7 +94,7 @@ class AmendmentMapper:
         response = self._llm.call(
             LLMRequest[AmendmentMapOutput](
                 prompt_name=PROMPT_NAME,
-                prompt_version=prompt_version,
+                prompt_version=MAP_PROMPT_VERSION,
                 content=[TextPart(text=prompt)],
                 response_model=AmendmentMapOutput,
                 created_by=ACTOR,
@@ -110,7 +111,7 @@ class AmendmentMapper:
         tender_id: str,
         version_no: int,
         document_id: str,
-        prompt_version: str = "v1",
+        prompt_version: str = "v2",
         created_by: str = ACTOR,
         start_runs: bool | str = True,
         is_fixture: bool = False,
@@ -163,9 +164,7 @@ class AmendmentMapper:
             )
         )
         by_keywords = plan_groups(compiled, version_no=version_no, role=role, page_texts=page_texts)
-        changes = self.map_changes(
-            session, compiled, document, base, prompt_version, is_fixture=is_fixture
-        )
+        changes = self.map_changes(session, compiled, document, base, is_fixture=is_fixture)
         order = [section.name for section in compiled.sections]
         by_map = sorted({change.section for change in changes}, key=order.index)
         union = sorted(set(by_keywords) | set(by_map), key=order.index)
@@ -231,7 +230,7 @@ def job_handlers(mapper: AmendmentMapper) -> dict[str, Callable[[Session, dict[s
             tender_id=payload["tender_id"],
             version_no=payload["version_no"],
             document_id=payload["document_id"],
-            prompt_version=payload.get("prompt_version", "v1"),
+            prompt_version=payload.get("prompt_version", "v2"),
             created_by=payload.get("created_by", ACTOR),
             start_runs=payload.get("start_runs", True),
             is_fixture=payload.get("is_fixture", False),

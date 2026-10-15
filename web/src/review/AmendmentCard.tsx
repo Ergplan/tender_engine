@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import type { AmendmentChange, Evidence, ReviewField } from "../api/client";
+import { changedShare, numericDelta, wordDiff } from "../lib/diff";
 import { confidenceBand, formatList, formatValue } from "../lib/format";
 import { DecisionNote } from "./DecisionNote";
 import { EditForm } from "./EditForm";
@@ -14,6 +15,8 @@ const KIND = {
   added: { label: "Added", className: "bg-sky-100 text-sky-800" },
   changed: { label: "Changed", className: "bg-violet-100 text-violet-800" },
   restated: { label: "Restated", className: "bg-slate-200 text-slate-700" },
+  // The version withdraws the provision: what stood before no longer applies.
+  removed: { label: "Removed", className: "bg-red-100 text-red-800" },
 };
 const PILL = {
   high: "bg-green-100 text-green-800",
@@ -54,6 +57,58 @@ function Shown({ value, field }: { value: unknown; field: ReviewField }) {
       </ul>
     );
   return <span>{formatValue(value, field.value_type, field.unit)}</span>;
+}
+
+const NUMERIC_TYPES = new Set(["int", "decimal", "percent", "money_inr", "mw", "mwh", "days", "months", "years"]);
+
+/** What a change means, under the two readings: the numeric delta or the word diff, and
+ * the impact cues — a decided value replaced, a required field, the derived tables that
+ * are written again from it. */
+export function ChangeDetail({ change, field, after }: { change: AmendmentChange; field: ReviewField; after: unknown }) {
+  const before = change.before?.value;
+  const delta = NUMERIC_TYPES.has(field.value_type) ? numericDelta(before, after) : null;
+  const textual =
+    typeof before === "string" && typeof after === "string" && !field.keys?.length ? wordDiff(before, after) : null;
+  const share = textual ? changedShare(textual) : 1;
+  const impacts = change.impacts ?? [];
+  const cues: string[] = [];
+  if (change.kind === "removed") cues.push("removes the value that stood before");
+  if (change.changes_decided) cues.push(change.kind === "removed" ? "a value you decided" : "replaces a value you decided");
+  if (change.required) cues.push("required field");
+  if (impacts.length) cues.push(`read by ${impacts.join(", ")} (written again from it)`);
+  if (!delta && !(textual && share < 0.8) && cues.length === 0) return null;
+  return (
+    <div data-testid="change-detail" className="mt-1 rounded border border-violet-200 bg-white px-2 py-1 text-xs">
+      {delta && (
+        <p data-testid="delta" className="font-medium text-violet-900">
+          {formatValue(before, field.value_type, field.unit)} → {formatValue(after, field.value_type, field.unit)}{" "}
+          <span className="font-normal text-slate-600">({delta})</span>
+        </p>
+      )}
+      {textual && share < 0.8 && (
+        <p data-testid="word-diff" className="leading-5 text-slate-800">
+          {textual.map((part, index) =>
+            part.kind === "same" ? (
+              <span key={index}>{part.text}</span>
+            ) : part.kind === "removed" ? (
+              <del key={index} className="rounded bg-red-100 px-0.5 text-red-800">
+                {part.text}
+              </del>
+            ) : (
+              <ins key={index} className="rounded bg-green-100 px-0.5 text-green-800 no-underline">
+                {part.text}
+              </ins>
+            ),
+          )}
+        </p>
+      )}
+      {cues.length > 0 && (
+        <p data-testid="impact" className="mt-0.5 text-slate-600">
+          <span className="font-medium text-slate-700">Impact:</span> {cues.join(" · ")}
+        </p>
+      )}
+    </div>
+  );
 }
 
 /** One field a later version states: what stood before it on the left, this version's
@@ -159,15 +214,31 @@ export function AmendmentCard({
             </p>
           )}
         </div>
-        <div data-testid="after" className={"rounded border px-2 py-1 " + (change.kind === "restated" ? "border-slate-200" : "border-violet-300 bg-violet-50/40")}>
-          <p className="text-[11px] uppercase tracking-wide text-violet-800">
+        <div
+          data-testid="after"
+          className={
+            "rounded border px-2 py-1 " +
+            (change.kind === "restated" ? "border-slate-200" : change.kind === "removed" ? "border-red-300 bg-red-50/60" : "border-violet-300 bg-violet-50/40")
+          }
+        >
+          <p className={"text-[11px] uppercase tracking-wide " + (change.kind === "removed" ? "text-red-800" : "text-violet-800")}>
             This version · v{entry.version_no} {entry.version_kind}
           </p>
           <div className="mt-0.5 text-slate-900">
-            <Shown value={after} field={field} />
+            {change.kind === "removed" ? (
+              <span data-testid="withdrawn" className="font-medium text-red-800">
+                Withdrawn by this version
+              </span>
+            ) : (
+              <Shown value={after} field={field} />
+            )}
           </div>
         </div>
       </div>
+
+      {(change.kind === "changed" || change.kind === "removed") && change.before && (
+        <ChangeDetail change={change} field={field} after={after} />
+      )}
 
       {failures.map((failure) => (
         <p
@@ -223,11 +294,16 @@ export function AmendmentCard({
             type="button"
             data-testid="approve"
             disabled={blocker !== null}
-            title={blocker ?? "Approve this version's reading"}
+            title={
+              blocker ??
+              (change.kind === "removed"
+                ? "Approve the removal: what stood before will no longer apply"
+                : "Approve this version's reading")
+            }
             className={BUTTON + " border-green-600 bg-green-600 text-white hover:bg-green-700"}
             onClick={() => onDecide({ decision: "approved", ...withNote })}
           >
-            Approve
+            {change.kind === "removed" ? "Approve removal" : "Approve"}
           </button>
           <button
             type="button"

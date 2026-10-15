@@ -16,6 +16,7 @@ from core.models import Document, ExtractionRun
 from scripts import ingest_tenders
 from scripts.ingest_tenders import Manifest, ManifestFile, Services, plan_versions
 from tender.models import Tender, TenderVersion
+from tender.services.tokens import TokenService
 from tender.services.worker_jobs import summary_writer
 from tests.conftest import Pipeline
 from tests.fixtures.llm import ScriptedSDK
@@ -306,6 +307,74 @@ def test_ingest_extract_and_summary_on_a_tender_folder(
     assert "| solar | `core.key_dates.pre_bid_meeting_date` | 1 | 0 | 0% | acme-solar-600 |" in text
     db.refresh(tender)
     assert tender.status == "extracted"
+
+
+def test_reseed_sets_an_undecided_tender_aside_and_builds_it_again_and_refuses_a_decided_one(
+    pipeline: Pipeline, db: Session, tmp_path: Path
+) -> None:
+    """A document found later that predates versions already held: the tender is built
+    again from its manifest in date order, as a new tender. Nothing is deleted (candidates
+    and evidence are immutable): the old tender is superseded and leaves every list; a
+    tender with a decision is never touched."""
+    from core.models import AuditLog, Candidate
+    from tender.models import ReviewToken
+
+    root = tmp_path / "tenders"
+    write_folder(root)
+    services = services_of(pipeline)
+    ingest_tenders.ingest(services, root)
+    pipeline.runner.run_until_idle()
+    pipeline.sdk.answers = {**RFS_ANSWERS, **AMENDMENT_ANSWERS}
+    ingest_tenders.extract(services)
+    pipeline.runner.run_until_idle()
+    old = db.scalars(select(Tender)).one()
+    runs_before = db.scalar(select(func.count()).select_from(ExtractionRun))
+    candidates_before = db.scalar(select(func.count()).select_from(Candidate))
+    TokenService(pipeline.settings.tenant_id).create(db, old, "Asha", created_by="t")
+    db.commit()
+
+    with pytest.raises(ValueError, match="--only"):
+        ingest_tenders.reseed(services, root, set())
+    lines = ingest_tenders.reseed(services, root, {"acme-solar-600", "no-such"})
+    assert lines[0].startswith("acme-solar-600: superseded as acme-solar-600-superseded-")
+    assert "2 version(s) kept, 1 link(s) revoked" in lines[0] and "now ingest" in lines[0]
+    assert lines[1] == "no-such: no such tender"
+    db.expire_all()
+    assert old.status == "superseded" and old.slug and old.slug.startswith("acme-solar-600-")
+    assert db.scalar(select(func.count()).select_from(ExtractionRun)) == runs_before, "kept"
+    assert db.scalar(select(func.count()).select_from(Candidate)) == candidates_before, "kept"
+    assert db.scalar(select(func.count()).select_from(TenderVersion)) == 2, "kept"
+    assert db.scalars(select(ReviewToken)).one().revoked_at is not None
+    assert pipeline.tenders.all(db) == [], "out of every list"
+    assert [t.id for t in pipeline.tenders.all(db, include_superseded=True)] == [old.id]
+    (row,) = db.scalars(select(AuditLog).where(AuditLog.action == "supersede"))
+    assert row.row_id == old.id and row.before is not None
+    assert row.before["slug"] == "acme-solar-600" and row.before["status"] != "superseded"
+
+    # Built again from the manifest as a new tender: the same documents, by sha256.
+    assert ingest_tenders.ingest(services, root) == [
+        "solar/acme-solar-600: 2 version(s) [v1:2, v2:1]"
+    ]
+    assert db.scalar(select(func.count()).select_from(Document)) == 3, "no document stored twice"
+    new = pipeline.tenders.by_slug(db, "acme-solar-600")
+    assert new is not None and new.id != old.id
+    assert db.scalar(select(func.count()).select_from(TenderVersion)) == 4
+    pipeline.runner.run_until_idle()
+    ingest_tenders.extract(services)
+    pipeline.runner.run_until_idle()
+    assert pipeline.tenders.all(db) == [new]
+    # A decision stands on the new one now: refused.
+    candidate = db.scalars(
+        select(Candidate)
+        .join(ExtractionRun, Candidate.extraction_run_id == ExtractionRun.id)
+        .where(ExtractionRun.object_id == new.id, Candidate.status == "validated")
+        .limit(1)
+    ).one()
+    pipeline.approvals.approve(db, candidate_id=candidate.id, decision="approved", reviewer="A")
+    assert ingest_tenders.reseed(services, root, {"acme-solar-600"}) == [
+        "acme-solar-600: refused, 1 decision(s) stand on it"
+    ]
+    assert pipeline.tenders.all(db) == [new]
 
 
 def test_resume_continues_a_failed_run_without_repeating_finished_groups(

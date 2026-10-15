@@ -5,7 +5,7 @@ sections:
   tbcb_elements:
     label: Transmission elements
     prompt: extract/tbcb_elements
-    prompt_version: v2
+    prompt_version: v3
     roles: [rfs, contractual, nit]
     section_kinds: [introduction_and_scope, technical_requirements, evaluation]
     keywords: [transmission scheme, scope of the project, kv, substation, bid process coordinator, scheduled cod, transmission charges, right of way, forest clearance, transmission service agreement, spv, ctu]

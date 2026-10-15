@@ -1,8 +1,8 @@
 # Core pack: fields that keep their meaning in any sector. Seeded from the field catalogue
 # in docs/MASTER-PROMPT.md. Field paths are core.<catalogue section>.<field>.
 pack: core
-version: v3
-reads_versions: [v1, v2]
+version: v4
+reads_versions: [v1, v2, v3]
 
 # A section is what a reviewer sees as one block and what the extractor reads in one call.
 # roles: the document roles of a tender version this section is extracted from.
@@ -39,21 +39,21 @@ sections:
   guarantees:
     label: Guarantees
     prompt: extract/guarantees
-    prompt_version: v2
+    prompt_version: v3
     roles: [rfs, contractual, nit]
     section_kinds: [financial_security]
     keywords: [earnest money deposit, emd, performance bank guarantee, pbg, success charges, processing fee, bid security, contract performance security, bid information sheet]
   commercial:
     label: Commercial
     prompt: extract/commercial
-    prompt_version: v3
+    prompt_version: v4
     roles: [rfs, contractual, nit, ppa, cfda]
     section_kinds: [commercial_terms]
     keywords: [ceiling tariff, tariff, payment security, letter of credit, change in law, late payment surcharge, termination compensation, deemed generation, generation compensation, buying entity, terms of payment, bid information sheet]
   penalties:
     label: Penalties
     prompt: extract/penalties
-    prompt_version: v3
+    prompt_version: v4
     roles: [rfs, contractual, nit, ppa, cfda]
     section_kinds: [penalties_and_remedies]
     keywords: [liquidated damages, delay in commissioning, delay in commencement, encash, shortfall, extension of scsd, extension of scd, termination, penalty]
@@ -359,6 +359,19 @@ fields:
     min: 1
     max: 120
     help: Months the EMD bank guarantee must stay valid.
+  # v4 (2026-10-15, from Amendment-03 of SECI CfD-I, clause 17): what the EMD's validity is
+  # counted from, and the rule on extending it.
+  core.guarantees.emd_validity_reference:
+    section: guarantees
+    label: EMD validity counted from
+    type: enum
+    enum: [bid_submission_deadline, original_bid_submission_deadline, bid_opening, loa, other]
+    help: The event the EMD's validity is counted from, as the tender states it (the original deadline when it says extensions of the deadline do not move it).
+  core.guarantees.emd_validity_rule:
+    section: guarantees
+    label: EMD validity rule
+    type: long_text
+    help: "The rule on the EMD's validity as stated: when the bidder must extend it, what shortfall is accepted, what the successful bidder must do before expiry (SECI CfD-I clause 17 as amended: an EMD valid 12 months from the original deadline and 6 months beyond the final one needs no extension during evaluation; the successful bidder extends it 30 days before expiry)."
   core.guarantees.bg_release_conditions:
     section: guarantees
     label: Guarantee release conditions

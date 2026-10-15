@@ -7,7 +7,7 @@ sections:
   epc_scope:
     label: EPC scope
     prompt: extract/epc_scope
-    prompt_version: v2
+    prompt_version: v3
     roles: [technical, contractual, rfs, nit]
     section_kinds: [introduction_and_scope, commercial_terms, penalties_and_remedies, technical_requirements]
     keywords: [scope of work, price schedule, bill of quantities, terms of payment, retention, defect liability, performance ratio, liquidated damages, warranty, approval of drawings, taxes and duties, operation and maintenance]

@@ -58,6 +58,8 @@ class CandidateView(BaseModel):
     prompt_version: str
     evidence: list[EvidenceView]
     validation: list[ValidationView]
+    # The document withdraws the provision: value None, the evidence the removing words.
+    withdrawn: bool = False
 
 
 class ApprovalView(BaseModel):
@@ -339,6 +341,7 @@ class ReviewStateService:
             prompt_version=candidate.prompt_version,
             evidence=evidence[candidate.id],
             validation=validation[candidate.id],
+            withdrawn=candidate.withdrawn,
         )
 
     def canonical(

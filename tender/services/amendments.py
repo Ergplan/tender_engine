@@ -19,12 +19,15 @@ from core.models.extraction import RECORD_MODES
 from core.schemas import KeyDef, SchemaRegistry
 from core.services.review_state import ReviewStateService
 from tender.models import Tender
+from tender.services.derive import derived_rules
 from tender.services.packs import Catalog
 from tender.services.review import ReviewDocument, ReviewEntry, TenderReview, tender_review
 from tender.services.summary import SUMMARY_FIELD
 from tender.services.tenders import OBJECT_TYPE, TenderService
 
-ChangeKind = Literal["added", "changed", "restated"]
+# removed: the version withdraws the provision (a `withdrawn` reading); what stood before is
+# shown as the value it removes.
+ChangeKind = Literal["added", "changed", "restated", "removed"]
 DECIDED = ("approved", "edited", "not_in_document")
 
 
@@ -59,6 +62,11 @@ class AmendmentChange(BaseModel):
     decided: bool
     set_aside: bool
     flagged: bool
+    # Impact cues. `changes_decided`: what stood before is a reviewer's decision (approved
+    # or edited), so this reading, once decided, replaces a canonical value. `impacts`: the
+    # derived tables whose rules read this field (their labels), written again from it.
+    changes_decided: bool = False
+    impacts: list[str] = []
 
 
 class AmendmentVersion(BaseModel):
@@ -73,6 +81,7 @@ class AmendmentVersion(BaseModel):
     added: int
     changed: int
     restated: int
+    removed: int = 0
     decided: int
     undecided: int
 
@@ -101,6 +110,14 @@ def tender_amendments(
     # is something an amendment states.
     derived = {section.name for section in compiled.sections if section.derived}
     defs = {item.path: item for item in compiled.schema.fields}
+    # Per field, the derived tables whose rules read it.
+    read_by: dict[str, list[str]] = {}
+    for rule in derived_rules(compiled):
+        table = next(
+            (f.label for f in compiled.fields if f.path == rule.field_path), rule.field_path
+        )
+        for path in rule.inputs:
+            read_by.setdefault(path, []).append(table)
 
     def comparable(path: str, value: Any) -> Any:
         try:
@@ -125,8 +142,12 @@ def tender_amendments(
                 continue
             before = _before(field.entries[:index])
             after = _value_of(entry)
-            if before is None or before.value is None:
-                kind: ChangeKind = "added"
+            candidate = entry.state.candidate
+            if candidate is not None and candidate.withdrawn and after is None:
+                # The version removes the provision: what stood before no longer applies.
+                kind: ChangeKind = "removed"
+            elif before is None or before.value is None:
+                kind = "added"
             elif comparable(field.field_path, before.value) == comparable(field.field_path, after):
                 kind = "restated"
             else:
@@ -151,6 +172,9 @@ def tender_amendments(
                     decided=decision in DECIDED,
                     set_aside=decision == "not_in_document",
                     flagged=decision == "flagged",
+                    changes_decided=before is not None
+                    and before.decision in ("approved", "edited"),
+                    impacts=read_by.get(field.field_path, []),
                 )
             )
     sections_read = _sections_read(session, tender)
@@ -170,6 +194,7 @@ def tender_amendments(
                 added=sum(1 for c in own if c.kind == "added"),
                 changed=sum(1 for c in own if c.kind == "changed"),
                 restated=sum(1 for c in own if c.kind == "restated"),
+                removed=sum(1 for c in own if c.kind == "removed"),
                 decided=sum(1 for c in own if c.decided),
                 undecided=sum(1 for c in own if not c.decided),
             )
