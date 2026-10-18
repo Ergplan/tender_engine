@@ -17,6 +17,7 @@ from sqlalchemy.orm import Session
 from core.models import ExtractionRun
 from core.models.extraction import RECORD_MODES
 from core.services import audit
+from tender.services.review import latest_snapshot
 from tender.services.tenders import OBJECT_TYPE, TenderService
 from tender.services.tokens import TokenService
 
@@ -48,6 +49,16 @@ class RoundOpener:
             return
         tender = self._tenders.get(session, run.object_id)
         if tender.status != "reviewed":
+            return
+        # Only a version the completed review did not see opens a round: a reading of an
+        # earlier version made again (a section re-read, a prompt evaluation) does not.
+        snapshot = latest_snapshot(session, tender)
+        reviewed_at = (
+            int((snapshot.snapshot.get("view") or {}).get("current_version_no") or 1)
+            if snapshot
+            else 1
+        )
+        if run.object_version <= reviewed_at:
             return
         under_way = session.scalar(
             select(ExtractionRun.id)

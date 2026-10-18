@@ -135,15 +135,41 @@ def _stricter(candidate: Row, standing: Row | None) -> Row:
 
 
 # The sources an input speaks of, for a withdrawal of it: the storage fields and the
-# charging rule speak of BESS; a withdrawn linked build obligation no longer names its
-# technology, so it is `other`; the mix rules speak of every source.
+# charging rule speak of BESS; the green minimum gives the non-RE sources their inherited
+# limit. The mix rules and a linked build obligation speak of the sources their value
+# named, read from what stood before the withdrawal (`sources_spoken_of`).
 SOURCES_OF_INPUT: dict[str, tuple[str, ...]] = {
     STORAGE_MANDATORY: ("bess",),
     STORAGE_PERMITTED: ("bess",),
     CHARGING: ("bess",),
+    GREEN_MIN: NON_RE,
     LINKED: ("other",),
     MIX: SOURCES,
 }
+
+
+def sources_spoken_of(decided: Decided) -> tuple[tuple[str, ...], bool]:
+    """The sources a withdrawn input spoke of, and whether that is known. A mix names its
+    sources in its records (`any_non_re` is the non-RE pair); a linked obligation names
+    its technology; the rest speak of fixed sources. With nothing known of what stood
+    before, every source the input could speak of, said to be unknown."""
+    previous = decided.previous
+    if decided.path == MIX:
+        if not isinstance(previous, list):
+            return SOURCES, False
+        named: list[str] = []
+        for item in previous:
+            source = item.get("source") if isinstance(item, dict) else None
+            for name in NON_RE if source == "any_non_re" else (source,):
+                if name in SOURCES and name not in named:
+                    named.append(name)
+        return (tuple(named), True) if named else (SOURCES, False)
+    if decided.path == LINKED:
+        technology = previous.get("technology") if isinstance(previous, dict) else None
+        if isinstance(technology, str) and technology in SOURCES:
+            return (technology,), True
+        return ("other",), False
+    return SOURCES_OF_INPUT.get(decided.path, ()), True
 
 
 def derive(inputs: Inputs) -> Derivation:
@@ -275,23 +301,32 @@ def derive(inputs: Inputs) -> Derivation:
 
     for path, decided in sorted(withdrawn.items()):
         note = f"withdrawn by v{decided.withdrawn_by}"
-        for source in SOURCES_OF_INPUT.get(path, ()):
+        spoken_of, known = sources_spoken_of(decided)
+        if not known:
+            note += "; sources it spoke of unknown"
+        removing = clause_of(decided)
+        for source in spoken_of:
             standing = rows.get(source)
             if standing is None:
                 rows[source] = _row(
-                    source,
-                    "withdrawn",
-                    "stated",
-                    (path,),
-                    condition=note,
-                    clause=clause_of(decided),
+                    source, "withdrawn", "stated", (path,), condition=note, clause=removing
                 )
                 continue
+            # A clause still gives the source a status: that stands, with the withdrawal
+            # and the words that made it on the row as well.
             value = dict(standing.value)
             value["condition"] = "; ".join(
                 v for v in (standing.value.get("condition"), f"{decided.label} {note}") if v
             )
             value["derived_from"] = ", ".join(dict.fromkeys([*standing.inputs, path]))
+            value["clause"] = " | ".join(
+                v
+                for v in (
+                    standing.value.get("clause"),
+                    f"{note}: {removing}" if removing else "",
+                )
+                if v
+            )
             rows[source] = Row(
                 value=value, inputs=(*standing.inputs, path), inherited=standing.inherited
             )

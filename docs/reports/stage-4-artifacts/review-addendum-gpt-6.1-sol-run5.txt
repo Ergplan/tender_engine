@@ -1,0 +1,68 @@
+reviewer: gpt-6.1-sol  input chars: 260306  tokens in/out: 65512/3503
+
+## (a) Non-negotiable invariants
+
+| Invariant | Assessment from the supplied diff |
+|---|---|
+| **The LLM never writes truth** | No new canonical-fact writer is shown. The derivation changes produce rows for review, not canonical facts (`tender/domain_packs/power/derivations/optimizer_constraints.py:433–438`). The approval handler and complete extraction persistence path are outside this diff, so the single-writer guarantee cannot be independently established. |
+| **Every value carries its evidence** | Withdrawn derivation inputs retain the candidate’s located spans (`tender/services/derive.py:118–136`). However, the source-table changes can assign withdrawals to sources without source-specific provenance, and can mention a withdrawal while retaining only the standing clause. See findings below. |
+| **The tender is a versioned object** | The new review-round projection retains entries and selects scope by version number rather than editing versions (`tender/services/review.py:200–223`). No production write to an existing `tender_version` is shown. Version creation and the canonical current-view implementation are outside this diff. |
+| **Candidates are immutable** | The shown derivation-input path reads candidates without changing them (`tender/services/derive.py:118–136`). Round creation changes tokens and tender status, not candidates (`tender/services/rounds.py:65–88`). Database immutability enforcement and approval persistence are outside this diff. |
+| **Validation is deterministic** | No validation-rule implementation is changed or supplied. The added extraction check resolves a registered prompt (`core/services/extract.py:291–294`); the round opener performs ordinary Python/SQL checks (`tender/services/rounds.py:38–64`). Neither establishes the complete validator’s behavior. No new LLM validation path is shown. |
+| **Everything is audited and tenant-scoped** | New extraction-run and token queries explicitly filter by tenant (`tender/services/rounds.py:38–60`; `tender/services/tokens.py:89–114`). Token insertion has an audit call (`tender/services/tokens.py:64–82`), as does the tender’s transition into review (`tender/services/rounds.py:71–88`). `ReviewToken` retains `TenantAuditMixin` (`tender/models/review.py:12–29`). No new protected-table production write is visible; see (c). |
+| **Feedback is stored, never auto-applied** | No runtime feedback reader or feedback-driven prompt modification is added. Prompt selection is explicitly pinned in configuration, for example `tender/domain_packs/core/common.yaml:21–43`. Feedback storage itself is outside this diff. |
+| **API first** | Round metadata and scope are exposed through existing review APIs (`api/v1/schemas/tenders.py:99–102`; `api/v1/tenders/review.py:91–92,117–127`). The new UI consumes review response fields (`web/src/review/ReviewScreen.tsx:211–217,321–335`). Complete endpoint registration and approval routing are outside this diff; no new intelligence operation bypassing the API is demonstrated. |
+
+FINDINGS: 2
+1. `tender/domain_packs/power/derivations/source_eligibility.py:139–146,276–288`: withdrawing `source_mix_rules` assigns `withdrawn` to every source through `MIX: SOURCES`. The withdrawn input has a null value, and this code does not inspect the prior mix to determine which sources it addressed. It can therefore present a source as withdrawn without evidence that the removed provision addressed that source.
+2. `tender/domain_packs/power/derivations/source_eligibility.py:290–298`: when a standing source clause exists, the row gains a withdrawal condition and input reference but retains the standing row’s `clause`. The removing words are not added to that row’s clause, so its withdrawal assertion does not carry the evidence supporting it.
+
+## (b) Tests for added API endpoints
+
+No API endpoints are added in this diff.
+
+The changed existing endpoints are exercised by `test_a_round_link_scopes_the_review_to_what_its_version_touched`:
+
+- `GET /api/v1/review-session` — `tests/api/test_review_tokens.py:919–921,935–936`.
+- `GET /api/v1/tenders/{id}/review` — review-helper calls and the explicit request at `tests/api/test_review_tokens.py:922–923,937–949`.
+
+FINDINGS: none
+
+## (c) Audit coverage of protected-table writes
+
+No new production insert, update or delete to `candidate`, `approval`, `canonical_fact`, `tender_version` or `feedback` is visible in the supplied hunks.
+
+- `tender/services/derive.py:118–136` constructs an in-memory `Decided`, not a database row.
+- `tender/services/derive.py:350–357` changes derivation rationale/value preparation; the candidate persistence and audit calls are not shown.
+- The approval calls in `tests/tender/test_rounds.py:34–46,131–152` delegate to the existing approval service; its protected-table writes and audit calls are outside this diff.
+- Migration 0015 changes `review_token` structure, not one of the listed protected tables (`migrations/versions/0015_review_rounds.py:21–30`).
+
+The visible production writes are to `review_token` and `tender`, with audit calls at `tender/services/tokens.py:66–82` and `tender/services/rounds.py:71–88`, respectively.
+
+FINDINGS: none
+
+## (d) `make trace` reproducibility
+
+**Not verifiable from these inputs.** The documentation identifies an existing `make trace`, so “not applicable” does not apply. The diff updates the committed trace and a generator-test expectation, but supplies neither the command implementation nor execution output establishing clean regeneration.
+
+FINDINGS: 1
+1. `docs/reports/STAGE-4-REPORT.md:195`: the assertion that `make trace` gives no diff is not independently established by the supplied inputs. Changes to `docs/FIELD-TRACE.md:12–59,93–131` and `tests/scripts/test_gen_field_trace.py:39` show updated expectations, not a successful regeneration.
+
+## (e) Draft-report claims unsupported by the code in the diff
+
+The report substitutes designated in Input 2 are included below. “Unsupported” distinguishes missing evidence from demonstrated contradictions.
+
+FINDINGS: 13
+1. **Spreadsheet rendering behavior.** `docs/ARCHITECTURE.md:434` and `docs/DECISIONS.md:158` describe workbook rendering, cached formula results, the fifty-empty-row cutoff, and preservation of the workbook’s filename and hash. No spreadsheet renderer or ingestion implementation is supplied in this diff.
+2. **Actual corpus operations and version sequence.** `docs/ARCHITECTURE.md:434,436` and `docs/DECISIONS.md:159–160` claim CnI-1 ingestion/extraction and Ramagiri’s completed re-seed into the specified five-version sequence. No corresponding manifests, document records or execution results are supplied.
+3. **Source-document conclusions.** `docs/DECISIONS.md:159` asserts amendment dates, agency provenance, annexure changes, trial-run wording and absence of a deadline change. The source documents needed to establish those conclusions are not supplied.
+4. **Re-seed implementation and list filtering.** `docs/ARCHITECTURE.md:436` and `docs/DECISIONS.md:160` describe superseding rather than deleting, revoking links, withdrawing jobs, refusing tenders with decisions, subsequent ingestion, and filtering through `TenderService.all` and freshness queries. Those implementations are outside this diff.
+5. **Complete withdrawal pipeline and worked case.** `docs/ARCHITECTURE.md:346` describes withdrawal extraction, evidence rejection, human approval, canonical persistence, current-view projection and the specific CfD-I clause/ceiling/version. This diff shows changes to derived inputs and `FieldCard`, but not those core persistence/projection implementations or the real worked-case extraction.
+6. **Every withdrawn derived input has a typed row.** `docs/DECISIONS.md:166` and `tender/services/derive.py:353` claim typed withdrawal representation. `source_eligibility.INPUTS` includes the traceable-green input, but `SOURCES_OF_INPUT` omits it and the withdrawal loop defaults to an empty source tuple (`tender/domain_packs/power/derivations/source_eligibility.py:139–146,276–278`). Such an input produces a note but no typed withdrawn source row.
+7. **Source withdrawal rows identify the sources actually addressed.** `docs/ARCHITECTURE.md:346`, `docs/DECISIONS.md:166` and `docs/KNOWN-GAPS.md:96` describe withdrawal rows for the sources the input spoke of. `MIX: SOURCES` assigns a withdrawn mix to all sources without inspecting its prior contents (`tender/domain_packs/power/derivations/source_eligibility.py:139–146`).
+8. **Every source withdrawal carries the removing words as its clause.** `docs/ARCHITECTURE.md:346` and `docs/KNOWN-GAPS.md:96` make this claim. Where a standing clause exists, only the condition and input references change; its clause remains unchanged (`tender/domain_packs/power/derivations/source_eligibility.py:290–298`).
+9. **Earlier rule versions keep every existing table current and approved tables unchanged.** `docs/DECISIONS.md:166` and `docs/reports/STAGE-4-REPORT.md:193` attribute this guarantee to `inputs_by_version`. The diff supplies historical input mappings, but not the digest, currency-check and approved-table preservation implementations needed to establish that guarantee.
+10. **All carried fields have earlier decisions.** `docs/DECISIONS.md:167` says every other field carries its earlier decision forward. Scope classification counts every out-of-scope field as carried without checking `decided` (`tender/services/review.py:217–223`); `CarriedCard` explicitly supports an “undecided” state (`web/src/review/CarriedCard.tsx:25–30`). The claim is broader than the implementation.
+11. **Rounds are opened specifically by a newly arriving version.** `docs/ARCHITECTURE.md:169,358` and `docs/DECISIONS.md:167` describe rounds opened when a later version reaches a reviewed tender. The hook checks only `object_version > 1`, tender status and work in progress; it does not compare the run’s version with the last completed round or snapshot (`tender/services/rounds.py:42–64`). Revalidating an already-reviewed amendment version can therefore open another round without a new version arriving.
+12. **Review/gold totals and measured accuracy.** `docs/DECISIONS.md:165` claims 11 completed owner reviews, 11 owner-authorized gold records, 97% value accuracy on 942 fields and 100% evidence accuracy on 634 fields. No underlying records, authorization artifacts or evaluation output are supplied.
+13. **Remaining historical implementation and inventory assertions.** `docs/DECISIONS.md:161,163–165` describes amendment impact computation, all named prompt files extending v2, released schema v4, compatibility, EMD fields and the superseded-tender gold guard; `docs/KNOWN-GAPS.md:97–98` describes the eleven stored snapshots and the absence of a live current-view page. The relevant implementations, released artifact and snapshot inventory are not supplied in this diff.

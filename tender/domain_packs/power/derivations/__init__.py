@@ -30,6 +30,9 @@ class Decided:
     # removed it. A rule writes a typed row for it rather than reading it as absent.
     withdrawn: bool = False
     withdrawn_by: int | None = None
+    # What stood before the withdrawal (the latest earlier reading as the reviewer left
+    # it), so a rule knows what the withdrawn provision spoke of; None when unknown.
+    previous: Any = None
 
 
 @dataclass(frozen=True)

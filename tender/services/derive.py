@@ -131,6 +131,7 @@ class DerivedWriter:
                     version_no=withdrawn.version_no,
                     withdrawn=True,
                     withdrawn_by=withdrawn.version_no,
+                    previous=_stood_before(item, item.current or 0),
                 )
                 continue
             value = decided_field_value(item, evidence)
@@ -473,6 +474,21 @@ def _withdrawn_entry(item: ReviewField) -> ReviewEntry | None:
     if candidate is None or approval is None:
         return None
     return entry if candidate.withdrawn and approval.decision == "approved" else None
+
+
+def _stood_before(item: ReviewField, index: int) -> Any:
+    """What stood for the field before the entry at `index`: the latest earlier reading
+    the reviewer did not set aside, as they left it (their edit, else the model's value);
+    None when nothing stood (the same reading the amendment screen shows as "before")."""
+    for entry in reversed(item.entries[:index]):
+        approval = entry.state.approval
+        if approval is not None and approval.decision == "not_in_document":
+            continue
+        if approval is not None and approval.decision == "edited":
+            return approval.final_value
+        candidate = entry.state.candidate
+        return candidate.value if candidate is not None else None
+    return None
 
 
 def _withdrawn_inputs(review: TenderReview, rule: Rule) -> list[str]:

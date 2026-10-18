@@ -644,4 +644,62 @@ def test_a_withdrawn_storage_obligation_reads_bess_as_withdrawn_unless_a_clause_
     assert rows["bess"]["status"] == "allowed"
     assert "bess_charging_rule withdrawn by v4" in rows["bess"]["condition"]
     assert rows["bess"]["derived_from"] == f"{MIX}, {CHARGING}"
+    # The removing words sit on the standing row beside its own clause.
+    assert rows["bess"]["clause"] == (
+        "p.10: \u201cstorage is allowed\u201d | withdrawn by v4: "
+        "p.2: \u201ccharging rule deleted\u201d"
+    )
     assert se.VERSION == "v2" and rule_for(se.FIELD).inputs_at("v1") == se.INPUTS
+
+
+def test_a_withdrawn_mix_marks_only_the_sources_it_spoke_of() -> None:
+    """A withdrawn source_mix_rules carries what stood before it: only the sources those
+    records named read withdrawn (`any_non_re` is the thermal and market-purchase pair);
+    with nothing known of the earlier value, every source, said to be unknown."""
+    se = source_eligibility
+    gone = withdrawn(MIX, 5, "clause 9 on sources of supply stands deleted")
+    gone = Decided(
+        **{
+            **gone.__dict__,
+            "previous": [
+                {"source": "thermal", "treatment": "prohibited"},
+                {"source": "bess", "treatment": "allowed"},
+                {"source": "not_a_source", "treatment": "allowed"},
+            ],
+        }
+    )
+    rows = {r.value["source"]: r.value for r in se.derive({MIX: gone}).rows}
+    assert {s for s, r in rows.items() if r["status"] == "withdrawn"} == {"thermal", "bess"}
+    assert rows["thermal"]["condition"] == "withdrawn by v5"
+    assert rows["solar"]["status"] == "not_addressed"
+    general = Decided(
+        **{**gone.__dict__, "previous": [{"source": "any_non_re", "treatment": "allowed"}]}
+    )
+    rows = {r.value["source"]: r.value for r in se.derive({MIX: general}).rows}
+    assert {s for s, r in rows.items() if r["status"] == "withdrawn"} == set(se.NON_RE)
+    unknown = Decided(**{**gone.__dict__, "previous": None})
+    rows = {r.value["source"]: r.value for r in se.derive({MIX: unknown}).rows}
+    assert all(r["status"] == "withdrawn" for r in rows.values())
+    assert rows["solar"]["condition"] == "withdrawn by v5; sources it spoke of unknown"
+    assert se.sources_spoken_of(unknown) == (se.SOURCES, False)
+
+
+def test_a_withdrawn_green_minimum_and_linked_obligation_speak_of_their_sources() -> None:
+    """The green minimum gave thermal and market purchase their inherited limit; a linked
+    build obligation named its technology, else `other`."""
+    se = source_eligibility
+    green = withdrawn(GREEN, 4, "the minimum traceable green share no longer applies")
+    rows = {r.value["source"]: r.value for r in se.derive({GREEN: green}).rows}
+    assert {s for s, r in rows.items() if r["status"] == "withdrawn"} == set(se.NON_RE)
+    linked = Decided(
+        **{
+            **withdrawn(LINKED, 4, "the linked capacity obligation is deleted").__dict__,
+            "previous": {"technology": "solar", "multiple_of_contracted": 2},
+        }
+    )
+    rows = {r.value["source"]: r.value for r in se.derive({LINKED: linked}).rows}
+    assert rows["solar"]["status"] == "withdrawn" and rows["other"]["status"] == "not_addressed"
+    nameless = Decided(**{**linked.__dict__, "previous": None})
+    rows = {r.value["source"]: r.value for r in se.derive({LINKED: nameless}).rows}
+    assert rows["other"]["status"] == "withdrawn"
+    assert rows["other"]["condition"] == "withdrawn by v4; sources it spoke of unknown"

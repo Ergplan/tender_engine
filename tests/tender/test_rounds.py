@@ -168,3 +168,27 @@ def test_completing_a_round_needs_only_its_scope_and_snapshots_the_whole_view(
     assert deadline["version_no"] == 2 and emd["version_no"] == 1, "carried value in the view"
     db.expire_all()
     assert tender.status == "reviewed" and token.completed_at is not None
+
+
+def test_a_reading_of_a_version_the_review_already_saw_opens_no_round(
+    pipeline: Pipeline, db: Session
+) -> None:
+    """A section of the reviewed version read again (a prompt evaluation, a re-read) is
+    not a new version reaching the tender: nothing opens, the tender stays reviewed."""
+    tender_id, _ = reviewed_tender(pipeline, db)
+    tender = pipeline.tenders.get(db, tender_id)
+    pipeline.tenders.start_extraction(
+        db, tender, version_no=1, created_by="pytest", groups=["key_dates"], is_fixture=True
+    )
+    pipeline.runner.run_until_idle()
+    db.expire_all()
+    assert tender.status == "reviewed"
+    assert (
+        db.scalar(
+            select(ReviewToken).where(
+                ReviewToken.tender_id == tender_id, ReviewToken.completed_at.is_(None)
+            )
+        )
+        is None
+    )
+    assert db.scalar(select(AuditLog).where(AuditLog.action == "open_round")) is None
