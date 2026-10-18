@@ -16,6 +16,15 @@
 		}
 	}
 
+	# The MCP endpoint and the OAuth authorization server the SDK mounts beside it
+	# (Stage 5D): the same public mark; the bearer token is checked by the API.
+	@mcp path /mcp /mcp/* /authorize /authorize/* /token /register /.well-known/*
+	handle @mcp {
+		reverse_proxy {args[0]} {
+			header_up X-Public-Request 1
+		}
+	}
+
 	# Stored files, read-only: /files/documents/<sha>.pdf and /files/renders/<sha>/<n>.png.
 	# The API is asked first whether the review token may see the file; then the file is
 	# served from disk, with range requests (the PDF viewer reads the PDF in pieces) and a

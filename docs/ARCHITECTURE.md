@@ -72,7 +72,7 @@ The layout in `CLAUDE.md` is authoritative. Additions made under operating rule 
 | `web/src/lib/` | `format.ts` (values by type), `keyboard.ts` (the reviewer's keys) | Stage 3 |
 | `web/e2e/`, `web/playwright.config.ts` | the Playwright suite, run by `make test-ui` | Stage 3 |
 | `tests/e2e/seed_review.py` | seeds the browser-test database | Stage 3 |
-| `infra/Caddyfile.routes`, `infra/Caddyfile.e2e` | the proxy routes shared by the deployed site and the browser-test stack | Stage 3 |
+| `infra/Caddyfile.routes`, `infra/Caddyfile.e2e` | the proxy routes shared by the deployed site and the browser-test stack: `/api/*`, `/files/*`, `/health` and, since Stage 5D, `/mcp`, `/authorize`, `/token`, `/register`, `/.well-known/*` go to the API with the public mark; everything else to the web app | Stage 3, 5D |
 | `scripts/review_token.py`, `scripts/gen_field_trace.py` | review links; `docs/FIELD-TRACE.md` | Stage 3 |
 | `evals/` | `gold.py` (a completed review as a YAML record under `evals/gold/<type>/<slug>.yaml`), `runner.py` (scores candidates against gold records; `evals/results/`), `feedback_report.py`, `report.py` (`RELIABILITY-REPORT.md`, `REVIEW-LOG.md`); imports core and tender, is imported only by the admin router and the scripts | Stage 4 |
 | `scripts/make_gold.py` | `make gold TENDER=<slug>`: the gold record of a completed review, then the report | Stage 4 |

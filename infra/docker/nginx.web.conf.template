@@ -21,6 +21,14 @@ server {
         proxy_pass ${API_UPSTREAM};
     }
 
+    # The MCP endpoint and the OAuth authorization server beside it (Stage 5D); the
+    # load balancer routes these to the api service, this is the single-service fallback.
+    location ~ ^/(mcp|authorize|token|register|\.well-known/) {
+        proxy_pass ${API_UPSTREAM};
+        proxy_set_header Host $host;
+        proxy_set_header X-Public-Request 1;
+    }
+
     location /assets/ {
         add_header Cache-Control "public, max-age=31536000, immutable";
         try_files $uri =404;

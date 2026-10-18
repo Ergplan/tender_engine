@@ -112,7 +112,7 @@ for b in api api-product web; do gcloud compute backend-services create be-tende
 # them without a sign-in, a review link or an API key. Do not skip this line.
 for b in api api-product; do gcloud compute backend-services update be-tender-$b --global --custom-request-header "X-Public-Request:1" --project $PROJECT; done
 gcloud compute url-maps create tender-lb --default-service be-tender-web --project $PROJECT
-gcloud compute url-maps add-path-matcher tender-lb --path-matcher-name app --default-service be-tender-web --path-rules "/api/*=be-tender-api,/files/*=be-tender-api,/health=be-tender-api" --new-hosts "[YOUR DOMAIN]" --project $PROJECT
+gcloud compute url-maps add-path-matcher tender-lb --path-matcher-name app --default-service be-tender-web --path-rules "/api/*=be-tender-api,/files/*=be-tender-api,/health=be-tender-api,/mcp=be-tender-api,/mcp/*=be-tender-api,/authorize=be-tender-api,/authorize/*=be-tender-api,/token=be-tender-api,/register=be-tender-api,/.well-known/*=be-tender-api" --new-hosts "[YOUR DOMAIN]" --project $PROJECT
 gcloud compute url-maps add-path-matcher tender-lb --path-matcher-name api-product --default-service be-tender-api-product --new-hosts "api.[YOUR DOMAIN]" --project $PROJECT
 gcloud compute ssl-certificates create tender-cert --domains "[YOUR DOMAIN],api.[YOUR DOMAIN]" --global --project $PROJECT
 gcloud compute target-https-proxies create tender-https --url-map tender-lb --ssl-certificates tender-cert --project $PROJECT
