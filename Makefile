@@ -40,7 +40,7 @@ deploy: hooks ## pull, build, migrate, restart, health check
 	$(COMPOSE) up -d db
 	$(COMPOSE) run --rm -T api alembic upgrade head
 	$(COMPOSE) run --rm -T --no-deps web npm ci --no-audit --no-fund
-	$(COMPOSE) up -d --force-recreate api worker web caddy tests
+	$(COMPOSE) up -d --force-recreate api worker agent web caddy tests
 	@for i in $$(seq 1 30); do \
 	  if curl -ksf https://$(STATIC_IP)/health >/dev/null; then \
 	    echo "healthy: $$(curl -ks https://$(STATIC_IP)/health)"; exit 0; fi; sleep 2; done; \

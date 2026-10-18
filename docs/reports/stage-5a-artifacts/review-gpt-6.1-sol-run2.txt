@@ -1,0 +1,54 @@
+reviewer: gpt-6.1-sol  input chars: 366514  tokens in/out: 93056/2141
+
+### (a) Non-negotiable invariants
+
+| Invariant | Assessment limited to the supplied diff |
+|---|---|
+| **The LLM never writes truth** | Upheld for the added agent path: findings are inserted as `AgentFinding`, not candidates or canonical facts (`agent/harness.py:426–470`). The stage prompt explicitly permits this separate findings store. No canonical-fact writer is added. |
+| **Every value carries its evidence** | Upheld for accepted agent values: unread pages and unlocated quotes are rejected, and non-null values require evidence (`agent/harness.py:229–282`). Evidence includes document, page, character range, quote and bounding box (`agent/harness.py:362–394`). Rejected attempts remain explicitly marked rejected. Existing candidate and canonical evidence handling is not changed. |
+| **The tender is a versioned object** | Upheld within the added path: runs identify an object version (`agent/service.py:81–84`), and inputs include only versions up to the requested version (`agent/inputs.py:82–84`). No tender-version mutation is added. The existing current-view projection is outside the supplied code. |
+| **Candidates are immutable** | Upheld within the diff: the agent writes separate findings (`agent/harness.py:426–443`); supersession changes an `AgentFinding`, not a candidate (`agent/harness.py:473–498`). No candidate or approval mutation is added. |
+| **Validation is deterministic** | Upheld for the added finding checks: page-read, confidence, rationale and evidence checks use Python, followed by deterministic value coercion (`agent/harness.py:201–282`). Existing candidate range and cross-field validation is not changed. |
+| **Everything is audited and tenant-scoped** | New tables include the required columns (`migrations/versions/0016_agent_pass.py:25–29,59–63`). Added production reads filter by tenant, including pages and findings (`agent/harness.py:172–176`; `agent/service.py:129–163`). Finding inserts and supersession are audited (`agent/harness.py:444–498`); run creation and status changes are audited (`agent/service.py:103–117,204–215`; `agent/harness.py:310–328`). |
+| **Feedback is stored, never auto-applied** | Upheld within the diff: the new input construction uses document/version/schema inputs (`agent/inputs.py:82–119`), and the driver receives the resulting brief and registered prompt (`agent/service.py:217–219`). No feedback reader or runtime feedback application is added. |
+| **API first** | The added operation has start, list and findings endpoints (`api/v1/tenders/agent_pass.py:39–87`) and its router is registered (`api/main.py:29`). The surrounding `/api/v1` mounting implementation is not included, but integration tests exercise these endpoints under that prefix (`tests/api/test_agent_pass.py:56–79`). No reviewer UI operation is added. |
+
+FINDINGS: none
+
+### (b) Tests for added API endpoints
+
+All three endpoints have integration-test coverage in `test_a_pass_is_queued_run_by_the_agent_container_and_read_back`:
+
+- `POST /api/v1/tenders/{tender_id}/agent-pass` — `tests/api/test_agent_pass.py:52–65`.
+- `GET /api/v1/tenders/{tender_id}/agent-pass` — `tests/api/test_agent_pass.py:75–77`.
+- `GET /api/v1/tenders/{tender_id}/agent-pass/{run_id}` — `tests/api/test_agent_pass.py:79–95`.
+
+Refusal cases are covered at `tests/api/test_agent_pass.py:99–119`; review-token denial for all three routes is covered at `tests/api/test_agent_pass.py:122–133`.
+
+FINDINGS: none
+
+### (c) Audit coverage for specified table writes
+
+No direct write to `candidate`, `approval`, `canonical_fact`, `tender_version` or `feedback` is added or modified in the supplied production code. The new finding insert targets `agent_finding` (`agent/harness.py:426–443`), and run creation targets `agent_run` (`agent/service.py:77–102`).
+
+Tests invoke existing tender-version creation services, but their implementations and audit calls are not included. Existing indirect writes therefore cannot be reverified from this diff.
+
+FINDINGS: none
+
+### (d) `make trace` reproducibility
+
+Cannot determine from the supplied diff. A trace generator already exists and is modified, so **not applicable** would be incorrect. The input contains neither an execution result nor the complete generator inputs needed to establish a clean regeneration.
+
+FINDINGS: 1
+1. `scripts/gen_field_trace.py:151–159,246–250`; `docs/FIELD-TRACE.md:5–13` — generator and generated-document changes are shown, but no evidence establishes that `make trace` regenerates the committed file without a diff.
+
+### (e) Draft report claims not supported by the supplied code
+
+FINDINGS: 7
+1. `docs/reports/STAGE-5A-REPORT.md:5,43` — “the commits of this stage each passed the full check suite” and green checks before every commit are not established by the diff. No commit-by-commit status records or hook execution results are supplied.
+2. `docs/reports/STAGE-5A-REPORT.md:5,47` — completed deployment, rebuilt images, applied migration, running agent service, successful health check, and subsequent watcher shutdown are not established. `Makefile:43` adds the agent to deployment, but does not prove deployment occurred; the referenced delivery output is absent.
+3. `docs/reports/STAGE-5A-REPORT.md:11` — the exact installed/locked SDK version `0.24.0` and the assertion that `gpt-6.1-sol` is the current GPT model are not established. `pyproject.toml:21` specifies only `openai-agents>=0.24.0`; the referenced lockfile is not supplied, and a configured model name does not establish currency.
+4. `docs/reports/STAGE-5A-REPORT.md:18` — “the harness writes `agent_finding` and `agent_run` only” is literally unsupported: the harness also appends audit rows (`agent/harness.py:310–328,444–460,485–495`), and its SDK driver arranges LLM-call logging (`agent/harness.py:559–567`; `core/llm/agent_calls.py:104–119`).
+5. `docs/reports/STAGE-5A-REPORT.md:27` — the claim that `pages_read` is “carried by the closing audit row” is contradicted by `Harness.finish`: it updates `run.pages_read`, but the audit payload omits it (`agent/harness.py:309–327`).
+6. `docs/reports/STAGE-5A-REPORT.md:36` — the assertion that the accepted readings were personally checked against the PDF cannot be verified from the supplied code. The artifact records readings and truncated quotes, not that manual comparison (`docs/reports/stage-5a-artifacts/e2e-agent-pass-2026-10-18.txt:5–15`).
+7. `docs/reports/STAGE-5A-REPORT.md:66` — the Anthropic section-map spend being “cents” and the complete stage-spend accounting are not established by supplied call-log records. The included execution artifact reports only the agent run’s OpenAI cost (`docs/reports/stage-5a-artifacts/e2e-agent-pass-2026-10-18.txt:4`).

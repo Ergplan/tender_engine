@@ -2,6 +2,7 @@
 (SKIP LOCKED claim, bounded retries with backoff), reduced to a single-process worker.
 """
 
+from collections.abc import Sequence
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
@@ -31,15 +32,18 @@ def enqueue(
     return job
 
 
-def claim_next(session: Session, tenant_id: str) -> Job | None:
-    """Take the tenant's oldest due job and mark it running. Commits."""
+def claim_next(session: Session, tenant_id: str, kinds: Sequence[str] | None = None) -> Job | None:
+    """Take the tenant's oldest due job and mark it running. Commits. `kinds` limits the
+    claim to those job kinds: each process claims only what it has a handler for (the
+    worker its chain, the agent container the agent pass)."""
     now = datetime.now(UTC)
+    query = select(Job).where(
+        Job.tenant_id == tenant_id, Job.status == "queued", Job.run_after <= now
+    )
+    if kinds is not None:
+        query = query.where(Job.kind.in_(list(kinds)))
     job = session.scalar(
-        select(Job)
-        .where(Job.tenant_id == tenant_id, Job.status == "queued", Job.run_after <= now)
-        .order_by(Job.run_after, Job.created_at)
-        .limit(1)
-        .with_for_update(skip_locked=True)
+        query.order_by(Job.run_after, Job.created_at).limit(1).with_for_update(skip_locked=True)
     )
     if job is None:
         session.rollback()
@@ -51,15 +55,15 @@ def claim_next(session: Session, tenant_id: str) -> Job | None:
     return job
 
 
-def requeue_orphans(session: Session, tenant_id: str) -> int:
-    """Put jobs left in `running` back in the queue. Called when the single worker starts:
-    a job still marked running then belongs to a worker that died mid-job. A job that has
-    used all its attempts is marked failed instead. Commits; returns the number touched."""
-    orphans = list(
-        session.scalars(
-            select(Job).where(Job.tenant_id == tenant_id, Job.status == "running").with_for_update()
-        )
-    )
+def requeue_orphans(session: Session, tenant_id: str, kinds: Sequence[str] | None = None) -> int:
+    """Put jobs left in `running` back in the queue. Called when a process starts, for the
+    job kinds it runs: a job of those kinds still marked running then belongs to a process
+    that died mid-job. A job that has used all its attempts is marked failed instead.
+    Commits; returns the number touched."""
+    query = select(Job).where(Job.tenant_id == tenant_id, Job.status == "running")
+    if kinds is not None:
+        query = query.where(Job.kind.in_(list(kinds)))
+    orphans = list(session.scalars(query.with_for_update()))
     now = datetime.now(UTC)
     for job in orphans:
         note = "worker stopped while the job was running"

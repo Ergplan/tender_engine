@@ -1,6 +1,7 @@
 """Job runner for one tenant: claims one of its jobs at a time and runs the
 parse -> section_map -> extract -> validate chain. A single process; failures are recorded
-with the traceback and retried with backoff up to the job's max_attempts.
+with the traceback and retried with backoff up to the job's max_attempts. It claims only
+the job kinds it has a handler for: the agent pass (agent/) runs in its own container.
 """
 
 import logging
@@ -66,7 +67,7 @@ class Runner:
     def run_once(self) -> bool:
         """Run the next due job, if any. Returns whether a job was run."""
         with self._session_factory() as session:
-            job = jobs.claim_next(session, self._settings.tenant_id)
+            job = jobs.claim_next(session, self._settings.tenant_id, kinds=tuple(self._handlers))
             if job is None:
                 return False
             job_id, kind, payload = job.id, job.kind, dict(job.payload)
@@ -105,7 +106,9 @@ class Runner:
 
     def run_forever(self, stop: threading.Event) -> None:
         with self._session_factory() as session:
-            orphans = jobs.requeue_orphans(session, self._settings.tenant_id)
+            orphans = jobs.requeue_orphans(
+                session, self._settings.tenant_id, kinds=tuple(self._handlers)
+            )
         if orphans:
             log.warning("%s job(s) left running by an earlier worker were put back", orphans)
         log.info("worker polling every %ss", self._settings.worker_poll_seconds)

@@ -116,3 +116,30 @@ def test_a_worker_only_sees_the_jobs_of_its_own_tenant(db: Session) -> None:
     assert jobs.claim_next(db, "ergplan") is None
     claimed = jobs.claim_next(db, "other")
     assert claimed is not None and claimed.id == foreign.id
+
+
+def test_a_claim_limited_to_kinds_skips_the_others(db: Session) -> None:
+    parse, agent = enqueue(db, "parse"), enqueue(db, "agent_pass")
+    parse.run_after = datetime.now(UTC) - timedelta(seconds=5)
+    db.commit()
+    claimed = jobs.claim_next(db, "ergplan", kinds=("agent_pass",))
+    assert claimed is not None and claimed.id == agent.id
+    assert jobs.claim_next(db, "ergplan", kinds=("agent_pass", "other")) is None
+    db.refresh(parse)
+    assert (parse.status, parse.attempts) == ("queued", 0)
+    claimed = jobs.claim_next(db, "ergplan", kinds=("parse",))
+    assert claimed is not None and claimed.id == parse.id
+
+
+def test_orphans_are_put_back_only_for_the_kinds_asked(db: Session) -> None:
+    parse, agent = enqueue(db, "parse"), enqueue(db, "agent_pass")
+    for job in (parse, agent):
+        job.status = "running"
+        job.attempts = 1
+    db.commit()
+    assert jobs.requeue_orphans(db, "ergplan", kinds=("agent_pass",)) == 1
+    db.refresh(parse)
+    db.refresh(agent)
+    assert (agent.status, parse.status) == ("queued", "running")
+    assert jobs.requeue_orphans(db, "ergplan", kinds=("extract",)) == 0
+    assert jobs.requeue_orphans(db, "ergplan") == 1

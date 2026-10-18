@@ -42,6 +42,19 @@ class Settings(BaseSettings):
     worker_poll_seconds: float = 2.0
 
     openai_api_key: str = ""
+    # The independent agent pass (Stage 5A): the OpenAI model it runs on, its list prices
+    # (the invoice is the truth; these give the figure the run records) and the factor on
+    # the input price for tokens the provider served from its prompt cache.
+    openai_model: str = "gpt-6.1-sol"
+    openai_price_in_per_mtok: float = 2.5
+    openai_price_out_per_mtok: float = 10.0
+    openai_cache_read_factor: float = 0.1
+    # Model calls one pass may make; pages one read_pages call may return; whether page
+    # images go with the text when the agent asks for them (a page without a text layer
+    # always comes as an image).
+    agent_max_turns: int = 200
+    agent_max_pages_per_read: int = 6
+    agent_page_images: bool = True
     # Guards /api/v1/admin/* (the reliability dashboard). Empty: the routes are refused.
     admin_token: str = ""
 

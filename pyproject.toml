@@ -18,6 +18,7 @@ dependencies = [
     "rapidfuzz>=3.10,<4",
     "pyyaml>=6.0.3",
     "openpyxl>=3.1.5",
+    "openai-agents>=0.24.0",
 ]
 
 [dependency-groups]
@@ -46,7 +47,7 @@ select = ["E", "F", "I", "UP", "B", "SIM"]
 python_version = "3.12"
 strict = true
 plugins = ["pydantic.mypy"]
-files = ["core", "tender", "api", "worker", "evals"]
+files = ["core", "tender", "api", "worker", "agent", "evals"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests", "tender/domain_packs"]

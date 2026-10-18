@@ -20,6 +20,11 @@ class LLMCallLog(IdMixin, TenantAuditMixin, Base):
     extraction_run_id: Mapped[str | None] = mapped_column(
         ForeignKey("extraction_run.id"), nullable=True, index=True
     )
+    # The agent pass the call belongs to (Stage 5A): its turns are logged here like every
+    # other call, and the run's tokens and cost are the sum of its rows.
+    agent_run_id: Mapped[str | None] = mapped_column(
+        ForeignKey("agent_run.id"), nullable=True, index=True
+    )
     prompt_name: Mapped[str] = mapped_column(String(100), nullable=False)
     prompt_version: Mapped[str] = mapped_column(String(20), nullable=False)
     output_schema: Mapped[str] = mapped_column(String(200), nullable=False)

@@ -510,6 +510,55 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/tenders/{tender_id}/agent-pass": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Agent Passes
+         * @description The agent passes of the tender, oldest first, with their turns, tokens and cost.
+         */
+        get: operations["list_agent_passes_api_v1_tenders__tender_id__agent_pass_get"];
+        put?: never;
+        /**
+         * Start Agent Pass
+         * @description Queue the independent agent pass over one version of the tender (the current one
+         *     by default). The agent container runs it: a second model, from another family, reads
+         *     the documents through its own tools and the field schema, without the engine's
+         *     candidates, the gold values or any reviewer's decision. Its findings land in
+         *     `agent_finding` and never become candidates or canonical facts.
+         */
+        post: operations["start_agent_pass_api_v1_tenders__tender_id__agent_pass_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tenders/{tender_id}/agent-pass/{run_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Agent Pass
+         * @description One pass with every finding the agent submitted, accepted or refused (a refusal
+         *     carries its reason), and the fields of the schema for which no finding stands.
+         */
+        get: operations["get_agent_pass_api_v1_tenders__tender_id__agent_pass__run_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/tenders/{tender_id}/amendments": {
         parameters: {
             query?: never;
@@ -712,6 +761,101 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AgentFindingOut */
+        AgentFindingOut: {
+            /** Confidence */
+            confidence: number;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Evidence */
+            evidence: unknown[];
+            /** Field Path */
+            field_path: string;
+            /** Id */
+            id: string;
+            /** Ordinal */
+            ordinal: number;
+            /** Rationale */
+            rationale: string;
+            /** Reason */
+            reason: string | null;
+            /** Status */
+            status: string;
+            /** Value */
+            value: unknown | null;
+            /** Value Type */
+            value_type: string;
+        };
+        /** AgentPassOut */
+        AgentPassOut: {
+            /** Findings */
+            findings: components["schemas"]["AgentFindingOut"][];
+            run: components["schemas"]["AgentRunOut"];
+            /** Unsubmitted */
+            unsubmitted: string[];
+        };
+        /** AgentPassRequest */
+        AgentPassRequest: {
+            /** Version No */
+            version_no?: number | null;
+        };
+        /** AgentRunOut */
+        AgentRunOut: {
+            /** Cost Usd */
+            cost_usd: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Created By */
+            created_by: string;
+            /** Documents */
+            documents: unknown[];
+            /** Error */
+            error: string | null;
+            /** Finished At */
+            finished_at: string | null;
+            /** Id */
+            id: string;
+            /** Model */
+            model: string;
+            /** Object Id */
+            object_id: string;
+            /** Object Version */
+            object_version: number;
+            /** Pages Offered */
+            pages_offered: {
+                [key: string]: unknown;
+            };
+            /** Pages Read */
+            pages_read: {
+                [key: string]: unknown;
+            };
+            /** Prompt Name */
+            prompt_name: string;
+            /** Prompt Version */
+            prompt_version: string;
+            /** Schema Name */
+            schema_name: string;
+            /** Schema Version */
+            schema_version: string;
+            /** Started At */
+            started_at: string | null;
+            /** Status */
+            status: string;
+            /** Tokens Cached */
+            tokens_cached: number;
+            /** Tokens In */
+            tokens_in: number;
+            /** Tokens Out */
+            tokens_out: number;
+            /** Turns */
+            turns: number;
+        };
         /** AmendmentChange */
         AmendmentChange: {
             before: components["schemas"]["ChangeBefore"] | null;
@@ -2863,6 +3007,106 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["TenderOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_agent_passes_api_v1_tenders__tender_id__agent_pass_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tender_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgentRunOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    start_agent_pass_api_v1_tenders__tender_id__agent_pass_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-reviewer"?: string | null;
+            };
+            path: {
+                tender_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AgentPassRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgentRunOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_agent_pass_api_v1_tenders__tender_id__agent_pass__run_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tender_id: string;
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgentPassOut"];
                 };
             };
             /** @description Validation Error */

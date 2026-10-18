@@ -79,12 +79,16 @@ def test_a_non_retryable_failure_fails_the_job_and_the_run_at_once(
     assert failed.status == "failed" and failed.error is not None and "HTTP 400" in failed.error
 
 
-def test_an_unknown_job_kind_fails_without_retry(pipeline: Pipeline, db: Session) -> None:
+def test_a_job_kind_without_a_handler_is_left_for_the_process_that_owns_it(
+    pipeline: Pipeline, db: Session
+) -> None:
+    """Since Stage 5A two processes share the job table: the worker claims only the kinds
+    it handles, so a kind it does not know stays queued, untouched, for another process."""
     job = jobs.enqueue(db, tenant_id="ergplan", kind="mystery", payload={}, created_by="pytest")
     db.commit()
-    assert pipeline.runner.run_once() is True
+    assert pipeline.runner.run_once() is False
     db.refresh(job)
-    assert job.status == "failed" and "no handler for job kind 'mystery'" in (job.last_error or "")
+    assert (job.status, job.attempts, job.last_error) == ("queued", 0, None)
 
 
 def test_a_section_map_that_fails_for_good_is_shown_on_the_document(

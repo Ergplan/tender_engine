@@ -1,0 +1,19 @@
+make test-e2e equivalent, run on the VM on 2026-10-18 with the real models:
+  .venv/bin/python -m pytest -p no:cacheprovider -q -m slow -s tests/e2e/test_agent_pass.py
+
+agent pass on Pre-Bid_meeting_notification48.pdf: status=done turns=118 tokens_in=1419692 (cached 1402646) tokens_out=7073 cost_usd=0.4640 findings={'accepted': 11, 'not_found': 94} pages_read={'1': [1]}
+  core.identity.tender_number = 'SECI/C&P/IPP/15/0009/26-27' (1.00) doc 1 p1: 'This has reference to the RfS (Ref No. SECI/C&P/IPP/15/0009/'
+  core.identity.issuing_agency = 'Solar Energy Corporation of India Limited (SECI)' (0.94) doc 1 p1: 'Solar Energy Corporation of India Limited (SECI)'
+  core.identity.title = 'Request for Selection (RfS) Document for Selection of Solar Power Developers for Setting up of 700 MW ISTS-Connected Solar PV Power Projects in India under Tariff-Based Competitive Bidding (C&I-1)' (1.00) doc 1 p1: 'Request for Selection (RfS) Document for Selection\nof Solar '
+  core.identity.portal = 'ETS Portal' (0.88) doc 1 p1: 'TSC On ETS Portal: SECI-2026-TN000027'
+  core.identity.tender_type_as_stated = 'ISTS-Connected Solar PV Power Projects' (1.00) doc 1 p1: '700 MW ISTS-Connected Solar PV\nPower Projects in India under'
+  sector.power.common.total_capacity_mw = 700 (1.00) doc 1 p1: '700 MW ISTS-Connected Solar PV\nPower Projects in India under'
+  sector.power.common.location_constraint = 'ists_anywhere' (0.94) doc 1 p1: '700 MW ISTS-Connected Solar PV\nPower Projects in India under'
+  core.key_dates.nit_date = '2026-09-03' (0.99) doc 1 p1: 'This has reference to the RfS (Ref No. SECI/C&P/IPP/15/0009/'
+  core.key_dates.pre_bid_meeting_date = '2026-09-14' (1.00) doc 1 p1: 'a Pre-Bid Meeting shall be organized in\nhybrid mode mode on '
+  core.key_dates.bid_submission_deadline = '2026-10-05' (1.00) doc 1 p1: 'Bid Submission End Date (Online): 05/10/2026 18:00:00'
+  sector.power.common.source_mix_rules = [{'source': 'solar', 'condition': 'Selection of Solar Power Developers for ISTS-connected Solar PV power projects in India.', 'treatment': 'required', 'limit_unit': None, 'limit_value': None}] (0.94) doc 1 p1: 'Selection\nof Solar Power Developers for Setting up of 700 MW'
+.
+1 passed
+
+Settings at the time of the run: agent_max_turns 120, parallel tool calls off (one tool call per turn: 105 submissions and 13 reads/searches in 118 turns). Changed after it to 200 and on.

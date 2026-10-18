@@ -18,7 +18,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 CI_DIR = ROOT / ".ci"
 WEB = ROOT / "web"
-PY_PACKAGES = ("core", "tender", "api", "worker")
+PY_PACKAGES = ("core", "tender", "api", "worker", "agent")
 WATCH_DIRS = (*PY_PACKAGES, "tests", "scripts", "migrations", "infra/ci", "web/src")
 WATCH_FILES = ("pyproject.toml", "alembic.ini", "web/package.json", "web/tsconfig.json")
 WATCH_SUFFIXES = {".py", ".md", ".yaml", ".yml", ".toml", ".ini", ".ts", ".tsx", ".json", ".css"}

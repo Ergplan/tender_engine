@@ -50,6 +50,12 @@ services:
     <<: *python
     command: python -m worker.main
 
+  # The independent agent pass (Stage 5A) in its own container: the same image, a process
+  # that claims only `agent_pass` jobs and calls the OpenAI model through core/llm.
+  agent:
+    <<: *python
+    command: python -m agent.main
+
   web:
     build:
       context: .

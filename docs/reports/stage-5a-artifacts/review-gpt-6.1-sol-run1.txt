@@ -1,0 +1,58 @@
+reviewer: gpt-6.1-sol  input chars: 360166  tokens in/out: 91288/3230
+
+### (a) Non-negotiable invariants
+
+| Invariant | Assessment against this diff |
+|---|---|
+| **The LLM never writes truth** | Upheld for this stage’s changes, subject to the stage prompt’s explicit `agent_finding` exception. Findings are inserted into `AgentFinding`, not `candidate` or `canonical_fact` (`agent/harness.py:429–475`). No canonical writer is added. |
+| **Every value carries its evidence** | Accepted agent values require evidence, read pages and quotes located on the cited page (`agent/harness.py:236–289, 375–405`). Null findings are explicit abstentions (`agent/harness.py:265–276`). Candidate validation and canonical evidence inheritance are unchanged and cannot be independently verified from this diff. |
+| **The tender is a versioned object** | No in-place tender-version mutation is added. Inputs include documents through the requested version (`agent/inputs.py:83–110`); runs record that version (`agent/service.py:79–89`). The existing canonical projection implementation is not shown. |
+| **Candidates are immutable** | No candidate updates are added. Agent findings use their separate table (`agent/harness.py:440–455`). Existing approval/edit behavior is not shown. |
+| **Validation is deterministic** | New finding checks use ordinary Python, the evidence resolver and value-type coercion, without a validation-time model call (`agent/harness.py:219–289, 375–405`). Existing candidate rule execution is unchanged and not shown. |
+| **Everything is audited and tenant-scoped** | New tables include tenant/audit columns (`migrations/versions/0016_agent_pass.py:23–29, 58–64`). Most new queries filter by tenant, but `_stand` performs an unscoped primary-key lookup. See finding below. |
+| **Feedback is stored, never auto-applied** | No feedback reader or runtime feedback application is added. Agent inputs are assembled from documents, versions, sections and schema definitions (`agent/inputs.py:14–23, 83–115`). Existing correction storage is not shown. |
+| **API first** | The new operation has start, list and result endpoints (`api/v1/tenders/agent_pass.py:39–87`), exercised through `/api/v1/` in integration tests (`tests/api/test_agent_pass.py:53–95`). No UI intelligence path is added. |
+
+FINDINGS: 1
+1. `agent/harness.py:482–484`: `session.get(AgentFinding, earlier_id)` has no `tenant_id` filter. A previously tenant-associated ID does not satisfy the invariant that every query filters by tenant.
+
+### (b) Tests for added API endpoints
+
+| Endpoint | Test |
+|---|---|
+| `POST /api/v1/tenders/{tender_id}/agent-pass` — `api/v1/tenders/agent_pass.py:39` | `test_a_pass_is_queued_run_by_the_agent_container_and_read_back`, `tests/api/test_agent_pass.py:53–67`; refusals at `:98–119`. |
+| `GET /api/v1/tenders/{tender_id}/agent-pass` — `api/v1/tenders/agent_pass.py:62` | Same integration test, `tests/api/test_agent_pass.py:76–78`. |
+| `GET /api/v1/tenders/{tender_id}/agent-pass/{run_id}` — `api/v1/tenders/agent_pass.py:71` | Same integration test, `tests/api/test_agent_pass.py:80–95`; cross-tender and missing-run refusals at `:115–119`. |
+
+All three also have review-token rejection coverage at `tests/api/test_agent_pass.py:122–133`.
+
+FINDINGS: none
+
+### (c) Audit coverage for specified tables
+
+No new direct production writes to `candidate`, `approval`, `canonical_fact`, `tender_version` or `feedback` appear in the diff. New finding persistence targets `agent_finding`, with an audit call (`agent/harness.py:440–474`).
+
+Tests invoke the existing version-writing service, for example `tests/agent/conftest.py:25–29`, but its implementation and audit call are outside the supplied diff. Existing write paths therefore cannot be certified here.
+
+FINDINGS: none
+
+### (d) `make trace` regeneration
+
+Cannot determine from the supplied inputs whether execution regenerates `docs/FIELD-TRACE.md` without diff. This is not “not applicable”: the trace generator exists and is changed (`scripts/gen_field_trace.py:151–159, 246–250`), and generated content is included. No execution result is supplied, and the complete generator and its source inputs are not available here.
+
+FINDINGS: 1
+1. `scripts/gen_field_trace.py:151–159, 246–250`; `docs/FIELD-TRACE.md:3–5`: regeneration without diff remains unverified. The changed generator and committed output alone do not establish that result.
+
+### (e) Unsupported draft-report claims
+
+FINDINGS: 10
+1. `docs/reports/STAGE-5A-REPORT.md:5, 19, 43–47`: “built, checked and deployed,” all tests green, migration applied, service started, health OK, and watcher stopped “as you asked” are operational claims without supplied execution records. The referenced “Checks” section is absent.
+2. `docs/reports/STAGE-5A-REPORT.md:11`: the installed SDK being specifically `0.24` and the configured model being the “current GPT model” are not established. `pyproject.toml:21` specifies only `openai-agents>=0.24.0`; `core/config.py:48` supplies a model-name default, not evidence of model currency.
+3. `docs/reports/STAGE-5A-REPORT.md:15`: the claimed requirement to read pages before **any** finding is not enforced for evidence-free abstentions. `agent/harness.py:236–264` checks reading only while iterating evidence; `:265–276` accepts null with empty evidence even when nothing has been read.
+4. `docs/reports/STAGE-5A-REPORT.md:26`: “Every write is audited” is false. `_record_pages_read` commits `agent_run.pages_read` without an audit call (`agent/harness.py:502–504`). Running and input-failure transitions also commit without audit calls (`agent/service.py:177–190`).
+5. `docs/reports/STAGE-5A-REPORT.md:27`: a pass ending with unsubmitted fields does not always name them in `error`. Stopped runs return before the missing-field note is constructed (`agent/service.py:193–200`).
+6. `docs/reports/STAGE-5A-REPORT.md:29`: “the TypeScript client regenerated” is unsupported; no generated TypeScript client change appears in the supplied diff.
+7. `docs/reports/STAGE-5A-REPORT.md:35, 66`: the actual first-run status, turns, token totals, cost, finding counts, accepted values matching the PDF, and total stage spend are unsupported by supplied run artifacts. The test prints measurements (`tests/e2e/test_agent_pass.py:105–120`), but its output and the PDF are not supplied. The claimed historical settings changes at report line 35 are likewise not demonstrated by the diff.
+8. `docs/reports/STAGE-5A-REPORT.md:35`: the conclusion that a full tender costs “dollars, not tens of dollars” is not established by the reported one-page notice run. No full-tender measurement is supplied.
+9. `docs/reports/STAGE-5A-REPORT.md:39`: the tests do not cover “every refusal” of `submit_finding`. In particular, the shown harness tests do not exercise empty rationale or nonexistent evidence pages/documents, despite those rejection branches at `agent/harness.py:234–248`.
+10. `docs/reports/STAGE-5A-REPORT.md:61`: recomputation of stored run costs by `make report` “only if asked” is unsupported. The supplied code computes cost during call logging and run completion (`core/llm/agent_calls.py:31–40, 88–94`; `agent/harness.py:296–323`); no report-driven recomputation path is shown.

@@ -34,6 +34,8 @@ WEB = ROOT / "web" / "src"
 READ_ROUTE = ("GET", "/api/v1/tenders/{tender_id}/review")
 WRITE_ROUTE = ("POST", "/api/v1/approvals")
 PROMPT_VERSION = "v1"
+AGENT_PROMPT = "agent_pass"
+AGENT_PROMPT_VERSION = "v1"
 _PATH = re.compile(r"^[a-z0-9_]+(\.[a-z0-9_]+)+$")
 
 
@@ -149,6 +151,12 @@ def build(catalog: Catalog | None = None) -> str:
     )
     cross = rule_fields(catalog)
     concerns = run_rule_fields()
+    # The independent agent (Stage 5A) is asked for every field read from pages but the
+    # summary; its findings go to agent_finding and never to a candidate or a fact.
+    agent_prompt = load_prompt(AGENT_PROMPT, AGENT_PROMPT_VERSION, catalog.prompt_roots)
+    agent_tag = (
+        f"AGENT {agent_prompt.name} {agent_prompt.version} → agent_finding (never canonical)"
+    )
 
     rows: dict[str, dict[str, Any]] = {}
     for tender_type in sorted(catalog.types):
@@ -187,7 +195,12 @@ def build(catalog: Catalog | None = None) -> str:
         "A field tagged DERIVED is written by `tender.services.derive.DerivedWriter.write()` "
         "from the decided fields its rule names (deterministic code under "
         "`tender/domain_packs/<pack>/derivations/`, no model call), with their evidence "
-        "inherited; it is validated and decided like any other.",
+        "inherited; it is validated and decided like any other. A field tagged AGENT is also "
+        "read by the independent agent pass (Stage 5A, `agent/`, a model of another family "
+        "with the three tools read_pages, search_text and submit_finding): its finding is "
+        "written to `agent_finding` by `agent.harness.Harness.submit_finding()` with "
+        "evidence located on the cited page, for the three-way comparison, and never "
+        "becomes a candidate or a canonical fact.",
         "",
         f"{len(rows)} fields over {len(catalog.types)} tender types.",
         "",
@@ -233,6 +246,8 @@ def build(catalog: Catalog | None = None) -> str:
             record = load_prompt(summary.PROMPT_NAME, summary.PROMPT_VERSION, catalog.prompt_roots)
             producer = f"LLM {record.name} {record.version} from the record (narrative: {producer})"
             service = "tender.services.summary.SummaryWriter.write()"
+        elif not row["derived"]:
+            producer = f"{producer}; {agent_tag}"
         lines.append(
             f"| `{path}` | {types} | review/FieldCard value ({field.value_type}); "
             f"review/EditForm {components[field.value_type]} | {field.section}: "

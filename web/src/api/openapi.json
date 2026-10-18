@@ -1,6 +1,274 @@
 {
   "components": {
     "schemas": {
+      "AgentFindingOut": {
+        "properties": {
+          "confidence": {
+            "title": "Confidence",
+            "type": "number"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "evidence": {
+            "items": {},
+            "title": "Evidence",
+            "type": "array"
+          },
+          "field_path": {
+            "title": "Field Path",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "ordinal": {
+            "title": "Ordinal",
+            "type": "integer"
+          },
+          "rationale": {
+            "title": "Rationale",
+            "type": "string"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {},
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "value_type": {
+            "title": "Value Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "ordinal",
+          "field_path",
+          "value",
+          "value_type",
+          "confidence",
+          "rationale",
+          "status",
+          "reason",
+          "evidence",
+          "created_at"
+        ],
+        "title": "AgentFindingOut",
+        "type": "object"
+      },
+      "AgentPassOut": {
+        "properties": {
+          "findings": {
+            "items": {
+              "$ref": "#/components/schemas/AgentFindingOut"
+            },
+            "title": "Findings",
+            "type": "array"
+          },
+          "run": {
+            "$ref": "#/components/schemas/AgentRunOut"
+          },
+          "unsubmitted": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Unsubmitted",
+            "type": "array"
+          }
+        },
+        "required": [
+          "run",
+          "findings",
+          "unsubmitted"
+        ],
+        "title": "AgentPassOut",
+        "type": "object"
+      },
+      "AgentPassRequest": {
+        "properties": {
+          "version_no": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version No"
+          }
+        },
+        "title": "AgentPassRequest",
+        "type": "object"
+      },
+      "AgentRunOut": {
+        "properties": {
+          "cost_usd": {
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Cost Usd",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "created_by": {
+            "title": "Created By",
+            "type": "string"
+          },
+          "documents": {
+            "items": {},
+            "title": "Documents",
+            "type": "array"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "finished_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finished At"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "model": {
+            "title": "Model",
+            "type": "string"
+          },
+          "object_id": {
+            "title": "Object Id",
+            "type": "string"
+          },
+          "object_version": {
+            "title": "Object Version",
+            "type": "integer"
+          },
+          "pages_offered": {
+            "additionalProperties": true,
+            "title": "Pages Offered",
+            "type": "object"
+          },
+          "pages_read": {
+            "additionalProperties": true,
+            "title": "Pages Read",
+            "type": "object"
+          },
+          "prompt_name": {
+            "title": "Prompt Name",
+            "type": "string"
+          },
+          "prompt_version": {
+            "title": "Prompt Version",
+            "type": "string"
+          },
+          "schema_name": {
+            "title": "Schema Name",
+            "type": "string"
+          },
+          "schema_version": {
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started At"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "tokens_cached": {
+            "title": "Tokens Cached",
+            "type": "integer"
+          },
+          "tokens_in": {
+            "title": "Tokens In",
+            "type": "integer"
+          },
+          "tokens_out": {
+            "title": "Tokens Out",
+            "type": "integer"
+          },
+          "turns": {
+            "title": "Turns",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "object_id",
+          "object_version",
+          "schema_name",
+          "schema_version",
+          "prompt_name",
+          "prompt_version",
+          "model",
+          "status",
+          "started_at",
+          "finished_at",
+          "turns",
+          "tokens_in",
+          "tokens_cached",
+          "tokens_out",
+          "cost_usd",
+          "error",
+          "pages_offered",
+          "pages_read",
+          "documents",
+          "created_at",
+          "created_by"
+        ],
+        "title": "AgentRunOut",
+        "type": "object"
+      },
       "AmendmentChange": {
         "properties": {
           "before": {
@@ -5121,6 +5389,172 @@
         "summary": "Get Tender",
         "tags": [
           "tenders"
+        ]
+      }
+    },
+    "/api/v1/tenders/{tender_id}/agent-pass": {
+      "get": {
+        "description": "The agent passes of the tender, oldest first, with their turns, tokens and cost.",
+        "operationId": "list_agent_passes_api_v1_tenders__tender_id__agent_pass_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tender_id",
+            "required": true,
+            "schema": {
+              "title": "Tender Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AgentRunOut"
+                  },
+                  "title": "Response List Agent Passes Api V1 Tenders  Tender Id  Agent Pass Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Agent Passes",
+        "tags": [
+          "agent"
+        ]
+      },
+      "post": {
+        "description": "Queue the independent agent pass over one version of the tender (the current one\nby default). The agent container runs it: a second model, from another family, reads\nthe documents through its own tools and the field schema, without the engine's\ncandidates, the gold values or any reviewer's decision. Its findings land in\n`agent_finding` and never become candidates or canonical facts.",
+        "operationId": "start_agent_pass_api_v1_tenders__tender_id__agent_pass_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tender_id",
+            "required": true,
+            "schema": {
+              "title": "Tender Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-reviewer",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Reviewer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgentPassRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentRunOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Start Agent Pass",
+        "tags": [
+          "agent"
+        ]
+      }
+    },
+    "/api/v1/tenders/{tender_id}/agent-pass/{run_id}": {
+      "get": {
+        "description": "One pass with every finding the agent submitted, accepted or refused (a refusal\ncarries its reason), and the fields of the schema for which no finding stands.",
+        "operationId": "get_agent_pass_api_v1_tenders__tender_id__agent_pass__run_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tender_id",
+            "required": true,
+            "schema": {
+              "title": "Tender Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "title": "Run Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentPassOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Agent Pass",
+        "tags": [
+          "agent"
         ]
       }
     },

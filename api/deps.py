@@ -6,6 +6,7 @@ from typing import Annotated
 from fastapi import Depends, Header, Request
 from sqlalchemy.orm import Session
 
+from agent.service import AgentPassService
 from api.middleware.errors import AppError
 from api.middleware.review_token import ReviewContext
 from core.config import Settings
@@ -175,3 +176,21 @@ def get_tokens(tenant_id: TenantDep) -> TokenService:
 
 
 TokensDep = Annotated[TokenService, Depends(get_tokens)]
+
+
+def get_agent_passes(
+    request: Request,
+    catalog: CatalogDep,
+    schemas: SchemasDep,
+    storage: StorageDep,
+    tenders: TendersDep,
+    tenant_id: TenantDep,
+) -> AgentPassService:
+    """Only to queue a pass and read it back: the agent container runs it."""
+    settings: Settings = request.app.state.settings
+    return AgentPassService(
+        catalog, schemas, tenders, settings.model_copy(update={"tenant_id": tenant_id}), storage
+    )
+
+
+AgentPassesDep = Annotated[AgentPassService, Depends(get_agent_passes)]

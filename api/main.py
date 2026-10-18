@@ -8,8 +8,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from api.middleware import audit, errors, review_token
 from api.v1.admin import freshness, reliability
 from api.v1.core import documents, extraction, health, review
+from api.v1.tenders import agent_pass, tenders
 from api.v1.tenders import review as tender_review
-from api.v1.tenders import tenders
 from core.config import Settings
 from core.db import make_engine, make_session_factory
 from core.llm.client import LLMClient
@@ -26,6 +26,7 @@ V1_ROUTERS = (
     review.router,
     tenders.router,
     tender_review.router,
+    agent_pass.router,
     reliability.router,
     freshness.router,
 )
