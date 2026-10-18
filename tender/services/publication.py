@@ -26,7 +26,7 @@ from sqlalchemy.orm import Session
 
 from core.models import Candidate, ExtractionRun
 from core.models.extraction import REVIEWABLE_STATUSES
-from tender.models import Tender, TenderVersion, TenderVersionDocument
+from tender.models import PublicationHold, Tender, TenderVersion, TenderVersionDocument
 from tender.services.packs import Catalog
 from tender.services.review import latest_snapshot
 from tender.services.tenders import OBJECT_TYPE
@@ -74,6 +74,20 @@ class PublicationState(BaseModel):
     suspended_by: list[str] = []
 
 
+def standing_hold(session: Session, tender: Tender) -> PublicationHold | None:
+    """The oldest hold on the tender that has not been lifted, or None."""
+    return session.scalar(
+        select(PublicationHold)
+        .where(
+            PublicationHold.tenant_id == tender.tenant_id,
+            PublicationHold.tender_id == tender.id,
+            PublicationHold.lifted_at.is_(None),
+        )
+        .order_by(PublicationHold.created_at)
+        .limit(1)
+    )
+
+
 def reviewed_version_of(session: Session, tender: Tender) -> int | None:
     """The version the latest completed review saw, or None without one."""
     snapshot = latest_snapshot(session, tender)
@@ -115,6 +129,23 @@ def publication_state(session: Session, catalog: Catalog, tender: Tender) -> Pub
     )
     current = versions[-1].version_no if versions else None
     reviewed = reviewed_version_of(session, tender)
+    hold = standing_hold(session, tender)
+    if hold is not None:
+        # A takedown or a correction hold suspends publication whatever the review state;
+        # the "version" a reader is pointed at is the hold itself.
+        return PublicationState(
+            state="publication_suspended",
+            reviewed_version=reviewed,
+            current_version=current,
+            unreviewed_version=UnreviewedVersion(
+                version_no=current or 0,
+                kind=f"hold:{hold.kind}",
+                issued_on=hold.created_at.date(),
+                document_ids=[],
+            ),
+            possibly_superseded=[],
+            suspended_by=[f"hold:{hold.kind}"],
+        )
     if reviewed is None:
         return PublicationState(
             state="not_published", reviewed_version=None, current_version=current

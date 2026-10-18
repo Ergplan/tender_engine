@@ -19,7 +19,9 @@ from core.models.base import Base, IdMixin, TenantAuditMixin
 
 ROLES = ("reviewer", "approver", "admin", "api_client")
 USER_STATUSES = ("active", "disabled")
-API_KEY_SCOPES = ("read", "model")
+# read/model: the intelligence API. public:read / own:read: an MCP access token issued by
+# the library's OAuth server (Stage 5D) for a signed-in user.
+API_KEY_SCOPES = ("read", "model", "public:read", "own:read")
 # What a tenant is: an enterprise customer, a free account (reads public only), or the
 # reserved public library tenant itself (Stage 5D).
 TENANT_PLANS = ("enterprise", "free", "public")

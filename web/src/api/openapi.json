@@ -877,6 +877,122 @@
         "title": "ApprovalView",
         "type": "object"
       },
+      "Assumptions": {
+        "description": "The user's, never the tender's. Defaults are marked \"assumed\" by every caller.",
+        "properties": {
+          "auxiliary_consumption_percent": {
+            "default": 1.0,
+            "title": "Auxiliary Consumption Percent",
+            "type": "number"
+          },
+          "capex_inr_crore_per_mw": {
+            "default": 4.1,
+            "title": "Capex Inr Crore Per Mw",
+            "type": "number"
+          },
+          "cuf_percent": {
+            "default": 24.0,
+            "title": "Cuf Percent",
+            "type": "number"
+          },
+          "debt_share_percent": {
+            "default": 75.0,
+            "title": "Debt Share Percent",
+            "type": "number"
+          },
+          "interest_percent": {
+            "default": 9.25,
+            "title": "Interest Percent",
+            "type": "number"
+          },
+          "om_escalation_percent": {
+            "default": 3.0,
+            "title": "Om Escalation Percent",
+            "type": "number"
+          },
+          "om_inr_lakh_per_mw_year": {
+            "default": 5.5,
+            "title": "Om Inr Lakh Per Mw Year",
+            "type": "number"
+          },
+          "ppa_tenure_years": {
+            "default": 25,
+            "title": "Ppa Tenure Years",
+            "type": "integer"
+          },
+          "tariff_inr_per_kwh": {
+            "default": 3.0,
+            "title": "Tariff Inr Per Kwh",
+            "type": "number"
+          },
+          "tax_rate_percent": {
+            "default": 25.17,
+            "title": "Tax Rate Percent",
+            "type": "number"
+          },
+          "tenor_years": {
+            "default": 18,
+            "title": "Tenor Years",
+            "type": "integer"
+          }
+        },
+        "title": "Assumptions",
+        "type": "object"
+      },
+      "AssumptionsIn": {
+        "properties": {
+          "assumptions": {
+            "additionalProperties": true,
+            "title": "Assumptions",
+            "type": "object"
+          },
+          "model_type": {
+            "default": "power_project_finance",
+            "title": "Model Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "assumptions"
+        ],
+        "title": "AssumptionsIn",
+        "type": "object"
+      },
+      "AssumptionsOut": {
+        "properties": {
+          "assumptions": {
+            "additionalProperties": true,
+            "title": "Assumptions",
+            "type": "object"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "model_type": {
+            "title": "Model Type",
+            "type": "string"
+          },
+          "tender_id": {
+            "title": "Tender Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "tender_id",
+          "model_type",
+          "assumptions",
+          "created_at"
+        ],
+        "title": "AssumptionsOut",
+        "type": "object"
+      },
       "Body_add_version_api_v1_tenders__tender_id__versions_post": {
         "properties": {
           "file": {
@@ -945,6 +1061,24 @@
           "file"
         ],
         "title": "Body_add_version_api_v1_tenders__tender_id__versions_post",
+        "type": "object"
+      },
+      "Body_decide_api_v1_oauth_consent_post": {
+        "properties": {
+          "decision": {
+            "title": "Decision",
+            "type": "string"
+          },
+          "request": {
+            "title": "Request",
+            "type": "string"
+          }
+        },
+        "required": [
+          "decision",
+          "request"
+        ],
+        "title": "Body_decide_api_v1_oauth_consent_post",
         "type": "object"
       },
       "Body_upload_document_api_v1_documents_post": {
@@ -1561,6 +1695,177 @@
           "order"
         ],
         "title": "CompiledSection",
+        "type": "object"
+      },
+      "CorrectionIn": {
+        "properties": {
+          "claimant_email": {
+            "anyOf": [
+              {
+                "maxLength": 320,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Claimant Email"
+          },
+          "claimed_error": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Claimed Error",
+            "type": "string"
+          },
+          "field_path": {
+            "maxLength": 200,
+            "minLength": 3,
+            "title": "Field Path",
+            "type": "string"
+          },
+          "reasoning": {
+            "maxLength": 8000,
+            "minLength": 1,
+            "title": "Reasoning",
+            "type": "string"
+          },
+          "tender_id": {
+            "title": "Tender Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tender_id",
+          "field_path",
+          "claimed_error",
+          "reasoning"
+        ],
+        "title": "CorrectionIn",
+        "type": "object"
+      },
+      "CorrectionOut": {
+        "properties": {
+          "claimant_email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Claimant Email"
+          },
+          "claimant_tenant_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Claimant Tenant Id"
+          },
+          "claimed_error": {
+            "title": "Claimed Error",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "field_path": {
+            "title": "Field Path",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "reasoning": {
+            "title": "Reasoning",
+            "type": "string"
+          },
+          "resolution": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolution"
+          },
+          "resolved_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolved At"
+          },
+          "resolved_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolved By"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "tender_id": {
+            "title": "Tender Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "tender_id",
+          "field_path",
+          "claimed_error",
+          "reasoning",
+          "claimant_tenant_id",
+          "claimant_email",
+          "status",
+          "resolution",
+          "resolved_by",
+          "resolved_at",
+          "created_at"
+        ],
+        "title": "CorrectionOut",
+        "type": "object"
+      },
+      "CorrectionResolve": {
+        "properties": {
+          "accepted": {
+            "title": "Accepted",
+            "type": "boolean"
+          },
+          "resolution": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Resolution",
+            "type": "string"
+          }
+        },
+        "required": [
+          "accepted",
+          "resolution"
+        ],
+        "title": "CorrectionResolve",
         "type": "object"
       },
       "DocumentOut": {
@@ -2447,6 +2752,85 @@
         "title": "FieldView",
         "type": "object"
       },
+      "FixedParameter": {
+        "description": "One tender-fixed parameter as the widget shows it: locked, with its page chip, or\na typed gap saying why there is none.",
+        "properties": {
+          "evidence": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/Evidence"
+            },
+            "title": "Evidence",
+            "type": "array"
+          },
+          "gap_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gap Reason"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "path": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Path"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          },
+          "value": {
+            "title": "Value"
+          },
+          "version_no": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version No"
+          }
+        },
+        "required": [
+          "name",
+          "label",
+          "status"
+        ],
+        "title": "FixedParameter",
+        "type": "object"
+      },
       "FreshnessOut": {
         "properties": {
           "checks": {
@@ -2621,6 +3005,124 @@
           "database"
         ],
         "title": "HealthResponse",
+        "type": "object"
+      },
+      "HoldIn": {
+        "properties": {
+          "kind": {
+            "default": "takedown",
+            "enum": [
+              "takedown",
+              "correction"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "reason": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Reason",
+            "type": "string"
+          },
+          "requested_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Requested At"
+          },
+          "tender_id": {
+            "title": "Tender Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tender_id",
+          "reason"
+        ],
+        "title": "HoldIn",
+        "type": "object"
+      },
+      "HoldOut": {
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "lifted_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lifted At"
+          },
+          "lifted_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lifted By"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          },
+          "requested_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Requested At"
+          },
+          "requested_by": {
+            "title": "Requested By",
+            "type": "string"
+          },
+          "tender_id": {
+            "title": "Tender Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "tender_id",
+          "kind",
+          "reason",
+          "requested_by",
+          "requested_at",
+          "lifted_at",
+          "lifted_by",
+          "created_at"
+        ],
+        "title": "HoldOut",
         "type": "object"
       },
       "KeyDef": {
@@ -2799,6 +3301,84 @@
         "title": "Listed",
         "type": "object"
       },
+      "Match": {
+        "properties": {
+          "authority_note": {
+            "default": "The tender document is the authoritative source; this is jouleWise's reviewed reading of it.",
+            "title": "Authority Note",
+            "type": "string"
+          },
+          "kind": {
+            "const": "match",
+            "default": "match",
+            "title": "Kind",
+            "type": "string"
+          },
+          "score": {
+            "title": "Score",
+            "type": "number"
+          },
+          "tender": {
+            "$ref": "#/components/schemas/TenderSearchHit"
+          }
+        },
+        "required": [
+          "tender",
+          "score"
+        ],
+        "title": "Match",
+        "type": "object"
+      },
+      "MatchCandidate": {
+        "properties": {
+          "distinguishing": {
+            "title": "Distinguishing",
+            "type": "string"
+          },
+          "external_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "External Ref"
+          },
+          "issuing_agency": {
+            "title": "Issuing Agency",
+            "type": "string"
+          },
+          "score": {
+            "title": "Score",
+            "type": "number"
+          },
+          "tender_id": {
+            "title": "Tender Id",
+            "type": "string"
+          },
+          "tender_type": {
+            "title": "Tender Type",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tender_id",
+          "title",
+          "issuing_agency",
+          "tender_type",
+          "external_ref",
+          "score",
+          "distinguishing"
+        ],
+        "title": "MatchCandidate",
+        "type": "object"
+      },
       "MeOut": {
         "properties": {
           "kind": {
@@ -2858,6 +3438,204 @@
           "scopes"
         ],
         "title": "MeOut",
+        "type": "object"
+      },
+      "ModelIn": {
+        "properties": {
+          "assumptions": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Assumptions"
+          },
+          "model_type": {
+            "default": "power_project_finance",
+            "title": "Model Type",
+            "type": "string"
+          }
+        },
+        "title": "ModelIn",
+        "type": "object"
+      },
+      "ModelResult": {
+        "properties": {
+          "assumptions": {
+            "$ref": "#/components/schemas/Assumptions"
+          },
+          "assumptions_saved": {
+            "title": "Assumptions Saved",
+            "type": "boolean"
+          },
+          "authority_note": {
+            "default": "The tender document is the authoritative source; this is jouleWise's reviewed reading of it.",
+            "title": "Authority Note",
+            "type": "string"
+          },
+          "fixed": {
+            "items": {
+              "$ref": "#/components/schemas/FixedParameter"
+            },
+            "title": "Fixed",
+            "type": "array"
+          },
+          "label": {
+            "default": "indicative",
+            "title": "Label",
+            "type": "string"
+          },
+          "model_type": {
+            "title": "Model Type",
+            "type": "string"
+          },
+          "note": {
+            "title": "Note",
+            "type": "string"
+          },
+          "outputs": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Outputs"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "tender_id": {
+            "title": "Tender Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tender_id",
+          "model_type",
+          "fixed",
+          "assumptions",
+          "assumptions_saved",
+          "outputs",
+          "note"
+        ],
+        "title": "ModelResult",
+        "type": "object"
+      },
+      "NoMatch": {
+        "properties": {
+          "authority_note": {
+            "default": "The tender document is the authoritative source; this is jouleWise's reviewed reading of it.",
+            "title": "Authority Note",
+            "type": "string"
+          },
+          "candidates": {
+            "items": {
+              "$ref": "#/components/schemas/MatchCandidate"
+            },
+            "title": "Candidates",
+            "type": "array"
+          },
+          "kind": {
+            "const": "no_match",
+            "default": "no_match",
+            "title": "Kind",
+            "type": "string"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "reason",
+          "candidates"
+        ],
+        "title": "NoMatch",
+        "type": "object"
+      },
+      "Outputs": {
+        "properties": {
+          "capex_crore": {
+            "title": "Capex Crore",
+            "type": "number"
+          },
+          "cashflows": {
+            "items": {
+              "$ref": "#/components/schemas/YearRow"
+            },
+            "title": "Cashflows",
+            "type": "array"
+          },
+          "equity_irr_percent": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Equity Irr Percent"
+          },
+          "label": {
+            "default": "indicative",
+            "title": "Label",
+            "type": "string"
+          },
+          "levelised_cost_inr_per_kwh": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Levelised Cost Inr Per Kwh"
+          },
+          "payback_years": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Payback Years"
+          },
+          "project_irr_percent": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project Irr Percent"
+          },
+          "used": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Used",
+            "type": "object"
+          }
+        },
+        "required": [
+          "project_irr_percent",
+          "equity_irr_percent",
+          "levelised_cost_inr_per_kwh",
+          "payback_years",
+          "capex_crore",
+          "used",
+          "cashflows"
+        ],
+        "title": "Outputs",
         "type": "object"
       },
       "PageOut": {
@@ -4001,6 +4779,27 @@
         "title": "SearchHit",
         "type": "object"
       },
+      "SearchResult": {
+        "properties": {
+          "authority_note": {
+            "default": "The tender document is the authoritative source; this is jouleWise's reviewed reading of it.",
+            "title": "Authority Note",
+            "type": "string"
+          },
+          "hits": {
+            "items": {
+              "$ref": "#/components/schemas/TenderSearchHit"
+            },
+            "title": "Hits",
+            "type": "array"
+          }
+        },
+        "required": [
+          "hits"
+        ],
+        "title": "SearchResult",
+        "type": "object"
+      },
       "SectionOut": {
         "properties": {
           "confidence": {
@@ -4037,6 +4836,21 @@
           "confidence"
         ],
         "title": "SectionOut",
+        "type": "object"
+      },
+      "SignupIn": {
+        "description": "A programmatic free sign-up: the provider's code, exchanged as the callback would.",
+        "properties": {
+          "code": {
+            "minLength": 1,
+            "title": "Code",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code"
+        ],
+        "title": "SignupIn",
         "type": "object"
       },
       "Sitting": {
@@ -5080,6 +5894,113 @@
         "title": "TenderSchemaOut",
         "type": "object"
       },
+      "TenderSearchHit": {
+        "description": "A tender as search and matching return it: identity, publication state and the\nsame provenance and reliability block every public response carries.",
+        "properties": {
+          "banner": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Banner"
+          },
+          "external_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "External Ref"
+          },
+          "issuing_agency": {
+            "title": "Issuing Agency",
+            "type": "string"
+          },
+          "publication": {
+            "$ref": "#/components/schemas/PublicationState"
+          },
+          "reliability": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Reliability"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reviewed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewed At"
+          },
+          "reviewer_role": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewer Role"
+          },
+          "slug": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Slug"
+          },
+          "tenant_id": {
+            "title": "Tenant Id",
+            "type": "string"
+          },
+          "tender_id": {
+            "title": "Tender Id",
+            "type": "string"
+          },
+          "tender_type": {
+            "title": "Tender Type",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tender_id",
+          "tenant_id",
+          "slug",
+          "title",
+          "issuing_agency",
+          "tender_type",
+          "external_ref",
+          "publication",
+          "banner"
+        ],
+        "title": "TenderSearchHit",
+        "type": "object"
+      },
       "TenderSummary": {
         "properties": {
           "cost_usd": {
@@ -5786,6 +6707,125 @@
         ],
         "title": "VersionOut",
         "type": "object"
+      },
+      "WatchedTender": {
+        "properties": {
+          "bid_deadline": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bid Deadline"
+          },
+          "days_remaining": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Days Remaining"
+          },
+          "issuing_agency": {
+            "title": "Issuing Agency",
+            "type": "string"
+          },
+          "publication_state": {
+            "title": "Publication State",
+            "type": "string"
+          },
+          "tender_id": {
+            "title": "Tender Id",
+            "type": "string"
+          },
+          "tender_type": {
+            "title": "Tender Type",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tender_id",
+          "title",
+          "issuing_agency",
+          "tender_type",
+          "publication_state",
+          "bid_deadline",
+          "days_remaining"
+        ],
+        "title": "WatchedTender",
+        "type": "object"
+      },
+      "WatchlistIn": {
+        "properties": {
+          "tender_id": {
+            "title": "Tender Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tender_id"
+        ],
+        "title": "WatchlistIn",
+        "type": "object"
+      },
+      "YearRow": {
+        "properties": {
+          "debt_service_crore": {
+            "title": "Debt Service Crore",
+            "type": "number"
+          },
+          "equity_cash_crore": {
+            "title": "Equity Cash Crore",
+            "type": "number"
+          },
+          "generation_mwh": {
+            "title": "Generation Mwh",
+            "type": "number"
+          },
+          "om_crore": {
+            "title": "Om Crore",
+            "type": "number"
+          },
+          "project_cash_crore": {
+            "title": "Project Cash Crore",
+            "type": "number"
+          },
+          "revenue_crore": {
+            "title": "Revenue Crore",
+            "type": "number"
+          },
+          "tax_crore": {
+            "title": "Tax Crore",
+            "type": "number"
+          },
+          "year": {
+            "title": "Year",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "year",
+          "generation_mwh",
+          "revenue_crore",
+          "om_crore",
+          "debt_service_crore",
+          "tax_crore",
+          "project_cash_crore",
+          "equity_cash_crore"
+        ],
+        "title": "YearRow",
+        "type": "object"
       }
     }
   },
@@ -5933,6 +6973,129 @@
           }
         },
         "summary": "Revoke Api Key",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/corrections": {
+      "get": {
+        "description": "The correction cases on the tenders the admin may read, oldest first.",
+        "operationId": "list_corrections_api_v1_admin_corrections_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CorrectionOut"
+                  },
+                  "title": "Response List Corrections Api V1 Admin Corrections Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Corrections",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/corrections/{case_id}/resolve": {
+      "post": {
+        "description": "Close a case as accepted or rejected. The value, if it changed, changed through\nthe reviewer's approval; this records the outcome.",
+        "operationId": "resolve_correction_api_v1_admin_corrections__case_id__resolve_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "case_id",
+            "required": true,
+            "schema": {
+              "title": "Case Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-reviewer",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Reviewer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CorrectionResolve"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CorrectionOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Resolve Correction",
         "tags": [
           "admin"
         ]
@@ -6108,6 +7271,148 @@
           }
         },
         "summary": "Make Gold",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/holds": {
+      "get": {
+        "operationId": "list_holds_api_v1_admin_holds_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/HoldOut"
+                  },
+                  "title": "Response List Holds Api V1 Admin Holds Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Holds",
+        "tags": [
+          "admin"
+        ]
+      },
+      "post": {
+        "description": "Suspend a tender's publication: a takedown (an agency's or rights-holder's request,\nalso recorded in docs/KNOWN-GAPS.md) or a correction hold.",
+        "operationId": "place_hold_api_v1_admin_holds_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-reviewer",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Reviewer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HoldIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HoldOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Place Hold",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/holds/{hold_id}": {
+      "delete": {
+        "description": "Lift a hold: publication follows the review state again.",
+        "operationId": "lift_hold_api_v1_admin_holds__hold_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "hold_id",
+            "required": true,
+            "schema": {
+              "title": "Hold Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-reviewer",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Reviewer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HoldOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Lift Hold",
         "tags": [
           "admin"
         ]
@@ -6590,8 +7895,26 @@
     },
     "/api/v1/auth/login": {
       "get": {
-        "description": "Send the browser to the identity provider. The state and nonce of this sign-in go\nin a signed cookie that lives ten minutes.",
+        "description": "Send the browser to the identity provider. The state and nonce of this sign-in go\nin a signed cookie that lives ten minutes, with where to return to (`next`: a path of\nthis origin, else the root).",
         "operationId": "login_api_v1_auth_login_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "next",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Next"
+            }
+          }
+        ],
         "responses": {
           "302": {
             "content": {
@@ -6600,6 +7923,16 @@
               }
             },
             "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
           }
         },
         "summary": "Login",
@@ -6640,6 +7973,46 @@
           }
         },
         "summary": "Me",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/signup": {
+      "post": {
+        "description": "A free sign-up without the browser dance: the provider's code is exchanged as the\ncallback would and a session opened. The same rules as the callback: a verified\naddress, outside the enterprise domains, no account yet.",
+        "operationId": "programmatic_signup_api_v1_auth_signup_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignupIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Programmatic Signup",
         "tags": [
           "auth"
         ]
@@ -7194,6 +8567,220 @@
         ]
       }
     },
+    "/api/v1/me/watchlist": {
+      "delete": {
+        "operationId": "unwatch_api_v1_me_watchlist_delete",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WatchlistIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/WatchedTender"
+                  },
+                  "title": "Response Unwatch Api V1 Me Watchlist Delete",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Unwatch",
+        "tags": [
+          "library"
+        ]
+      },
+      "get": {
+        "description": "The tenders the caller follows, with bid deadlines and days remaining. A paid\ntier's tool: a free tenant is refused (`tier_required`).",
+        "operationId": "my_watchlist_api_v1_me_watchlist_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/WatchedTender"
+                  },
+                  "title": "Response My Watchlist Api V1 Me Watchlist Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "My Watchlist",
+        "tags": [
+          "library"
+        ]
+      },
+      "post": {
+        "operationId": "watch_api_v1_me_watchlist_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WatchlistIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/WatchedTender"
+                  },
+                  "title": "Response Watch Api V1 Me Watchlist Post",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Watch",
+        "tags": [
+          "library"
+        ]
+      }
+    },
+    "/api/v1/oauth/consent": {
+      "get": {
+        "description": "The consent page: needs a signed-in user; otherwise sends them to sign in.",
+        "operationId": "consent_api_v1_oauth_consent_get",
+        "responses": {
+          "200": {
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Consent",
+        "tags": [
+          "auth"
+        ]
+      },
+      "post": {
+        "description": "Allow issues a code and returns the browser to the client; deny returns an error.",
+        "operationId": "decide_api_v1_oauth_consent_post",
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_decide_api_v1_oauth_consent_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Decide",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/public/corrections": {
+      "post": {
+        "description": "A claim that a published field is wrong, from any signed-in principal or from the\npublic form (then with an email address). It opens a correction case and queues the\nfield for re-review; it never changes a value.",
+        "operationId": "open_correction_api_v1_public_corrections_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CorrectionIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CorrectionOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Open Correction",
+        "tags": [
+          "library"
+        ]
+      }
+    },
     "/api/v1/reports/extraction-summary": {
       "get": {
         "description": "What extraction returned for every tender, before review: evidence-location rate,\nanswer rate, validation failures, tokens and cost, as data and as the Markdown report.",
@@ -7537,6 +9124,189 @@
         ]
       }
     },
+    "/api/v1/tenders/match": {
+      "get": {
+        "description": "The library tender a document in the caller's hand is, or no_match with up to three\ncandidates and what tells them apart. Nothing is ingested or extracted.",
+        "operationId": "match_api_v1_tenders_match_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "title_or_number",
+            "required": true,
+            "schema": {
+              "maxLength": 300,
+              "minLength": 1,
+              "title": "Title Or Number",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "agency",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 200,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Agency"
+            }
+          },
+          {
+            "in": "query",
+            "name": "capacity_mw",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "exclusiveMinimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Capacity Mw"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Match"
+                    },
+                    {
+                      "$ref": "#/components/schemas/NoMatch"
+                    }
+                  ],
+                  "title": "Response Match Api V1 Tenders Match Get"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Match",
+        "tags": [
+          "library"
+        ]
+      }
+    },
+    "/api/v1/tenders/search": {
+      "get": {
+        "description": "Published tenders the caller may read (its own and the public library), narrowed\nby words, type, agency or publication state. A suspended or unreviewed tender is\nabsent. Every hit carries its review date, reviewer role and reliability block; the\nresponse the authority note.",
+        "operationId": "search_api_v1_tenders_search_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "default": "",
+              "maxLength": 300,
+              "title": "Q",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "tender_type",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 30,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Tender Type"
+            }
+          },
+          {
+            "in": "query",
+            "name": "agency",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 200,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Agency"
+            }
+          },
+          {
+            "in": "query",
+            "name": "state",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 30,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "State"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Search",
+        "tags": [
+          "library"
+        ]
+      }
+    },
     "/api/v1/tenders/{tender_id}": {
       "get": {
         "operationId": "get_tender_api_v1_tenders__tender_id__get",
@@ -7788,6 +9558,59 @@
         ]
       }
     },
+    "/api/v1/tenders/{tender_id}/assumptions": {
+      "put": {
+        "description": "Persist the caller's assumptions for a model of the tender. Separate from the\nmodel: a read never saves, a save never computes. Never a canonical fact.",
+        "operationId": "save_assumptions_api_v1_tenders__tender_id__assumptions_put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tender_id",
+            "required": true,
+            "schema": {
+              "title": "Tender Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssumptionsIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssumptionsOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Save Assumptions",
+        "tags": [
+          "library"
+        ]
+      }
+    },
     "/api/v1/tenders/{tender_id}/changes": {
       "get": {
         "description": "The changelog across versions: per version, the facts it changed (old to new, a\nwithdrawal flagged) with their evidence, decision date and reviewer role; an\nunreviewed version lists the fields it may touch, by path only.",
@@ -7944,6 +9767,59 @@
         "summary": "Start Extraction",
         "tags": [
           "tenders"
+        ]
+      }
+    },
+    "/api/v1/tenders/{tender_id}/model": {
+      "post": {
+        "description": "The financial model, read-only: the tender's fixed parameters with provenance, the\nassumptions (given now, else saved, else the engine's defaults marked assumed) and the\nengine's figures, labelled indicative. A free tenant is refused (`tier_required`).",
+        "operationId": "model_api_v1_tenders__tender_id__model_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tender_id",
+            "required": true,
+            "schema": {
+              "title": "Tender Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ModelIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Model",
+        "tags": [
+          "library"
         ]
       }
     },

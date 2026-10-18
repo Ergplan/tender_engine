@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Changes across versions</title>
+<!-- MCP Apps widget (text/html;profile=mcp-app) for list_changes. Self-contained; the
+     only outbound call is the bridge (get_document_page). -->
+<style>
+:root{--bg:#f6f5f1;--card:#ffffff;--ink:#1a1a1a;--muted:#5a5a55;--line:#e6e4dd;--accent:#0f5f5c;--accent-bg:#e7f2ef;--amber:#8a4a0b;--amber-bg:#fdf1e3;--red:#991b1b;--red-bg:#fdecec;--mark:#fde68a}
+@media (prefers-color-scheme: dark){:root{--bg:#141413;--card:#1f1f1d;--ink:#f1efe8;--muted:#a9a79f;--line:#34332f;--accent:#7fc4bf;--accent-bg:#17302e;--amber:#f0b36b;--amber-bg:#3a2a12;--red:#f29c9c;--red-bg:#3b1b1b;--mark:#6b5a12}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:720px;margin:0 auto;padding:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+header{padding:12px 14px;border-bottom:1px solid var(--line)}
+h1{margin:0;font-size:15px}
+.timeline{display:flex;gap:6px;overflow-x:auto;padding:10px 14px;border-bottom:1px solid var(--line)}
+.timeline button{font:inherit;font-size:12px;min-height:44px;padding:8px 10px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;white-space:nowrap;cursor:pointer}
+.timeline button[aria-pressed=true]{border-color:var(--accent);background:var(--accent-bg);color:var(--accent);font-weight:600}
+.banner{padding:8px 14px;font-size:12px;background:var(--amber-bg);color:var(--amber);border-bottom:1px solid var(--line)}
+.change{border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:10px 14px;display:flex;flex-direction:column;gap:6px;font-size:13px}
+.pill{display:inline-block;padding:1px 7px;border-radius:999px;font-size:11px;font-weight:600;background:var(--amber-bg);color:var(--amber)}
+.pill.red{background:var(--red-bg);color:var(--red)}
+.pill.ok{background:var(--accent-bg);color:var(--accent)}
+.old{color:var(--muted)}
+.arrow{margin:0 6px}
+.chip{display:inline-block;margin-left:4px;padding:1px 7px;border-radius:999px;background:var(--accent-bg);color:var(--accent);font:11px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace;border:0;cursor:pointer;min-height:24px}
+.quote{font-size:12px;color:var(--muted)}
+.page{border:1px solid var(--line);border-radius:8px;padding:8px;background:var(--bg);font-size:12px}
+.page mark{background:var(--mark);color:var(--ink)}
+.page img{max-width:100%;height:auto;display:block}.note{font-size:11px;color:var(--muted)}
+.pending{margin:10px 14px;font-size:12px;color:var(--muted)}.summary{font-style:italic}
+code{font:12px ui-monospace,SFMono-Regular,Menlo,monospace}
+footer{padding:10px 14px;font-size:11px;color:var(--muted);border-top:1px solid var(--line);display:flex;flex-direction:column;gap:3px}
+.hint{padding:14px;color:var(--muted)}
+</style>
+</head>
+<body>
+<main id="app"><p class="hint">Waiting for the tool result…</p></main>
+<script>
+(function () {
+  "use strict";
+  var RESULT_METHODS = ["ui/notifications/tool-result", "ui/notifications/tool-input", "ui/tool-result"];
+  var bridge = {
+    nextId: 1, pending: new Map(),
+    post: function (msg) { if (window.parent && window.parent !== window) window.parent.postMessage(msg, "*"); },
+    call: function (name, args) {
+      var id = this.nextId++; var self = this;
+      return new Promise(function (resolve, reject) {
+        self.pending.set(id, { resolve: resolve, reject: reject });
+        self.post({ jsonrpc: "2.0", id: id, method: "tools/call", params: { name: name, arguments: args } });
+        self.post({ jsonrpc: "2.0", id: "x" + id, method: "ui/request-tool-call", params: { name: name, arguments: args, forwardOf: id } });
+      });
+    }
+  };
+  window.addEventListener("message", function (ev) {
+    var m = ev.data; if (!m || m.jsonrpc !== "2.0") return;
+    if (m.id !== undefined && bridge.pending.has(m.id)) { var p = bridge.pending.get(m.id); bridge.pending.delete(m.id); if (m.error) p.reject(m.error); else p.resolve(m.result); return; }
+    if (RESULT_METHODS.indexOf(m.method) >= 0) { var r = m.params || {}; var data = r.structuredContent || (r.toolResult && r.toolResult.structuredContent) || (r.result && r.result.structuredContent) || r.arguments; if (data) render(data); }
+  });
+  bridge.post({ jsonrpc: "2.0", id: bridge.nextId++, method: "ui/initialize", params: { protocolVersion: "2026-01-26", appInfo: { name: "changes_view", version: "1" }, appCapabilities: {} } });
+  bridge.post({ jsonrpc: "2.0", method: "ui/notifications/initialized" });
+
+  function el(tag, attrs, children) {
+    var e = document.createElement(tag);
+    if (attrs) Object.keys(attrs).forEach(function (k) {
+      if (k === "class") e.className = attrs[k]; else if (k === "text") e.textContent = attrs[k];
+      else if (k.slice(0, 2) === "on") e.addEventListener(k.slice(2), attrs[k]); else e.setAttribute(k, attrs[k]);
+    });
+    (children || []).forEach(function (c) { if (c) e.appendChild(typeof c === "string" ? document.createTextNode(c) : c); });
+    return e;
+  }
+  function fmtDate(s) { if (!s) return ""; var d = new Date(s); return isNaN(d) ? String(s) : d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" }); }
+  function show(v, unit) {
+    if (v === null || v === undefined) return "not stated";
+    var t = typeof v === "number" ? v.toLocaleString("en-IN") : typeof v === "object" ? JSON.stringify(v) : String(v);
+    return unit ? t + " " + unit : t;
+  }
+  function showPage(ev, host) {
+    var box = host.querySelector(".page");
+    if (box) { box.remove(); return; }
+    box = el("div", { class: "page" }, [el("div", { text: "Loading page " + ev.page_no + "…" })]);
+    host.appendChild(box);
+    bridge.call("get_document_page", { document_id: ev.document_id, page_no: ev.page_no, quote: ev.quote || "" }).then(function (res) {
+      var sc = (res && res.structuredContent) || res || {};
+      box.textContent = "";
+      // The image comes inside the result as a data: URL; nothing is fetched from any host.
+      if (sc.image_data_url && String(sc.image_data_url).indexOf("data:") === 0) box.appendChild(el("img", { src: sc.image_data_url, alt: "Page " + ev.page_no + " of " + (ev.filename || "the document") }));
+      var text = sc.text || "";
+      var q = ev.quote || "";
+      var at = q ? text.indexOf(q) : -1;
+      var p = el("p", {});
+      if (at >= 0) { p.appendChild(document.createTextNode(text.slice(Math.max(0, at - 160), at))); p.appendChild(el("mark", { text: q })); p.appendChild(document.createTextNode(text.slice(at + q.length, at + q.length + 160))); }
+      else { if (q) p.appendChild(el("mark", { text: q })); if (text) p.appendChild(document.createTextNode((q ? " — quote as cited; page text: " : "") + text.slice(0, 320))); }
+      if (sc.quote_located === false && q) p.appendChild(el("span", { class: "note", text: " (the quote was not located on this page)" }));
+      box.appendChild(p);
+    }, function (err) {
+      box.textContent = "";
+      box.appendChild(el("p", { text: "The page could not be fetched (" + ((err && err.message) || "no answer") + "). Quote as cited: " }));
+      box.appendChild(el("mark", { text: ev.quote || "" }));
+    });
+  }
+  function pageChip(ev, host) {
+    return el("button", { class: "chip", type: "button", "aria-label": "Show page " + ev.page_no + " of " + (ev.filename || "the document"), text: (ev.filename ? ev.filename.replace(/\.pdf$/i, "") : "doc") + " p." + ev.page_no, onclick: function () { showPage(ev, host); } });
+  }
+  var state = { data: null, selected: null };
+  function render(data) {
+    data = (data && typeof data.changelog === "object" && data.changelog && data.changelog.versions) ? data.changelog : data;
+    state.data = data;
+    var versions = data.versions || [];
+    if (state.selected === null || !versions.some(function (v) { return v.version_no === state.selected; })) state.selected = versions.length ? versions[versions.length - 1].version_no : null;
+    var app = document.getElementById("app"); app.textContent = "";
+    var card = el("div", { class: "card" }, [el("header", {}, [el("h1", { text: data.title || "Changes" }), el("div", { class: "quote", text: data.reviewed_version ? "Reviewed through version " + data.reviewed_version : "No completed review" })])]);
+    var tl = el("div", { class: "timeline", role: "tablist", "aria-label": "Versions" });
+    versions.forEach(function (v) {
+      tl.appendChild(el("button", { type: "button", role: "tab", "aria-pressed": String(v.version_no === state.selected), text: "v" + v.version_no + " " + v.kind + (v.issued_on ? " · " + fmtDate(v.issued_on) : ""), onclick: function () { state.selected = v.version_no; render(state.data); } }));
+    });
+    card.appendChild(tl);
+    var v = versions.filter(function (x) { return x.version_no === state.selected; })[0];
+    if (v) {
+      if (!v.reviewed) card.appendChild(el("div", { class: "banner", role: "status", text: "Version " + v.version_no + " is not yet reviewed: the fields it may touch are listed by path; no value is shown until a reviewer decides." }));
+      if (v.summary_of_change) card.appendChild(el("div", { class: "summary pending", text: v.summary_of_change }));
+      if (v.changes.length === 0 && v.reviewed) card.appendChild(el("div", { class: "pending", text: "This version changed no reviewed field." }));
+      v.changes.forEach(function (c) {
+        var box = el("div", { class: "change" });
+        box.appendChild(el("div", {}, [el("strong", { text: c.label }), " ", el("span", { class: "pill " + (c.withdrawn ? "red" : c.before === null || c.before === undefined ? "ok" : ""), text: c.withdrawn ? "removed" : (c.before === null || c.before === undefined) ? "added" : "changed" })]));
+        var line = el("div", {}, [el("span", { class: "old", text: show(c.before, c.unit) }), el("span", { class: "arrow", text: "→" }), el("strong", { text: c.withdrawn ? "withdrawn" : show(c.after, c.unit) })]);
+        box.appendChild(line);
+        (c.evidence || []).forEach(function (ev) { var q = el("div", { class: "quote" }, ["“" + ev.quote + "”"]); q.appendChild(pageChip(ev, box)); box.appendChild(q); });
+        if (c.decided_at) box.appendChild(el("div", { class: "quote", text: "Decided " + fmtDate(c.decided_at) + (c.reviewer_role ? " by " + c.reviewer_role : "") }));
+        card.appendChild(box);
+      });
+      if (v.pending && v.pending.length) { var p = el("div", { class: "pending" }, ["Pending review, may touch: "]); v.pending.forEach(function (path, i) { if (i) p.appendChild(document.createTextNode(", ")); p.appendChild(el("code", { text: path })); }); card.appendChild(p); }
+    }
+    card.appendChild(el("footer", {}, [
+      el("div", { class: "reliability", text: data.reliability ? "Reliability: " + data.reliability.tender_type + (data.reliability.value_accuracy != null ? " " + Math.round(data.reliability.value_accuracy * 100) + "% on " + data.reliability.n_fields + " fields" : " not yet measured") + (data.reliability.as_of ? " · as of " + data.reliability.as_of : "") : "Reliability: not yet measured" }),
+      el("div", { text: data.authority_note || "The tender document is the authoritative source; this is a reviewed reading of it." })
+    ]));
+    app.appendChild(card);
+  }
+  window.__render = render;
+})();
+</script>
+</body>
+</html>

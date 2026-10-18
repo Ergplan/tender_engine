@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Financial model</title>
+<!-- MCP Apps widget (text/html;profile=mcp-app) for model_tender. The server is the
+     authoritative calculator: the figure this document computes while a slider moves is
+     shown as provisional and replaced by the server's answer; Save goes to the server. -->
+<style>
+:root{--bg:#f6f5f1;--card:#ffffff;--ink:#1a1a1a;--muted:#5a5a55;--line:#e6e4dd;--accent:#0f5f5c;--accent-bg:#e7f2ef;--amber:#8a4a0b;--amber-bg:#fdf1e3;--gap-bg:#efeeea;--assume:#fbfaf7;--bar:#0f5f5c;--bar2:#b45309}
+@media (prefers-color-scheme: dark){:root{--bg:#141413;--card:#1f1f1d;--ink:#f1efe8;--muted:#a9a79f;--line:#34332f;--accent:#7fc4bf;--accent-bg:#17302e;--amber:#f0b36b;--amber-bg:#3a2a12;--gap-bg:#2a2a27;--assume:#242422;--bar:#7fc4bf;--bar2:#f0b36b}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:860px;margin:0 auto;padding:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+header{padding:12px 14px;border-bottom:1px solid var(--line);display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+h1{margin:0;font-size:15px}
+.pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600;background:var(--amber-bg);color:var(--amber)}
+.pill.ok{background:var(--accent-bg);color:var(--accent)}
+.panels{display:flex;flex-wrap:wrap}
+.panel{flex:1 1 300px;min-width:0;padding:12px 14px}
+.panel.fixed{border-right:1px solid var(--line)}
+.panel.assume{background:var(--assume)}
+.panel h2{margin:0 0 8px;font-size:12px;text-transform:uppercase;letter-spacing:.02em;color:var(--muted)}
+.row{display:flex;justify-content:space-between;gap:8px;padding:5px 0;font-size:13px;border-bottom:1px dashed var(--line)}
+.row{flex-wrap:wrap}.row .v{text-align:right}.page{margin:6px 0;border:1px solid var(--line);border-radius:8px;padding:8px;background:var(--bg);font-size:12px;flex-basis:100%}.page img{max-width:100%;height:auto;display:block;border-radius:4px}.page mark{background:var(--mark);color:var(--ink);padding:0 2px}.note{font-size:11px;color:var(--muted)}
+.chip{display:inline-block;margin-left:4px;padding:1px 7px;border-radius:999px;background:var(--accent-bg);color:var(--accent);font:11px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace;border:0;cursor:pointer;min-height:24px}
+.gap{display:inline-block;background:var(--gap-bg);color:var(--muted);border-radius:6px;padding:2px 6px;font-size:12px}
+label{display:flex;flex-direction:column;gap:4px;font-size:13px;padding:6px 0}
+label .k{display:flex;justify-content:space-between}
+input[type=range]{width:100%;min-height:44px;accent-color:var(--accent)}
+.outputs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;padding:12px 14px;border-top:1px solid var(--line)}
+.out .k{font-size:11px;color:var(--muted)}
+.out .n{font-size:18px;font-weight:600}
+.chart{padding:0 14px 8px}
+svg{width:100%;height:150px;display:block}
+footer{padding:10px 14px;font-size:11px;color:var(--muted);display:flex;flex-direction:column;gap:3px;border-top:1px solid var(--line)}
+button.save{font:inherit;min-height:44px;padding:8px 14px;border:0;background:var(--accent);color:#fff;border-radius:6px;margin-top:8px}
+button.save[disabled]{opacity:.6}
+.note{font-size:11px;color:var(--muted)}
+.hint{padding:14px;color:var(--muted)}
+@media (max-width:420px){.outputs{grid-template-columns:repeat(2,minmax(0,1fr))}.panel.fixed{border-right:0;border-bottom:1px solid var(--line)}}
+</style>
+</head>
+<body>
+<main id="app"><p class="hint" id="waiting">Waiting for the tool result…</p></main>
+<script>
+(function () {
+  "use strict";
+  var RESULT_METHODS = ["ui/notifications/tool-result", "ui/notifications/tool-input", "ui/tool-result"];
+  var bridge = {
+    nextId: 1, pending: new Map(),
+    post: function (msg) { if (window.parent && window.parent !== window) window.parent.postMessage(msg, "*"); },
+    call: function (name, args) {
+      var id = this.nextId++; var self = this;
+      return new Promise(function (resolve, reject) {
+        self.pending.set(id, { resolve: resolve, reject: reject });
+        self.post({ jsonrpc: "2.0", id: id, method: "tools/call", params: { name: name, arguments: args } });
+        self.post({ jsonrpc: "2.0", id: "x" + id, method: "ui/request-tool-call", params: { name: name, arguments: args, forwardOf: id } });
+      });
+    }
+  };
+  window.addEventListener("message", function (ev) {
+    var m = ev.data; if (!m || m.jsonrpc !== "2.0") return;
+    if (m.id !== undefined && bridge.pending.has(m.id)) { var p = bridge.pending.get(m.id); bridge.pending.delete(m.id); if (m.error) p.reject(m.error); else p.resolve(m.result); return; }
+    if (RESULT_METHODS.indexOf(m.method) >= 0) { var r = m.params || {}; var data = r.structuredContent || (r.toolResult && r.toolResult.structuredContent) || (r.result && r.result.structuredContent) || r.arguments; if (data) render(data); }
+  });
+  bridge.post({ jsonrpc: "2.0", id: bridge.nextId++, method: "ui/initialize", params: { protocolVersion: "2026-01-26", appInfo: { name: "financial_model", version: "1" }, appCapabilities: {} } });
+  bridge.post({ jsonrpc: "2.0", method: "ui/notifications/initialized" });
+
+  function el(tag, attrs, children) {
+    var e = document.createElement(tag);
+    if (attrs) Object.keys(attrs).forEach(function (k) {
+      if (k === "class") e.className = attrs[k]; else if (k === "text") e.textContent = attrs[k];
+      else if (k.slice(0, 2) === "on") e.addEventListener(k.slice(2), attrs[k]); else e.setAttribute(k, attrs[k]);
+    });
+    (children || []).forEach(function (c) { if (c) e.appendChild(typeof c === "string" ? document.createTextNode(c) : c); });
+    return e;
+  }
+  var SLIDERS = [
+    ["capex_inr_crore_per_mw", "Capex (INR crore / MW)", 2.5, 8, 0.05],
+    ["om_inr_lakh_per_mw_year", "O&M (INR lakh / MW-year)", 2, 12, 0.1],
+    ["om_escalation_percent", "O&M escalation (%)", 0, 8, 0.1],
+    ["debt_share_percent", "Debt share (%)", 40, 90, 1],
+    ["interest_percent", "Interest (%)", 6, 14, 0.05],
+    ["tenor_years", "Tenor (years)", 5, 25, 1],
+    ["tax_rate_percent", "Tax rate (%)", 15, 35, 0.01],
+    ["auxiliary_consumption_percent", "Auxiliary consumption (%)", 0, 5, 0.1],
+    ["cuf_percent", "CUF if the tender fixes none (%)", 10, 60, 0.5],
+    ["tariff_inr_per_kwh", "Tariff if the tender fixes none (INR/kWh)", 1, 8, 0.01],
+    ["ppa_tenure_years", "Tenure if the tender fixes none (years)", 5, 35, 1]
+  ];
+
+  function showPage(ev, host) {
+    var box = host.querySelector(".page");
+    if (box) { box.remove(); return; }
+    box = el("div", { class: "page" }, [el("div", { text: "Loading page " + ev.page_no + "…" })]);
+    host.appendChild(box);
+    bridge.call("get_document_page", { document_id: ev.document_id, page_no: ev.page_no, quote: ev.quote || "" }).then(function (res) {
+      var sc = (res && res.structuredContent) || res || {};
+      box.textContent = "";
+      // The image comes inside the result as a data: URL; nothing is fetched from any host.
+      if (sc.image_data_url && String(sc.image_data_url).indexOf("data:") === 0) box.appendChild(el("img", { src: sc.image_data_url, alt: "Page " + ev.page_no + " of " + (ev.filename || "the document") }));
+      var text = sc.text || "";
+      var q = ev.quote || "";
+      var at = q ? text.indexOf(q) : -1;
+      var p = el("p", {});
+      if (at >= 0) { p.appendChild(document.createTextNode(text.slice(Math.max(0, at - 160), at))); p.appendChild(el("mark", { text: q })); p.appendChild(document.createTextNode(text.slice(at + q.length, at + q.length + 160))); }
+      else { if (q) p.appendChild(el("mark", { text: q })); if (text) p.appendChild(document.createTextNode((q ? " — quote as cited; page text: " : "") + text.slice(0, 320))); }
+      if (sc.quote_located === false && q) p.appendChild(el("span", { class: "note", text: " (the quote was not located on this page)" }));
+      box.appendChild(p);
+    }, function (err) {
+      box.textContent = "";
+      box.appendChild(el("p", { text: "The page could not be fetched (" + ((err && err.message) || "no answer") + "). Quote as cited: " }));
+      box.appendChild(el("mark", { text: ev.quote || "" }));
+    });
+  }
+  var state = { data: null, assumptions: null, timer: null, provisional: false };
+  function fmt(n, d) { return n === null || n === undefined ? "—" : Number(n).toLocaleString("en-IN", { maximumFractionDigits: d === undefined ? 2 : d }); }
+  function fixedInputs(data) {
+    var byName = {};
+    (data.fixed || []).forEach(function (f) { byName[f.name] = f; });
+    function v(n) { var f = byName[n]; return f && f.status === "reviewed" && f.value !== null && f.value !== undefined ? f.value : null; }
+    var sources = {};
+    Object.keys(byName).forEach(function (n) { if (byName[n].status === "reviewed" && byName[n].evidence && byName[n].evidence.length) sources[n] = "tender"; });
+    return { capacity_mw: v("capacity_mw") || 0, tariff_inr_per_kwh: v("tariff_inr_per_kwh"), cuf_floor_percent: v("cuf_floor_percent"), cuf_ceiling_percent: v("cuf_ceiling_percent"), ppa_tenure_years: v("ppa_tenure_years"), scod_months: v("scod_months"), degradation_cap_percent: v("degradation_cap_percent"), pbg_inr_per_mw: v("pbg_inr_per_mw"), pbg_duration_months: v("pbg_duration_months"), ists_waiver: v("ists_waiver"), sources: sources };
+  }
+  function chart(rows) {
+    var w = 600, h = 150, pad = 24;
+    var vals = rows.map(function (r) { return r.equity_cash_crore; });
+    var max = Math.max.apply(null, vals.concat([0])), min = Math.min.apply(null, vals.concat([0]));
+    var span = max - min || 1;
+    var bw = (w - 2 * pad) / Math.max(rows.length, 1);
+    var y0 = pad + (max / span) * (h - 2 * pad);
+    var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("viewBox", "0 0 " + w + " " + h); svg.setAttribute("role", "img");
+    svg.setAttribute("aria-label", "Equity cash flow by year, INR crore");
+    var axis = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    axis.setAttribute("x1", pad); axis.setAttribute("x2", w - pad); axis.setAttribute("y1", y0); axis.setAttribute("y2", y0); axis.setAttribute("stroke", "currentColor"); axis.setAttribute("stroke-opacity", "0.4");
+    svg.appendChild(axis);
+    rows.forEach(function (r, i) {
+      var v = r.equity_cash_crore; var hh = Math.abs(v) / span * (h - 2 * pad);
+      var rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      rect.setAttribute("x", pad + i * bw + 1); rect.setAttribute("width", Math.max(1, bw - 2));
+      rect.setAttribute("y", v >= 0 ? y0 - hh : y0); rect.setAttribute("height", hh);
+      rect.setAttribute("fill", v >= 0 ? "var(--bar)" : "var(--bar2)");
+      var t = document.createElementNS("http://www.w3.org/2000/svg", "title"); t.textContent = "Year " + r.year + ": " + fmt(v) + " crore"; rect.appendChild(t);
+      svg.appendChild(rect);
+    });
+    return svg;
+  }
+  function outputsBox(out, provisional) {
+    var box = el("div", { class: "outputs", id: "outputs" });
+    [["Project IRR", out.project_irr_percent, "%"], ["Equity IRR", out.equity_irr_percent, "%"], ["Levelised cost", out.levelised_cost_inr_per_kwh, " INR/kWh"], ["Payback", out.payback_years, " years"]].forEach(function (o) {
+      box.appendChild(el("div", { class: "out" }, [el("div", { class: "k", text: o[0] + (provisional ? " (provisional)" : "") }), el("div", { class: "n", text: o[1] === null || o[1] === undefined ? "—" : fmt(o[1]) + o[2] })]));
+    });
+    return box;
+  }
+  function render(data) {
+    data = (data && typeof data.model === "object" && data.model && data.model.fixed) ? data.model : data;
+    state.data = data; state.assumptions = Object.assign({}, data.assumptions || {});
+    var app = document.getElementById("app"); app.textContent = "";
+    var card = el("div", { class: "card" });
+    card.appendChild(el("header", {}, [el("h1", { text: "Financial model · " + (data.model_type || "power_project_finance") }), el("span", { class: "pill", text: data.label || "indicative" }), el("span", { class: "note", text: data.note || "" })]));
+    var panels = el("div", { class: "panels" });
+    var fixed = el("div", { class: "panel fixed" }, [el("h2", { text: "Fixed by the tender" })]);
+    (data.fixed || []).forEach(function (f) {
+      var v = el("div", { class: "v" });
+      var row = el("div", { class: "row" });
+      var ev = (f.evidence && f.evidence[0]) || null;
+      if (f.status !== "reviewed" || f.value === null || f.value === undefined) v.appendChild(el("span", { class: "gap", text: (f.status === "not_in_schema" ? "not in schema" : f.status === "possibly_superseded" ? "possibly superseded" : "not reviewed") + (f.gap_reason ? " — " + f.gap_reason : "") }));
+      else { v.appendChild(document.createTextNode((typeof f.value === "boolean" ? (f.value ? "yes" : "no") : typeof f.value === "number" ? fmt(f.value, 3) : String(f.value)) + (f.unit ? " " + f.unit : ""))); if (f.version_no && f.version_no > 1) v.appendChild(el("span", { class: "note", text: " v" + f.version_no })); if (ev) v.appendChild(el("button", { class: "chip", type: "button", "aria-label": "Page " + ev.page_no + " of " + (ev.filename || "the document"), text: (ev.filename ? ev.filename.replace(/\.pdf$/i, "") : "doc") + " p." + ev.page_no, onclick: function () { showPage(ev, row); } })); }
+      row.appendChild(el("span", { text: f.label })); row.appendChild(v); fixed.appendChild(row);
+    });
+    var assume = el("div", { class: "panel assume" }, [el("h2", {}, ["Your assumptions ", el("span", { class: "pill", text: "assumed, not from the tender" })])]);
+    // Marked "assumed": what the engine took from the assumptions (`used`), and every
+    // assumption the tender fixes nothing for.
+    var fixedNames = {}; (data.fixed || []).forEach(function (f) { if (f.status === "reviewed" && f.value !== null) fixedNames[f.name] = true; });
+    var usedAssumed = {}; var used = (data.outputs && data.outputs.used) || {}; Object.keys(used).forEach(function (k) { if (used[k] === "assumed") usedAssumed[k] = true; });
+    var assumed = SLIDERS.map(function (s) { return s[0]; }).filter(function (n) { return !fixedNames[n] || usedAssumed[{ cuf_percent: "cuf", tariff_inr_per_kwh: "tariff", ppa_tenure_years: "tenure" }[n] || n]; });
+    SLIDERS.forEach(function (s) {
+      var name = s[0]; var val = state.assumptions[name];
+      if (val === undefined) return;
+      var shown = el("span", { class: "shown", text: fmt(val, 2) + (assumed.indexOf(name) >= 0 ? " (assumed)" : "") });
+      var input = el("input", { type: "range", min: s[2], max: s[3], step: s[4], value: val, "aria-label": s[1], oninput: function (e) { state.assumptions[name] = Number(e.target.value); shown.textContent = fmt(Number(e.target.value), 2); provisional(); } });
+      assume.appendChild(el("label", {}, [el("span", { class: "k" }, [el("span", { text: s[1] }), shown]), input]));
+    });
+    assume.appendChild(el("button", { class: "save", type: "button", id: "save", text: "Save assumptions", onclick: save }));
+    assume.appendChild(el("div", { class: "note", id: "save-note", text: (data.assumptions_saved ? "Saved assumptions loaded. " : "") + "Saved by the server (save_model_assumptions); never a canonical fact." }));
+    panels.appendChild(fixed); panels.appendChild(assume);
+    card.appendChild(panels);
+    if (data.outputs) { card.appendChild(outputsBox(data.outputs, false)); card.appendChild(el("div", { class: "chart", id: "chart" }, [chart(data.outputs.cashflows || [])])); }
+    else card.appendChild(el("div", { class: "outputs", id: "outputs" }, [el("div", { class: "note", role: "status", text: data.note || "The model cannot run: a required parameter is not published." })]));
+    var rel = data.reliability;
+    card.appendChild(el("footer", {}, [
+      el("div", { text: "Indicative. The server's engine is the authoritative calculator; a provisional figure shown while a slider moves is replaced by the server's answer." }),
+      el("div", { class: "reliability", text: rel ? "Reliability: " + rel.tender_type + (rel.value_accuracy != null ? " " + Math.round(rel.value_accuracy * 100) + "% on " + rel.n_fields + " fields" : " not yet measured") + (rel.as_of ? " · as of " + rel.as_of : "") : "Reliability: not yet measured" }),
+      el("div", { text: data.authority_note || "The tender document is the authoritative source; this is a reviewed reading of it." })
+    ]));
+    app.appendChild(card);
+  }
+  function replaceOutputs(out, provisional) {
+    var old = document.getElementById("outputs"); if (old) old.replaceWith(outputsBox(out, provisional));
+    var ch = document.getElementById("chart"); if (ch) { ch.textContent = ""; ch.appendChild(chart(out.cashflows || [])); }
+  }
+  function provisional() {
+    var fx = fixedInputs(state.data);
+    if (!fx.capacity_mw) return;
+    var out = window.TenderFinance.powerProjectFinance(fx, state.assumptions);
+    replaceOutputs(out, true);
+    clearTimeout(state.timer);
+    state.timer = setTimeout(function () {
+      bridge.call("model_tender", { tender_id: state.data.tender_id, model_type: state.data.model_type || "power_project_finance", assumptions: state.assumptions }).then(function (res) {
+        var sc = (res && res.structuredContent) || res || {};
+        if (sc.outputs) replaceOutputs(sc.outputs, false);
+      }, function () { /* the provisional figure stays marked provisional */ });
+    }, 400);
+  }
+  function save() {
+    var btn = document.getElementById("save"); btn.disabled = true;
+    bridge.call("save_model_assumptions", { tender_id: state.data.tender_id, model_type: state.data.model_type || "power_project_finance", assumptions: state.assumptions }).then(function () {
+      btn.disabled = false; document.getElementById("save-note").textContent = "Saved.";
+    }, function (err) { btn.disabled = false; document.getElementById("save-note").textContent = "Not saved: " + ((err && err.message) || "no answer"); });
+  }
+  window.__render = render;
+  window.__provisional = provisional;
+})();
+</script>
+<script>
+/* finance.js begin — a port of tender/services/finance.py; the agreement test extracts and runs it */
+(function (global) {
+  "use strict";
+  var HOURS_PER_YEAR = 8760, CRORE = 1e7, LAKH = 1e5;
+  var DEFAULTS = { capex_inr_crore_per_mw: 4.1, om_inr_lakh_per_mw_year: 5.5, om_escalation_percent: 3.0, debt_share_percent: 75.0, interest_percent: 9.25, tenor_years: 18, tax_rate_percent: 25.17, auxiliary_consumption_percent: 1.0, cuf_percent: 24.0, tariff_inr_per_kwh: 3.0, ppa_tenure_years: 25 };
+  function irr(flows, lo, hi) {
+    lo = lo === undefined ? -0.99 : lo; hi = hi === undefined ? 10.0 : hi;
+    if (!flows.length) return null;
+    var mn = Math.min.apply(null, flows), mx = Math.max.apply(null, flows);
+    if (!(mn < 0 && 0 < mx)) return null;
+    function npv(rate) { var s = 0; for (var t = 0; t < flows.length; t++) s += flows[t] / Math.pow(1 + rate, t); return s; }
+    var fLo = npv(lo), fHi = npv(hi);
+    if (fLo * fHi > 0) return null;
+    for (var i = 0; i < 200; i++) {
+      var mid = (lo + hi) / 2, fMid = npv(mid);
+      if (Math.abs(fMid) < 1e-9) return mid;
+      if (fLo * fMid < 0) { hi = mid; fHi = fMid; } else { lo = mid; fLo = fMid; }
+    }
+    return (lo + hi) / 2;
+  }
+  function powerProjectFinance(fixed, given) {
+    var a = Object.assign({}, DEFAULTS, given || {});
+    var used = {};
+    var tariff = fixed.tariff_inr_per_kwh;
+    if (tariff === null || tariff === undefined) { tariff = a.tariff_inr_per_kwh; used.tariff = "assumed"; } else used.tariff = (fixed.sources || {}).tariff_inr_per_kwh || "tender";
+    var cuf = fixed.cuf_floor_percent;
+    if (cuf === null || cuf === undefined) { cuf = a.cuf_percent; used.cuf = "assumed"; } else used.cuf = (fixed.sources || {}).cuf_floor_percent || "tender";
+    if (fixed.cuf_ceiling_percent !== null && fixed.cuf_ceiling_percent !== undefined) cuf = Math.min(cuf, fixed.cuf_ceiling_percent);
+    var years = fixed.ppa_tenure_years || a.ppa_tenure_years;
+    used.tenure = fixed.ppa_tenure_years ? ((fixed.sources || {}).ppa_tenure_years || "tender") : "assumed";
+    var degradation = (fixed.degradation_cap_percent || 0.0) / 100;
+    used.degradation = (fixed.degradation_cap_percent !== null && fixed.degradation_cap_percent !== undefined) ? ((fixed.sources || {}).degradation_cap_percent || "tender") : "none";
+    var capex = a.capex_inr_crore_per_mw * fixed.capacity_mw;
+    var debt = capex * a.debt_share_percent / 100, equity = capex - debt;
+    var rate = a.interest_percent / 100, tenor = Math.max(1, a.tenor_years);
+    var annuity = rate > 0 ? debt * rate / (1 - Math.pow(1 + rate, -tenor)) : debt / tenor;
+    var tax = a.tax_rate_percent / 100, aux = a.auxiliary_consumption_percent / 100;
+    var straight = capex / years;
+    var rows = [], pf = [-capex], ef = [-equity], balance = debt;
+    for (var year = 1; year <= years; year++) {
+      var gen = (fixed.capacity_mw * HOURS_PER_YEAR * cuf / 100 * Math.pow(1 - degradation, year - 1)) * (1 - aux);
+      var revenue = gen * 1000 * tariff / CRORE;
+      var om = a.om_inr_lakh_per_mw_year * fixed.capacity_mw * LAKH / CRORE * Math.pow(1 + a.om_escalation_percent / 100, year - 1);
+      var interest = year <= tenor ? balance * rate : 0.0;
+      var principal = year <= tenor ? annuity - interest : 0.0;
+      balance = Math.max(0.0, balance - principal);
+      var ds = interest + principal;
+      var taxable = revenue - om - interest - straight;
+      var taxPaid = Math.max(0.0, taxable * tax);
+      var projectCash = revenue - om - Math.max(0.0, (revenue - om - straight) * tax);
+      var equityCash = revenue - om - ds - taxPaid;
+      rows.push({ year: year, generation_mwh: gen, revenue_crore: revenue, om_crore: om, debt_service_crore: ds, tax_crore: taxPaid, project_cash_crore: projectCash, equity_cash_crore: equityCash });
+      pf.push(projectCash); ef.push(equityCash);
+    }
+    var totalKwh = rows.reduce(function (s, r) { return s + r.generation_mwh; }, 0) * 1000;
+    var totalCost = capex + rows.reduce(function (s, r) { return s + r.om_crore; }, 0);
+    var lcoe = totalKwh > 0 ? totalCost * CRORE / totalKwh : null;
+    var cumulative = -capex, payback = null;
+    for (var i = 0; i < rows.length; i++) {
+      cumulative += rows[i].project_cash_crore;
+      if (cumulative >= 0 && payback === null) { var overshoot = cumulative - rows[i].project_cash_crore; payback = rows[i].year - 1 + (rows[i].project_cash_crore ? -overshoot / rows[i].project_cash_crore : 0); }
+    }
+    var p = irr(pf), e = irr(ef);
+    return { project_irr_percent: p === null ? null : Math.round(p * 10000) / 100, equity_irr_percent: e === null ? null : Math.round(e * 10000) / 100, levelised_cost_inr_per_kwh: lcoe === null ? null : Math.round(lcoe * 1000) / 1000, payback_years: payback === null ? null : Math.round(payback * 100) / 100, capex_crore: Math.round(capex * 100) / 100, used: used, cashflows: rows, label: "indicative" };
+  }
+  global.TenderFinance = { irr: irr, powerProjectFinance: powerProjectFinance, DEFAULTS: DEFAULTS };
+})(typeof window !== "undefined" ? window : globalThis);
+/* finance.js end */
+</script>
+</body>
+</html>

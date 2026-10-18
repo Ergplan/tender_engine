@@ -26,6 +26,7 @@ ERROR_STATUS: dict[str, tuple[int, str]] = {
     "api_key_invalid": (401, "The API key is not valid or has been revoked."),
     "login_refused": (403, "This account cannot sign in here."),
     "rate_limited": (429, "Too many calls for this key. Wait a minute, or raise the key's limit."),
+    "tier_required": (403, "This needs a paid plan; the free library tier is read-only."),
     "runs_not_finished": (409, "The runs are still queued or running. Ask again later."),
     "review_link_invalid": (
         401,

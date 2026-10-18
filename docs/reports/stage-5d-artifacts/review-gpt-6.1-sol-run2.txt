@@ -1,0 +1,90 @@
+reviewer: gpt-6.1-sol  input chars: 452702  tokens in/out: 121701/4234
+
+## (a) Non-negotiable invariants
+
+| Invariant | Assessment from the supplied diff |
+|---|---|
+| The LLM never writes truth | No new production write to `canonical_fact` is shown. The financial engine uses arithmetic, not an LLM (`tender/services/finance.py:107–203`); corrections create cases and review rounds (`tender/services/corrections.py:46–112`). The existing approval implementation is absent, so its exclusive-writer guarantee cannot be independently verified. |
+| Every value carries its evidence | New financial inputs select reviewed, non-withdrawn published fields (`tender/services/model_inputs.py:48–55`); fixed parameters preserve their evidence (`tender/services/library.py:166–208`). Existing candidate validation and canonical evidence enforcement are not supplied. |
+| The tender is a versioned object | No new mutation of `tender_version` is shown. Publication holds are separate records (`tender/models/library.py:78–93`), and their publication projection retains version identifiers (`tender/services/publication.py:132–149`). Existing version creation and projection are not independently verifiable here. |
+| Candidates are immutable | No candidate mutation is shown. Corrections and assumptions occupy separate tables (`tender/models/library.py:26–42,58–75`). |
+| Validation is deterministic | New correction validation and matching use plain Python (`tender/services/corrections.py:58–63`; `tender/services/library.py:334–360`). Existing candidate validators are not supplied. |
+| Everything is audited and tenant-scoped | New tables receive tenant/audit columns and RLS policies (`migrations/versions/0019_library.py:31–51`). Several production identity-discovery queries nevertheless omit the invariant’s explicit tenant filter. |
+| Feedback is stored, never auto-applied | No runtime application of feedback, or new feedback read, is shown. Correction claims are stored separately (`tender/services/corrections.py:65–78`). Existing approval-to-feedback storage is not supplied. |
+| API first | HTTP library routes are registered under `/api/v1/` (`api/main.py:114–116`). Widgets instead invoke MCP tools, whose implementations call services directly; this conflicts with the invariant’s exclusive versioned-API requirement for reviewer intelligence interfaces. |
+
+FINDINGS: 2
+1. `api/v1/core/auth.py:154–158`; `mcpserver/auth.py:251–258`; `tender/services/library.py:413–424`: subject/code-discovery queries lack a `tenant_id` predicate. Their system scope and explanatory comments do not satisfy “every query filters by `tenant_id`.”
+2. `mcp/widgets/tender_card.html:62–68`; `mcp/widgets/financial_model.html:221–235`; `mcpserver/server.py:145–172,298–305`: widgets drive intelligence through `/mcp` tools calling services directly, not exclusively through versioned `/api/v1/` endpoints. The stage prompt requires a bridge, but the overriding invariant’s conflict is not flagged in `docs/reports/STAGE-5D-REPORT.md:28–32`.
+
+## (b) Tests for added API endpoints
+
+| Endpoint | Test shown |
+|---|---|
+| `GET /api/v1/tenders/search` | `tests/api/test_library.py:48–63` |
+| `GET /api/v1/tenders/match` | `tests/api/test_library.py:64–72` |
+| `POST /api/v1/tenders/{tender_id}/model` | `tests/api/test_library.py:74–86` |
+| `PUT /api/v1/tenders/{tender_id}/assumptions` | `tests/api/test_library.py:88–97` |
+| `GET /api/v1/me/watchlist` | `tests/api/test_library.py:99` |
+| `POST /api/v1/me/watchlist` | `tests/api/test_library.py:100–104` |
+| `DELETE /api/v1/me/watchlist` | `tests/api/test_library.py:105–108` |
+| `POST /api/v1/public/corrections` | `tests/api/test_library.py:181–213` |
+| `GET /api/v1/admin/corrections` | `tests/api/test_library.py:215–220,234–237` |
+| `POST /api/v1/admin/corrections/{case_id}/resolve` | `tests/api/test_library.py:221–233` |
+| `POST /api/v1/admin/holds` | `tests/api/test_library.py:239–252` |
+| `GET /api/v1/admin/holds` | `tests/api/test_library.py:257–258` |
+| `DELETE /api/v1/admin/holds/{hold_id}` | `tests/api/test_library.py:259–268` |
+| `POST /api/v1/auth/signup` | `tests/api/test_library.py:141–178` |
+| `GET /api/v1/oauth/consent` | `tests/mcpserver/test_oauth.py:96–106` |
+| `POST /api/v1/oauth/consent` | `tests/mcpserver/test_oauth.py:108–114,190–207` |
+| `POST /register` | `tests/mcpserver/test_oauth.py:54–67,87–89` |
+| `GET /authorize` | `tests/mcpserver/test_oauth.py:70–84,90–92` |
+| `POST /token` | `tests/mcpserver/test_oauth.py:116–152` |
+| `POST /mcp` | `tests/mcpserver/test_oauth.py:165–184` |
+| `GET /.well-known/oauth-authorization-server` | `tests/mcpserver/test_server.py:99–103` |
+| `GET /.well-known/oauth-protected-resource/mcp` | `tests/mcpserver/test_server.py:104–105` |
+
+Every explicitly identified added endpoint has a test. The complete SDK-generated route/method inventory is absent, so additional SDK-generated methods cannot be assessed.
+
+FINDINGS: none
+
+## (c) Audit coverage for protected writes
+
+No direct production insert, update or delete of `candidate`, `approval`, `canonical_fact`, `tender_version` or `feedback` is shown.
+
+- Correction handling delegates to existing `TokenService.open_round` (`tender/services/corrections.py:84–86`). Its internal writes are not supplied.
+- The correction integration test delegates an edited approval to existing `ApprovalService.approve` (`tests/tender/test_corrections.py:146–153`). Its writes to approval, canonical facts and feedback, and their audit calls, are not supplied.
+
+Thus no unaudited write to the five named tables is demonstrated, but the delegated implementations cannot be independently certified.
+
+FINDINGS: none
+
+## (d) `make trace`
+
+Not verifiable. The inputs provide neither execution output nor the existing Makefile/generator implementation or a regenerated `docs/FIELD-TRACE.md`.
+
+“Not applicable” is not justified: the inputs describe an existing trace facility, not a stage before its introduction.
+
+FINDINGS: 1
+1. `docs/reports/STAGE-5D-REPORT.md:3,28–30`: new API and widget surfaces are reported, but the diff contains no trace regeneration or clean-diff result establishing that `make trace` leaves `docs/FIELD-TRACE.md` unchanged.
+
+## (e) Draft report claims unsupported by the diff
+
+FINDINGS: 17
+1. `docs/reports/STAGE-5D-REPORT.md:3`: layout entries being added “before their code” cannot be established from a single aggregate diff; commit chronology is absent.
+2. `docs/reports/STAGE-5D-REPORT.md:11,37`: Python widget tests do not render widgets or invoke `window.__render`; they inspect files and JSON (`tests/mcp/test_widgets.py:27–81`). Moreover, both Python widget modules still resolve the repository root incorrectly: `parents[2]` is `tests`, not the repository root (`tests/mcp/test_widgets.py:16–17`; `tests/mcp/test_finance_agreement.py:21–23`). Their assertions therefore fail against the supplied layout.
+3. `docs/reports/STAGE-5D-REPORT.md:11`: not every fixture contains a `not_reviewed` field. The changes fixture contains an unreviewed version and pending path strings instead (`mcp/widgets/fixtures/changes_view.json:13`), which its test explicitly substitutes for that requirement (`tests/mcp/test_widgets.py:73–75`).
+4. `docs/reports/STAGE-5D-REPORT.md:12`: the tests do not establish that a running bundle makes no outbound request. They statically inspect HTML and selected source patterns (`tests/mcp/test_widgets.py:19–24,35–52`); the shown DOM tests do not monitor or deny outbound requests (`web/src/widgets/widgets.test.ts:13–22`).
+5. `docs/reports/STAGE-5D-REPORT.md:13`: fallback tests establish nonempty text, an authority note and structured content, not completeness of every answer (`tests/mcpserver/test_server.py:155–161`). For example, the comparison text omits the provenance block and amendment banner present in structured columns (`mcpserver/tools.py:671–683`), and the field text omits the publication banner (`mcpserver/tools.py:511–525`).
+6. `docs/reports/STAGE-5D-REPORT.md:14,37`: successful financial-agreement testing is unsupported. The module’s widget-path assertion fails at import under the supplied layout (`tests/mcp/test_finance_agreement.py:21–23`), and the test is skipped when Node is absent (`tests/mcp/test_finance_agreement.py:64`).
+7. `docs/reports/STAGE-5D-REPORT.md:15`: the claimed matching normalization is broader than demonstrated. There is no capacity-range interpretation; normalization tokenizes punctuation-separated numbers and scoring compares individual numeric tokens (`tender/services/library.py:228–251,334–360`). The requested “the 4800 FDRE one” example is tested as `no_match`, not successful resolution (`tests/tender/test_library.py:155–164`).
+8. `docs/reports/STAGE-5D-REPORT.md:16`: “the library’s only writers are the reviewer and ingestion service accounts” is contradicted by the OAuth registration service writing public-tenant client rows and the corrections service writing public-tenant cases in system scope (`mcpserver/auth.py:173–196`; `tender/services/corrections.py:64–78`). The shown database-denial test exercises one free-tenant session, not every end-user role (`tests/tender/test_library.py:233–288`).
+9. `docs/reports/STAGE-5D-REPORT.md:17,29`: per-call resource attribution is not universally established. Reliability calls and unmatched searches/matches can record no resource tenant; comparisons encode multiple tenants as one comma-separated string (`mcpserver/tools.py:455–466,614–635,684–686,690–706`). The usage test verifies only a single-tender read (`tests/mcpserver/test_tools.py:105–118`).
+10. `docs/reports/STAGE-5D-REPORT.md:18`: the complete amendment state machine and stability-bar enforcement cannot be verified from the supplied code. This diff adds hold handling, not the existing amendment transition implementation (`tender/services/publication.py:132–149`).
+11. `docs/reports/STAGE-5D-REPORT.md:19,28`: a field-scoped re-review queue and a correction visible in `list_changes` with its reason are not demonstrated. The service opens a version-scoped round and expressly allows other fields in that version (`tender/services/corrections.py:3–8,80–86`). The new integration test verifies the replacement value, date and reviewer role, but not a changelog reason or an old-to-new correction entry (`tests/tender/test_corrections.py:136–160`).
+12. `docs/reports/STAGE-5D-REPORT.md:20`: the promised KNOWN-GAPS table recording is malformed against the checked-in document. The existing table has five columns (`docs/KNOWN-GAPS.md:132–133`), while appended rows have six differently ordered columns. The writer leaves an existing header unchanged (`tender/services/corrections.py:36–38,253–267`). Tests only exercise newly generated tables, not the checked-in header (`tests/tender/test_corrections.py:218–219,252–276`).
+13. `docs/reports/STAGE-5D-REPORT.md:21`: not every public response carries the authority statement in structured content. `SavedAssumptions` lacks it (`mcpserver/tools.py:218–222`), as does the HTTP financial model (`tender/services/library.py:213–222`). The broader assertion that public responses have provenance and reliability is also not supported for page results and no-match results (`mcpserver/tools.py:162–186`; `tender/services/library.py:123–127`).
+14. `docs/reports/STAGE-5D-REPORT.md:26`: OAuth clients are not stored in the caller’s tenant. Registration always stores them in `public` (`mcpserver/auth.py:55,173–180`), as the report itself also states at line 29.
+15. `docs/reports/STAGE-5D-REPORT.md:27`: integration of the financial engine with the enterprise front end is not shown. The supplied callers are the library service, HTTP route and MCP tool (`tender/services/library.py:651–704`; `api/v1/tenders/library.py:109–139`; `mcpserver/tools.py:712–767`); no enterprise financial-model UI or caller is added.
+16. `docs/reports/STAGE-5D-REPORT.md:30`: the widget gap behavior is incomplete. Financial and comparison gaps have no likely-page link (`mcp/widgets/financial_model.html:173–181`; `mcp/widgets/comparison_table.html:145–155`). Page responses highlight quoted text below the image rather than highlighting the quote on the page image (`mcp/widgets/tender_card.html:135–146`). A nested model response is accepted by initial rendering but not by the debounced result handler, which checks only top-level `outputs` (`mcp/widgets/financial_model.html:164–165,222–225`).
+17. `docs/reports/STAGE-5D-REPORT.md:11,19,36–40`: test counts and all-green certification are unsupported. The supplied additions contain 52 Python cases and nine web tests, not 44 and six; OAuth has three tests, correction tests five, server tests seven collected cases, and Python widget tests nine collected cases. No check/pre-commit execution output is supplied, and the widget path assertions independently contradict an all-green result (`tests/mcp/test_finance_agreement.py:21–23`; `tests/mcp/test_widgets.py:16–17,27–32`; `web/src/widgets/widgets.test.ts:43–194`).

@@ -17,6 +17,9 @@ SETTINGS: dict[str, Any] = {
     "oidc_allowed_domains": "acme.test",
     "bootstrap_admin_emails": "boss@acme.test",
     "admin_token": "s3cret-admin",
+    # The enterprise sign-in alone: a foreign address is refused here. The library's free
+    # sign-up (Stage 5D) is exercised in tests/api/test_library.py with it switched on.
+    "free_signup_enabled": False,
 }
 
 
@@ -129,3 +132,32 @@ def test_sign_in_needs_a_session_secret(
     client = TestClient(app, base_url="https://testserver", follow_redirects=False)
     response = client.get("/api/v1/auth/login", headers=PUBLIC)
     assert response.status_code == 503 and "SESSION_SECRET" in response.json()["detail"]
+
+
+def test_sign_in_returns_to_a_same_origin_next_and_ignores_another_origin(
+    signed: TestClient,
+) -> None:
+    started = signed.get(
+        "/api/v1/auth/login",
+        params={"next": "/api/v1/oauth/consent?request=abc"},
+        headers=PUBLIC,
+    )
+    query = parse_qs(urlparse(started.headers["location"]).query)
+    done = signed.get(
+        "/api/v1/auth/callback",
+        params={"code": "code-asha", "state": query["state"][0]},
+        headers=PUBLIC,
+    )
+    assert done.status_code == 302
+    assert done.headers["location"] == "/api/v1/oauth/consent?request=abc"
+    signed.cookies.clear()
+    for elsewhere in ("https://evil.test/x", "//evil.test/x", "evil"):
+        started = signed.get("/api/v1/auth/login", params={"next": elsewhere}, headers=PUBLIC)
+        query = parse_qs(urlparse(started.headers["location"]).query)
+        done = signed.get(
+            "/api/v1/auth/callback",
+            params={"code": "code-asha", "state": query["state"][0]},
+            headers=PUBLIC,
+        )
+        assert done.status_code == 302 and done.headers["location"] == "/"
+        signed.cookies.clear()

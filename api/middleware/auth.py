@@ -32,7 +32,16 @@ ADMIN = review_token.ADMIN
 SESSION_COOKIE = "tie_session"
 BEARER = "bearer "
 # Reachable from outside without any identity.
-OPEN = {f"{API}/health", f"{API}/auth/login", f"{API}/auth/callback"}
+OPEN = {
+    f"{API}/health",
+    f"{API}/auth/login",
+    f"{API}/auth/callback",
+    f"{API}/auth/signup",
+    # The OAuth consent page sends a visitor without a session to sign in itself.
+    f"{API}/oauth/consent",
+    # The public correction form (Stage 5D): a claim with an email address, no sign-in.
+    f"{API}/public/corrections",
+}
 ID = review_token.ID
 
 # What each role may call, by method and path under /api/v1. A review token has its own
@@ -54,12 +63,18 @@ _READS = (
     r"/reports/[a-z-]+",
     r"/canonical",
     r"/review-state",
+    # The library (Stage 5D): search, matching, the watchlist.
+    r"/tenders/search",
+    r"/tenders/match",
+    r"/me/watchlist",
 )
 _INTELLIGENCE = (
     rf"/tenders/{ID}/(published|published\.pdf|changes)",
     r"/tenders/compare",
     rf"/tenders/{ID}/model",
     r"/reports/[a-z-]+",
+    r"/tenders/search",
+    r"/tenders/match",
 )
 ALLOWED_BY_ROLE: dict[str, tuple[tuple[str, str], ...]] = {
     "reviewer": (
@@ -67,6 +82,16 @@ ALLOWED_BY_ROLE: dict[str, tuple[tuple[str, str], ...]] = {
         ("POST", r"/approvals"),
         ("POST", rf"/tenders/{ID}/complete-review"),
         ("POST", r"/auth/logout"),
+        # The library (Stage 5D): the model and its assumptions (a free tenant is refused
+        # by the route with `tier_required`), the watchlist, a correction.
+        ("POST", rf"/tenders/{ID}/model"),
+        ("PUT", rf"/tenders/{ID}/assumptions"),
+        ("POST", r"/me/watchlist"),
+        ("DELETE", r"/me/watchlist"),
+        ("POST", r"/public/corrections"),
+        # The library's OAuth consent page (an MCP client asking to read on the user's behalf).
+        ("GET", r"/oauth/consent"),
+        ("POST", r"/oauth/consent"),
     ),
     "api_client": (
         ("GET", r"/auth/me"),
@@ -75,10 +100,13 @@ ALLOWED_BY_ROLE: dict[str, tuple[tuple[str, str], ...]] = {
         ("GET", rf"/tenders/{ID}/(versions|view)"),
         ("GET", rf"/tenders/{ID}/(published|published\.pdf|changes)"),
         ("GET", r"/tenders/compare"),
+        ("GET", r"/tenders/search"),
+        ("GET", r"/tenders/match"),
         ("GET", r"/admin/reliability"),
         ("GET", r"/reports/[a-z-]+"),
         ("GET", r"/schemas/tender/[a-z_]+"),
         ("POST", rf"/tenders/{ID}/model"),
+        ("POST", r"/public/corrections"),
     ),
 }
 ALLOWED_BY_ROLE["approver"] = (*ALLOWED_BY_ROLE["reviewer"], ("POST", r"/admin/gold"))

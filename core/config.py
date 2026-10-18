@@ -74,6 +74,10 @@ class Settings(BaseSettings):
     # Guards /api/v1/admin/* for internal automation and the tests; an admin who signed in
     # reaches the same routes with their session. Empty: the header opens nothing.
     admin_token: str = ""
+    # The public library's free tier on the MCP server (Stage 5D): calls per minute and per
+    # UTC day for a free-plan tenant or a token scoped to the library only.
+    free_rate_limit_per_min: int = 20
+    free_daily_cap: int = 200
 
     # Sign-in (Stage 5C): Google OIDC. The client is registered by the operator; the
     # callback is <public_base_url>/api/v1/auth/callback. Only verified addresses of the
@@ -92,6 +96,11 @@ class Settings(BaseSettings):
     # made without its own limits.
     api_key_rate_limit_per_min: int = 60
     api_key_daily_cap: int = 5000
+    # The public library (Stage 5D): whether an address outside the allowed domains may
+    # sign up for a free account (its own tenant, reading the library only), and the
+    # score below which find_matching_tender answers no_match rather than a wrong match.
+    free_signup_enabled: bool = True
+    match_threshold: float = 0.75
 
     # Where reviewers reach the app; review links are built from it.
     public_base_url: str = "https://34.131.65.108"

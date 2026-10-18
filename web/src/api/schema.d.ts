@@ -48,6 +48,47 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/corrections": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Corrections
+         * @description The correction cases on the tenders the admin may read, oldest first.
+         */
+        get: operations["list_corrections_api_v1_admin_corrections_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/corrections/{case_id}/resolve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Resolve Correction
+         * @description Close a case as accepted or rejected. The value, if it changed, changed through
+         *     the reviewer's approval; this records the outcome.
+         */
+        post: operations["resolve_correction_api_v1_admin_corrections__case_id__resolve_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/evals": {
         parameters: {
             query?: never;
@@ -128,6 +169,48 @@ export interface paths {
          */
         post: operations["make_gold_api_v1_admin_gold_post"];
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/holds": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Holds */
+        get: operations["list_holds_api_v1_admin_holds_get"];
+        put?: never;
+        /**
+         * Place Hold
+         * @description Suspend a tender's publication: a takedown (an agency's or rights-holder's request,
+         *     also recorded in docs/KNOWN-GAPS.md) or a correction hold.
+         */
+        post: operations["place_hold_api_v1_admin_holds_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/holds/{hold_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Lift Hold
+         * @description Lift a hold: publication follows the review state again.
+         */
+        delete: operations["lift_hold_api_v1_admin_holds__hold_id__delete"];
         options?: never;
         head?: never;
         patch?: never;
@@ -341,7 +424,8 @@ export interface paths {
         /**
          * Login
          * @description Send the browser to the identity provider. The state and nonce of this sign-in go
-         *     in a signed cookie that lives ten minutes.
+         *     in a signed cookie that lives ten minutes, with where to return to (`next`: a path of
+         *     this origin, else the root).
          */
         get: operations["login_api_v1_auth_login_get"];
         put?: never;
@@ -386,6 +470,28 @@ export interface paths {
         get: operations["me_api_v1_auth_me_get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/signup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Programmatic Signup
+         * @description A free sign-up without the browser dance: the provider's code is exchanged as the
+         *     callback would and a session opened. The same rules as the callback: a verified
+         *     address, outside the enterprise domains, no account yet.
+         */
+        post: operations["programmatic_signup_api_v1_auth_signup_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -608,6 +714,75 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/me/watchlist": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * My Watchlist
+         * @description The tenders the caller follows, with bid deadlines and days remaining. A paid
+         *     tier's tool: a free tenant is refused (`tier_required`).
+         */
+        get: operations["my_watchlist_api_v1_me_watchlist_get"];
+        put?: never;
+        /** Watch */
+        post: operations["watch_api_v1_me_watchlist_post"];
+        /** Unwatch */
+        delete: operations["unwatch_api_v1_me_watchlist_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/oauth/consent": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Consent
+         * @description The consent page: needs a signed-in user; otherwise sends them to sign in.
+         */
+        get: operations["consent_api_v1_oauth_consent_get"];
+        put?: never;
+        /**
+         * Decide
+         * @description Allow issues a code and returns the browser to the client; deny returns an error.
+         */
+        post: operations["decide_api_v1_oauth_consent_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/public/corrections": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Open Correction
+         * @description A claim that a published field is wrong, from any signed-in principal or from the
+         *     public form (then with an email address). It opens a correction case and queues the
+         *     field for re-review; it never changes a value.
+         */
+        post: operations["open_correction_api_v1_public_corrections_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/reports/extraction-summary": {
         parameters: {
             query?: never;
@@ -753,6 +928,50 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/tenders/match": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Match
+         * @description The library tender a document in the caller's hand is, or no_match with up to three
+         *     candidates and what tells them apart. Nothing is ingested or extracted.
+         */
+        get: operations["match_api_v1_tenders_match_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tenders/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Search
+         * @description Published tenders the caller may read (its own and the public library), narrowed
+         *     by words, type, agency or publication state. A suspended or unreviewed tender is
+         *     absent. Every hit carries its review date, reviewer role and reliability block; the
+         *     response the authority note.
+         */
+        get: operations["search_api_v1_tenders_search_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/tenders/{tender_id}": {
         parameters: {
             query?: never;
@@ -840,6 +1059,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/tenders/{tender_id}/assumptions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Save Assumptions
+         * @description Persist the caller's assumptions for a model of the tender. Separate from the
+         *     model: a read never saves, a save never computes. Never a canonical fact.
+         */
+        put: operations["save_assumptions_api_v1_tenders__tender_id__assumptions_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/tenders/{tender_id}/changes": {
         parameters: {
             query?: never;
@@ -902,6 +1142,28 @@ export interface paths {
          *     `mode` "batch" sends the calls through the batch API for a run nobody waits for.
          */
         post: operations["start_extraction_api_v1_tenders__tender_id__extract_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tenders/{tender_id}/model": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Model
+         * @description The financial model, read-only: the tender's fixed parameters with provenance, the
+         *     assumptions (given now, else saved, else the engine's defaults marked assumed) and the
+         *     engine's figures, labelled indicative. A free tenant is refused (`tier_required`).
+         */
+        post: operations["model_api_v1_tenders__tender_id__model_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1384,6 +1646,97 @@ export interface components {
             /** Reviewer */
             reviewer: string;
         };
+        /**
+         * Assumptions
+         * @description The user's, never the tender's. Defaults are marked "assumed" by every caller.
+         */
+        Assumptions: {
+            /**
+             * Auxiliary Consumption Percent
+             * @default 1
+             */
+            auxiliary_consumption_percent: number;
+            /**
+             * Capex Inr Crore Per Mw
+             * @default 4.1
+             */
+            capex_inr_crore_per_mw: number;
+            /**
+             * Cuf Percent
+             * @default 24
+             */
+            cuf_percent: number;
+            /**
+             * Debt Share Percent
+             * @default 75
+             */
+            debt_share_percent: number;
+            /**
+             * Interest Percent
+             * @default 9.25
+             */
+            interest_percent: number;
+            /**
+             * Om Escalation Percent
+             * @default 3
+             */
+            om_escalation_percent: number;
+            /**
+             * Om Inr Lakh Per Mw Year
+             * @default 5.5
+             */
+            om_inr_lakh_per_mw_year: number;
+            /**
+             * Ppa Tenure Years
+             * @default 25
+             */
+            ppa_tenure_years: number;
+            /**
+             * Tariff Inr Per Kwh
+             * @default 3
+             */
+            tariff_inr_per_kwh: number;
+            /**
+             * Tax Rate Percent
+             * @default 25.17
+             */
+            tax_rate_percent: number;
+            /**
+             * Tenor Years
+             * @default 18
+             */
+            tenor_years: number;
+        };
+        /** AssumptionsIn */
+        AssumptionsIn: {
+            /** Assumptions */
+            assumptions: {
+                [key: string]: unknown;
+            };
+            /**
+             * Model Type
+             * @default power_project_finance
+             */
+            model_type: string;
+        };
+        /** AssumptionsOut */
+        AssumptionsOut: {
+            /** Assumptions */
+            assumptions: {
+                [key: string]: unknown;
+            };
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Id */
+            id: string;
+            /** Model Type */
+            model_type: string;
+            /** Tender Id */
+            tender_id: string;
+        };
         /** Body_add_version_api_v1_tenders__tender_id__versions_post */
         Body_add_version_api_v1_tenders__tender_id__versions_post: {
             /** File */
@@ -1398,6 +1751,13 @@ export interface components {
             summary_of_change?: string | null;
             /** Version No */
             version_no?: number | null;
+        };
+        /** Body_decide_api_v1_oauth_consent_post */
+        Body_decide_api_v1_oauth_consent_post: {
+            /** Decision */
+            decision: string;
+            /** Request */
+            request: string;
         };
         /** Body_upload_document_api_v1_documents_post */
         Body_upload_document_api_v1_documents_post: {
@@ -1614,6 +1974,56 @@ export interface components {
             prompt_version?: string | null;
             /** Roles */
             roles: string[];
+        };
+        /** CorrectionIn */
+        CorrectionIn: {
+            /** Claimant Email */
+            claimant_email?: string | null;
+            /** Claimed Error */
+            claimed_error: string;
+            /** Field Path */
+            field_path: string;
+            /** Reasoning */
+            reasoning: string;
+            /** Tender Id */
+            tender_id: string;
+        };
+        /** CorrectionOut */
+        CorrectionOut: {
+            /** Claimant Email */
+            claimant_email: string | null;
+            /** Claimant Tenant Id */
+            claimant_tenant_id: string | null;
+            /** Claimed Error */
+            claimed_error: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Field Path */
+            field_path: string;
+            /** Id */
+            id: string;
+            /** Reasoning */
+            reasoning: string;
+            /** Resolution */
+            resolution: string | null;
+            /** Resolved At */
+            resolved_at: string | null;
+            /** Resolved By */
+            resolved_by: string | null;
+            /** Status */
+            status: string;
+            /** Tender Id */
+            tender_id: string;
+        };
+        /** CorrectionResolve */
+        CorrectionResolve: {
+            /** Accepted */
+            accepted: boolean;
+            /** Resolution */
+            resolution: string;
         };
         /** DocumentOut */
         DocumentOut: {
@@ -1894,6 +2304,34 @@ export interface components {
             /** Withdrawn Value */
             withdrawn_value?: unknown;
         };
+        /**
+         * FixedParameter
+         * @description One tender-fixed parameter as the widget shows it: locked, with its page chip, or
+         *     a typed gap saying why there is none.
+         */
+        FixedParameter: {
+            /**
+             * Evidence
+             * @default []
+             */
+            evidence: components["schemas"]["Evidence"][];
+            /** Gap Reason */
+            gap_reason?: string | null;
+            /** Label */
+            label: string;
+            /** Name */
+            name: string;
+            /** Path */
+            path?: string | null;
+            /** Status */
+            status: string;
+            /** Unit */
+            unit?: string | null;
+            /** Value */
+            value?: unknown;
+            /** Version No */
+            version_no?: number | null;
+        };
         /** FreshnessOut */
         FreshnessOut: {
             /** Checks */
@@ -1970,6 +2408,45 @@ export interface components {
             /** Tenant Id */
             tenant_id: string;
         };
+        /** HoldIn */
+        HoldIn: {
+            /**
+             * Kind
+             * @default takedown
+             * @enum {string}
+             */
+            kind: "takedown" | "correction";
+            /** Reason */
+            reason: string;
+            /** Requested At */
+            requested_at?: string | null;
+            /** Tender Id */
+            tender_id: string;
+        };
+        /** HoldOut */
+        HoldOut: {
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Id */
+            id: string;
+            /** Kind */
+            kind: string;
+            /** Lifted At */
+            lifted_at: string | null;
+            /** Lifted By */
+            lifted_by: string | null;
+            /** Reason */
+            reason: string;
+            /** Requested At */
+            requested_at: string | null;
+            /** Requested By */
+            requested_by: string;
+            /** Tender Id */
+            tender_id: string;
+        };
         /**
          * KeyDef
          * @description One typed key of a record field. `keys` makes the key a list of sub-records with
@@ -2026,6 +2503,40 @@ export interface components {
             /** Url */
             url: string;
         };
+        /** Match */
+        Match: {
+            /**
+             * Authority Note
+             * @default The tender document is the authoritative source; this is jouleWise's reviewed reading of it.
+             */
+            authority_note: string;
+            /**
+             * Kind
+             * @default match
+             * @constant
+             */
+            kind: "match";
+            /** Score */
+            score: number;
+            tender: components["schemas"]["TenderSearchHit"];
+        };
+        /** MatchCandidate */
+        MatchCandidate: {
+            /** Distinguishing */
+            distinguishing: string;
+            /** External Ref */
+            external_ref: string | null;
+            /** Issuing Agency */
+            issuing_agency: string;
+            /** Score */
+            score: number;
+            /** Tender Id */
+            tender_id: string;
+            /** Tender Type */
+            tender_type: string;
+            /** Title */
+            title: string;
+        };
         /** MeOut */
         MeOut: {
             /**
@@ -2045,6 +2556,85 @@ export interface components {
             tenant_id: string;
             /** User Id */
             user_id?: string | null;
+        };
+        /** ModelIn */
+        ModelIn: {
+            /** Assumptions */
+            assumptions?: {
+                [key: string]: unknown;
+            } | null;
+            /**
+             * Model Type
+             * @default power_project_finance
+             */
+            model_type: string;
+        };
+        /** ModelResult */
+        ModelResult: {
+            assumptions: components["schemas"]["Assumptions"];
+            /** Assumptions Saved */
+            assumptions_saved: boolean;
+            /**
+             * Authority Note
+             * @default The tender document is the authoritative source; this is jouleWise's reviewed reading of it.
+             */
+            authority_note: string;
+            /** Fixed */
+            fixed: components["schemas"]["FixedParameter"][];
+            /**
+             * Label
+             * @default indicative
+             */
+            label: string;
+            /** Model Type */
+            model_type: string;
+            /** Note */
+            note: string;
+            outputs: components["schemas"]["Outputs"] | null;
+            /** Tender Id */
+            tender_id: string;
+        };
+        /** NoMatch */
+        NoMatch: {
+            /**
+             * Authority Note
+             * @default The tender document is the authoritative source; this is jouleWise's reviewed reading of it.
+             */
+            authority_note: string;
+            /** Candidates */
+            candidates: components["schemas"]["MatchCandidate"][];
+            /**
+             * Kind
+             * @default no_match
+             * @constant
+             */
+            kind: "no_match";
+            /** Reason */
+            reason: string;
+        };
+        /** Outputs */
+        Outputs: {
+            /** Capex Crore */
+            capex_crore: number;
+            /** Cashflows */
+            cashflows: components["schemas"]["YearRow"][];
+            /** Equity Irr Percent */
+            equity_irr_percent: number | null;
+            /**
+             * Label
+             * @default indicative
+             */
+            label: string;
+            /** Levelised Cost Inr Per Kwh */
+            levelised_cost_inr_per_kwh: number | null;
+            /** Payback Years */
+            payback_years: number | null;
+            /** Project Irr Percent */
+            project_irr_percent: number | null;
+            /** Used */
+            used: {
+                [key: string]: string;
+            };
         };
         /** PageOut */
         PageOut: {
@@ -2424,6 +3014,16 @@ export interface components {
             /** Snippet */
             snippet: string;
         };
+        /** SearchResult */
+        SearchResult: {
+            /**
+             * Authority Note
+             * @default The tender document is the authoritative source; this is jouleWise's reviewed reading of it.
+             */
+            authority_note: string;
+            /** Hits */
+            hits: components["schemas"]["TenderSearchHit"][];
+        };
         /** SectionOut */
         SectionOut: {
             /** Confidence */
@@ -2438,6 +3038,14 @@ export interface components {
             kind: string;
             /** Start Page */
             start_page: number;
+        };
+        /**
+         * SignupIn
+         * @description A programmatic free sign-up: the provider's code, exchanged as the callback would.
+         */
+        SignupIn: {
+            /** Code */
+            code: string;
         };
         /** Sitting */
         Sitting: {
@@ -2823,6 +3431,35 @@ export interface components {
             /** Tender Type */
             tender_type: string;
         };
+        /**
+         * TenderSearchHit
+         * @description A tender as search and matching return it: identity, publication state and the
+         *     same provenance and reliability block every public response carries.
+         */
+        TenderSearchHit: {
+            /** Banner */
+            banner: string | null;
+            /** External Ref */
+            external_ref: string | null;
+            /** Issuing Agency */
+            issuing_agency: string;
+            publication: components["schemas"]["PublicationState"];
+            reliability?: components["schemas"]["Reliability"] | null;
+            /** Reviewed At */
+            reviewed_at?: string | null;
+            /** Reviewer Role */
+            reviewer_role?: string | null;
+            /** Slug */
+            slug: string | null;
+            /** Tenant Id */
+            tenant_id: string;
+            /** Tender Id */
+            tender_id: string;
+            /** Tender Type */
+            tender_type: string;
+            /** Title */
+            title: string;
+        };
         /** TenderSummary */
         TenderSummary: {
             /** Cost Usd */
@@ -3062,6 +3699,47 @@ export interface components {
             /** Version No */
             version_no: number;
         };
+        /** WatchedTender */
+        WatchedTender: {
+            /** Bid Deadline */
+            bid_deadline: string | null;
+            /** Days Remaining */
+            days_remaining: number | null;
+            /** Issuing Agency */
+            issuing_agency: string;
+            /** Publication State */
+            publication_state: string;
+            /** Tender Id */
+            tender_id: string;
+            /** Tender Type */
+            tender_type: string;
+            /** Title */
+            title: string;
+        };
+        /** WatchlistIn */
+        WatchlistIn: {
+            /** Tender Id */
+            tender_id: string;
+        };
+        /** YearRow */
+        YearRow: {
+            /** Debt Service Crore */
+            debt_service_crore: number;
+            /** Equity Cash Crore */
+            equity_cash_crore: number;
+            /** Generation Mwh */
+            generation_mwh: number;
+            /** Om Crore */
+            om_crore: number;
+            /** Project Cash Crore */
+            project_cash_crore: number;
+            /** Revenue Crore */
+            revenue_crore: number;
+            /** Tax Crore */
+            tax_crore: number;
+            /** Year */
+            year: number;
+        };
     };
     responses: never;
     parameters: never;
@@ -3146,6 +3824,74 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ApiKeyOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_corrections_api_v1_admin_corrections_get: {
+        parameters: {
+            query?: {
+                status?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CorrectionOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    resolve_correction_api_v1_admin_corrections__case_id__resolve_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-reviewer"?: string | null;
+            };
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CorrectionResolve"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CorrectionOut"];
                 };
             };
             /** @description Validation Error */
@@ -3283,6 +4029,94 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["GoldOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_holds_api_v1_admin_holds_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HoldOut"][];
+                };
+            };
+        };
+    };
+    place_hold_api_v1_admin_holds_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-reviewer"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HoldIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HoldOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    lift_hold_api_v1_admin_holds__hold_id__delete: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-reviewer"?: string | null;
+            };
+            path: {
+                hold_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HoldOut"];
                 };
             };
             /** @description Validation Error */
@@ -3616,7 +4450,9 @@ export interface operations {
     };
     login_api_v1_auth_login_get: {
         parameters: {
-            query?: never;
+            query?: {
+                next?: string | null;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -3630,6 +4466,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -3668,6 +4513,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MeOut"];
+                };
+            };
+        };
+    };
+    programmatic_signup_api_v1_auth_signup_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SignupIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -4015,6 +4893,178 @@ export interface operations {
             };
         };
     };
+    my_watchlist_api_v1_me_watchlist_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WatchedTender"][];
+                };
+            };
+        };
+    };
+    watch_api_v1_me_watchlist_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WatchlistIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WatchedTender"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    unwatch_api_v1_me_watchlist_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WatchlistIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WatchedTender"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    consent_api_v1_oauth_consent_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+        };
+    };
+    decide_api_v1_oauth_consent_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/x-www-form-urlencoded": components["schemas"]["Body_decide_api_v1_oauth_consent_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    open_correction_api_v1_public_corrections_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CorrectionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CorrectionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     get_extraction_summary_api_v1_reports_extraction_summary_get: {
         parameters: {
             query?: never;
@@ -4241,6 +5291,73 @@ export interface operations {
             };
         };
     };
+    match_api_v1_tenders_match_get: {
+        parameters: {
+            query: {
+                title_or_number: string;
+                agency?: string | null;
+                capacity_mw?: number | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Match"] | components["schemas"]["NoMatch"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    search_api_v1_tenders_search_get: {
+        parameters: {
+            query?: {
+                q?: string;
+                tender_type?: string | null;
+                agency?: string | null;
+                state?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SearchResult"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     get_tender_api_v1_tenders__tender_id__get: {
         parameters: {
             query?: never;
@@ -4403,6 +5520,41 @@ export interface operations {
             };
         };
     };
+    save_assumptions_api_v1_tenders__tender_id__assumptions_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tender_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssumptionsIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssumptionsOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     get_changes_api_v1_tenders__tender_id__changes_get: {
         parameters: {
             query?: never;
@@ -4489,6 +5641,41 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ExtractionRunOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    model_api_v1_tenders__tender_id__model_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tender_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ModelIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModelResult"];
                 };
             };
             /** @description Validation Error */

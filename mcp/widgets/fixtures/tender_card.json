@@ -1,0 +1,49 @@
+{
+  "tender_id": "11111111111111111111111111111111",
+  "slug": "seci-cfd-i",
+  "title": "Selection of 2,000 MW FDRE power with Contract for Difference (CfD-I)",
+  "issuing_agency": "SECI",
+  "tender_type": "fdre",
+  "external_ref": "SECI/C&P/IPP/13/0002/26-27",
+  "publication": {
+    "state": "update_pending",
+    "reviewed_version": 4,
+    "current_version": 5,
+    "unreviewed_version": {"version_no": 5, "kind": "corrigendum", "issued_on": "2026-10-08", "document_ids": ["dddddddddddddddddddddddddddddddd"]},
+    "possibly_superseded": ["sector.power.common.ppa_tenure_years"],
+    "suspended_by": []
+  },
+  "banner": "Version 5 (corrigendum, issued 2026-10-08) is not yet reviewed; fields it may touch are marked possibly superseded.",
+  "reviewed_at": "2026-10-13T10:32:00+00:00",
+  "reviewer_role": "approver",
+  "reviewed_version": 4,
+  "current_version": 5,
+  "sections": [
+    {
+      "name": "key_dates",
+      "label": "Key dates",
+      "fields": [
+        {"path": "core.key_dates.bid_submission_deadline", "section": "key_dates", "label": "Bid submission deadline", "value_type": "date", "unit": null, "value": "2026-11-08", "version_no": 4, "set_by": "amendment", "evidence": [{"document_id": "cccccccccccccccccccccccccccccccc", "filename": "Amendment-02.pdf", "page_no": 1, "quote": "The last date of bid submission is extended to 08.11.2026"}], "reviewed_at": "2026-10-13T10:32:00+00:00", "reviewer_role": "approver", "withdrawn": false, "withdrawn_from_version": null, "status": "reviewed", "gap": null},
+        {"path": "sector.power.common.ppa_tenure_years", "section": "key_dates", "label": "PPA tenure", "value_type": "int", "unit": "years", "value": 12, "version_no": 1, "set_by": "original", "evidence": [{"document_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "filename": "RfS.pdf", "page_no": 41, "quote": "The PPA shall be valid for a period of 12 (twelve) years"}], "reviewed_at": "2026-10-13T10:32:00+00:00", "reviewer_role": "approver", "withdrawn": false, "withdrawn_from_version": null, "status": "possibly_superseded", "gap": null},
+        {"path": "core.key_dates.query_deadline", "section": "key_dates", "label": "Query deadline", "value_type": "date", "unit": null, "value": null, "version_no": null, "set_by": null, "evidence": [], "reviewed_at": null, "reviewer_role": null, "withdrawn": false, "withdrawn_from_version": null, "status": "not_reviewed", "gap": {"reason": "the reviewer has not decided this field; the engine's reading cites page 12", "document_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "likely_page": 12}}
+      ]
+    },
+    {
+      "name": "scope",
+      "label": "Scope",
+      "fields": [
+        {"path": "sector.power.common.total_capacity_mw", "section": "scope", "label": "Total capacity", "value_type": "decimal", "unit": "MW", "value": 2000, "version_no": 1, "set_by": "original", "evidence": [{"document_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "filename": "RfS.pdf", "page_no": 1, "quote": "2000 MW FDRE power"}], "reviewed_at": "2026-10-13T10:32:00+00:00", "reviewer_role": "approver", "withdrawn": false, "withdrawn_from_version": null, "status": "reviewed", "gap": null}
+      ]
+    },
+    {
+      "name": "commercial",
+      "label": "Commercial",
+      "fields": [
+        {"path": "core.commercial.tariff_ceiling_inr_per_kwh", "section": "commercial", "label": "Tariff ceiling", "value_type": "decimal", "unit": "INR/kWh", "value": 3.8, "version_no": 1, "set_by": "original", "evidence": [{"document_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "filename": "RfS.pdf", "page_no": 63, "quote": "ceiling tariff of INR 3.80/kWh"}], "reviewed_at": "2026-10-13T10:32:00+00:00", "reviewer_role": "approver", "withdrawn": false, "withdrawn_from_version": null, "status": "reviewed", "gap": null}
+      ]
+    }
+  ],
+  "suspension": null,
+  "reliability": {"tender_type": "fdre", "value_accuracy": 0.96, "evidence_accuracy": 1.0, "n_fields": 320, "as_of": "2026-10-15"},
+  "authority_note": "The tender document is the authoritative source; this is a reviewed reading of it."
+}

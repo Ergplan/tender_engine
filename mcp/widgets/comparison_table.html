@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Compare tenders</title>
+<!-- MCP Apps widget (text/html;profile=mcp-app) for compare_tenders. Self-contained; the
+     CSV export is built from this document's own copy of the data, no network. -->
+<style>
+:root{--bg:#f6f5f1;--card:#ffffff;--ink:#1a1a1a;--muted:#5a5a55;--line:#e6e4dd;--accent:#0f5f5c;--accent-bg:#e7f2ef;--amber:#8a4a0b;--amber-bg:#fdf1e3;--red:#991b1b;--red-bg:#fdecec;--gap-bg:#efeeea;--mark:#fde68a}
+@media (prefers-color-scheme: dark){:root{--bg:#141413;--card:#1f1f1d;--ink:#f1efe8;--muted:#a9a79f;--line:#34332f;--accent:#7fc4bf;--accent-bg:#17302e;--amber:#f0b36b;--amber-bg:#3a2a12;--red:#f29c9c;--red-bg:#3b1b1b;--gap-bg:#2a2a27;--mark:#6b5a12}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:960px;margin:0 auto;padding:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+header{padding:12px 14px;border-bottom:1px solid var(--line);display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+h1{margin:0;font-size:15px;flex:1}
+button.plain{font:inherit;font-size:13px;min-height:44px;padding:8px 12px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:6px;cursor:pointer}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:520px;font-size:13px}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left}
+th{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.02em;font-weight:500}
+th button{font:inherit;min-height:44px;background:none;border:0;color:inherit;cursor:pointer;text-align:left;padding:0}
+th .state{display:block;font-size:11px;text-transform:none;letter-spacing:0;color:var(--amber)}
+td.path{font:12px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted)}
+.gap{display:inline-block;background:var(--gap-bg);color:var(--muted);border-radius:6px;padding:2px 6px;font-size:12px}
+.chip{display:inline-block;margin-left:4px;padding:1px 7px;border-radius:999px;background:var(--accent-bg);color:var(--accent);font:11px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace;border:0;cursor:pointer;min-height:24px}
+.tag{font-size:11px;color:var(--amber);margin-left:4px}
+.struck{text-decoration:line-through;color:var(--muted)}.page{margin:6px 0;border:1px solid var(--line);border-radius:8px;padding:8px;background:var(--bg);font-size:12px;}.page img{max-width:100%;height:auto;display:block;border-radius:4px}.page mark{background:var(--mark);color:var(--ink);padding:0 2px}.note{font-size:11px;color:var(--muted)}
+.excluded{padding:8px 14px;font-size:12px;background:var(--red-bg);color:var(--red)}
+footer{padding:10px 14px;font-size:11px;color:var(--muted);border-top:1px solid var(--line);display:flex;flex-direction:column;gap:3px}
+.hint{padding:14px;color:var(--muted)}
+</style>
+</head>
+<body>
+<main id="app"><p class="hint">Waiting for the tool result…</p></main>
+<script>
+(function () {
+  "use strict";
+  var RESULT_METHODS = ["ui/notifications/tool-result", "ui/notifications/tool-input", "ui/tool-result"];
+  var bridge = {
+    nextId: 1, pending: new Map(),
+    post: function (msg) { if (window.parent && window.parent !== window) window.parent.postMessage(msg, "*"); },
+    call: function (name, args) {
+      var id = this.nextId++; var self = this;
+      return new Promise(function (resolve, reject) {
+        self.pending.set(id, { resolve: resolve, reject: reject });
+        self.post({ jsonrpc: "2.0", id: id, method: "tools/call", params: { name: name, arguments: args } });
+        self.post({ jsonrpc: "2.0", id: "x" + id, method: "ui/request-tool-call", params: { name: name, arguments: args, forwardOf: id } });
+      });
+    }
+  };
+  window.addEventListener("message", function (ev) {
+    var m = ev.data; if (!m || m.jsonrpc !== "2.0") return;
+    if (m.id !== undefined && bridge.pending.has(m.id)) { var p = bridge.pending.get(m.id); bridge.pending.delete(m.id); if (m.error) p.reject(m.error); else p.resolve(m.result); return; }
+    if (RESULT_METHODS.indexOf(m.method) >= 0) { var r = m.params || {}; var data = r.structuredContent || (r.toolResult && r.toolResult.structuredContent) || (r.result && r.result.structuredContent) || r.arguments; if (data) render(data); }
+  });
+  bridge.post({ jsonrpc: "2.0", id: bridge.nextId++, method: "ui/initialize", params: { protocolVersion: "2026-01-26", appInfo: { name: "comparison_table", version: "1" }, appCapabilities: {} } });
+  bridge.post({ jsonrpc: "2.0", method: "ui/notifications/initialized" });
+
+  function el(tag, attrs, children) {
+    var e = document.createElement(tag);
+    if (attrs) Object.keys(attrs).forEach(function (k) {
+      if (k === "class") e.className = attrs[k]; else if (k === "text") e.textContent = attrs[k];
+      else if (k.slice(0, 2) === "on") e.addEventListener(k.slice(2), attrs[k]); else e.setAttribute(k, attrs[k]);
+    });
+    (children || []).forEach(function (c) { if (c) e.appendChild(typeof c === "string" ? document.createTextNode(c) : c); });
+    return e;
+  }
+  function show(v, unit) {
+    if (v === null || v === undefined) return "";
+    var t = typeof v === "number" ? v.toLocaleString("en-IN") : typeof v === "boolean" ? (v ? "yes" : "no") : typeof v === "object" ? JSON.stringify(v) : String(v);
+    return unit ? t + " " + unit : t;
+  }
+  function cellText(cell, unit) {
+    if (!cell || cell.status === "not_reviewed" || (cell.value === null && !cell.withdrawn)) return "not reviewed";
+    return (cell.withdrawn ? "withdrawn by v" + cell.version_no : show(cell.value, unit));
+  }
+  function sortKey(cell) {
+    if (!cell || cell.value === null || cell.value === undefined) return [1, ""];
+    return [0, typeof cell.value === "number" ? cell.value : String(cell.value).toLowerCase()];
+  }
+
+  function showPage(ev, host) {
+    var box = host.querySelector(".page");
+    if (box) { box.remove(); return; }
+    box = el("div", { class: "page" }, [el("div", { text: "Loading page " + ev.page_no + "…" })]);
+    host.appendChild(box);
+    bridge.call("get_document_page", { document_id: ev.document_id, page_no: ev.page_no, quote: ev.quote || "" }).then(function (res) {
+      var sc = (res && res.structuredContent) || res || {};
+      box.textContent = "";
+      // The image comes inside the result as a data: URL; nothing is fetched from any host.
+      if (sc.image_data_url && String(sc.image_data_url).indexOf("data:") === 0) box.appendChild(el("img", { src: sc.image_data_url, alt: "Page " + ev.page_no + " of " + (ev.filename || "the document") }));
+      var text = sc.text || "";
+      var q = ev.quote || "";
+      var at = q ? text.indexOf(q) : -1;
+      var p = el("p", {});
+      if (at >= 0) { p.appendChild(document.createTextNode(text.slice(Math.max(0, at - 160), at))); p.appendChild(el("mark", { text: q })); p.appendChild(document.createTextNode(text.slice(at + q.length, at + q.length + 160))); }
+      else { if (q) p.appendChild(el("mark", { text: q })); if (text) p.appendChild(document.createTextNode((q ? " — quote as cited; page text: " : "") + text.slice(0, 320))); }
+      if (sc.quote_located === false && q) p.appendChild(el("span", { class: "note", text: " (the quote was not located on this page)" }));
+      box.appendChild(p);
+    }, function (err) {
+      box.textContent = "";
+      box.appendChild(el("p", { text: "The page could not be fetched (" + ((err && err.message) || "no answer") + "). Quote as cited: " }));
+      box.appendChild(el("mark", { text: ev.quote || "" }));
+    });
+  }
+  var state = { data: null, sort: null, dir: 1 };
+  function csv(data) {
+    var q = function (s) { return '"' + String(s === null || s === undefined ? "" : s).replace(/"/g, '""') + '"'; };
+    var lines = [["field", "section"].concat(data.columns.map(function (c) { return c.title; })).map(q).join(",")];
+    data.rows.forEach(function (r) {
+      lines.push([r.path, r.section].concat(r.cells.map(function (c) { return cellText(c, r.unit) + (c && c.version_no ? " [v" + c.version_no + (c.evidence && c.evidence[0] ? " p." + c.evidence[0].page_no : "") + "]" : ""); })).map(q).join(","));
+    });
+    return lines.join("\r\n") + "\r\n";
+  }
+  function download(data) {
+    var blob = new Blob([csv(data)], { type: "text/csv;charset=utf-8" });
+    var url = URL.createObjectURL(blob);
+    var a = el("a", { href: url, download: "tender-comparison.csv" }); document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+  }
+  function render(data) {
+    data = (data && typeof data.comparison === "object" && data.comparison && data.comparison.columns) ? data.comparison : data;
+    state.data = data;
+    var app = document.getElementById("app"); app.textContent = "";
+    var card = el("div", { class: "card" });
+    card.appendChild(el("header", {}, [el("h1", { text: "Compare " + data.columns.length + " tender" + (data.columns.length === 1 ? "" : "s") }), el("button", { class: "plain", type: "button", id: "export", text: "Export CSV", onclick: function () { download(state.data); } })]));
+    (data.excluded || []).forEach(function (x) { card.appendChild(el("div", { class: "excluded", role: "alert", text: "Left out: " + x.tender_id + " — " + x.reason })); });
+    var rows = data.rows.slice();
+    if (state.sort !== null) {
+      rows.sort(function (a, b) {
+        var ka = sortKey(a.cells[state.sort]), kb = sortKey(b.cells[state.sort]);
+        if (ka[0] !== kb[0]) return ka[0] - kb[0];
+        return (ka[1] < kb[1] ? -1 : ka[1] > kb[1] ? 1 : 0) * state.dir;
+      });
+    }
+    var thead = el("tr", {}, [el("th", { text: "Field" })]);
+    data.columns.forEach(function (c, i) {
+      var th = el("th", { scope: "col" });
+      th.appendChild(el("button", { type: "button", "aria-sort": state.sort === i ? (state.dir === 1 ? "ascending" : "descending") : "none", text: c.title + (state.sort === i ? (state.dir === 1 ? " ▲" : " ▼") : ""), onclick: function () { if (state.sort === i) state.dir = -state.dir; else { state.sort = i; state.dir = 1; } render(state.data); } }));
+      th.appendChild(el("span", { class: "state", text: c.issuing_agency + " · " + c.tender_type + (c.publication_state !== "published" ? " · " + c.publication_state.replace("_", " ") : "") }));
+      thead.appendChild(th);
+    });
+    var table = el("table", {}, [el("thead", {}, [thead])]);
+    var tbody = el("tbody", {});
+    rows.forEach(function (r) {
+      var tr = el("tr", {}, [el("td", {}, [el("div", { text: r.label }), el("div", { class: "path", text: r.path })])]);
+      r.cells.forEach(function (c) {
+        var td = el("td", {});
+        if (!c || c.status === "not_reviewed" || (c.value === null && !c.withdrawn)) td.appendChild(el("span", { class: "gap", text: "not reviewed" + (c && c.gap && c.gap.reason ? " — " + c.gap.reason : "") }));
+        else {
+          td.appendChild(c.withdrawn ? el("span", { class: "struck", text: show(c.value, r.unit) || "value" }) : document.createTextNode(show(c.value, r.unit)));
+          if (c.withdrawn) td.appendChild(el("span", { class: "tag", text: "withdrawn by v" + c.version_no }));
+          else if (c.version_no && c.version_no > 1) td.appendChild(el("span", { class: "tag", text: "v" + c.version_no }));
+          (c.evidence || []).slice(0, 1).forEach(function (ev) { td.appendChild(el("button", { class: "chip", type: "button", "aria-label": "Show page " + ev.page_no, text: "p." + ev.page_no, onclick: function () { showPage(ev, td); } })); });
+          if (c.status === "possibly_superseded") td.appendChild(el("span", { class: "tag", text: "possibly superseded" }));
+        }
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+    card.appendChild(el("div", { class: "scroll" }, [table]));
+    card.appendChild(el("footer", {}, [
+      el("div", { class: "reliability", text: data.columns.map(function (c) { return c.reliability ? c.tender_type + " " + (c.reliability.value_accuracy != null ? Math.round(c.reliability.value_accuracy * 100) + "% on " + c.reliability.n_fields + " fields" : "not yet measured") + (c.reliability.as_of ? " as of " + c.reliability.as_of : "") : c.tender_type + " reliability not yet measured"; }).filter(function (x, i, a) { return a.indexOf(x) === i; }).join(" · ") || "Reliability: not yet measured" }),
+      el("div", { text: data.authority_note || "The tender document is the authoritative source; this is a reviewed reading of it." })
+    ]));
+    app.appendChild(card);
+  }
+  window.__render = render;
+})();
+</script>
+</body>
+</html>

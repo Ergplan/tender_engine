@@ -1,0 +1,17 @@
+{
+  "tender_id": "11111111111111111111111111111111",
+  "title": "Selection of 2,000 MW FDRE power with Contract for Difference (CfD-I)",
+  "reviewed_version": 4,
+  "versions": [
+    {"version_no": 1, "kind": "original", "issued_on": "2026-08-20", "summary_of_change": null, "documents": ["RfS.pdf"], "reviewed": true, "changes": [], "pending": []},
+    {"version_no": 2, "kind": "amendment", "issued_on": "2026-09-02", "summary_of_change": "ISTS waiver cut-off restated.", "documents": ["Amendment-01.pdf"], "reviewed": true, "changes": [
+      {"field_path": "core.connectivity.ists_waiver_cutoff_date", "label": "ISTS waiver cut-off", "section": "connectivity", "value_type": "date", "unit": null, "before": "2028-06-30", "after": "2028-12-31", "withdrawn": false, "evidence": [{"document_id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "filename": "Amendment-01.pdf", "page_no": 1, "quote": "ISTS charges waiver shall apply to projects commissioned by 31.12.2028"}], "decided_at": "2026-10-13T10:00:00+00:00", "reviewer_role": "approver"}
+    ], "pending": []},
+    {"version_no": 4, "kind": "amendment", "issued_on": "2026-09-22", "summary_of_change": "Bid deadline extended.", "documents": ["Amendment-02.pdf"], "reviewed": true, "changes": [
+      {"field_path": "core.key_dates.bid_submission_deadline", "label": "Bid submission deadline", "section": "key_dates", "value_type": "date", "unit": null, "before": "2026-10-20", "after": "2026-11-08", "withdrawn": false, "evidence": [{"document_id": "cccccccccccccccccccccccccccccccc", "filename": "Amendment-02.pdf", "page_no": 1, "quote": "The last date of bid submission is extended to 08.11.2026"}], "decided_at": "2026-10-13T10:32:00+00:00", "reviewer_role": "approver"}
+    ], "pending": []},
+    {"version_no": 5, "kind": "corrigendum", "issued_on": "2026-10-08", "summary_of_change": "Amendment-03: ceiling tariff withdrawn, PPA tenure, EMD validity.", "documents": ["Amendment-03.pdf"], "reviewed": false, "changes": [], "pending": ["core.commercial.tariff_ceiling_inr_per_kwh", "sector.power.common.ppa_tenure_years", "core.guarantees.emd_validity_reference", "core.key_dates.bid_validity_days"]}
+  ],
+  "reliability": {"tender_type": "fdre", "value_accuracy": 0.96, "evidence_accuracy": 1.0, "n_fields": 320, "as_of": "2026-10-15"},
+  "authority_note": "The tender document is the authoritative source; this is a reviewed reading of it."
+}

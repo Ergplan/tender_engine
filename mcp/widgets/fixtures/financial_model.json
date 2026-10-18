@@ -1,0 +1,31 @@
+{
+  "tender_id": "22222222222222222222222222222222",
+  "model_type": "power_project_finance",
+  "label": "indicative",
+  "fixed": [
+    {"name": "capacity_mw", "label": "Total capacity", "value": 700, "unit": "MW", "path": "sector.power.common.total_capacity_mw", "version_no": 1, "status": "reviewed", "evidence": [{"document_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "filename": "RfS.pdf", "page_no": 1, "quote": "700 MW ISTS-connected Solar PV"}], "gap_reason": null},
+    {"name": "tariff_inr_per_kwh", "label": "Tariff ceiling", "value": null, "unit": "INR/kWh", "path": "sector.power.common.tariff_ceiling_inr_per_kwh", "version_no": null, "status": "not_reviewed", "evidence": [], "gap_reason": "the reviewer has not decided this field; the engine's reading cites page 60"},
+    {"name": "cuf_floor_percent", "label": "CUF floor", "value": 17, "unit": "%", "path": "sector.power.solar.min_cuf_percent", "version_no": 1, "status": "reviewed", "evidence": [{"document_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "filename": "RfS.pdf", "page_no": 38, "quote": "minimum CUF of 17%"}], "gap_reason": null},
+    {"name": "cuf_ceiling_percent", "label": "CUF ceiling", "value": 30, "unit": "%", "path": "sector.power.solar.max_cuf_percent", "version_no": 1, "status": "reviewed", "evidence": [{"document_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "filename": "RfS.pdf", "page_no": 38, "quote": "maximum CUF of 30%"}], "gap_reason": null},
+    {"name": "ppa_tenure_years", "label": "PPA tenure", "value": 25, "unit": "years", "path": "sector.power.common.ppa_tenure_years", "version_no": 1, "status": "reviewed", "evidence": [{"document_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "filename": "RfS.pdf", "page_no": 41, "quote": "PPA shall be valid for a period of 25 years"}], "gap_reason": null},
+    {"name": "scod_months", "label": "SCOD", "value": 24, "unit": "months", "path": "sector.power.common.scod_months", "version_no": 1, "status": "reviewed", "evidence": [{"document_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "filename": "RfS.pdf", "page_no": 44, "quote": "within 24 months from the Effective Date"}], "gap_reason": null},
+    {"name": "degradation_cap_percent", "label": "Degradation cap", "value": 0.5, "unit": "%", "path": "sector.power.solar.annual_degradation_cap_percent", "version_no": 1, "status": "reviewed", "evidence": [{"document_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "filename": "RfS.pdf", "page_no": 39, "quote": "degradation not exceeding 0.5% per year"}], "gap_reason": null},
+    {"name": "pbg_inr_per_mw", "label": "PBG per MW", "value": 2320000, "unit": "INR", "path": "core.guarantees.pbg_per_mw_inr", "version_no": 1, "status": "reviewed", "evidence": [{"document_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "filename": "RfS.pdf", "page_no": 22, "quote": "PBG of INR 23.20 Lakh per MW"}], "gap_reason": null},
+    {"name": "pbg_duration_months", "label": "PBG duration", "value": null, "unit": "months", "path": "sector.power.ipp.pbg_duration_months", "version_no": null, "status": "not_in_schema", "evidence": [], "gap_reason": "the tender type's schema has no field for it"},
+    {"name": "ists_waiver", "label": "ISTS waiver cut-off", "value": "2028-06-30", "unit": null, "path": "sector.power.common.ists_waiver_cutoff_date", "version_no": 2, "status": "possibly_superseded", "evidence": [], "gap_reason": "version 3 may change it; not yet reviewed"},
+    {"name": "payment_security", "label": "Payment security mechanism", "value": "Letter of credit, one month billing; payment security fund", "unit": null, "path": "core.commercial.payment_security_mechanism", "version_no": 1, "status": "reviewed", "evidence": [{"document_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "filename": "RfS.pdf", "page_no": 52, "quote": "revolving Letter of Credit"}], "gap_reason": null}
+  ],
+  "assumptions": {"capex_inr_crore_per_mw": 4.1, "om_inr_lakh_per_mw_year": 5.5, "om_escalation_percent": 3.0, "debt_share_percent": 75.0, "interest_percent": 9.25, "tenor_years": 18, "tax_rate_percent": 25.17, "auxiliary_consumption_percent": 1.0, "cuf_percent": 24.0, "tariff_inr_per_kwh": 3.0, "ppa_tenure_years": 25},
+  "assumptions_saved": false,
+  "outputs": {
+    "project_irr_percent": 9.17, "equity_irr_percent": 13.87, "levelised_cost_inr_per_kwh": 1.245, "payback_years": 9.39, "capex_crore": 2870.0,
+    "used": {"tariff": "assumed", "cuf": "tender", "tenure": "tender", "degradation": "tender"},
+    "cashflows": [
+      {"year": 1, "generation_mwh": 1031796.7, "revenue_crore": 309.5, "om_crore": 38.5, "debt_service_crore": 245.2, "tax_crore": 0.0, "project_cash_crore": 271.0, "equity_cash_crore": 25.8},
+      {"year": 2, "generation_mwh": 1026637.7, "revenue_crore": 308.0, "om_crore": 39.7, "debt_service_crore": 245.2, "tax_crore": 0.0, "project_cash_crore": 268.3, "equity_cash_crore": 23.1},
+      {"year": 3, "generation_mwh": 1021504.5, "revenue_crore": 306.5, "om_crore": 40.8, "debt_service_crore": 245.2, "tax_crore": 1.4, "project_cash_crore": 265.7, "equity_cash_crore": 19.1}
+    ],
+    "label": "indicative"
+  },
+  "note": "indicative; tariff taken from the assumptions, not the tender"
+}

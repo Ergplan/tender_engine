@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tender card</title>
+<!-- MCP Apps widget (text/html;profile=mcp-app). Self-contained: no request leaves this
+     document except bridge calls to the host (get_document_page). Renders only what the
+     get_tender tool returned. -->
+<style>
+:root{--bg:#f6f5f1;--card:#ffffff;--ink:#1a1a1a;--muted:#5a5a55;--line:#e6e4dd;--accent:#0f5f5c;--accent-bg:#e7f2ef;--amber:#8a4a0b;--amber-bg:#fdf1e3;--red:#991b1b;--red-bg:#fdecec;--gap-bg:#efeeea;--mark:#fde68a}
+@media (prefers-color-scheme: dark){:root{--bg:#141413;--card:#1f1f1d;--ink:#f1efe8;--muted:#a9a79f;--line:#34332f;--accent:#7fc4bf;--accent-bg:#17302e;--amber:#f0b36b;--amber-bg:#3a2a12;--red:#f29c9c;--red-bg:#3b1b1b;--gap-bg:#2a2a27;--mark:#6b5a12}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:720px;margin:0 auto;padding:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.banner{padding:10px 14px;font-size:13px;border-bottom:1px solid var(--line)}
+.banner.update_pending{background:var(--amber-bg);color:var(--amber)}
+.banner.publication_suspended,.banner.not_published{background:var(--red-bg);color:var(--red)}
+header{padding:14px;border-bottom:1px solid var(--line)}
+h1{margin:0 0 4px;font-size:16px;line-height:1.3}
+.meta{color:var(--muted);font-size:12px}
+.deadline{display:flex;gap:8px;align-items:baseline;margin-top:6px;flex-wrap:wrap}
+.pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600;background:var(--accent-bg);color:var(--accent)}
+.pill.amber{background:var(--amber-bg);color:var(--amber)}
+.pill.red{background:var(--red-bg);color:var(--red)}
+details{border-bottom:1px solid var(--line)}
+summary{padding:12px 14px;min-height:44px;display:flex;align-items:center;font-weight:600;cursor:pointer;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"▸";margin-right:8px;color:var(--muted)}
+details[open]>summary::before{content:"▾"}
+.field{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:8px;padding:8px 14px;font-size:13px;align-items:start}
+.field .label{color:var(--muted)}
+.field .value{text-align:right;word-break:break-word}
+.gap{display:inline-block;background:var(--gap-bg);color:var(--muted);border-radius:6px;padding:3px 8px;font-size:12px;text-align:left}
+.gap strong{color:var(--ink);font-weight:600}
+.chip{display:inline-block;margin-left:4px;padding:1px 7px;border-radius:999px;background:var(--accent-bg);color:var(--accent);font:11px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace;text-decoration:none;cursor:pointer;border:0;min-height:24px}
+button.chip{min-height:28px}
+.tag{font-size:11px;color:var(--amber);margin-left:4px}
+.struck{text-decoration:line-through;color:var(--muted)}
+.page{margin:6px 14px 10px;border:1px solid var(--line);border-radius:8px;padding:8px;background:var(--bg);font-size:12px}
+.page img{max-width:100%;height:auto;display:block;border-radius:4px}
+.page mark{background:var(--mark);color:var(--ink);padding:0 2px}
+footer{padding:10px 14px;font-size:11px;color:var(--muted);display:flex;flex-direction:column;gap:3px}
+.hint{padding:14px;color:var(--muted)}
+button.plain{font:inherit;min-height:44px;padding:8px 12px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:6px}
+@media (max-width:420px){.field{grid-template-columns:1fr}.field .value{text-align:left}}
+</style>
+</head>
+<body>
+<main id="app"><p class="hint" id="waiting">Waiting for the tool result…</p></main>
+<script>
+(function () {
+  "use strict";
+  // Bridge: JSON-RPC over postMessage with the host (MCP Apps, io.modelcontextprotocol/ui).
+  // The host's result notification name has varied between drafts; every spelling is taken.
+  var RESULT_METHODS = ["ui/notifications/tool-result", "ui/notifications/tool-input", "ui/tool-result"];
+  var bridge = {
+    nextId: 1,
+    pending: new Map(),
+    post: function (msg) { if (window.parent && window.parent !== window) window.parent.postMessage(msg, "*"); },
+    call: function (name, args) {
+      var id = this.nextId++;
+      var self = this;
+      return new Promise(function (resolve, reject) {
+        self.pending.set(id, { resolve: resolve, reject: reject });
+        self.post({ jsonrpc: "2.0", id: id, method: "tools/call", params: { name: name, arguments: args } });
+        self.post({ jsonrpc: "2.0", id: "x" + id, method: "ui/request-tool-call", params: { name: name, arguments: args, forwardOf: id } });
+      });
+    }
+  };
+  window.addEventListener("message", function (ev) {
+    var m = ev.data;
+    if (!m || m.jsonrpc !== "2.0") return;
+    if (m.id !== undefined && bridge.pending.has(m.id)) {
+      var p = bridge.pending.get(m.id); bridge.pending.delete(m.id);
+      if (m.error) p.reject(m.error); else p.resolve(m.result);
+      return;
+    }
+    if (RESULT_METHODS.indexOf(m.method) >= 0) {
+      var r = m.params || {};
+      var data = r.structuredContent || (r.toolResult && r.toolResult.structuredContent) || (r.result && r.result.structuredContent) || r.arguments;
+      if (data) render(data);
+    }
+  });
+  bridge.post({ jsonrpc: "2.0", id: bridge.nextId++, method: "ui/initialize", params: { protocolVersion: "2026-01-26", appInfo: { name: "tender_card", version: "1" }, appCapabilities: {} } });
+  bridge.post({ jsonrpc: "2.0", method: "ui/notifications/initialized" });
+
+  function el(tag, attrs, children) {
+    var e = document.createElement(tag);
+    if (attrs) Object.keys(attrs).forEach(function (k) {
+      if (k === "class") e.className = attrs[k];
+      else if (k === "text") e.textContent = attrs[k];
+      else if (k.slice(0, 2) === "on") e.addEventListener(k.slice(2), attrs[k]);
+      else e.setAttribute(k, attrs[k]);
+    });
+    (children || []).forEach(function (c) { if (c) e.appendChild(typeof c === "string" ? document.createTextNode(c) : c); });
+    return e;
+  }
+  function fmtDate(s) {
+    if (!s) return null;
+    var d = new Date(s); if (isNaN(d)) return String(s);
+    return d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+  }
+  function daysLeft(s) {
+    if (!s) return null;
+    var d = new Date(s); if (isNaN(d)) return null;
+    return Math.ceil((d.getTime() - Date.now()) / 86400000);
+  }
+  function showValue(v, unit) {
+    if (v === null || v === undefined) return "";
+    var text;
+    if (typeof v === "number") text = v.toLocaleString("en-IN");
+    else if (typeof v === "boolean") text = v ? "yes" : "no";
+    else if (Array.isArray(v)) text = v.map(function (x) { return typeof x === "object" ? JSON.stringify(x) : String(x); }).join("; ");
+    else if (typeof v === "object") text = Object.keys(v).map(function (k) { return k + ": " + (v[k] === null ? "–" : String(v[k])); }).join("; ");
+    else text = String(v);
+    return unit ? text + " " + unit : text;
+  }
+  function field(path, data) {
+    for (var i = 0; i < (data.sections || []).length; i++)
+      for (var j = 0; j < data.sections[i].fields.length; j++)
+        if (data.sections[i].fields[j].path === path) return data.sections[i].fields[j];
+    return null;
+  }
+  function pageChip(ev, host) {
+    var label = (ev.filename ? ev.filename.replace(/\.pdf$/i, "") : "doc") + " p." + ev.page_no;
+    return el("button", { class: "chip", type: "button", "aria-label": "Show page " + ev.page_no + " of " + (ev.filename || "the document"), onclick: function () { showPage(ev, host); } }, [label]);
+  }
+  function showPage(ev, host) {
+    var box = host.querySelector(".page");
+    if (box) { box.remove(); return; }
+    box = el("div", { class: "page" }, [el("div", { text: "Loading page " + ev.page_no + "…" })]);
+    host.appendChild(box);
+    bridge.call("get_document_page", { document_id: ev.document_id, page_no: ev.page_no, quote: ev.quote || "" }).then(function (res) {
+      var sc = (res && res.structuredContent) || res || {};
+      box.textContent = "";
+      // The image comes inside the result as a data: URL; nothing is fetched from any host.
+      if (sc.image_data_url && String(sc.image_data_url).indexOf("data:") === 0) box.appendChild(el("img", { src: sc.image_data_url, alt: "Page " + ev.page_no + " of " + (ev.filename || "the document") }));
+      var text = sc.text || "";
+      var q = ev.quote || "";
+      var at = q ? text.indexOf(q) : -1;
+      var p = el("p", {});
+      if (at >= 0) { p.appendChild(document.createTextNode(text.slice(Math.max(0, at - 160), at))); p.appendChild(el("mark", { text: q })); p.appendChild(document.createTextNode(text.slice(at + q.length, at + q.length + 160))); }
+      else { if (q) p.appendChild(el("mark", { text: q })); if (text) p.appendChild(document.createTextNode((q ? " — quote as cited; page text: " : "") + text.slice(0, 320))); }
+      if (sc.quote_located === false && q) p.appendChild(el("span", { class: "note", text: " (the quote was not located on this page)" }));
+      box.appendChild(p);
+    }, function (err) {
+      box.textContent = "";
+      box.appendChild(el("p", { text: "The page could not be fetched (" + ((err && err.message) || "no answer") + "). Quote as cited: " }));
+      box.appendChild(el("mark", { text: ev.quote || "" }));
+    });
+  }
+  function render(data) {
+    data = (data && typeof data.tender === "object" && data.tender && data.tender.sections) ? data.tender : data;
+    var app = document.getElementById("app");
+    app.textContent = "";
+    var card = el("div", { class: "card" });
+    var state = (data.publication && data.publication.state) || "not_published";
+    if (state !== "published") {
+      card.appendChild(el("div", { class: "banner " + state, role: state === "publication_suspended" ? "alert" : "status", text: data.banner || ({ update_pending: "A later version exists and is not yet reviewed.", publication_suspended: "Publication suspended: an unreviewed amendment touches critical fields.", not_published: "Not published: no completed review." }[state]) }));
+    }
+    var cap = field("sector.power.common.total_capacity_mw", data);
+    var deadline = field("core.key_dates.bid_submission_deadline", data);
+    var head = el("header", {}, [
+      el("h1", { text: data.title || "Tender" }),
+      el("div", { class: "meta", text: [data.issuing_agency, data.tender_type, cap && cap.value != null ? showValue(cap.value, "MW") : null, data.external_ref].filter(Boolean).join(" · ") })
+    ]);
+    if (deadline && deadline.value) {
+      var n = daysLeft(deadline.value);
+      head.appendChild(el("div", { class: "deadline" }, [
+        el("span", { class: "meta", text: "Bid deadline" }),
+        el("strong", { text: fmtDate(deadline.value) }),
+        n === null ? null : el("span", { class: "pill " + (n < 0 ? "red" : n <= 7 ? "amber" : ""), text: n < 0 ? "closed" : n + " days" })
+      ]));
+    }
+    card.appendChild(head);
+    if (state === "publication_suspended" && data.suspension) {
+      var s = data.suspension;
+      card.appendChild(el("div", { class: "banner publication_suspended" }, ["Suspended by version " + s.version_no + " (" + s.kind + (s.issued_on ? ", " + fmtDate(s.issued_on) : "") + "); fields it touches: " + s.fields.join(", ") + ". Values are not shown until the version is reviewed."]));
+    }
+    (data.sections || []).forEach(function (sec, idx) {
+      var d = el("details", idx === 0 ? { open: "" } : {}, [el("summary", { text: sec.label + " · " + sec.fields.length })]);
+      sec.fields.forEach(function (f) {
+        var row = el("div", { class: "field" }, [el("div", { class: "label", text: f.label })]);
+        var val = el("div", { class: "value" });
+        if (f.status === "not_reviewed" || (f.value === null && !f.withdrawn)) {
+          var g = f.gap || { reason: "not reviewed" };
+          var gap = el("span", { class: "gap", role: "note" }, [el("strong", { text: "Not reviewed" }), " — " + g.reason]);
+          if (g.likely_page) gap.appendChild(pageChip({ document_id: g.document_id, page_no: g.likely_page, filename: null, quote: "" }, row));
+          val.appendChild(gap);
+        } else {
+          if (f.withdrawn) {
+            val.appendChild(el("span", { class: "struck", text: showValue(f.value, f.unit) || "value" }));
+            val.appendChild(el("span", { class: "pill red", text: "withdrawn by v" + f.version_no }));
+          } else {
+            val.appendChild(document.createTextNode(showValue(f.value, f.unit)));
+          }
+          (f.evidence || []).forEach(function (ev) { val.appendChild(pageChip(ev, row)); });
+          if (f.version_no && f.version_no > 1 && !f.withdrawn) val.appendChild(el("span", { class: "tag", text: "set by v" + f.version_no + (f.set_by ? " (" + f.set_by + ")" : "") }));
+          if (f.status === "possibly_superseded") val.appendChild(el("span", { class: "tag", text: "possibly superseded" }));
+        }
+        row.appendChild(val);
+        d.appendChild(row);
+      });
+      card.appendChild(d);
+    });
+    var rel = data.reliability;
+    var foot = el("footer", {}, [
+      el("div", { text: "Reviewed " + (fmtDate(data.reviewed_at) || "—") + (data.reviewer_role ? " · " + data.reviewer_role : "") + (data.reviewed_version ? " · at version " + data.reviewed_version + (data.current_version ? " of " + data.current_version : "") : "") }),
+      el("div", { class: "reliability", text: rel ? "Reliability: " + rel.tender_type + (rel.value_accuracy != null ? " " + Math.round(rel.value_accuracy * 100) + "% on " + rel.n_fields + " fields" : " not yet measured") + (rel.as_of ? " · as of " + rel.as_of : "") : "Reliability: not yet measured" }),
+      el("div", { text: data.authority_note || "The tender document is the authoritative source; this is a reviewed reading of it." })
+    ]);
+    card.appendChild(foot);
+    app.appendChild(card);
+  }
+  window.__render = render;
+})();
+</script>
+</body>
+</html>

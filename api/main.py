@@ -1,15 +1,18 @@
 """FastAPI application factory. Routes only; business logic lives in core/ and tender/."""
 
+import contextlib
 import logging
+from collections.abc import AsyncIterator
 
 from fastapi import APIRouter, FastAPI
 from sqlalchemy.exc import SQLAlchemyError
 
 from api.middleware import audit, auth, errors
 from api.v1.admin import freshness, identity, reliability, threeway
+from api.v1.admin import library as admin_library
 from api.v1.core import auth as auth_routes
-from api.v1.core import documents, extraction, files, health, review
-from api.v1.tenders import agent_pass, published, tenders
+from api.v1.core import documents, extraction, files, health, oauth, review
+from api.v1.tenders import agent_pass, library, published, tenders
 from api.v1.tenders import review as tender_review
 from core.config import Settings
 from core.db import make_engine, make_session_factory
@@ -18,6 +21,7 @@ from core.schemas import SchemaRegistry
 from core.services.identity import IdentityService
 from core.services.oidc import GoogleOidc, OidcProvider
 from core.storage import Storage, make_storage
+from mcpserver.server import build_server, routes_of, run_session_manager
 from tender.services.field_defs import sync_field_defs
 from tender.services.packs import Catalog, load_catalog
 
@@ -27,8 +31,10 @@ V1_ROUTERS = (
     documents.router,
     extraction.router,
     review.router,
-    # Before the tenders router: its `/tenders/compare` must not be read as a tender id.
+    # Before the tenders router: `/tenders/compare`, `/tenders/search` and `/tenders/match`
+    # must not be read as a tender id.
     published.router,
+    library.router,
     tenders.router,
     tender_review.router,
     agent_pass.router,
@@ -36,7 +42,9 @@ V1_ROUTERS = (
     freshness.router,
     threeway.router,
     auth_routes.router,
+    oauth.router,
     identity.router,
+    admin_library.router,
 )
 # Product B, the intelligence API (settings.product == "api"): the read side only — the
 # tenders and their documents, the reliability figures, health. The same code as the
@@ -47,10 +55,11 @@ API_PRODUCT_ROUTERS = (
     health.router,
     documents.router,
     published.router,
+    library.router,
     tenders.router,
     reliability.router,
 )
-API_PRODUCT_READ_ONLY = ("documents", "tenders", "reliability", "published")
+API_PRODUCT_READ_ONLY = ("documents", "tenders", "reliability", "published", "library")
 
 
 def routers_for(product: str) -> tuple[APIRouter, ...]:
@@ -105,7 +114,19 @@ def create_app(
         if settings.product == "api" and _has_writes(router):
             router = _reads_only(router)
         app.include_router(router, prefix="/api/v1")
+    # The MCP server of the public library (Stage 5D): `/mcp` and the OAuth routes
+    # (`/authorize`, `/token`, `/register`, `/.well-known/...`) at the root, behind the
+    # API's own routes; its session manager runs for the life of the process.
+    app.state.mcp = build_server(app.state)
+    app.router.lifespan_context = _lifespan
+    app.router.routes.extend(routes_of(app.state.mcp))
     return app
+
+
+@contextlib.asynccontextmanager
+async def _lifespan(app: FastAPI) -> AsyncIterator[None]:
+    async with run_session_manager(app.state.mcp):
+        yield
 
 
 def _has_writes(router: APIRouter) -> bool:

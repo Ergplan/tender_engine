@@ -1,0 +1,26 @@
+{
+  "columns": [
+    {"tender_id": "11111111111111111111111111111111", "slug": "seci-cfd-i", "title": "SECI CfD-I 2,000 MW FDRE", "issuing_agency": "SECI", "tender_type": "fdre", "publication_state": "update_pending", "reviewed_version": 4, "banner": "Version 5 is not yet reviewed.", "reliability": {"tender_type": "fdre", "value_accuracy": 0.96, "evidence_accuracy": 1.0, "n_fields": 320, "as_of": "2026-10-15"}},
+    {"tender_id": "22222222222222222222222222222222", "slug": "seci-cni-1-700mw", "title": "SECI CnI-1 700 MW solar", "issuing_agency": "SECI", "tender_type": "solar", "publication_state": "published", "reviewed_version": 2, "banner": null, "reliability": {"tender_type": "solar", "value_accuracy": 0.97, "evidence_accuracy": 1.0, "n_fields": 85, "as_of": "2026-10-15"}}
+  ],
+  "rows": [
+    {"path": "sector.power.common.total_capacity_mw", "label": "Total capacity", "section": "scope", "value_type": "decimal", "unit": "MW", "cells": [
+      {"path": "sector.power.common.total_capacity_mw", "section": "scope", "label": "Total capacity", "value_type": "decimal", "unit": "MW", "value": 2000, "version_no": 1, "set_by": "original", "evidence": [{"document_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "filename": "RfS.pdf", "page_no": 1, "quote": "2000 MW"}], "reviewed_at": "2026-10-13T10:32:00+00:00", "reviewer_role": "approver", "withdrawn": false, "withdrawn_from_version": null, "status": "reviewed", "gap": null},
+      {"path": "sector.power.common.total_capacity_mw", "section": "scope", "label": "Total capacity", "value_type": "decimal", "unit": "MW", "value": 700, "version_no": 1, "set_by": "original", "evidence": [{"document_id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "filename": "RfS.pdf", "page_no": 1, "quote": "700 MW"}], "reviewed_at": "2026-10-13T11:44:00+00:00", "reviewer_role": "approver", "withdrawn": false, "withdrawn_from_version": null, "status": "reviewed", "gap": null}
+    ]},
+    {"path": "core.key_dates.bid_submission_deadline", "label": "Bid submission deadline", "section": "key_dates", "value_type": "date", "unit": null, "cells": [
+      {"path": "core.key_dates.bid_submission_deadline", "section": "key_dates", "label": "Bid submission deadline", "value_type": "date", "unit": null, "value": "2026-11-08", "version_no": 4, "set_by": "amendment", "evidence": [{"document_id": "cccccccccccccccccccccccccccccccc", "filename": "Amendment-02.pdf", "page_no": 1, "quote": "extended to 08.11.2026"}], "reviewed_at": "2026-10-13T10:32:00+00:00", "reviewer_role": "approver", "withdrawn": false, "withdrawn_from_version": null, "status": "reviewed", "gap": null},
+      {"path": "core.key_dates.bid_submission_deadline", "section": "key_dates", "label": "Bid submission deadline", "value_type": "date", "unit": null, "value": "2026-10-05", "version_no": 1, "set_by": "original", "evidence": [{"document_id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "filename": "RfS.pdf", "page_no": 3, "quote": "Bid Submission End Date (Online): 05/10/2026"}], "reviewed_at": "2026-10-13T11:44:00+00:00", "reviewer_role": "approver", "withdrawn": false, "withdrawn_from_version": null, "status": "reviewed", "gap": null}
+    ]},
+    {"path": "core.commercial.tariff_ceiling_inr_per_kwh", "label": "Tariff ceiling", "section": "commercial", "value_type": "decimal", "unit": "INR/kWh", "cells": [
+      {"path": "core.commercial.tariff_ceiling_inr_per_kwh", "section": "commercial", "label": "Tariff ceiling", "value_type": "decimal", "unit": "INR/kWh", "value": 3.8, "version_no": 1, "set_by": "original", "evidence": [{"document_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "filename": "RfS.pdf", "page_no": 63, "quote": "ceiling tariff of INR 3.80/kWh"}], "reviewed_at": "2026-10-13T10:32:00+00:00", "reviewer_role": "approver", "withdrawn": false, "withdrawn_from_version": null, "status": "possibly_superseded", "gap": null},
+      {"path": "core.commercial.tariff_ceiling_inr_per_kwh", "section": "commercial", "label": "Tariff ceiling", "value_type": "decimal", "unit": "INR/kWh", "value": null, "version_no": null, "set_by": null, "evidence": [], "reviewed_at": null, "reviewer_role": null, "withdrawn": false, "withdrawn_from_version": null, "status": "not_reviewed", "gap": {"reason": "the reviewer has not decided this field", "document_id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "likely_page": 60}}
+    ]},
+    {"path": "core.eligibility.net_worth_per_mw_inr", "label": "Net worth per MW", "section": "eligibility", "value_type": "money_inr", "unit": "INR", "cells": [
+      null,
+      {"path": "core.eligibility.net_worth_per_mw_inr", "section": "eligibility", "label": "Net worth per MW", "value_type": "money_inr", "unit": "INR", "value": 12000000, "version_no": 1, "set_by": "original", "evidence": [{"document_id": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "filename": "RfS.pdf", "page_no": 18, "quote": "Net Worth of INR 1.2 Crore per MW"}], "reviewed_at": "2026-10-13T11:44:00+00:00", "reviewer_role": "approver", "withdrawn": false, "withdrawn_from_version": null, "status": "reviewed", "gap": null}
+    ]}
+  ],
+  "excluded": [{"tender_id": "33333333333333333333333333333333", "reason": "publication suspended by version 2 (corrigendum)"}],
+  "authority_note": "The tender document is the authoritative source; this is a reviewed reading of it."
+}
