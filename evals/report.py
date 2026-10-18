@@ -528,7 +528,7 @@ def main(argv: list[str]) -> int:
     settings = Settings()
     registry, catalog = build_registry()
     review_state = ReviewStateService(registry, settings.tenant_id)
-    with make_session_factory(make_engine(settings))() as session:
+    with make_session_factory(make_engine(settings), settings.tenant_id)() as session:
         records, scored = write_reports(
             session, settings.tenant_id, registry, catalog, review_state, args.out, args.log
         )

@@ -174,7 +174,7 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--out", type=Path, default=None)
     args = parser.parse_args(argv[1:])
     settings = Settings()
-    with make_session_factory(make_engine(settings))() as session:
+    with make_session_factory(make_engine(settings), settings.tenant_id)() as session:
         rows = load_feedback(session, settings.tenant_id)
     out: Path = args.out or DEFAULT_OUT
     out.parent.mkdir(parents=True, exist_ok=True)

@@ -38,7 +38,7 @@ def export(directory: Path) -> int:
     )
     seen = {(case["page"], case["quote"]) for case in cases}
     added = 0
-    session_factory = make_session_factory(make_engine(Settings()))
+    session_factory = make_session_factory(make_engine(Settings()), Settings().tenant_id)
     with session_factory() as session:
         rows = session.execute(
             select(EvidenceSpan, Candidate.field_path, Document.sha256, Document.filename)

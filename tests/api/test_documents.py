@@ -1,9 +1,9 @@
 from fastapi.testclient import TestClient
-from sqlalchemy import text
 from sqlalchemy.orm import Session
 
+from core.db import make_engine, make_session_factory
 from core.models import Document
-from tests.conftest import Pipeline
+from tests.conftest import Pipeline, add_tenant
 from tests.fixtures.pdfs import make_pdf
 
 
@@ -115,9 +115,7 @@ def test_sections_are_listed_in_page_order(client: TestClient, pipeline: Pipelin
 def test_another_tenants_document_is_invisible(
     client: TestClient, pipeline: Pipeline, db: Session
 ) -> None:
-    db.execute(
-        text("INSERT INTO tenant (tenant_id, name, created_by) VALUES ('other', 'Other', 't')")
-    )
+    add_tenant(pipeline.settings, "other")
     foreign = Document(
         tenant_id="other",
         created_by="t",
@@ -128,8 +126,10 @@ def test_another_tenants_document_is_invisible(
         status="parsed",
         page_count=1,
     )
-    db.add(foreign)
-    db.commit()
+    # Written as the other tenant: row-level security refuses the write from ours.
+    with make_session_factory(make_engine(pipeline.settings), "other")() as theirs:
+        theirs.add(foreign)
+        theirs.commit()
     assert client.get(f"/api/v1/documents/{foreign.id}").status_code == 404
     assert client.get(f"/api/v1/documents/{foreign.id}/sections").status_code == 404
     assert client.get(f"/api/v1/documents/{foreign.id}/pages/1/render").status_code == 404

@@ -34,7 +34,13 @@ def _record(request: Request, status: int) -> None:
     review = getattr(request.state, "review", None) or getattr(
         request.state, "review_identity", None
     )
-    actor = review.reviewer if review else (request.headers.get("x-reviewer") or "api").strip()
+    principal = getattr(request.state, "principal", None)
+    if review:
+        actor = review.reviewer
+    elif principal is not None and principal.name:
+        actor = principal.name
+    else:
+        actor = (request.headers.get("x-reviewer") or "api").strip()
     try:
         with request.app.state.session_factory() as session:
             audit.record(

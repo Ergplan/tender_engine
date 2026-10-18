@@ -1,10 +1,12 @@
 from datetime import UTC, datetime, timedelta
 
-from sqlalchemy import text
 from sqlalchemy.orm import Session, sessionmaker
 
+from core.config import Settings
+from core.db import make_engine, make_session_factory
 from core.models import Job
 from core.services import jobs
+from tests.conftest import add_tenant
 
 
 def enqueue(db: Session, kind: str = "parse") -> Job:
@@ -103,19 +105,26 @@ def test_a_non_retryable_failure_fails_at_once(db: Session) -> None:
     assert (job.status, job.attempts) == ("failed", 1)
 
 
-def test_a_worker_only_sees_the_jobs_of_its_own_tenant(db: Session) -> None:
-    db.execute(
-        text("INSERT INTO tenant (tenant_id, name, created_by) VALUES ('other', 'Other', 't')")
-    )
-    foreign = jobs.enqueue(db, tenant_id="other", kind="parse", payload={}, created_by="t")
-    foreign.status = "running"
-    db.commit()
+def test_a_worker_only_sees_the_jobs_of_its_own_tenant(db: Session, settings: Settings) -> None:
+    add_tenant(settings, "other")
+    # Queued as the other tenant: row-level security refuses the write from ours.
+    other = make_session_factory(make_engine(settings), "other")
+    with other() as theirs:
+        foreign = jobs.enqueue(theirs, tenant_id="other", kind="parse", payload={}, created_by="t")
+        foreign.status = "running"
+        theirs.commit()
+        foreign_id = foreign.id
+    # Our worker neither re-queues nor claims it, whatever tenant it names: the session is
+    # ours and row-level security shows it our rows only.
     assert jobs.requeue_orphans(db, "ergplan") == 0
-    foreign.status = "queued"
-    db.commit()
+    assert jobs.requeue_orphans(db, "other") == 0
     assert jobs.claim_next(db, "ergplan") is None
-    claimed = jobs.claim_next(db, "other")
-    assert claimed is not None and claimed.id == foreign.id
+    assert jobs.claim_next(db, "other") is None
+    # Their worker, with their session, does.
+    with other() as theirs:
+        assert jobs.requeue_orphans(theirs, "other") == 1
+        claimed = jobs.claim_next(theirs, "other")
+        assert claimed is not None and claimed.id == foreign_id
 
 
 def test_a_claim_limited_to_kinds_skips_the_others(db: Session) -> None:

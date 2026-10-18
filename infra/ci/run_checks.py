@@ -53,17 +53,28 @@ def checks() -> list[Check]:
     ]
 
 
+# The full Python suite passed 900 s on the 2-vCPU VM once Stage 5C added its sixty tests;
+# the limit is a guard against a hung run, not a budget.
+COMMAND_TIMEOUT_S = 1500
+
+
 def run_command(command: tuple[str, ...], cwd: Path) -> tuple[int, str]:
     env = {**os.environ, "DATABASE_URL": CI_DATABASE_URL, "NO_COLOR": "1", "CI": "1"}
     env.pop("DB_SCHEMA", None)
     try:
         done = subprocess.run(
-            command, cwd=cwd, env=env, capture_output=True, text=True, timeout=900, check=False
+            command,
+            cwd=cwd,
+            env=env,
+            capture_output=True,
+            text=True,
+            timeout=COMMAND_TIMEOUT_S,
+            check=False,
         )
     except FileNotFoundError as exc:
         return 127, f"{exc}"
     except subprocess.TimeoutExpired:
-        return 124, "timed out after 900 s"
+        return 124, f"timed out after {COMMAND_TIMEOUT_S} s"
     return done.returncode, (done.stdout + done.stderr)
 
 

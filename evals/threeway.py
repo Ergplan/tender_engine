@@ -570,7 +570,7 @@ def main(argv: list[str]) -> int:
     only = {s for s in args.only.split(",") if s} or None
     # The same root the review API reads the emphasis file from (settings.results_root).
     results_root = Path(settings.results_root) if settings.results_root else None
-    with make_session_factory(make_engine(settings))() as session:
+    with make_session_factory(make_engine(settings), settings.tenant_id)() as session:
         summary, out = write_threeway(
             session,
             settings.tenant_id,

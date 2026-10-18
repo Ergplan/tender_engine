@@ -160,7 +160,12 @@ def test_review_state_and_canonical_require_their_query_parameters(client: TestC
 
 def test_every_api_route_is_under_v1_except_the_root_health_probe(client: TestClient) -> None:
     paths = sorted(client.get("/openapi.json").json()["paths"])
-    outside = [p for p in paths if not p.startswith("/api/v1/") and p != "/health"]
+    # Two things live at the root: the health probe Caddy and `make deploy` read, and the
+    # stored files (Stage 5C: `/files/<key>`, the path Caddy served from disk before and
+    # the API streams on Cloud Run). Neither is an intelligence operation.
+    outside = [
+        p for p in paths if not p.startswith("/api/v1/") and p not in ("/health", "/files/{path}")
+    ]
     assert outside == []
     assert {
         "/api/v1/documents",

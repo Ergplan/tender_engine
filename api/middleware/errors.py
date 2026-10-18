@@ -16,8 +16,16 @@ log = logging.getLogger("api")
 
 ERROR_STATUS: dict[str, tuple[int, str]] = {
     "not_found": (404, "The requested record does not exist."),
-    "review_link_required": (401, "This page needs a review link. Open the link you were sent."),
+    "review_link_required": (
+        401,
+        "Sign in, or open the review link you were sent.",
+    ),
     "admin_token_required": (401, "An admin token is required for this page."),
+    "login_required": (401, "Sign in to continue."),
+    "session_expired": (401, "Your session has ended. Sign in again."),
+    "api_key_invalid": (401, "The API key is not valid or has been revoked."),
+    "login_refused": (403, "This account cannot sign in here."),
+    "rate_limited": (429, "Too many calls for this key. Wait a minute, or raise the key's limit."),
     "runs_not_finished": (409, "The runs are still queued or running. Ask again later."),
     "review_link_invalid": (
         401,

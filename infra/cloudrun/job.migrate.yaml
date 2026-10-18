@@ -1,0 +1,26 @@
+# Cloud Run job: the database migrations, run as the owner role before each deploy
+# (MIGRATION_DATABASE_URL); the services connect as tender_app (DATABASE_URL).
+apiVersion: run.googleapis.com/v1
+kind: Job
+metadata:
+  name: tender-migrate
+spec:
+  template:
+    metadata:
+      annotations:
+        run.googleapis.com/cloudsql-instances: "[SQL_CONNECTION]"
+    spec:
+      taskCount: 1
+      template:
+        spec:
+          maxRetries: 0
+          timeoutSeconds: 1200
+          serviceAccountName: tender-run@[PROJECT].iam.gserviceaccount.com
+          containers:
+            - image: "[IMAGE_PYTHON]"
+              args: ["alembic", "upgrade", "head"]
+              env:
+                - name: DATABASE_URL
+                  valueFrom: {secretKeyRef: {name: MIGRATION_DATABASE_URL, key: latest}}
+                - name: MIGRATION_DATABASE_URL
+                  valueFrom: {secretKeyRef: {name: MIGRATION_DATABASE_URL, key: latest}}

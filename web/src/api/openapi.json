@@ -509,6 +509,170 @@
         "title": "AmendmentVersion",
         "type": "object"
       },
+      "ApiKeyCreate": {
+        "properties": {
+          "daily_cap": {
+            "anyOf": [
+              {
+                "maximum": 10000000.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Daily Cap"
+          },
+          "name": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "rate_limit_per_min": {
+            "anyOf": [
+              {
+                "maximum": 10000.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rate Limit Per Min"
+          },
+          "scopes": {
+            "default": [
+              "read"
+            ],
+            "items": {
+              "enum": [
+                "read",
+                "model"
+              ],
+              "type": "string"
+            },
+            "title": "Scopes",
+            "type": "array"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "ApiKeyCreate",
+        "type": "object"
+      },
+      "ApiKeyCreated": {
+        "description": "The key itself, shown once.",
+        "properties": {
+          "key": {
+            "$ref": "#/components/schemas/ApiKeyOut"
+          },
+          "secret": {
+            "title": "Secret",
+            "type": "string"
+          }
+        },
+        "required": [
+          "key",
+          "secret"
+        ],
+        "title": "ApiKeyCreated",
+        "type": "object"
+      },
+      "ApiKeyOut": {
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "created_by": {
+            "title": "Created By",
+            "type": "string"
+          },
+          "daily_cap": {
+            "title": "Daily Cap",
+            "type": "integer"
+          },
+          "expires_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires At"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "last_used_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Used At"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "prefix": {
+            "title": "Prefix",
+            "type": "string"
+          },
+          "rate_limit_per_min": {
+            "title": "Rate Limit Per Min",
+            "type": "integer"
+          },
+          "revoked_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Revoked At"
+          },
+          "scopes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Scopes",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "prefix",
+          "scopes",
+          "rate_limit_per_min",
+          "daily_cap",
+          "expires_at",
+          "revoked_at",
+          "last_used_at",
+          "created_at",
+          "created_by"
+        ],
+        "title": "ApiKeyOut",
+        "type": "object"
+      },
       "ApprovalOut": {
         "properties": {
           "candidate_id": {
@@ -956,6 +1120,88 @@
         "title": "CanonicalFactView",
         "type": "object"
       },
+      "Change": {
+        "properties": {
+          "after": {
+            "title": "After"
+          },
+          "before": {
+            "title": "Before"
+          },
+          "decided_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decided At"
+          },
+          "evidence": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/Evidence"
+            },
+            "title": "Evidence",
+            "type": "array"
+          },
+          "field_path": {
+            "title": "Field Path",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "reviewer_role": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewer Role"
+          },
+          "section": {
+            "title": "Section",
+            "type": "string"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          },
+          "value_type": {
+            "title": "Value Type",
+            "type": "string"
+          },
+          "withdrawn": {
+            "default": false,
+            "title": "Withdrawn",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "field_path",
+          "label",
+          "section",
+          "value_type",
+          "unit"
+        ],
+        "title": "Change",
+        "type": "object"
+      },
       "ChangeBefore": {
         "description": "What stood for the field before this version: the latest earlier reading, as the\nreviewer left it (their edit if they made one).",
         "properties": {
@@ -989,6 +1235,280 @@
           "decision"
         ],
         "title": "ChangeBefore",
+        "type": "object"
+      },
+      "Changelog": {
+        "properties": {
+          "reviewed_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewed Version"
+          },
+          "tender_id": {
+            "title": "Tender Id",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "versions": {
+            "items": {
+              "$ref": "#/components/schemas/ChangelogVersion"
+            },
+            "title": "Versions",
+            "type": "array"
+          }
+        },
+        "required": [
+          "tender_id",
+          "title",
+          "reviewed_version",
+          "versions"
+        ],
+        "title": "Changelog",
+        "type": "object"
+      },
+      "ChangelogVersion": {
+        "properties": {
+          "changes": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/Change"
+            },
+            "title": "Changes",
+            "type": "array"
+          },
+          "documents": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Documents",
+            "type": "array"
+          },
+          "issued_on": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Issued On"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "pending": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Pending",
+            "type": "array"
+          },
+          "reviewed": {
+            "title": "Reviewed",
+            "type": "boolean"
+          },
+          "summary_of_change": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summary Of Change"
+          },
+          "version_no": {
+            "title": "Version No",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "version_no",
+          "kind",
+          "issued_on",
+          "summary_of_change",
+          "documents",
+          "reviewed"
+        ],
+        "title": "ChangelogVersion",
+        "type": "object"
+      },
+      "CompareColumn": {
+        "properties": {
+          "banner": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Banner"
+          },
+          "issuing_agency": {
+            "title": "Issuing Agency",
+            "type": "string"
+          },
+          "publication_state": {
+            "title": "Publication State",
+            "type": "string"
+          },
+          "reviewed_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewed Version"
+          },
+          "slug": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Slug"
+          },
+          "tender_id": {
+            "title": "Tender Id",
+            "type": "string"
+          },
+          "tender_type": {
+            "title": "Tender Type",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tender_id",
+          "slug",
+          "title",
+          "issuing_agency",
+          "tender_type",
+          "publication_state",
+          "reviewed_version",
+          "banner"
+        ],
+        "title": "CompareColumn",
+        "type": "object"
+      },
+      "CompareRow": {
+        "properties": {
+          "cells": {
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PublishedField"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "title": "Cells",
+            "type": "array"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "path": {
+            "title": "Path",
+            "type": "string"
+          },
+          "section": {
+            "title": "Section",
+            "type": "string"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          },
+          "value_type": {
+            "title": "Value Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "path",
+          "label",
+          "section",
+          "value_type",
+          "unit",
+          "cells"
+        ],
+        "title": "CompareRow",
+        "type": "object"
+      },
+      "Comparison": {
+        "properties": {
+          "authority_note": {
+            "title": "Authority Note",
+            "type": "string"
+          },
+          "columns": {
+            "items": {
+              "$ref": "#/components/schemas/CompareColumn"
+            },
+            "title": "Columns",
+            "type": "array"
+          },
+          "excluded": {
+            "items": {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            "title": "Excluded",
+            "type": "array"
+          },
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/CompareRow"
+            },
+            "title": "Rows",
+            "type": "array"
+          }
+        },
+        "required": [
+          "columns",
+          "rows",
+          "excluded",
+          "authority_note"
+        ],
+        "title": "Comparison",
         "type": "object"
       },
       "CompiledSection": {
@@ -1248,6 +1768,41 @@
           }
         },
         "title": "EvalRequest",
+        "type": "object"
+      },
+      "Evidence": {
+        "properties": {
+          "document_id": {
+            "title": "Document Id",
+            "type": "string"
+          },
+          "filename": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Filename"
+          },
+          "page_no": {
+            "title": "Page No",
+            "type": "integer"
+          },
+          "quote": {
+            "title": "Quote",
+            "type": "string"
+          }
+        },
+        "required": [
+          "document_id",
+          "filename",
+          "page_no",
+          "quote"
+        ],
+        "title": "Evidence",
         "type": "object"
       },
       "EvidenceView": {
@@ -1937,6 +2492,42 @@
         "title": "FreshnessQueued",
         "type": "object"
       },
+      "Gap": {
+        "description": "The designed empty state: why there is no value, and where it likely is.",
+        "properties": {
+          "document_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Document Id"
+          },
+          "likely_page": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Likely Page"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "reason"
+        ],
+        "title": "Gap",
+        "type": "object"
+      },
       "GoldOut": {
         "properties": {
           "decided": {
@@ -2208,6 +2799,67 @@
         "title": "Listed",
         "type": "object"
       },
+      "MeOut": {
+        "properties": {
+          "kind": {
+            "enum": [
+              "user",
+              "api_key",
+              "review_token",
+              "admin_token"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "read_tenants": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Read Tenants",
+            "type": "array"
+          },
+          "role": {
+            "title": "Role",
+            "type": "string"
+          },
+          "scopes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Scopes",
+            "type": "array"
+          },
+          "tenant_id": {
+            "title": "Tenant Id",
+            "type": "string"
+          },
+          "user_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "User Id"
+          }
+        },
+        "required": [
+          "kind",
+          "name",
+          "role",
+          "tenant_id",
+          "read_tenants",
+          "scopes"
+        ],
+        "title": "MeOut",
+        "type": "object"
+      },
       "PageOut": {
         "properties": {
           "has_text_layer": {
@@ -2246,6 +2898,439 @@
           "render_url"
         ],
         "title": "PageOut",
+        "type": "object"
+      },
+      "PublicationState": {
+        "properties": {
+          "current_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Version"
+          },
+          "possibly_superseded": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Possibly Superseded",
+            "type": "array"
+          },
+          "reviewed_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewed Version"
+          },
+          "state": {
+            "enum": [
+              "not_published",
+              "published",
+              "update_pending",
+              "publication_suspended"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "suspended_by": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Suspended By",
+            "type": "array"
+          },
+          "unreviewed_version": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/UnreviewedVersion"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "state",
+          "reviewed_version",
+          "current_version"
+        ],
+        "title": "PublicationState",
+        "type": "object"
+      },
+      "PublishedField": {
+        "properties": {
+          "evidence": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/Evidence"
+            },
+            "title": "Evidence",
+            "type": "array"
+          },
+          "gap": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Gap"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "path": {
+            "title": "Path",
+            "type": "string"
+          },
+          "reviewed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewed At"
+          },
+          "reviewer_role": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewer Role"
+          },
+          "section": {
+            "title": "Section",
+            "type": "string"
+          },
+          "set_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Set By"
+          },
+          "status": {
+            "enum": [
+              "reviewed",
+              "not_reviewed",
+              "possibly_superseded"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          },
+          "value": {
+            "title": "Value"
+          },
+          "value_type": {
+            "title": "Value Type",
+            "type": "string"
+          },
+          "version_no": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version No"
+          },
+          "withdrawn": {
+            "default": false,
+            "title": "Withdrawn",
+            "type": "boolean"
+          },
+          "withdrawn_from_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Withdrawn From Version"
+          }
+        },
+        "required": [
+          "path",
+          "section",
+          "label",
+          "value_type",
+          "unit",
+          "status"
+        ],
+        "title": "PublishedField",
+        "type": "object"
+      },
+      "PublishedSection": {
+        "properties": {
+          "fields": {
+            "items": {
+              "$ref": "#/components/schemas/PublishedField"
+            },
+            "title": "Fields",
+            "type": "array"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "label",
+          "fields"
+        ],
+        "title": "PublishedSection",
+        "type": "object"
+      },
+      "PublishedTender": {
+        "properties": {
+          "authority_note": {
+            "default": "The tender document is the authoritative source; this is jouleWise's reviewed reading of it.",
+            "title": "Authority Note",
+            "type": "string"
+          },
+          "banner": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Banner"
+          },
+          "current_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Version"
+          },
+          "external_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "External Ref"
+          },
+          "issuing_agency": {
+            "title": "Issuing Agency",
+            "type": "string"
+          },
+          "publication": {
+            "$ref": "#/components/schemas/PublicationState"
+          },
+          "reliability": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Reliability"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reviewed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewed At"
+          },
+          "reviewed_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewed Version"
+          },
+          "reviewer_role": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewer Role"
+          },
+          "sections": {
+            "items": {
+              "$ref": "#/components/schemas/PublishedSection"
+            },
+            "title": "Sections",
+            "type": "array"
+          },
+          "slug": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Slug"
+          },
+          "suspension": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Suspension"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "tender_id": {
+            "title": "Tender Id",
+            "type": "string"
+          },
+          "tender_type": {
+            "title": "Tender Type",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tender_id",
+          "slug",
+          "title",
+          "issuing_agency",
+          "tender_type",
+          "external_ref",
+          "publication",
+          "banner",
+          "reviewed_at",
+          "reviewer_role",
+          "reviewed_version",
+          "current_version",
+          "sections",
+          "suspension",
+          "reliability"
+        ],
+        "title": "PublishedTender",
+        "type": "object"
+      },
+      "Reliability": {
+        "properties": {
+          "as_of": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "As Of"
+          },
+          "evidence_accuracy": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidence Accuracy"
+          },
+          "n_fields": {
+            "title": "N Fields",
+            "type": "integer"
+          },
+          "tender_type": {
+            "title": "Tender Type",
+            "type": "string"
+          },
+          "value_accuracy": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value Accuracy"
+          }
+        },
+        "required": [
+          "tender_type",
+          "value_accuracy",
+          "evidence_accuracy",
+          "n_fields",
+          "as_of"
+        ],
+        "title": "Reliability",
         "type": "object"
       },
       "ReliabilityOut": {
@@ -2710,6 +3795,27 @@
           "reviewer_name"
         ],
         "title": "ReviewTokenCreate",
+        "type": "object"
+      },
+      "ReviewTokenMint": {
+        "properties": {
+          "reviewer_name": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Reviewer Name",
+            "type": "string"
+          },
+          "tender": {
+            "description": "The tender's id or slug",
+            "title": "Tender",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tender",
+          "reviewer_name"
+        ],
+        "title": "ReviewTokenMint",
         "type": "object"
       },
       "ReviewTokenOut": {
@@ -3330,6 +4436,52 @@
           "queued"
         ],
         "title": "SummaryQueued",
+        "type": "object"
+      },
+      "Suspension": {
+        "properties": {
+          "document_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Document Ids",
+            "type": "array"
+          },
+          "fields": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Fields",
+            "type": "array"
+          },
+          "issued_on": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Issued On"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "version_no": {
+            "title": "Version No",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "fields",
+          "document_ids",
+          "version_no",
+          "kind",
+          "issued_on"
+        ],
+        "title": "Suspension",
         "type": "object"
       },
       "TenderAmendments": {
@@ -4200,6 +5352,260 @@
         "title": "ThreeWaySummary",
         "type": "object"
       },
+      "UnreviewedVersion": {
+        "properties": {
+          "document_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Document Ids",
+            "type": "array"
+          },
+          "issued_on": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Issued On"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "version_no": {
+            "title": "Version No",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "version_no",
+          "kind",
+          "issued_on",
+          "document_ids"
+        ],
+        "title": "UnreviewedVersion",
+        "type": "object"
+      },
+      "UsageByKey": {
+        "properties": {
+          "api_key_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Api Key Id"
+          },
+          "calls": {
+            "title": "Calls",
+            "type": "integer"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          }
+        },
+        "required": [
+          "api_key_id",
+          "name",
+          "calls"
+        ],
+        "title": "UsageByKey",
+        "type": "object"
+      },
+      "UsageByTool": {
+        "properties": {
+          "calls": {
+            "title": "Calls",
+            "type": "integer"
+          },
+          "errors": {
+            "title": "Errors",
+            "type": "integer"
+          },
+          "tool": {
+            "title": "Tool",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tool",
+          "calls",
+          "errors"
+        ],
+        "title": "UsageByTool",
+        "type": "object"
+      },
+      "UsageOut": {
+        "properties": {
+          "by_key": {
+            "items": {
+              "$ref": "#/components/schemas/UsageByKey"
+            },
+            "title": "By Key",
+            "type": "array"
+          },
+          "by_tool": {
+            "items": {
+              "$ref": "#/components/schemas/UsageByTool"
+            },
+            "title": "By Tool",
+            "type": "array"
+          },
+          "calls": {
+            "title": "Calls",
+            "type": "integer"
+          },
+          "days": {
+            "title": "Days",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "days",
+          "calls",
+          "by_tool",
+          "by_key"
+        ],
+        "title": "UsageOut",
+        "type": "object"
+      },
+      "UserCreate": {
+        "properties": {
+          "display_name": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Display Name",
+            "type": "string"
+          },
+          "email": {
+            "maxLength": 320,
+            "minLength": 3,
+            "title": "Email",
+            "type": "string"
+          },
+          "role": {
+            "default": "reviewer",
+            "enum": [
+              "reviewer",
+              "approver",
+              "admin"
+            ],
+            "title": "Role",
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "display_name"
+        ],
+        "title": "UserCreate",
+        "type": "object"
+      },
+      "UserOut": {
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "display_name": {
+            "title": "Display Name",
+            "type": "string"
+          },
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "last_login_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Login At"
+          },
+          "role": {
+            "title": "Role",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "display_name",
+          "role",
+          "status",
+          "last_login_at",
+          "created_at"
+        ],
+        "title": "UserOut",
+        "type": "object"
+      },
+      "UserPatch": {
+        "properties": {
+          "role": {
+            "anyOf": [
+              {
+                "enum": [
+                  "reviewer",
+                  "approver",
+                  "admin"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Role"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "enum": [
+                  "active",
+                  "disabled"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          }
+        },
+        "title": "UserPatch",
+        "type": "object"
+      },
       "ValidationError": {
         "properties": {
           "ctx": {
@@ -4389,6 +5795,149 @@
   },
   "openapi": "3.1.0",
   "paths": {
+    "/api/v1/admin/api-keys": {
+      "get": {
+        "description": "The tenant's keys, revoked ones included (never the secret).",
+        "operationId": "list_api_keys_api_v1_admin_api_keys_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ApiKeyOut"
+                  },
+                  "title": "Response List Api Keys Api V1 Admin Api Keys Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Api Keys",
+        "tags": [
+          "admin"
+        ]
+      },
+      "post": {
+        "description": "A new key of the intelligence API. The secret is in this response and nowhere else.",
+        "operationId": "create_api_key_api_v1_admin_api_keys_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-reviewer",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Reviewer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApiKeyCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiKeyCreated"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Api Key",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/api-keys/{key_id}": {
+      "delete": {
+        "description": "Revoke a key. It stays listed; calls with it are refused from now on.",
+        "operationId": "revoke_api_key_api_v1_admin_api_keys__key_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "key_id",
+            "required": true,
+            "schema": {
+              "title": "Key Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-reviewer",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Reviewer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiKeyOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Revoke Api Key",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
     "/api/v1/admin/evals": {
       "post": {
         "description": "Without a prompt: score every gold record against the readings in review and write a\nresults file. With a prompt (section/vN): queue a reading of that section on every gold\ntender with that version and return the run ids; score those readings, and nothing\nelse, by sending the run ids back once the runs have finished.",
@@ -4608,6 +6157,66 @@
         ]
       }
     },
+    "/api/v1/admin/review-tokens": {
+      "post": {
+        "description": "A review link for a one-off external reviewer, minted by an admin: the same link\nthe management command makes, for one tender and one name, 30 days.",
+        "operationId": "mint_review_token_api_v1_admin_review_tokens_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-reviewer",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Reviewer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewTokenMint"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewTokenOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Mint Review Token",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
     "/api/v1/admin/threeway": {
       "get": {
         "description": "The latest comparison made for the tenant, from its results file.",
@@ -4670,6 +6279,203 @@
         ]
       }
     },
+    "/api/v1/admin/usage": {
+      "get": {
+        "description": "Metered calls of the tenant over the last `days`: by tool, and by API key.",
+        "operationId": "usage_api_v1_admin_usage_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "days",
+            "required": false,
+            "schema": {
+              "default": 30,
+              "title": "Days",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsageOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Usage",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/users": {
+      "get": {
+        "description": "The tenant's users, newest last.",
+        "operationId": "list_users_api_v1_admin_users_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/UserOut"
+                  },
+                  "title": "Response List Users Api V1 Admin Users Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Users",
+        "tags": [
+          "admin"
+        ]
+      },
+      "post": {
+        "description": "Invite a user: the row exists with its role before their first sign-in, which then\nattaches the identity provider's subject.",
+        "operationId": "create_user_api_v1_admin_users_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-reviewer",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Reviewer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create User",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/users/{user_id}": {
+      "patch": {
+        "description": "Change a user's role or disable them. Nothing else about a user is edited here.",
+        "operationId": "patch_user_api_v1_admin_users__user_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "required": true,
+            "schema": {
+              "title": "User Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-reviewer",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Reviewer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserPatch"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Patch User",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
     "/api/v1/approvals": {
       "post": {
         "description": "Record a reviewer's decision. This is the only route that produces a canonical fact.\nAn identical repeat returns the existing approval with 200 and writes nothing. When\nthe request names `previous_approval_id` (null: the field was undecided) and the field\nhas been decided again since, the write is refused with 409. With a review token, only\ncandidates of the token's tender can be decided.",
@@ -4727,6 +6533,115 @@
         "summary": "Post Approval",
         "tags": [
           "review"
+        ]
+      }
+    },
+    "/api/v1/auth/callback": {
+      "get": {
+        "description": "The provider sends the browser back here with a code: exchange it, verify the\nidentity, open a session and go to the app.",
+        "operationId": "callback_api_v1_auth_callback_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "code",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "Code",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "state",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "State",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "302": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Callback",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/login": {
+      "get": {
+        "description": "Send the browser to the identity provider. The state and nonce of this sign-in go\nin a signed cookie that lives ten minutes.",
+        "operationId": "login_api_v1_auth_login_get",
+        "responses": {
+          "302": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Login",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "description": "End the browser session: the row is revoked and the cookie cleared.",
+        "operationId": "logout_api_v1_auth_logout_post",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Logout",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "description": "The principal of the request: the signed-in user, the API key or the review link.",
+        "operationId": "me_api_v1_auth_me_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Me",
+        "tags": [
+          "auth"
         ]
       }
     },
@@ -5577,6 +7492,51 @@
         ]
       }
     },
+    "/api/v1/tenders/compare": {
+      "get": {
+        "description": "Tenders side by side: fields as rows, tenders as columns, provenance on every cell,\na field not reviewed marked as such. A tender whose publication is suspended is left\nout with the reason.",
+        "operationId": "compare_api_v1_tenders_compare_get",
+        "parameters": [
+          {
+            "description": "Comma-separated tender ids, at most six",
+            "in": "query",
+            "name": "ids",
+            "required": true,
+            "schema": {
+              "description": "Comma-separated tender ids, at most six",
+              "title": "Ids",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Comparison"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Compare",
+        "tags": [
+          "published"
+        ]
+      }
+    },
     "/api/v1/tenders/{tender_id}": {
       "get": {
         "operationId": "get_tender_api_v1_tenders__tender_id__get",
@@ -5828,6 +7788,49 @@
         ]
       }
     },
+    "/api/v1/tenders/{tender_id}/changes": {
+      "get": {
+        "description": "The changelog across versions: per version, the facts it changed (old to new, a\nwithdrawal flagged) with their evidence, decision date and reviewer role; an\nunreviewed version lists the fields it may touch, by path only.",
+        "operationId": "get_changes_api_v1_tenders__tender_id__changes_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tender_id",
+            "required": true,
+            "schema": {
+              "title": "Tender Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Changelog"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Changes",
+        "tags": [
+          "published"
+        ]
+      }
+    },
     "/api/v1/tenders/{tender_id}/complete-review": {
       "post": {
         "description": "Complete the review of the token's tender: refused while a required field has no\ndecision. Marks the token completed and the tender reviewed, and stores the current\nview as the snapshot the gold set is made from.",
@@ -5941,6 +7944,85 @@
         "summary": "Start Extraction",
         "tags": [
           "tenders"
+        ]
+      }
+    },
+    "/api/v1/tenders/{tender_id}/published": {
+      "get": {
+        "description": "The published view: canonical facts only, each with the version that set it, its\nevidence pages, the review date and the reviewer's role; the publication state with\nits banner; a field without a fact as a gap with its reason and the likely page. While\nan unreviewed version touches a critical field the view carries the suspension and the\namending documents instead of values.",
+        "operationId": "get_published_api_v1_tenders__tender_id__published_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tender_id",
+            "required": true,
+            "schema": {
+              "title": "Tender Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublishedTender"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Published",
+        "tags": [
+          "published"
+        ]
+      }
+    },
+    "/api/v1/tenders/{tender_id}/published.pdf": {
+      "get": {
+        "description": "The published view as a PDF: cover, facts by section with a reference number each,\nthe changelog, and an appendix of page references.",
+        "operationId": "get_published_pdf_api_v1_tenders__tender_id__published_pdf_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tender_id",
+            "required": true,
+            "schema": {
+              "title": "Tender Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Published Pdf",
+        "tags": [
+          "published"
         ]
       }
     },

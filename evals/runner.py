@@ -573,7 +573,7 @@ def _services() -> tuple[Any, Any, Any, Any]:
 
     settings = Settings()
     registry, catalog = build_registry()
-    session_factory = make_session_factory(make_engine(settings))
+    session_factory = make_session_factory(make_engine(settings), settings.tenant_id)
     llm = LLMClient(settings, session_factory, prompt_roots=catalog.prompt_roots)
     extract = ExtractService(llm, make_storage(settings), registry, settings)
     return (

@@ -1,6 +1,7 @@
 // The only place fetch() appears. Types come from schema.d.ts, which is generated from the
 // API's OpenAPI document by `make client`; the watcher fails when it drifts.
 import type { components } from "./schema";
+import type * as T5 from "./types5c";
 
 type Schemas = components["schemas"];
 export type Health = Schemas["HealthResponse"];
@@ -99,3 +100,23 @@ export function reviewApi(token: string) {
 }
 
 export type ReviewApi = ReturnType<typeof reviewApi>;
+
+/** The calls of a signed-in user (Stage 5C). The session travels as a cookie the browser
+ * sends by itself on this origin; nothing is added to the request. */
+export const appApi = {
+  me: () => request<T5.Me>("GET", "/auth/me"),
+  logout: () => request<unknown>("POST", "/auth/logout"),
+  tenders: () => request<T5.TenderListItem[]>("GET", "/tenders"),
+  published: (tenderId: string) => request<T5.PublishedTender>("GET", `/tenders/${tenderId}/published`),
+  changes: (tenderId: string) => request<T5.TenderChanges>("GET", `/tenders/${tenderId}/changes`),
+  users: () => request<T5.AdminUser[]>("GET", "/admin/users"),
+  updateUser: (id: string, body: T5.UserPatch) =>
+    request<T5.AdminUser>("PATCH", `/admin/users/${id}`, undefined, body),
+  apiKeys: () => request<T5.ApiKeyInfo[]>("GET", "/admin/api-keys"),
+  createApiKey: (body: T5.ApiKeyCreate) =>
+    request<T5.CreatedApiKey>("POST", "/admin/api-keys", undefined, body),
+  revokeApiKey: (id: string) => request<unknown>("DELETE", `/admin/api-keys/${id}`),
+  createReviewToken: (body: { tender: string; reviewer_name: string }) =>
+    request<T5.ReviewTokenOut>("POST", "/admin/review-tokens", undefined, body),
+  usage: (days = 30) => request<T5.Usage>("GET", `/admin/usage?days=${days}`),
+};

@@ -1,5 +1,7 @@
 """Settings from environment variables. No module-level singleton: callers build one and pass it."""
 
+from typing import Literal
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -7,10 +9,21 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     database_url: str = "postgresql+psycopg://tender:tender@db:5432/tender"
+    # The connection migrations use: the owner of the tables. The app itself connects as
+    # `tender_app` (migration 0018), a role without ownership that row-level security
+    # binds; empty means the same URL as database_url (the test harness, a dev database).
+    migration_database_url: str = ""
     db_schema: str | None = None
     data_dir: str = "/data"
+    # local: files under data_dir. gcs: the bucket (Cloud Run); the files route streams them.
     storage_backend: str = "local"
+    gcs_bucket: str = ""
     tenant_id: str = "ergplan"
+    # Which product this process serves (Stage 5C). enterprise: every route and the web
+    # front end. api: the intelligence API only — the read routes, the published view,
+    # the model, the reliability figures and the OpenAPI document — for API-key clients.
+    # Same code either way; the difference is which routers are mounted.
+    product: Literal["enterprise", "api"] = "enterprise"
 
     anthropic_api_key: str = ""
     anthropic_model: str = "claude-fable-5-1"
@@ -58,8 +71,27 @@ class Settings(BaseSettings):
     # Where evaluation results are written and the review emphasis file is read from
     # (`evals/results/review-emphasis-<tenant>.json`, Stage 5B). Empty: `evals/results`.
     results_root: str = ""
-    # Guards /api/v1/admin/* (the reliability dashboard). Empty: the routes are refused.
+    # Guards /api/v1/admin/* for internal automation and the tests; an admin who signed in
+    # reaches the same routes with their session. Empty: the header opens nothing.
     admin_token: str = ""
+
+    # Sign-in (Stage 5C): Google OIDC. The client is registered by the operator; the
+    # callback is <public_base_url>/api/v1/auth/callback. Only verified addresses of the
+    # allowed domains (comma list; empty: any) may sign in; a first sign-in creates the
+    # user with the default role, or `admin` for the bootstrap addresses. The session
+    # secret signs the sign-in state cookie; empty refuses sign-in with a plain message.
+    oidc_client_id: str = ""
+    oidc_client_secret: str = ""
+    oidc_issuer: str = "https://accounts.google.com"
+    oidc_allowed_domains: str = ""
+    oidc_default_role: str = "reviewer"
+    bootstrap_admin_emails: str = ""
+    session_hours: float = 12.0
+    session_secret: str = ""
+    # The intelligence API's keys (Product B): calls per minute and per UTC day for a key
+    # made without its own limits.
+    api_key_rate_limit_per_min: int = 60
+    api_key_daily_cap: int = 5000
 
     # Where reviewers reach the app; review links are built from it.
     public_base_url: str = "https://34.131.65.108"

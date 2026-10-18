@@ -10,9 +10,11 @@ from agent.service import AgentPassService
 from api.middleware.errors import AppError
 from api.middleware.review_token import ReviewContext
 from core.config import Settings
+from core.db import set_tenant
 from core.schemas import SchemaRegistry
 from core.services.approve import ApprovalService, DecisionGuard
 from core.services.extract import ExtractService
+from core.services.identity import Principal
 from core.services.ingest import IngestService
 from core.services.review_state import ReviewStateService
 from core.storage import Storage
@@ -29,14 +31,32 @@ def get_settings(request: Request) -> Settings:
     return settings
 
 
-def get_session(request: Request) -> Iterator[Session]:
+def get_principal(request: Request) -> Principal | None:
+    """The identity behind the request, set by api.middleware.auth; None inside the
+    deployment (the management commands, the tests)."""
+    principal: Principal | None = getattr(request.state, "principal", None)
+    return principal
+
+
+PrincipalDep = Annotated[Principal | None, Depends(get_principal)]
+
+
+def get_tenant_id(
+    settings: Annotated[Settings, Depends(get_settings)], principal: PrincipalDep
+) -> str:
+    """The principal's tenant; the configured one for a request made inside the deployment."""
+    return principal.tenant_id if principal is not None else settings.tenant_id
+
+
+def get_session(
+    request: Request, principal: PrincipalDep, tenant_id: Annotated[str, Depends(get_tenant_id)]
+) -> Iterator[Session]:
+    """A session scoped by row-level security to the request's tenant (and the tenants
+    it may read) before its first statement."""
     with request.app.state.session_factory() as session:
+        read = principal.read_tenants if principal is not None else (tenant_id, "public")
+        set_tenant(session, tenant_id, read)
         yield session
-
-
-def get_tenant_id(settings: Annotated[Settings, Depends(get_settings)]) -> str:
-    """Phase 1 resolves every request to the single configured tenant."""
-    return settings.tenant_id
 
 
 def get_review(request: Request) -> ReviewContext | None:
@@ -48,19 +68,28 @@ def get_review(request: Request) -> ReviewContext | None:
 ReviewDep = Annotated[ReviewContext | None, Depends(get_review)]
 
 
-def get_reviewer(review: ReviewDep, x_reviewer: Annotated[str | None, Header()] = None) -> str:
-    """Who decides: the reviewer name of the review token. A request made inside the
-    deployment, which carries no token, names the reviewer in the X-Reviewer header."""
+def get_reviewer(
+    review: ReviewDep, principal: PrincipalDep, x_reviewer: Annotated[str | None, Header()] = None
+) -> str:
+    """Who decides: the reviewer name of the review token, else the signed-in user's
+    address. A request made inside the deployment, which carries neither, names the
+    reviewer in the X-Reviewer header."""
     if review is not None:
         return review.reviewer
+    if principal is not None and principal.kind == "user":
+        return principal.name
     if x_reviewer is None or not x_reviewer.strip():
         raise AppError("validation_failed", "the X-Reviewer header is required")
     return x_reviewer.strip()
 
 
-def get_actor(review: ReviewDep, x_reviewer: Annotated[str | None, Header()] = None) -> str:
+def get_actor(
+    review: ReviewDep, principal: PrincipalDep, x_reviewer: Annotated[str | None, Header()] = None
+) -> str:
     if review is not None:
         return review.reviewer
+    if principal is not None and principal.kind in ("user", "api_key"):
+        return principal.name
     return x_reviewer.strip() if x_reviewer and x_reviewer.strip() else "api"
 
 

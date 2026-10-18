@@ -14,7 +14,7 @@ from typing import Any
 import pytest
 from alembic import command
 from alembic.config import Config
-from sqlalchemy import create_engine, text
+from sqlalchemy import Engine, create_engine, text
 from sqlalchemy.orm import Session, sessionmaker
 
 from core.config import Settings
@@ -38,6 +38,11 @@ from worker.runner import Runner
 TEST_DATABASE_URL = os.environ.get(
     "TEST_DATABASE_URL", "postgresql+psycopg://tender:tender@db:5432/tender_ci"
 )
+# The app's own role (no ownership, bound by row-level security); the owner URL above runs
+# the migrations and the clean-up.
+TEST_APP_DATABASE_URL = os.environ.get(
+    "TEST_APP_DATABASE_URL", "postgresql+psycopg://tender_app:tender_app@db:5432/tender_ci"
+)
 
 
 @pytest.fixture(scope="session")
@@ -48,7 +53,8 @@ def settings(tmp_path_factory: pytest.TempPathFactory) -> Iterator[Settings]:
         conn.execute(text(f'CREATE SCHEMA "{schema}"'))
     test_settings = Settings(
         _env_file=None,
-        database_url=TEST_DATABASE_URL,
+        database_url=TEST_APP_DATABASE_URL,
+        migration_database_url=TEST_DATABASE_URL,
         db_schema=schema,
         tenant_id="ergplan",
         data_dir=str(tmp_path_factory.mktemp("data")),
@@ -71,23 +77,46 @@ def settings(tmp_path_factory: pytest.TempPathFactory) -> Iterator[Settings]:
 @pytest.fixture(scope="session")
 def session_factory(settings: Settings) -> Iterator[sessionmaker[Session]]:
     engine = make_engine(settings)
-    yield make_session_factory(engine)
+    yield make_session_factory(engine, settings.tenant_id, read_tenants=("public",))
     engine.dispose()
 
 
 @pytest.fixture()
-def db(session_factory: sessionmaker[Session]) -> Iterator[Session]:
+def db(session_factory: sessionmaker[Session], settings: Settings) -> Iterator[Session]:
     """A session for the test. Every table except tenant is emptied afterwards.
 
     TRUNCATE is used because candidate, evidence_span and audit_log refuse DELETE.
     """
     with session_factory() as session:
         yield session
+    # The clean-up is the owner's: TRUNCATE needs the table owner, and the app role is
+    # bound by row-level security to one tenant.
     tables = ", ".join(f'"{name}"' for name in Base.metadata.tables if name != "tenant")
-    with session_factory() as cleanup:
+    with owner_engine(settings).connect() as cleanup:
         cleanup.execute(text(f"TRUNCATE {tables} CASCADE"))
-        cleanup.execute(text("DELETE FROM tenant WHERE tenant_id <> 'ergplan'"))
+        cleanup.execute(text("DELETE FROM tenant WHERE tenant_id NOT IN ('ergplan', 'public')"))
         cleanup.commit()
+
+
+def owner_engine(settings: Settings) -> Engine:
+    """The owner's connection to the test schema, for what the app role may not do."""
+    return make_engine(settings.model_copy(update={"database_url": TEST_DATABASE_URL}))
+
+
+def add_tenant(settings: Settings, tenant_id: str, name: str | None = None) -> None:
+    """A second tenant for a test. The registry is written only in the system scope
+    (sign-up, the operator), so a test adds one as the owner."""
+    engine = owner_engine(settings)
+    with engine.connect() as conn:
+        conn.execute(
+            text(
+                "INSERT INTO tenant (tenant_id, name, created_by) VALUES (:id, :name, 'pytest') "
+                "ON CONFLICT (tenant_id) DO NOTHING"
+            ),
+            {"id": tenant_id, "name": name or tenant_id.title()},
+        )
+        conn.commit()
+    engine.dispose()
 
 
 @dataclass

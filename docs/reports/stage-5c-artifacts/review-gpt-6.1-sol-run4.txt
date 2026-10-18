@@ -1,0 +1,82 @@
+reviewer: gpt-6.1-sol  input chars: 479898  tokens in/out: 125937/3210
+
+## (a) Non-negotiable invariants
+
+| Invariant | Assessment |
+|---|---|
+| **The LLM never writes truth** | No new production truth writer is shown. Publication delegates to `current_view` (`tender/services/published.py:234`); changelog reads canonical facts (`tender/services/changelog.py:91–103`). The existing approval handler is not supplied, so its exclusive ownership of canonical writes cannot be independently reverified. |
+| **Every value carries its evidence** | Published facts copy canonical evidence (`tender/services/published.py:300–309`), as do changelog entries (`tender/services/changelog.py:142–151`). Existing candidate validation and approval evidence guards are not supplied; no change weakening them is shown. |
+| **The tender is a versioned object** | Publication distinguishes reviewed and subsequent versions (`tender/services/publication.py:106–156`), and published fields retain their source version (`tender/services/published.py:298–299`). No new in-place version mutation is shown. |
+| **Candidates are immutable** | Added production candidate access is read-only: touched-field detection (`tender/services/publication.py:85–102`) and likely-page lookup (`tender/services/published.py:160–180`). |
+| **Validation is deterministic** | No LLM-based validator or change to pipeline validation is shown. Publication-state decisions use ordinary Python conditions and sets (`tender/services/publication.py:117–142`). |
+| **Everything is audited and tenant-scoped** | Not fully upheld: explicit tenant-filter and file-ownership exceptions remain below. New identity tables receive tenant and creation columns (`migrations/versions/0017_identity.py:18–26`), and request sessions receive tenant scope (`api/deps.py:54–63`). |
+| **Feedback is stored, never auto-applied** | No feedback-to-prompt, threshold or model runtime path is added. The changed feedback command remains a reporting reader (`evals/feedback_report.py:174–179`). |
+| **API first** | Publication, PDF export, changelog and comparison have versioned endpoints (`api/v1/tenders/published.py:35–108`, `api/main.py:110–113`). Root file delivery is not an intelligence operation (`api/v1/core/files.py:78–120`). |
+
+FINDINGS: 2
+1. **Not every query filters by `tenant_id`.** Identity resolution deliberately uses unrestricted system scope and queries by subject, session hash or key hash without a tenant predicate (`core/services/identity.py:88–94,174–178,264–267`). This does not satisfy the literal query-filter invariant, notwithstanding its documented rationale.
+2. **Root file delivery bypasses tenant ownership checks for unmarked requests without a review token.** Authentication skips root paths (`api/middleware/auth.py:104–105`), and the file route reads the shared storage key without checking document ownership in that case (`api/v1/core/files.py:95–103`). The bypass is explicitly tested (`tests/api/test_files.py:45–48`).
+
+## (b) Tests for added API endpoints
+
+| Endpoint | Test location |
+|---|---|
+| `GET /api/v1/auth/login` | `tests/api/test_auth.py:49–58,118–131` |
+| `GET /api/v1/auth/callback` | `tests/api/test_auth.py:54–58,61–86,96–115` |
+| `POST /api/v1/auth/logout` | `tests/api/test_auth.py:79–85` |
+| `GET /api/v1/auth/me` | `tests/api/test_auth.py:62–76` |
+| `GET /api/v1/admin/users` | `tests/api/test_identity_admin.py:52–53` |
+| `POST /api/v1/admin/users` | `tests/api/test_identity_admin.py:34–51` |
+| `PATCH /api/v1/admin/users/{user_id}` | `tests/api/test_identity_admin.py:54–60` |
+| `GET /api/v1/admin/api-keys` | `tests/api/test_identity_admin.py:76–77` |
+| `POST /api/v1/admin/api-keys` | `tests/api/test_identity_admin.py:64–75` |
+| `DELETE /api/v1/admin/api-keys/{key_id}` | `tests/api/test_identity_admin.py:78–86` |
+| `POST /api/v1/admin/review-tokens` | `tests/api/test_identity_admin.py:89–106` |
+| `GET /api/v1/admin/usage` | `tests/api/test_identity_admin.py:107–108` |
+| `GET /api/v1/tenders/compare` | `tests/api/test_published.py:53–58,71–87` |
+| `GET /api/v1/tenders/{tender_id}/published` | `tests/api/test_published.py:16–40,67–70` |
+| `GET /api/v1/tenders/{tender_id}/published.pdf` | `tests/api/test_published.py:42–46,83` |
+| `GET /api/v1/tenders/{tender_id}/changes` | `tests/api/test_published.py:48–51,76–79` |
+| `GET /files/{path:path}` | `tests/api/test_files.py:19–75` |
+| Worker/agent listener: `GET /health` | `tests/core/services/test_liveness.py:10–25` |
+
+FINDINGS: none
+
+## (c) Audit coverage for protected-table writes
+
+No new direct production write to `candidate`, `approval`, `canonical_fact`, `tender_version` or `feedback` is shown.
+
+Added fixtures and tests invoke existing write services whose implementations and audit calls are outside the supplied diff:
+
+| Write invoked | Location | Audit verification |
+|---|---|---|
+| Tender-version creation through `add_version` | `tests/fixtures/published.py:35–37` | Existing implementation and audit call not supplied. |
+| Human approval through `approve` | `tests/fixtures/published.py:73–81` | Existing implementation and audit call not supplied. |
+| Edited approval | `tests/tender/test_published.py:29–31` | Same limitation. |
+| Cleared approval | `tests/tender/test_published.py:100–102` | Same limitation. |
+| Approvals during withdrawal review | `tests/tender/test_published.py:158–166` | Same limitation. |
+
+Existing production audit coverage therefore cannot be independently certified from these inputs.
+
+FINDINGS: 1
+1. Test teardown executes `TRUNCATE … CASCADE` over every mapped table except `tenant`, including the five protected tables, without an audit call (`tests/conftest.py:94–100`). This is owner-role test cleanup, not a production write path.
+
+## (d) `make trace` reproducibility
+
+**Not established.** This is not “not applicable”: `trace` is a declared Make target (`Makefile:6`). Neither execution output nor the generator and committed `FIELD-TRACE.md` contents needed to verify clean regeneration are supplied. The report’s assertion is not execution evidence.
+
+FINDINGS: 1
+1. Clean regeneration is unverified: `docs/reports/STAGE-5C-REPORT.md:74` asserts that `make trace` ran clean, but no supporting execution result is supplied (`Makefile:6`).
+
+## (e) Draft report claims unsupported by the diff
+
+Repeated claims are grouped. Unfilled deployment and cost placeholders are not treated as completed claims.
+
+FINDINGS: 7
+1. **Review-token minting requires a logged-in admin, marked “Yes.”** The report acknowledges alternatives but still marks that requirement satisfied (`docs/reports/STAGE-5C-REPORT.md:14`). Middleware accepts an admin-token principal without login and does not require the request to be internal (`api/middleware/auth.py:176–187`); the shell command also mints directly (`scripts/review_token.py:42–46`).
+2. **Production images have been built and tested as far as locally possible.** These execution claims appear at `docs/reports/STAGE-5C-REPORT.md:12,15,25`. The diff supplies build definitions and template-inspection tests, not image-build or smoke-run results (`Makefile:49–51`, `tests/infra/test_cloudrun.py:31–95`).
+3. **The full nine-check suite was green before every commit, certified by the hook; earlier runs and builds are certified operational facts.** No watcher status, hook output, test execution results or delivery message supports these historical assertions (`docs/reports/STAGE-5C-REPORT.md:36,75`).
+4. **The lockfile and generated OpenAPI client changed with the stage.** This is asserted at `docs/reports/STAGE-5C-REPORT.md:75`, but neither generated artifact is supplied. Their absence does not prove they were unchanged, but prevents verification. The shown code depends on the missing artifacts (`infra/docker/Dockerfile.python:13`, `web/src/api/types5c.ts:10–31`).
+5. **The field trace ran clean.** This execution claim lacks supporting output, generator contents or committed trace contents (`docs/reports/STAGE-5C-REPORT.md:74`, `Makefile:6`).
+6. **There are 46 new Python tests in the stage.** The report’s own area totals are 4 RLS + 18 identity + 15 publication + 11 storage/files/products/cloud + 2 liveness = **50**, not 46 (`docs/reports/STAGE-5C-REPORT.md:30–35`; liveness tests at `tests/core/services/test_liveness.py:10–29`).
+7. **The published-output implementation fully satisfies review-date and reviewer-role presentation.** The definition-of-done row marks this complete (`docs/reports/STAGE-5C-REPORT.md:16`), but published changelog entries omit their individual decision date and reviewer role in both the web rendering (`web/src/library/PublishedPage.tsx:90–103`) and PDF rendering (`tender/services/published_pdf.py:180–189`), despite those properties being present in the changelog model (`tender/services/changelog.py:36–37`).

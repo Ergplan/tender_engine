@@ -13,6 +13,13 @@ RUN uv sync --frozen --no-dev --no-cache
 COPY . .
 USER 1000:1000
 
+# Production (Cloud Run): the app target as it is, no reload and no dev tools; the command
+# comes from the Cloud Run service (uvicorn, worker.main, agent.main) or job (alembic).
+FROM app AS prod
+ENV PRODUCT=enterprise
+EXPOSE 8000
+CMD ["uvicorn", "api.main:create_app", "--factory", "--host", "0.0.0.0", "--port", "8000"]
+
 FROM app AS tests
 USER root
 # Node is needed for tsc, vitest and the OpenAPI client drift check.

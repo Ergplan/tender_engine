@@ -91,6 +91,7 @@ services:
     image: tender-engine-tests
     environment:
       TEST_DATABASE_URL: postgresql+psycopg://tender:tender@db:5432/tender_ci
+      TEST_APP_DATABASE_URL: postgresql+psycopg://tender_app:tender_app@db:5432/tender_ci
     volumes:
       - .:/app
       - web_node_modules:/app/web/node_modules

@@ -15,6 +15,9 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 settings: Settings = config.attributes.get("settings") or Settings()
+# Migrations run as the owner of the tables; the app connects as a role without ownership.
+if settings.migration_database_url:
+    settings = settings.model_copy(update={"database_url": settings.migration_database_url})
 engine = make_engine(settings)
 
 with engine.connect() as connection:

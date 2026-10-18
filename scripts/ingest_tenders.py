@@ -121,7 +121,7 @@ class Services:
 
 def build_services(settings: Settings | None = None) -> Services:
     settings = settings or Settings()
-    session_factory = make_session_factory(make_engine(settings))
+    session_factory = make_session_factory(make_engine(settings), settings.tenant_id)
     storage = make_storage(settings)
     schemas, catalog = build_registry()
     llm = LLMClient(settings, session_factory, prompt_roots=catalog.prompt_roots)

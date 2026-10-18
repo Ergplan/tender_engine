@@ -1,0 +1,54 @@
+# Cloud Run service: the independent agent pass (Stage 5A), a poller like the worker that
+# claims only `agent_pass` jobs and calls the OpenAI model through core/llm.
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: tender-agent
+  annotations:
+    run.googleapis.com/ingress: internal
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "1"
+        autoscaling.knative.dev/maxScale: "1"
+        run.googleapis.com/cloudsql-instances: "[SQL_CONNECTION]"
+        run.googleapis.com/cpu-throttling: "false"
+    spec:
+      containerConcurrency: 1
+      timeoutSeconds: 3600
+      serviceAccountName: tender-run@[PROJECT].iam.gserviceaccount.com
+      containers:
+        - image: "[IMAGE_PYTHON]"
+          args: ["python", "-m", "agent.main"]
+          ports:
+            - containerPort: 8080
+          resources:
+            limits:
+              cpu: "1"
+              memory: 2Gi
+          env:
+            - name: PRODUCT
+              value: enterprise
+            - name: STORAGE_BACKEND
+              value: gcs
+            - name: GCS_BUCKET
+              value: "[BUCKET]"
+            - name: TENANT_ID
+              value: ergplan
+            - name: OPENAI_MODEL
+              value: gpt-6.1-sol
+            - name: ANTHROPIC_API_KEY
+              valueFrom: {secretKeyRef: {name: ANTHROPIC_API_KEY, key: latest}}
+            - name: OPENAI_API_KEY
+              valueFrom: {secretKeyRef: {name: OPENAI_API_KEY, key: latest}}
+            - name: DATABASE_URL
+              valueFrom: {secretKeyRef: {name: DATABASE_URL, key: latest}}
+            - name: ADMIN_TOKEN
+              valueFrom: {secretKeyRef: {name: ADMIN_TOKEN, key: latest}}
+            - name: SESSION_SECRET
+              valueFrom: {secretKeyRef: {name: SESSION_SECRET, key: latest}}
+            - name: OIDC_CLIENT_ID
+              valueFrom: {secretKeyRef: {name: OIDC_CLIENT_ID, key: latest}}
+            - name: OIDC_CLIENT_SECRET
+              valueFrom: {secretKeyRef: {name: OIDC_CLIENT_SECRET, key: latest}}

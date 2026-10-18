@@ -3,7 +3,7 @@ COMPOSE := docker compose
 STATIC_IP := $(shell cat infra/STATIC-IP.txt)
 RUN_TESTS := $(COMPOSE) run --rm --no-deps -T tests
 
-.PHONY: up down test test-e2e test-ui check watch migrate deploy logs smoke client hooks evidence-corpus trace gold eval feedback-report report threeway agent-pass freshness
+.PHONY: up down test test-e2e test-ui check watch migrate deploy build-prod logs smoke client hooks evidence-corpus trace gold eval feedback-report report threeway agent-pass freshness
 
 up: hooks ## start the app and the test watcher
 	$(COMPOSE) up -d --build
@@ -45,6 +45,10 @@ deploy: hooks ## pull, build, migrate, restart, health check
 	  if curl -ksf https://$(STATIC_IP)/health >/dev/null; then \
 	    echo "healthy: $$(curl -ks https://$(STATIC_IP)/health)"; exit 0; fi; sleep 2; done; \
 	  echo "health check failed: https://$(STATIC_IP)/health"; $(COMPOSE) ps; exit 1
+
+build-prod: ## the production images Cloud Run runs (python target prod, web static bundle), for a local smoke run
+	docker build -f infra/docker/Dockerfile.python --target prod -t tender-engine-python:prod .
+	docker build -f infra/docker/Dockerfile.web.prod -t tender-engine-web:prod .
 
 logs: ## follow logs of every service
 	$(COMPOSE) logs -f --tail=50

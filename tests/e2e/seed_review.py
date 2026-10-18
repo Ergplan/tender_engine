@@ -61,7 +61,7 @@ def reset_database(settings: Settings) -> None:
 
 def build_runner(settings: Settings, sdk: ScriptedSDK) -> tuple[Runner, ExtractService, Any]:
     """The worker of the browser-test stack: the real job chain with a scripted model."""
-    session_factory = make_session_factory(make_engine(settings))
+    session_factory = make_session_factory(make_engine(settings), settings.tenant_id)
     storage = make_storage(settings)
     schemas, catalog = build_registry()
     llm = LLMClient(settings, session_factory, sdk=sdk.as_sdk(), prompt_roots=catalog.prompt_roots)

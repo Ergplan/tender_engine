@@ -14,8 +14,13 @@ class Storage(Protocol):
 
 
 def make_storage(settings: Settings) -> Storage:
+    """`local` (the /data volume) or `gcs` (the bucket named by settings.gcs_bucket)."""
     from core.storage.local import LocalStorage
 
     if settings.storage_backend == "local":
         return LocalStorage(settings.data_dir)
+    if settings.storage_backend == "gcs":
+        from core.storage.gcs import GcsStorage
+
+        return GcsStorage(settings.gcs_bucket)
     raise ValueError(f"unknown storage backend {settings.storage_backend!r}")

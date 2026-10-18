@@ -2,6 +2,7 @@
 each through the OpenAI Agents SDK, and never touch the worker's chain."""
 
 import logging
+import os
 import signal
 import threading
 import traceback
@@ -15,6 +16,7 @@ from core.db import make_engine, make_session_factory
 from core.llm.client import LLMClient
 from core.services import jobs
 from core.services.extract import ExtractService
+from core.services.liveness import serve_health
 from core.storage import make_storage
 from tender.services.packs import build_registry
 from tender.services.tenders import TenderService
@@ -87,10 +89,15 @@ class AgentWorker:
 def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(message)s")
     settings = Settings()
+    # Cloud Run runs the agent as a service and probes $PORT; compose sets no port.
+    port = os.environ.get("PORT")
+    serve_health(int(port) if port else None, name="agent")
     stop = threading.Event()
     for sig in (signal.SIGTERM, signal.SIGINT):
         signal.signal(sig, lambda *_: stop.set())
-    AgentWorker(settings, make_session_factory(make_engine(settings))).run_forever(stop)
+    AgentWorker(
+        settings, make_session_factory(make_engine(settings), settings.tenant_id)
+    ).run_forever(stop)
 
 
 if __name__ == "__main__":

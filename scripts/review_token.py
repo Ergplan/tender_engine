@@ -40,21 +40,21 @@ def _tender(session: Session, settings: Settings, tender_ref: str) -> Tender:
 
 
 def create(settings: Settings, tender_ref: str, reviewer: str) -> str:
-    with make_session_factory(make_engine(settings))() as session:
+    with make_session_factory(make_engine(settings), settings.tenant_id)() as session:
         tender = _tender(session, settings, tender_ref)
         token = TokenService(settings.tenant_id).create(session, tender, reviewer, created_by=ACTOR)
         return review_url(settings.public_base_url, token.token)
 
 
 def revoke(settings: Settings, tender_ref: str) -> int:
-    with make_session_factory(make_engine(settings))() as session:
+    with make_session_factory(make_engine(settings), settings.tenant_id)() as session:
         tender = _tender(session, settings, tender_ref)
         return TokenService(settings.tenant_id).revoke(session, tender, created_by=ACTOR)
 
 
 def listing(settings: Settings) -> list[str]:
     lines = []
-    with make_session_factory(make_engine(settings))() as session:
+    with make_session_factory(make_engine(settings), settings.tenant_id)() as session:
         rows = session.execute(
             select(ReviewToken, Tender)
             .join(Tender, Tender.id == ReviewToken.tender_id)

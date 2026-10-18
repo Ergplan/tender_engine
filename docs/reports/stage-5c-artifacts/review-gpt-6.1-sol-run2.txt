@@ -1,0 +1,86 @@
+reviewer: gpt-6.1-sol  input chars: 455298  tokens in/out: 119691/3221
+
+## (a) Non-negotiable invariants
+
+| Invariant | Assessment from the supplied diff |
+|---|---|
+| **The LLM never writes truth** | No new production writer to `canonical_fact` is shown. Publication reads through `current_view` (`tender/services/published.py:234`); the existing approval handler is not supplied, so its exclusivity cannot be independently reverified. |
+| **Every value carries its evidence** | Published facts copy canonical evidence (`tender/services/published.py:300–309`); changelog entries do likewise (`tender/services/changelog.py:139–148`). Candidate validation and approval evidence guards are not supplied and cannot be reverified. |
+| **The tender is a versioned object** | Publication reads ordered versions and distinguishes pending versions (`tender/services/publication.py:107–155`). Published fields retain their source version (`tender/services/published.py:298–299`). No new in-place version mutation is shown. |
+| **Candidates are immutable** | Added production candidate access is read-only: touched-field detection (`tender/services/publication.py:85–102`) and evidence-page lookup (`tender/services/published.py:160–180`). |
+| **Validation is deterministic** | No change to pipeline validation or LLM-based validator is shown. Publication-state decisions use deterministic Python conditions and set operations (`tender/services/publication.py:117–142`). |
+| **Everything is audited and tenant-scoped** | Not fully upheld: explicit tenant filters are missing from several queries, and root file delivery can bypass tenant ownership checks. New identity tables include tenant and creation columns (`migrations/versions/0017_identity.py:18–26`); request sessions receive tenant scope (`api/deps.py:54–63`). |
+| **Feedback is stored, never auto-applied** | No runtime feedback-to-prompt, threshold or model path is added. The changed feedback command remains a reporting reader (`evals/feedback_report.py:177–179`). |
+| **API first** | Added publication, comparison, PDF and changelog operations have versioned endpoints (`api/v1/tenders/published.py:35–101`, `api/main.py:106–109`). Root file delivery is not an intelligence operation (`api/v1/core/files.py:78–120`). |
+
+FINDINGS: 2
+1. Queries do not consistently include the invariant’s explicit `tenant_id` filter. Examples include system-scoped identity lookups (`core/services/identity.py:88–94,174–178,262–263`) and usage counting filtered only by key and time (`core/services/identity.py:316–326`). RLS does not satisfy the separate requirement that every query filters by tenant.
+2. File delivery is not consistently tenant-scoped. Authentication skips root paths (`api/middleware/auth.py:104–105`), and an unmarked request without a review token reads the shared storage key without any tenant/document ownership lookup (`api/v1/core/files.py:95–103`). The behavior is explicitly tested (`tests/api/test_files.py:45–48`).
+
+## (b) Tests for added API endpoints
+
+All 17 explicitly added application endpoints have HTTP tests.
+
+| Endpoint | Test location |
+|---|---|
+| `GET /api/v1/auth/login` | `tests/api/test_auth.py:49–58,118–131` |
+| `GET /api/v1/auth/callback` | `tests/api/test_auth.py:54–58,61–86,96–115` |
+| `POST /api/v1/auth/logout` | `tests/api/test_auth.py:79–85` |
+| `GET /api/v1/auth/me` | `tests/api/test_auth.py:62–76` |
+| `GET /api/v1/admin/users` | `tests/api/test_identity_admin.py:52–53` |
+| `POST /api/v1/admin/users` | `tests/api/test_identity_admin.py:34–51` |
+| `PATCH /api/v1/admin/users/{user_id}` | `tests/api/test_identity_admin.py:54–60` |
+| `GET /api/v1/admin/api-keys` | `tests/api/test_identity_admin.py:76–77` |
+| `POST /api/v1/admin/api-keys` | `tests/api/test_identity_admin.py:64–75` |
+| `DELETE /api/v1/admin/api-keys/{key_id}` | `tests/api/test_identity_admin.py:78–86` |
+| `POST /api/v1/admin/review-tokens` | `tests/api/test_identity_admin.py:89–106` |
+| `GET /api/v1/admin/usage` | `tests/api/test_identity_admin.py:107–108` |
+| `GET /api/v1/tenders/compare` | `tests/api/test_published.py:53–58,71–81` |
+| `GET /api/v1/tenders/{tender_id}/published` | `tests/api/test_published.py:16–40,67–70` |
+| `GET /api/v1/tenders/{tender_id}/published.pdf` | `tests/api/test_published.py:42–46` |
+| `GET /api/v1/tenders/{tender_id}/changes` | `tests/api/test_published.py:48–51` |
+| `GET /files/{path:path}` | `tests/api/test_files.py:19–75` |
+
+The shared worker/agent health listener also has a test: `GET /health` in `tests/core/services/test_liveness.py:10–25`.
+
+FINDINGS: none
+
+## (c) Audit coverage for protected-table writes
+
+No new direct production write to `candidate`, `approval`, `canonical_fact`, `tender_version` or `feedback` appears in the supplied diff.
+
+The new tests and fixtures invoke existing write services:
+
+| Write invoked | Location | Audit verification |
+|---|---|---|
+| Tender-version creation through `add_version` | `tests/fixtures/published.py:35–37` | Existing service implementation and audit call are not supplied. |
+| Human approval through `approve` | `tests/fixtures/published.py:73–81` | Existing approval implementation and audit call are not supplied. |
+| Edited approval | `tests/tender/test_published.py:29–31` | Same limitation. |
+| Cleared approval | `tests/tender/test_published.py:100–102` | Same limitation. |
+| Approval during withdrawal review | `tests/tender/test_published.py:158–166` | Same limitation. |
+
+Thus, existing audit coverage cannot be independently verified, but no newly introduced unaudited direct write to these five tables is shown.
+
+FINDINGS: none
+
+## (d) `make trace` reproducibility
+
+Not established. This is not “not applicable”: `trace` is already a declared Make target (`Makefile:6`). The supplied inputs contain neither execution output nor the generator and committed `docs/FIELD-TRACE.md` needed to verify clean regeneration. The report’s assertion is not execution evidence.
+
+FINDINGS: 1
+1. Clean regeneration remains unverified despite new API routes and field-display components (`api/v1/tenders/published.py:35–101`, `web/src/library/PublishedPage.tsx:30–68`). The report asserts a clean run without supplying its result (`docs/reports/STAGE-5C-REPORT.md:70`).
+
+## (e) Draft report claims not supported by the diff
+
+Repeated occurrences are grouped. Unfilled deployment and cost placeholders are not treated as completed claims.
+
+FINDINGS: 9
+1. **Review-token minting requires a logged-in admin, marked “Yes.”** The report’s definition-of-done row asserts completion while admitting the admin-token alternative (`docs/reports/STAGE-5C-REPORT.md:14`). Middleware permits an admin-token principal without login (`api/middleware/auth.py:176–187`), and the shell command mints directly (`scripts/review_token.py:42–46`).
+2. **Production images have been built and tested as far as locally possible.** The report asserts this at `docs/reports/STAGE-5C-REPORT.md:12,15,25`. No build or smoke-run results are supplied; infrastructure tests inspect templates and command text (`tests/infra/test_cloudrun.py:31–93`). The frozen dependency build also depends on an unavailable lockfile update (`infra/docker/Dockerfile.python:13`, `pyproject.toml:22`).
+3. **The full nine-check suite was green before every commit, certified by the hook.** This historical assertion has no supporting watcher status, execution results or hook output (`docs/reports/STAGE-5C-REPORT.md:36`). The generated OpenAPI schema needed by the new aliases is also absent from the supplied diff (`web/src/api/types5c.ts:10–31`).
+4. **Per-field review dates are present in the PDF appendix.** The report expressly claims this (`docs/reports/STAGE-5C-REPORT.md:16`), but references retain only number, filename, page and quote (`tender/services/published_pdf.py:130–150`), and the appendix prints only those properties (`tender/services/published_pdf.py:187–194`). Field-body text prints reviewer role but not review date (`tender/services/published_pdf.py:154–161`).
+5. **Usage is recorded for every API-key call.** The report claims this at `docs/reports/STAGE-5C-REPORT.md:23`. Policy refusals return before metering (`api/middleware/auth.py:119–120,126–131`); the test explicitly confirms refused approval calls are not metered (`tests/api/test_access_policy.py:125–140`).
+6. **The `api_client` model operation is available with the `model` scope.** The role-matrix description presents `POST /tenders/{id}/model` as reachable functionality (`docs/reports/STAGE-5C-REPORT.md:23`), although the report elsewhere correctly calls it future Stage 5D work. No model endpoint is added here; Product B removes all POST routes (`api/main.py:106–125`). The access-policy test merely asserts “not 403,” which also accepts a missing route (`tests/api/test_access_policy.py:144–153`).
+7. **Suspension means the published output contains no values.** The report describes suspension as returning “no values” (`docs/reports/STAGE-5C-REPORT.md:24`). The PDF route nevertheless passes the full changelog into rendering (`api/v1/tenders/published.py:82–84`), and the renderer prints historical before/after values regardless of suspension (`tender/services/published_pdf.py:163–184`). The suspension PDF test passes `None` instead of the route’s actual changelog argument (`tests/tender/test_published_pdf.py:38–48`).
+8. **The infrastructure test checks that the public-header step is written.** The independent-review section says the header fix is backed by the runbook check (`docs/reports/STAGE-5C-REPORT.md:58,69`; the corresponding gap makes the test attribution explicit). The test checks only a list of broad command substrings and never checks `X-Public-Request` or `--custom-request-header` (`tests/infra/test_cloudrun.py:66–93`).
+9. **The suite’s prior runs, image builds and hook are certified operational facts.** The independent-review section asserts certification by the hook and delivery message (`docs/reports/STAGE-5C-REPORT.md:71`), but neither execution evidence nor that delivery message is among the inputs. The embedded earlier review is another assertion, not independent execution evidence.

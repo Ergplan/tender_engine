@@ -1,4 +1,4 @@
-"""Review tokens on the API: who the caller is and what they may reach.
+"""Review tokens on the API: the reviewer behind a link and what the link may reach.
 
 A request that carries a review token (the X-Review-Token header, or the review_token
 cookie for images and the PDF the browser fetches itself) is that token's reviewer and is
@@ -6,23 +6,18 @@ limited to that token's tender: the routes the reviewer screen needs, and nothin
 An expired, revoked or unknown token is refused with a plain message. A completed review
 can be read and no longer changed.
 
-A request that came in through the public proxy (Caddy marks it with X-Public-Request)
-and carries no token is refused, whatever it asks for, except the health probe. Requests
-made inside the deployment (the management commands, the tests) carry neither and are
-not limited. There is no other identity mechanism in phase 1.
+Since Stage 5C the middleware that runs this is api.middleware.auth, which also knows
+signed-in users, API keys and the admin token; this module keeps the token's own rules.
 """
 
 import re
 import secrets
-from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
+from typing import Any
 
-from fastapi import FastAPI, Request
-from fastapi.concurrency import run_in_threadpool
-from fastapi.responses import Response
+from fastapi import Request
 from sqlalchemy import select
 
-from api.middleware.errors import AppError
 from tender.models import TenderVersion, TenderVersionDocument
 from tender.services.tokens import TokenError, TokenService
 
@@ -71,39 +66,10 @@ class ReviewContext:
     completed: bool
 
 
-def install(app: FastAPI) -> None:
-    @app.middleware("http")
-    async def review_token(
-        request: Request, call_next: Callable[[Request], Awaitable[Response]]
-    ) -> Response:
-        request.state.review = None
-        request.state.review_identity = None
-        path = request.url.path
-        if not path.startswith(API + "/"):
-            return await call_next(request)
-        if path.startswith(ADMIN):
-            # The reliability dashboard: no login in phase 1, an admin token in the header
-            # (settings.admin_token; empty means the routes are closed). A review link
-            # never admits here.
-            expected = request.app.state.settings.admin_token
-            given = request.headers.get(ADMIN_HEADER, "")
-            if not expected or not given or not secrets.compare_digest(given, expected):
-                return _refuse(request, "admin_token_required")
-            return await call_next(request)
-        token = request.headers.get(TOKEN_HEADER) or request.cookies.get(TOKEN_COOKIE)
-        public = PUBLIC_HEADER in request.headers
-        if not token:
-            if public and path != f"{API}/health":
-                return _refuse(request, "review_link_required")
-            return await call_next(request)
-        refusal = await run_in_threadpool(_admit, request, token)
-        if refusal is not None:
-            return _refuse(request, refusal)
-        return await call_next(request)
-
-
-def _refuse(request: Request, error_type: str) -> Response:
-    return AppError(error_type).response(getattr(request.state, "request_id", ""))
+def admin_token_matches(settings: Any, given: str) -> bool:
+    """The admin token header (settings.admin_token; empty means it opens nothing)."""
+    expected = settings.admin_token
+    return bool(expected and given and secrets.compare_digest(given, expected))
 
 
 def _admit(request: Request, token: str) -> str | None:

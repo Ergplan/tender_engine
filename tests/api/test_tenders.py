@@ -343,11 +343,10 @@ def test_the_api_writes_the_field_definitions_at_start_up(pipeline: Pipeline, db
 def test_another_tenants_tender_is_invisible(
     client: TestClient, pipeline: Pipeline, db: Session
 ) -> None:
-    from core.models import Tenant
+    from tests.conftest import add_tenant
 
     tender = create(client)
-    db.add(Tenant(tenant_id="other", name="Other", created_by="pytest"))
-    db.commit()
+    add_tenant(pipeline.settings, "other")
     other = TestClient(
         create_app(
             pipeline.settings.model_copy(update={"tenant_id": "other"}),

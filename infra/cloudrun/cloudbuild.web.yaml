@@ -1,0 +1,8 @@
+# Cloud Build: the front end as a static bundle behind nginx.
+#   gcloud builds submit . --substitutions _IMAGE=<image> --config infra/cloudrun/cloudbuild.web.yaml
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args: ["build", "-f", "infra/docker/Dockerfile.web.prod", "-t", "${_IMAGE}", "."]
+images: ["${_IMAGE}"]
+substitutions:
+  _IMAGE: asia-south2-docker.pkg.dev/tender-intelligence-510607/tender-engine/web:latest

@@ -33,7 +33,7 @@ ACTOR = "agent_pass_command"
 def _service(
     settings: Settings,
 ) -> tuple[AgentPassService, TenderService, sessionmaker[Session]]:
-    session_factory = make_session_factory(make_engine(settings))
+    session_factory = make_session_factory(make_engine(settings), settings.tenant_id)
     schemas, catalog = build_registry()
     storage = make_storage(settings)
     llm = LLMClient(settings, session_factory, prompt_roots=catalog.prompt_roots)

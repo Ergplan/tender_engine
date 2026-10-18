@@ -26,7 +26,7 @@ def main(argv: list[str]) -> int:
     args = parser.parse_args(argv[1:])
     settings = Settings()
     catalog = load_catalog()
-    with make_session_factory(make_engine(settings))() as session:
+    with make_session_factory(make_engine(settings), settings.tenant_id)() as session:
         tender = session.scalar(
             select(Tender).where(
                 (Tender.slug == args.tender) | (Tender.id == args.tender),

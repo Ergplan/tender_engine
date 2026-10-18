@@ -12,9 +12,24 @@ function respond(status: number, body: unknown) {
 afterEach(() => vi.unstubAllGlobals());
 
 describe("App", () => {
-  it("asks for the review link when the address is not one", () => {
+  it("asks for a sign-in when the address is not a review link and nobody is signed in", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(respond(401, { error_type: "login_required", message: "Sign in." })));
     render(<App path="/" />);
-    expect(screen.getByRole("alert")).toHaveTextContent("Open the review link you were sent");
+    expect(await screen.findByRole("button", { name: "Sign in with Google" })).toBeInTheDocument();
+  });
+
+  it("routes a signed-in user to the library, a tender and the admin page", async () => {
+    const me = { kind: "user", name: "Asha", role: "admin", tenant_id: "ergplan" };
+    vi.stubGlobal(
+      "fetch",
+      vi.fn((url: string) =>
+        Promise.resolve(url === "/api/v1/auth/me" ? respond(200, me) : respond(200, [])),
+      ),
+    );
+    render(<App path="/tenders" />);
+    expect(await screen.findByRole("heading", { level: 1, name: "Tenders" })).toBeInTheDocument();
+    render(<App path="/admin" />);
+    expect(await screen.findByRole("heading", { level: 1, name: "Admin" })).toBeInTheDocument();
   });
 
   it("sends the token with every call and keeps it for the files the browser fetches", async () => {

@@ -17,7 +17,7 @@ from core.llm.smoke import SmokeResult
 def main(argv: list[str]) -> int:
     settings = Settings()
     engine = make_engine(settings)
-    client = LLMClient(settings, make_session_factory(engine))
+    client = LLMClient(settings, make_session_factory(engine, settings.tenant_id))
     content: list[TextPart | PdfPart] = []
     if len(argv) > 1:
         pdf = Path(argv[1])
