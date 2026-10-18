@@ -1,0 +1,69 @@
+reviewer: gpt-6.1-sol  input chars: 211962  tokens in/out: 60168/2086
+
+## (a) Non-negotiable invariants
+
+Assessment is limited to the supplied changes; unchanged safeguards cannot be certified.
+
+| Invariant | Assessment and evidence |
+|---|---|
+| **The LLM never writes truth** | Upheld by the changed paths: comparison reads candidates and findings, without adding a canonical writer (`evals/threeway.py:126–171, 277–284`). Review emphasis changes a response property only (`tender/services/review.py:205`). |
+| **Every value carries its evidence** | No candidate validation or canonical evidence safeguard is changed. Comparison retains the existing scorer’s evidence results (`evals/threeway.py:251–258`); it does not approve values. The underlying safeguards are outside the diff. |
+| **The tender is a versioned object** | Agent selection requires the gold record’s reviewed version (`evals/threeway.py:134–140`); gold-mode scheduling uses that version (`scripts/agent_pass.py:85–86`). No in-place tender-version edit is added. |
+| **Candidates are immutable** | Candidates are read for scoring (`evals/threeway.py:283–284`), not mutated. The review-service change assigns only presentation emphasis (`tender/services/review.py:205`). |
+| **Validation is deterministic** | Classification and emphasis use Python comparisons and scorer functions, with no model invocation (`evals/threeway.py:182–217, 297–318`). Existing candidate validators are outside the diff. |
+| **Everything is audited and tenant-scoped** | New production ORM queries filter by tenant (`evals/threeway.py:134–153`; `scripts/agent_pass.py:48–50, 62–67`). Gold/result access is tenant-keyed (`evals/threeway.py:495–496, 531, 542`). No new table or explicit protected-table write is shown. Audit behavior inside unchanged services cannot be certified. |
+| **Feedback is stored, never auto-applied** | No feedback reader or automatic prompt/model modification is added. Comparison output affects review emphasis only (`evals/threeway.py:510–517`; `tender/services/review.py:205`). |
+| **API first** | Comparison execution and retrieval have versioned API routes (`api/v1/admin/threeway.py:33–71`; `api/main.py:32`). Review emphasis is supplied through the existing review endpoint (`api/v1/tenders/review.py:127–131`). |
+
+FINDINGS: none
+
+## (b) Tests for added API endpoints
+
+| Endpoint | Test |
+|---|---|
+| `POST /api/v1/admin/threeway` (`api/v1/admin/threeway.py:33`) | `test_the_three_way_comparison_is_an_api_operation`, `tests/api/test_admin.py:254–294`: execution, artifact creation, filtering and missing-pass exclusion. |
+| `GET /api/v1/admin/threeway` (`api/v1/admin/threeway.py:58`) | Same test, `tests/api/test_admin.py:267–269, 289–291`: unauthenticated refusal, no-result response and latest-summary retrieval. |
+
+The modified review endpoint’s emphasis integration is tested at `tests/tender/test_review_emphasis.py:65–74`.
+
+FINDINGS: none
+
+## (c) Audit coverage of writes
+
+No explicit new production write to `candidate`, `approval`, `canonical_fact`, `tender_version` or `feedback` appears in the diff.
+
+- Candidate access is read-only (`evals/threeway.py:283–284`).
+- Comparison persistence writes report, emphasis and results files, not these tables (`evals/threeway.py:535–551`).
+- Review changes assign a response property (`tender/services/review.py:205`).
+- Agent scheduling delegates to unchanged `AgentPassService.start` (`scripts/agent_pass.py:102`). Its internal writes and audit calls are not supplied.
+- Tests invoke existing extraction, approval and versioning services; their internal write/audit implementations are outside the diff.
+
+FINDINGS: none
+
+## (d) `make trace` reproducibility
+
+Cannot determine. `trace` already exists in the Makefile’s target declarations, so this is not “not applicable.” Neither its implementation nor execution output demonstrating unchanged regeneration is supplied.
+
+FINDINGS: 1
+1. `Makefile:6` — The supplied inputs do not establish that `make trace` regenerates `docs/FIELD-TRACE.md` without a diff.
+
+## (e) Draft stage-report claims unsupported by the diff
+
+The checked-in comparison report and breakdown support the stated aggregate comparison figures. The cost artifact supports the listed per-pass costs, turn counts and provider totals, but not every associated operational claim.
+
+FINDINGS: 8
+1. `docs/reports/STAGE-5B-REPORT.md:28` — The claimed gold-mode test that “skips a tender that has one” is absent. `tests/scripts/test_agent_pass.py:48–60` invokes gold mode once on an unqueued tender; skipping is tested only in single-tender mode.
+
+2. `docs/reports/STAGE-5B-REPORT.md:31` — A green full suite, nine successful checks and pre-commit certification are not demonstrated by supplied execution output, watcher status or hook records.
+
+3. `docs/reports/STAGE-5B-REPORT.md:35` — Successful deployment, rebuilt images, restarted services, health status, watcher shutdown, three-container scaling and execution timings are not established by the supplied artifacts.
+
+4. `docs/reports/STAGE-5B-REPORT.md:23, 51–67` — Actual queueing through `make agent-pass`, execution by the stated containers, all eleven runs being `done`, no unsubmitted/rejected findings, document/page counts, token counts and the parallel-tool-call explanation lack supporting run records. `stage-5b-artifacts/costs.txt:12–24` supports costs and turns only.
+
+5. `docs/reports/STAGE-5B-REPORT.md:5, 69` — The assertion that the 197 text/record/list errors are independently phrased readings, and that their gold values are the engine’s wording approved by the owner, is not established. The breakdown supplies value types and outcomes, not semantic-equivalence judgments or approval provenance.
+
+6. `docs/reports/STAGE-5B-REPORT.md:47` — The statement that all twelve earlier report findings were corrected is unsupported: the gold-mode skipping test claim remains at line 28. The statement that cost figures “carry their query” is also unsupported; `stage-5b-artifacts/costs.txt:1–26` contains result tables, not a query.
+
+7. `docs/reports/STAGE-5B-REPORT.md:85` — The Stage 5A test-pass cost, fixture exclusion, external Stage 3 expenditure and approximately USD 455 cumulative total lack supporting records. The supplied cost tables establish database totals but not those qualifications or additions.
+
+8. `docs/reports/STAGE-5B-REPORT.md:22` — “`make threeway` is the shell equivalent” is not supported when `RESULTS_ROOT` is configured. The API passes that setting into `write_threeway` (`api/v1/admin/threeway.py:45–53`), but the CLI omits `results_root` (`evals/threeway.py:570–573`), writing to the default location instead of the location the review API reads.

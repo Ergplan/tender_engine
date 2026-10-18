@@ -43,6 +43,7 @@ export function fieldOf(change: AmendmentChange): ReviewField {
     decided: change.decided,
     flagged: change.flagged,
     in_scope: true,
+    emphasis: "full",
   };
 }
 

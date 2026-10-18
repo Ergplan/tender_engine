@@ -250,6 +250,15 @@ export function FieldCard({
           {field.help_text && <span className="ml-1 cursor-help text-slate-400">ⓘ</span>}
         </div>
         <div className="flex shrink-0 items-center gap-1">
+          {field.emphasis === "low" && (
+            <span
+              data-testid="low-review"
+              className="cursor-help rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[11px] font-medium text-slate-500"
+              title="Low-review: reviewer, engine and agent agreed on at least 97% of at least 15 gold instances of this field. Still yours to decide."
+            >
+              low-review
+            </span>
+          )}
           {tag && (
             <span data-testid="version-tag" className="rounded bg-violet-100 px-1.5 py-0.5 text-[11px] font-medium text-violet-800">
               {tag}

@@ -1,4 +1,5 @@
 import re
+from pathlib import Path
 from typing import Annotated
 
 from fastapi import APIRouter, Header
@@ -27,6 +28,7 @@ from api.v1.schemas.tenders import (
     SnapshotOut,
 )
 from core.models import Document
+from evals.threeway import low_review_fields
 from tender.models import ReviewToken, TenderVersion, TenderVersionDocument
 from tender.services import review as reviews
 from tender.services.amendments import TenderAmendments, tender_amendments
@@ -104,6 +106,7 @@ def get_tender_review(
     deriver: DerivedWriterDep,
     review_link: ReviewDep,
     tenant_id: TenantDep,
+    settings: SettingsDep,
 ) -> TenderReview:
     """The tender as the reviewer sees it: every field once, with what each version says
     about it and the entry to decide (the latest version that states the field). Through
@@ -121,6 +124,11 @@ def get_tender_review(
         tender,
         round_no=token.round_no if token else None,
         from_version=token.from_version if token else None,
+        # Stage 5B's production confidence rule: the fields the three-way comparison found
+        # reviewer, engine and agent agreeing on are shown with low-review emphasis.
+        low_review=low_review_fields(
+            tenant_id, Path(settings.results_root) if settings.results_root else None
+        ),
     )
     state = writer.state(session, tender, review)
     review.summary = state.model_dump()

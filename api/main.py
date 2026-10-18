@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from sqlalchemy.exc import SQLAlchemyError
 
 from api.middleware import audit, errors, review_token
-from api.v1.admin import freshness, reliability
+from api.v1.admin import freshness, reliability, threeway
 from api.v1.core import documents, extraction, health, review
 from api.v1.tenders import agent_pass, tenders
 from api.v1.tenders import review as tender_review
@@ -29,6 +29,7 @@ V1_ROUTERS = (
     agent_pass.router,
     reliability.router,
     freshness.router,
+    threeway.router,
 )
 
 

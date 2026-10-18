@@ -1,0 +1,1072 @@
+{
+  "tenant_id": "ergplan",
+  "made_at": "2026-10-18T09:10:46+00:00",
+  "rule": {
+    "agreement_min": 0.97,
+    "instances_min": 15
+  },
+  "fields": [
+    {
+      "field_path": "core.commercial.change_in_law_clause",
+      "instances": 4,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "core.commercial.late_payment_surcharge",
+      "instances": 11,
+      "agreement": 0.4545,
+      "low_review": false
+    },
+    {
+      "field_path": "core.commercial.offtaker",
+      "instances": 11,
+      "agreement": 0.0909,
+      "low_review": false
+    },
+    {
+      "field_path": "core.commercial.payment_security_mechanism",
+      "instances": 2,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "core.commercial.payment_security_structured",
+      "instances": 11,
+      "agreement": 0.4545,
+      "low_review": false
+    },
+    {
+      "field_path": "core.commercial.termination_compensation",
+      "instances": 4,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "core.documents.annexure_formats",
+      "instances": 11,
+      "agreement": 0.0909,
+      "low_review": false
+    },
+    {
+      "field_path": "core.documents.draft_agreements_referenced",
+      "instances": 11,
+      "agreement": 0.0,
+      "low_review": false
+    },
+    {
+      "field_path": "core.documents.required_documents",
+      "instances": 11,
+      "agreement": 0.0,
+      "low_review": false
+    },
+    {
+      "field_path": "core.eligibility.consortium_allowed",
+      "instances": 11,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "core.eligibility.ebitda_basis",
+      "instances": 1,
+      "agreement": 0.0,
+      "low_review": false
+    },
+    {
+      "field_path": "core.eligibility.ebitda_requirement_inr",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "core.eligibility.experience_period_end_date",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "core.eligibility.liquidity_basis",
+      "instances": 11,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "core.eligibility.liquidity_requirement_inr",
+      "instances": 11,
+      "agreement": 0.3636,
+      "low_review": false
+    },
+    {
+      "field_path": "core.eligibility.max_consortium_members",
+      "instances": 11,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "core.eligibility.min_continuous_operation_years",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "core.eligibility.min_single_station_mw",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "core.eligibility.parent_affiliate_credentials_allowed",
+      "instances": 11,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "core.eligibility.shareholding_lock_in",
+      "instances": 3,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "core.eligibility.technical_experience_requirement",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "core.eligibility.turnover_basis",
+      "instances": 11,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "core.eligibility.turnover_requirement_inr",
+      "instances": 11,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "core.guarantees.bg_release_conditions",
+      "instances": 2,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "core.guarantees.bg_validity_months",
+      "instances": 11,
+      "agreement": 0.8182,
+      "low_review": false
+    },
+    {
+      "field_path": "core.guarantees.bid_security_instruments",
+      "instances": 1,
+      "agreement": 0.0,
+      "low_review": false
+    },
+    {
+      "field_path": "core.guarantees.emd_form",
+      "instances": 11,
+      "agreement": 0.9091,
+      "low_review": false
+    },
+    {
+      "field_path": "core.guarantees.emd_formula",
+      "instances": 5,
+      "agreement": 0.8,
+      "low_review": false
+    },
+    {
+      "field_path": "core.guarantees.emd_per_mw_inr",
+      "instances": 11,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "core.guarantees.emd_structured",
+      "instances": 11,
+      "agreement": 0.7273,
+      "low_review": false
+    },
+    {
+      "field_path": "core.guarantees.pbg_formula",
+      "instances": 6,
+      "agreement": 0.6667,
+      "low_review": false
+    },
+    {
+      "field_path": "core.guarantees.pbg_instruments",
+      "instances": 1,
+      "agreement": 0.0,
+      "low_review": false
+    },
+    {
+      "field_path": "core.guarantees.pbg_per_mw_inr",
+      "instances": 11,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "core.guarantees.pbg_schedule",
+      "instances": 2,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "core.guarantees.pbg_structured",
+      "instances": 11,
+      "agreement": 0.5455,
+      "low_review": false
+    },
+    {
+      "field_path": "core.guarantees.processing_fee_inr",
+      "instances": 11,
+      "agreement": 0.6364,
+      "low_review": false
+    },
+    {
+      "field_path": "core.guarantees.success_charge_inr",
+      "instances": 11,
+      "agreement": 0.9091,
+      "low_review": false
+    },
+    {
+      "field_path": "core.identity.issuing_agency",
+      "instances": 11,
+      "agreement": 0.8182,
+      "low_review": false
+    },
+    {
+      "field_path": "core.identity.portal",
+      "instances": 11,
+      "agreement": 0.3636,
+      "low_review": false
+    },
+    {
+      "field_path": "core.identity.procurement_mode",
+      "instances": 11,
+      "agreement": 0.5455,
+      "low_review": false
+    },
+    {
+      "field_path": "core.identity.tender_number",
+      "instances": 11,
+      "agreement": 0.9091,
+      "low_review": false
+    },
+    {
+      "field_path": "core.identity.tender_type_as_stated",
+      "instances": 11,
+      "agreement": 0.0909,
+      "low_review": false
+    },
+    {
+      "field_path": "core.identity.title",
+      "instances": 11,
+      "agreement": 0.6364,
+      "low_review": false
+    },
+    {
+      "field_path": "core.key_dates.bid_submission_deadline",
+      "instances": 11,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "core.key_dates.bid_validity",
+      "instances": 11,
+      "agreement": 0.9091,
+      "low_review": false
+    },
+    {
+      "field_path": "core.key_dates.bid_validity_unit",
+      "instances": 11,
+      "agreement": 0.9091,
+      "low_review": false
+    },
+    {
+      "field_path": "core.key_dates.era_date",
+      "instances": 11,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "core.key_dates.loa_timeline",
+      "instances": 11,
+      "agreement": 0.1818,
+      "low_review": false
+    },
+    {
+      "field_path": "core.key_dates.nit_date",
+      "instances": 11,
+      "agreement": 0.9091,
+      "low_review": false
+    },
+    {
+      "field_path": "core.key_dates.pre_bid_meeting_date",
+      "instances": 11,
+      "agreement": 0.8182,
+      "low_review": false
+    },
+    {
+      "field_path": "core.key_dates.query_deadline",
+      "instances": 11,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "core.key_dates.technical_opening_date",
+      "instances": 11,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "core.penalties.delay_ld_per_mw_per_day_inr",
+      "instances": 11,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "core.penalties.delay_ld_structured",
+      "instances": 11,
+      "agreement": 0.8182,
+      "low_review": false
+    },
+    {
+      "field_path": "core.penalties.max_scod_extension_months",
+      "instances": 11,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "core.penalties.pbg_encashment_triggers",
+      "instances": 2,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "core.penalties.shortfall_penalty_basis",
+      "instances": 2,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "core.penalties.shortfall_rules",
+      "instances": 11,
+      "agreement": 0.3636,
+      "low_review": false
+    },
+    {
+      "field_path": "core.penalties.termination_delay_months",
+      "instances": 11,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.bess.augmentation_obligation",
+      "instances": 1,
+      "agreement": 0.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.bess.availability_floor_percent",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.bess.capacity_charge_inr_lakh_per_mw_month",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.bess.capacity_mw",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.bess.capacity_mwh",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.bess.cycles_per_day",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.bess.degradation_and_augmentation_structured",
+      "instances": 1,
+      "agreement": 0.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.bess.degradation_obligation",
+      "instances": 1,
+      "agreement": 0.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.bess.dispatch_control",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.bess.end_of_life_terms",
+      "instances": 1,
+      "agreement": 0.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.bess.round_trip_efficiency_guarantee_percent",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.bess.soc_constraints",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.bess.soc_constraints_structured",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.bess.vgf_inr",
+      "instances": 1,
+      "agreement": 0.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.bess.warranty_years",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.common.almm_required",
+      "instances": 11,
+      "agreement": 0.8182,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.common.bess_charging_rule",
+      "instances": 10,
+      "agreement": 0.7,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.common.clearances_responsibility",
+      "instances": 11,
+      "agreement": 0.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.common.connectivity_responsibility",
+      "instances": 11,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.common.dcr_required",
+      "instances": 11,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.common.deemed_generation_clause",
+      "instances": 3,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.common.deemed_generation_structured",
+      "instances": 11,
+      "agreement": 0.6364,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.common.delivery_point",
+      "instances": 11,
+      "agreement": 0.0909,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.common.financial_closure_months",
+      "instances": 11,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.common.financial_closure_reference",
+      "instances": 11,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.common.gna_requirement",
+      "instances": 3,
+      "agreement": 0.6667,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.common.ists_waiver_cutoff_date",
+      "instances": 11,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.common.land_responsibility",
+      "instances": 11,
+      "agreement": 0.0909,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.common.line_to_pooling_station_responsibility",
+      "instances": 11,
+      "agreement": 0.0909,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.common.local_content_rule",
+      "instances": 7,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.common.location_constraint",
+      "instances": 11,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.common.max_bid_mw",
+      "instances": 11,
+      "agreement": 0.9091,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.common.max_projects_per_bidder",
+      "instances": 11,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.common.metering_point",
+      "instances": 11,
+      "agreement": 0.1818,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.common.min_bid_mw",
+      "instances": 11,
+      "agreement": 0.9091,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.common.min_commissioned_mw",
+      "instances": 11,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.common.named_states_or_sites",
+      "instances": 11,
+      "agreement": 0.6364,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.common.net_worth_per_mw_inr",
+      "instances": 11,
+      "agreement": 0.7273,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.common.ppa_signing_window_days",
+      "instances": 11,
+      "agreement": 0.4545,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.common.ppa_tenure_years",
+      "instances": 10,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.common.scod_months",
+      "instances": 11,
+      "agreement": 0.9091,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.common.scod_reference",
+      "instances": 11,
+      "agreement": 0.7273,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.common.source_mix_rules",
+      "instances": 8,
+      "agreement": 0.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.common.tariff_ceiling_inr_per_kwh",
+      "instances": 10,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.common.tariff_structure",
+      "instances": 11,
+      "agreement": 0.9091,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.common.total_capacity_mw",
+      "instances": 11,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.common.total_capacity_mwh",
+      "instances": 11,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.common.under_construction_counts",
+      "instances": 11,
+      "agreement": 0.6364,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.epc.boq_structure",
+      "instances": 1,
+      "agreement": 0.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.epc.defect_liability_months",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.epc.drawing_approval_cycle",
+      "instances": 1,
+      "agreement": 0.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.epc.ld_delay",
+      "instances": 1,
+      "agreement": 0.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.epc.ld_performance",
+      "instances": 1,
+      "agreement": 0.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.epc.ld_performance_structured",
+      "instances": 1,
+      "agreement": 0.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.epc.milestone_payment_structured",
+      "instances": 1,
+      "agreement": 0.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.epc.om_period_months",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.epc.performance_ratio_guarantee_percent",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.epc.price_schedule_structure",
+      "instances": 1,
+      "agreement": 0.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.epc.retention_percent",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.epc.scope_matrix",
+      "instances": 1,
+      "agreement": 0.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.epc.supply_service_split",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.epc.taxes_duties_treatment",
+      "instances": 1,
+      "agreement": 0.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.epc.warranty_terms",
+      "instances": 1,
+      "agreement": 0.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.fdre.assured_availability_percent",
+      "instances": 4,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.fdre.capacity_addition_flexibility",
+      "instances": 4,
+      "agreement": 0.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.fdre.component_disclosure_required",
+      "instances": 4,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.fdre.demand_profile_structured",
+      "instances": 4,
+      "agreement": 0.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.fdre.excess_energy_price_inr_per_kwh",
+      "instances": 4,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.fdre.excess_energy_structured",
+      "instances": 4,
+      "agreement": 0.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.fdre.peak_window_definition",
+      "instances": 4,
+      "agreement": 0.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.fdre.shortfall_compensation_multiple",
+      "instances": 4,
+      "agreement": 0.75,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.fdre.storage_mandatory",
+      "instances": 4,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.generation.availability_norm_percent",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.generation.capacity_charge_recovery_rule",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.generation.fuel_supply_arrangement",
+      "instances": 1,
+      "agreement": 0.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.generation.fuel_type",
+      "instances": 1,
+      "agreement": 0.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.generation.heat_rate_or_design_energy",
+      "instances": 1,
+      "agreement": 0.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.generation.tariff_two_part",
+      "instances": 1,
+      "agreement": 0.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.generation.water_clearance_responsibility",
+      "instances": 1,
+      "agreement": 0.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.hybrid.combined_cuf_floor_percent",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.hybrid.cuf_terms",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.hybrid.excess_energy_structured",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.hybrid.excess_generation_treatment",
+      "instances": 1,
+      "agreement": 0.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.hybrid.min_share_per_resource_percent",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.hybrid.oversizing_allowance_percent",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.hybrid.storage_metering_rule",
+      "instances": 1,
+      "agreement": 0.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.hybrid.storage_permitted",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.re_rtc.cuf_annual_min_pct",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.re_rtc.cuf_monthly_min_pct",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.re_rtc.cuf_peak_min_pct",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.re_rtc.greenshoe_capacity_mw",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.re_rtc.greenshoe_exercise_deadline",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.re_rtc.greenshoe_ppa_signing_days",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.re_rtc.greenshoe_ssd",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.re_rtc.greenshoe_tariff_basis",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.re_rtc.linked_capacity_obligation",
+      "instances": 1,
+      "agreement": 0.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.re_rtc.non_re_tariff_split",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.re_rtc.peak_window",
+      "instances": 1,
+      "agreement": 0.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.re_rtc.rec_obligation",
+      "instances": 1,
+      "agreement": 0.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.re_rtc.supply_start_date",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.re_rtc.traceable_green_min_pct",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.solar.almm_list_requirement",
+      "instances": 1,
+      "agreement": 0.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.solar.annual_degradation_cap_percent",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.solar.augmentation_rules",
+      "instances": 1,
+      "agreement": 0.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.solar.cuf_terms",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.solar.dcr_share_percent",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.solar.excess_energy_structured",
+      "instances": 1,
+      "agreement": 0.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.solar.land_type_restrictions",
+      "instances": 1,
+      "agreement": 0.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.solar.max_cuf_percent",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.solar.min_cuf_percent",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.solar.repowering_allowed",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.wind.cuf_terms",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.wind.excess_energy_structured",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.wind.hub_height_or_tech_restrictions",
+      "instances": 1,
+      "agreement": 0.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.wind.min_cuf_percent",
+      "instances": 1,
+      "agreement": 1.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.wind.resource_data_obligation",
+      "instances": 1,
+      "agreement": 0.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.wind.rlmm_requirement",
+      "instances": 1,
+      "agreement": 0.0,
+      "low_review": false
+    },
+    {
+      "field_path": "sector.power.wind.site_transmission_constraints",
+      "instances": 1,
+      "agreement": 0.0,
+      "low_review": false
+    }
+  ]
+}

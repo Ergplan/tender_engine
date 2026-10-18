@@ -1,0 +1,7 @@
+results file: 20261018T091046Z-threeway-ergplan.json rows: 1075
+by class: {'all_agree': 663, 'both_wrong_same_way': 9, 'engine_right_agent_wrong': 255, 'needs_judgement': 135, 'both_wrong_differently': 9, 'agent_right_engine_wrong': 2, 'both_abstained': 2}
+engine_right_agent_wrong by agent outcome: {'wrong_value': 210, 'extra': 28, 'missing': 17}
+  wrong_value by value_type: [('text', 114), ('record', 35), ('list_text', 32), ('record_list', 16), ('money_inr', 8), ('mw', 2), ('enum', 2), ('date', 1)]
+strict value types counted: 564 all_agree: 514
+all_agree agent_evidence_ok: {'True': 328, 'None': 271, 'False': 64}
+197 text/record/list wrong_value rows in engine_right_agent_wrong, by the reviewer's decision on the gold field (evals/gold): approved 196, edited 1

@@ -82,6 +82,7 @@ function field(base: Partial<ReviewField>, entries: (f: Partial<ReviewField>) =>
     decided: false,
     flagged: false,
     in_scope: true,
+    emphasis: "full",
     entries: built,
     current: built.length ? built.length - 1 : null,
     ...base,

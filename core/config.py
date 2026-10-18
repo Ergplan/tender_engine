@@ -55,6 +55,9 @@ class Settings(BaseSettings):
     agent_max_turns: int = 200
     agent_max_pages_per_read: int = 6
     agent_page_images: bool = True
+    # Where evaluation results are written and the review emphasis file is read from
+    # (`evals/results/review-emphasis-<tenant>.json`, Stage 5B). Empty: `evals/results`.
+    results_root: str = ""
     # Guards /api/v1/admin/* (the reliability dashboard). Empty: the routes are refused.
     admin_token: str = ""
 

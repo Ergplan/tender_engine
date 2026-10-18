@@ -1141,6 +1141,34 @@
         "title": "DocumentOut",
         "type": "object"
       },
+      "Emphasis": {
+        "properties": {
+          "agreement": {
+            "title": "Agreement",
+            "type": "number"
+          },
+          "field_path": {
+            "title": "Field Path",
+            "type": "string"
+          },
+          "instances": {
+            "title": "Instances",
+            "type": "integer"
+          },
+          "low_review": {
+            "title": "Low Review",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "field_path",
+          "instances",
+          "agreement",
+          "low_review"
+        ],
+        "title": "Emphasis",
+        "type": "object"
+      },
       "EvalOut": {
         "properties": {
           "queued": {
@@ -2377,6 +2405,15 @@
           "decided": {
             "title": "Decided",
             "type": "boolean"
+          },
+          "emphasis": {
+            "default": "full",
+            "enum": [
+              "full",
+              "low"
+            ],
+            "title": "Emphasis",
+            "type": "string"
           },
           "entries": {
             "items": {
@@ -4035,6 +4072,134 @@
         "title": "TenderView",
         "type": "object"
       },
+      "ThreeWayOut": {
+        "properties": {
+          "report": {
+            "title": "Report",
+            "type": "string"
+          },
+          "results_file": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Results File"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/ThreeWaySummary"
+          }
+        },
+        "required": [
+          "summary",
+          "report",
+          "results_file"
+        ],
+        "title": "ThreeWayOut",
+        "type": "object"
+      },
+      "ThreeWayRequest": {
+        "properties": {
+          "only": {
+            "description": "tender slugs; empty means all",
+            "items": {
+              "type": "string"
+            },
+            "title": "Only",
+            "type": "array"
+          }
+        },
+        "title": "ThreeWayRequest",
+        "type": "object"
+      },
+      "ThreeWaySummary": {
+        "properties": {
+          "by_agency": {
+            "additionalProperties": {
+              "additionalProperties": {
+                "type": "integer"
+              },
+              "type": "object"
+            },
+            "title": "By Agency",
+            "type": "object"
+          },
+          "by_class": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "By Class",
+            "type": "object"
+          },
+          "by_field": {
+            "additionalProperties": {
+              "additionalProperties": {
+                "type": "integer"
+              },
+              "type": "object"
+            },
+            "title": "By Field",
+            "type": "object"
+          },
+          "by_type": {
+            "additionalProperties": {
+              "additionalProperties": {
+                "type": "integer"
+              },
+              "type": "object"
+            },
+            "title": "By Type",
+            "type": "object"
+          },
+          "emphasis": {
+            "items": {
+              "$ref": "#/components/schemas/Emphasis"
+            },
+            "title": "Emphasis",
+            "type": "array"
+          },
+          "fields": {
+            "title": "Fields",
+            "type": "integer"
+          },
+          "made_at": {
+            "title": "Made At",
+            "type": "string"
+          },
+          "tenant_id": {
+            "title": "Tenant Id",
+            "type": "string"
+          },
+          "tenders": {
+            "title": "Tenders",
+            "type": "integer"
+          },
+          "tenders_without_agent_pass": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Tenders Without Agent Pass",
+            "type": "array"
+          }
+        },
+        "required": [
+          "tenant_id",
+          "made_at",
+          "tenders",
+          "tenders_without_agent_pass",
+          "fields",
+          "by_class",
+          "by_type",
+          "by_agency",
+          "by_field",
+          "emphasis"
+        ],
+        "title": "ThreeWaySummary",
+        "type": "object"
+      },
       "ValidationError": {
         "properties": {
           "ctx": {
@@ -4438,6 +4603,68 @@
           }
         },
         "summary": "Write Report Files",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/admin/threeway": {
+      "get": {
+        "description": "The latest comparison made for the tenant, from its results file.",
+        "operationId": "get_threeway_api_v1_admin_threeway_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ThreeWayOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Threeway",
+        "tags": [
+          "admin"
+        ]
+      },
+      "post": {
+        "description": "Compare reviewer, engine and agent on every gold field (the latest finished agent\npass at the reviewed version); write THREEWAY-REPORT.md, a results file and the review\nemphasis file. A gold tender without an agent pass is listed and left out.",
+        "operationId": "run_threeway_api_v1_admin_threeway_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ThreeWayRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ThreeWayOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Run Threeway",
         "tags": [
           "admin"
         ]

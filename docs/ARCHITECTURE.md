@@ -76,6 +76,9 @@ The layout in `CLAUDE.md` is authoritative. Additions made under operating rule 
 | `api/v1/admin/` | the reliability router, behind the admin token (`api/middleware/review_token.py`) | Stage 4 |
 | `web/src/admin/` | `ReliabilityPage` at `/admin/reliability` | Stage 4 |
 | `tests/evals/` | the runner's match rules, a gold record from a completed test review, the feedback report, the report on two fixture records | Stage 4 |
+| `evals/threeway.py` | the three-way comparison: per gold field the reviewer's value, the engine's reading in review and the agent's standing finding, one of six agreement classes each; `docs/reports/THREEWAY-REPORT.md`, `evals/results/<stamp>-threeway-<tenant>.json`, `evals/results/review-emphasis-<tenant>.json` (the production confidence rule) | Stage 5B |
+| `scripts/agent_pass.py` | `make agent-pass`: queue the agent pass over every gold tender at its reviewed version (`--gold`), or one tender (`--tender`, `--version`); a tender with a pass at that version is skipped unless `--again` | Stage 5B |
+| `tests/evals/test_threeway.py` | the six classes on fixture readings, the emphasis rule at and below its thresholds, the report on fixture rows, tenders without a pass left out | Stage 5B |
 | `agent/` | named in the layout, built in Stage 5A: `models.py` (`agent_run`, `agent_finding`), `inputs.py` (what the agent is given: documents with the pages the section map names, the fields), `harness.py` (the three tools, the judge of a finding, the SDK driver), `service.py` (start, run, read back), `main.py` (the container's poll loop) | 5A |
 | `core/llm/agent_calls.py`, `core/llm/prompts/agent_pass/` | the OpenAI model behind the agent, wrapped so every turn writes an `llm_call_log` row; the agent's instructions as a registered prompt version | 5A |
 | `tests/agent/` | the harness, the inputs, the service and the container's poll loop, driven by a scripted driver instead of a model | 5A |
@@ -160,6 +163,7 @@ Native PDF pages cost about 2,800 input tokens each, and in Stage 2 every field 
 | `api/v1/admin/reliability.py` | `GET /api/v1/admin/reliability` (every gold record scored against the candidates in review, the reviewed tenders with their time, the stability bar, the prompt versions tried), `POST /api/v1/admin/gold` (a completed review becomes a gold record; the reports are written again), `POST /api/v1/admin/evals` (score the gold records and write a results file; with `prompt: section/vN` queue a reading of that section on every gold tender and return the run ids; with `run_ids` score those readings only), `GET /api/v1/admin/feedback` (corrections of standing decisions, grouped, with the rendered report). All refused without `X-Admin-Token` equal to `ADMIN_TOKEN`, and always when that setting is empty; a review link does not open them. The management commands (`make gold`, `eval`, `feedback-report`, `report`) do the same work from the shell | 4 |
 | `api/v1/admin/freshness.py` | `GET /api/v1/admin/freshness` (the last `source_freshness` check of every tender: the page reached or not, files listed, held, new, changed, unchanged, unreadable, no longer listed), `POST /api/v1/admin/freshness` (queue one check now, `repeat: false`, so the weekly schedule is untouched). Same admin token. `make freshness` runs the check in the shell and writes `docs/reports/FRESHNESS-REPORT.md` | 2026-10-13 |
 | `api/v1/tenders/tenders.py` | `POST /api/v1/tenders`, `GET /api/v1/tenders`, `GET /api/v1/tenders/{id}`, `POST /api/v1/tenders/{id}/versions` (multipart: file, kind, issued_on, role, summary_of_change; with version_no the document joins an existing version), `GET /api/v1/tenders/{id}/versions`, `GET /api/v1/tenders/{id}/view`, `POST /api/v1/tenders/{id}/extract`, `POST /api/v1/tenders/{id}/summarize`, `GET /api/v1/tenders/{id}/review-state` (core's review state for one version, plus the fields that version changes), `GET /api/v1/schemas/tender/{type}`, `GET /api/v1/reports/extraction-summary` | 2 |
+| `api/v1/admin/threeway.py` | `POST /api/v1/admin/threeway` (compare every gold tender three ways, write `THREEWAY-REPORT.md` and the review-emphasis file, return the summary), `GET /api/v1/admin/threeway` (the latest summary). Same admin token. `make threeway` does the same from the shell | 5B |
 | `api/v1/tenders/agent_pass.py` | `POST /api/v1/tenders/{id}/agent-pass` (queue a pass of the independent agent over a version, the current one by default; 202 with the run), `GET /api/v1/tenders/{id}/agent-pass` (the tender's runs), `GET /api/v1/tenders/{id}/agent-pass/{run_id}` (the run with its findings). Operator routes like `/extract`: reachable only from inside the deployment; a review token cannot reach them (not in `ALLOWED`) | 5A |
 
 Tenant resolution is the request dependency `api.deps.get_tenant_id`, which returns the configured single tenant in phase 1. Errors go through `api/middleware/errors.py`: a request id on every response and a typed error payload. The API never calls the model: it queues jobs and reads state.
@@ -375,6 +379,24 @@ A second model, from a different family than the extraction model, reads a tende
 
 The `openai-agents` package is the one SDK `agent/` uses; the only module that touches OpenAI is `core/llm/agent_calls.py` (operating rule 8).
 
+## Three-way comparison (Stage 5B)
+
+`evals/threeway.py` puts three readings of every gold field side by side: the reviewer's (the gold record, at the version it was reviewed), the engine's (the candidate in review for that field at that version, `evals.runner.candidates_in_review`, the same reading `make eval` scores) and the agent's (the standing finding — `accepted`, `not_found` or `withdrawn` — of the latest `done` or `stopped` agent pass over the tender **at the gold record's reviewed version**, so the agent read the documents the reviewer saw and no later ones). Engine and agent are each scored against the reviewer with the scorer's own rules (`evals.runner.score_field`: the same tolerances, the same coercion), so the comparison is fair to neither. A gold tender without a finished pass at that version is named in the summary and left out, never counted as abstentions.
+
+Each decided field falls into one of six classes:
+
+- `all_agree` — engine and agent both match the reviewer (a value, or an abstention where the reviewer marked the field absent).
+- `engine_right_agent_wrong`, `agent_right_engine_wrong` — one reading matches, the other does not.
+- `both_wrong_same_way` — both miss and their two values match each other (by the scorer's rules).
+- `both_wrong_differently` — both miss, each in its own way.
+- `both_abstained` — the reviewer found a value, neither model returned one.
+
+Long-text fields are `needs_judgement`, outside the six (the scorer leaves them to a human), and are counted apart.
+
+`THREEWAY-REPORT.md` (`make threeway`, `POST /api/v1/admin/threeway`; rewritten on every run) gives the counts by class, by tender type, by agency and by field, and four lists that say what each pattern asks for: *both wrong the same way* — the schema or the document (an ambiguous clause, a table against a clause, a definition that does not fit); *the models disagree* (one right, or both wrong apart) — the field earns a mandatory second reading in production before it is shown; *the agent caught what the engine missed* — the agent's path to the evidence (its search, the page it cited) is what to fold into that section's extract prompt, then `make eval PROMPT=<section>/vN`; *both abstained* — routing, a scanned page, or a clause in words the prompts do not expect.
+
+**The production confidence rule.** Per field, over every gold instance that is not `needs_judgement`, the share in `all_agree`. A field is "auto-surface with low-review" only when that share is at least `AGREEMENT_MIN` (0.97) over at least `INSTANCES_MIN` (15) instances; otherwise it stays full review. The rule and every field's figures are written to `evals/results/review-emphasis-<tenant>.json` and printed in the report. The reviewer screen reads the file (`ReviewField.emphasis`, `"full"` or `"low"`, from `settings.results_root`) and a `low` field gets a quiet badge on its card — its default look and nothing more. No auto-approval exists: the truth pipeline, the approval handler and the review counts are untouched by the emphasis.
+
 ## Independent review (operating rule 15, from Stage 1)
 
 Before each stage report, a reviewer from a different model family (OpenAI through `OPENAI_API_KEY`) runs in a fresh context. It receives only the stage diff (`git diff stage-N-start..HEAD`), `CLAUDE.md` and the stage prompt, and answers a fixed five-point checklist. Code defects are fixed and the reviewer is rerun until it reports no new code defect; findings that code cannot resolve are listed in the stage report with a one-line rationale and do not block the stage (rule 15 as amended on 2026-10-04). Stage starts are tagged `stage-N-start`.
@@ -473,3 +495,10 @@ One GCE VM (`instance-20261004-081207`, asia-south2-b), static IP `34.131.65.108
 - `POST /api/v1/tenders/{id}/agent-pass`, `GET /api/v1/tenders/{id}/agent-pass`, `GET /api/v1/tenders/{id}/agent-pass/{run_id}` (`api/v1/tenders/agent_pass.py`, `api/v1/schemas/agent.py`); generated client refreshed.
 - `jobs.claim_next` and `requeue_orphans` take `kinds`: the worker and the `agent` compose service each claim and re-queue only their own; `make deploy` restarts `agent` too. Settings `OPENAI_MODEL`, `OPENAI_PRICE_IN_PER_MTOK`, `OPENAI_PRICE_OUT_PER_MTOK`, `AGENT_MAX_TURNS`, `AGENT_MAX_PAGES_PER_READ`.
 - `docs/FIELD-TRACE.md` carries the producer `AGENT agent_pass v1 → agent_finding (never canonical)` on every field the agent is asked for; mypy and the watcher's scoped pytest cover `agent/`.
+
+**Stage 5B (2026-10-18)**
+
+- `evals/threeway.py`: the three-way comparison of every gold field (reviewer, engine, agent) into six agreement classes, `needs_judgement` apart; `docs/reports/THREEWAY-REPORT.md` with the counts by class, type, agency and field and the four error-pattern lists; `evals/results/<stamp>-threeway-<tenant>.json`.
+- The production confidence rule: `evals/results/review-emphasis-<tenant>.json` (agreement ≥ 97% over ≥ 15 gold instances); `ReviewField.emphasis` (`full` / `low`) on the review API and a quiet low-review badge on the field card. Inert today: no field has 15 instances.
+- `POST`/`GET /api/v1/admin/threeway` behind `ADMIN_TOKEN`; `make threeway`; `make agent-pass` (`scripts/agent_pass.py`: every gold tender at its reviewed version, or one tender).
+- The eleven agent passes over the gold tenders, run on the VM after the Stage 5A deploy. No migration, no new table.

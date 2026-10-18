@@ -214,6 +214,20 @@ describe("what the reviewer sees", () => {
     expect(within(card(PBG)).getAllByTestId("evidence-chip")[0]).toHaveTextContent("p. 3 ?");
   });
 
+  it("marks a low-review field with a badge and nothing else changes", async () => {
+    const review = makeReview();
+    const deadline = review.fields.find((f) => f.field_path === DEADLINE)!;
+    deadline.emphasis = "low";
+    await open(review);
+    const badge = within(card(DEADLINE)).getByTestId("low-review");
+    expect(badge).toHaveTextContent("low-review");
+    expect(badge).toHaveAttribute("title", expect.stringContaining("Still yours to decide"));
+    expect(within(card(EMD)).queryByTestId("low-review")).toBeNull();
+    // The same buttons as any other undecided field: no auto-approve, no changed default.
+    expect(within(card(DEADLINE)).getByRole("button", { name: /^Approve/ })).toBeEnabled();
+    expect(card(DEADLINE)).toHaveAttribute("data-decided", "no");
+  });
+
   it("does not offer Approve where there is no value or no located evidence", async () => {
     await open();
     expect(within(card(EMD)).getByTestId("approve")).toBeEnabled();

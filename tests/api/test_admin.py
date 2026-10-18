@@ -249,3 +249,46 @@ def test_gold_eval_and_feedback_are_api_operations(
     )
     assert results and all(r["tenant_id"] == pipeline.settings.tenant_id for r in results)
     assert client.post("/api/v1/admin/reports").status_code == 401
+
+
+def test_the_three_way_comparison_is_an_api_operation(
+    make_pipeline: Callable[..., Pipeline], eval_roots: Path
+) -> None:
+    """Stage 5B: POST runs the comparison and writes the report, the results file and the
+    review-emphasis file; GET reads the latest. A gold tender without an agent pass is
+    listed and left out."""
+    import evals.threeway
+
+    pipeline = make_pipeline(admin_token="s3cret-admin", results_root=str(eval_roots / "results"))
+    client = app_for(pipeline)
+    report = eval_roots / "THREEWAY-REPORT.md"
+    with pytest.MonkeyPatch.context() as patch:
+        patch.setattr(evals.threeway, "DEFAULT_OUT", report)
+        assert client.get("/api/v1/admin/threeway").status_code == 401
+        none_yet = client.get("/api/v1/admin/threeway", headers=ADMIN)
+        assert none_yet.status_code == 404 and none_yet.json()["error_type"] == "not_found"
+
+        empty = client.post("/api/v1/admin/threeway", json={}, headers=ADMIN)
+        assert empty.status_code == 201, empty.text
+        assert empty.json()["summary"]["tenders"] == 0 and empty.json()["summary"]["fields"] == 0
+        assert (
+            report.exists() and (eval_roots / "results" / "review-emphasis-ergplan.json").exists()
+        )
+
+        tender = extracted(client, pipeline)
+        completed_review(client, pipeline, tender)
+        made = client.post("/api/v1/admin/gold", json={"tender_id": tender["id"]}, headers=ADMIN)
+        assert made.status_code == 201, made.text
+        slug = made.json()["slug"]
+        without = client.post("/api/v1/admin/threeway", json={"only": [slug]}, headers=ADMIN)
+        assert without.status_code == 201, without.text
+        summary = without.json()["summary"]
+        assert summary["tenders_without_agent_pass"] == [slug] and summary["tenders"] == 0
+        assert summary["emphasis"] == [] and "without an agent pass" in report.read_text()
+
+        latest = client.get("/api/v1/admin/threeway", headers=ADMIN)
+        assert latest.status_code == 200 and latest.json()["summary"] == summary
+        assert Path(latest.json()["results_file"]).is_relative_to(eval_roots / "results")
+        # The emphasis the review API reads comes from the same root: no field qualifies.
+        review = client.get(f"/api/v1/tenders/{tender['id']}/review").json()
+        assert {f["emphasis"] for f in review["fields"]} == {"full"}

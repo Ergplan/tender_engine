@@ -11,7 +11,7 @@ canonical fact.
 """
 
 from datetime import UTC, date, datetime
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel
 from sqlalchemy import select
@@ -82,6 +82,10 @@ class ReviewField(BaseModel):
     # field). Out of scope, the field carries its earlier decision forward and is shown
     # with that provenance. Always true outside a round.
     in_scope: bool = True
+    # The screen's default emphasis (Stage 5B's production confidence rule): "low" only
+    # where reviewer, engine and agent agreed on at least 97% of at least 15 gold
+    # instances of the field; "full" otherwise. A hint to the eye, never a decision.
+    emphasis: Literal["full", "low"] = "full"
 
 
 class ReviewRound(BaseModel):
@@ -125,10 +129,13 @@ def tender_review(
     *,
     round_no: int | None = None,
     from_version: int | None = None,
+    low_review: frozenset[str] = frozenset(),
 ) -> TenderReview:
     """The tender as a reviewer sees it. With `from_version`, as a review round opened by
     that version: the fields a version from it on states (or a derived table reading one)
-    are in scope and counted; the rest carry their earlier decisions forward."""
+    are in scope and counted; the rest carry their earlier decisions forward. `low_review`
+    names the fields shown with low-review emphasis (the API reads them from the
+    three-way comparison's emphasis file)."""
     compiled = catalog.get(tender.tender_type)
     entries: dict[str, list[ReviewEntry]] = {field.path: [] for field in compiled.fields}
     versions: list[ReviewVersion] = []
@@ -195,6 +202,7 @@ def tender_review(
                 decided=approval is not None
                 and approval.decision in (*VALUE_DECISIONS, "not_in_document"),
                 flagged=approval is not None and approval.decision == "flagged",
+                emphasis="low" if field.path in low_review else "full",
             )
         )
     round_info: ReviewRound | None = None

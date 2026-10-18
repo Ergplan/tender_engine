@@ -3,7 +3,7 @@ COMPOSE := docker compose
 STATIC_IP := $(shell cat infra/STATIC-IP.txt)
 RUN_TESTS := $(COMPOSE) run --rm --no-deps -T tests
 
-.PHONY: up down test test-e2e test-ui check watch migrate deploy logs smoke client hooks evidence-corpus trace gold eval feedback-report report
+.PHONY: up down test test-e2e test-ui check watch migrate deploy logs smoke client hooks evidence-corpus trace gold eval feedback-report report threeway agent-pass freshness
 
 up: hooks ## start the app and the test watcher
 	$(COMPOSE) up -d --build
@@ -75,6 +75,12 @@ feedback-report: ## FEEDBACK-REPORT.md from the feedback table
 
 report: ## RELIABILITY-REPORT.md and REVIEW-LOG.md from the gold records
 	$(COMPOSE) exec -T api python -m evals.report
+
+threeway: ## THREEWAY-REPORT.md: reviewer, engine and agent per gold field, and the review-emphasis file (Stage 5B)
+	$(COMPOSE) exec -T api python -m evals.threeway
+
+agent-pass: ## queue the agent pass over every gold tender at its reviewed version, or one tender: make agent-pass TENDER=<slug>
+	$(COMPOSE) exec -T api python -m scripts.agent_pass $(if $(TENDER),--tender $(TENDER),--gold)
 
 freshness: ## read every tender's source page again and report new or changed files; nothing is ingested
 	$(COMPOSE) exec -T api python -m scripts.ingest_tenders freshness

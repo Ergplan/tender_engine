@@ -130,6 +130,32 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/threeway": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Threeway
+         * @description The latest comparison made for the tenant, from its results file.
+         */
+        get: operations["get_threeway_api_v1_admin_threeway_get"];
+        put?: never;
+        /**
+         * Run Threeway
+         * @description Compare reviewer, engine and agent on every gold field (the latest finished agent
+         *     pass at the reviewed version); write THREEWAY-REPORT.md, a results file and the review
+         *     emphasis file. A gold tender without an agent pass is listed and left out.
+         */
+        post: operations["run_threeway_api_v1_admin_threeway_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/approvals": {
         parameters: {
             query?: never;
@@ -1151,6 +1177,17 @@ export interface components {
             /** Status */
             status: string;
         };
+        /** Emphasis */
+        Emphasis: {
+            /** Agreement */
+            agreement: number;
+            /** Field Path */
+            field_path: string;
+            /** Instances */
+            instances: number;
+            /** Low Review */
+            low_review: boolean;
+        };
         /** EvalOut */
         EvalOut: {
             /** Queued */
@@ -1572,6 +1609,12 @@ export interface components {
             current: number | null;
             /** Decided */
             decided: boolean;
+            /**
+             * Emphasis
+             * @default full
+             * @enum {string}
+             */
+            emphasis: "full" | "low";
             /** Entries */
             entries: components["schemas"]["ReviewEntry"][];
             /** Enum Values */
@@ -2175,6 +2218,59 @@ export interface components {
             /** Total */
             total: number;
         };
+        /** ThreeWayOut */
+        ThreeWayOut: {
+            /** Report */
+            report: string;
+            /** Results File */
+            results_file: string | null;
+            summary: components["schemas"]["ThreeWaySummary"];
+        };
+        /** ThreeWayRequest */
+        ThreeWayRequest: {
+            /**
+             * Only
+             * @description tender slugs; empty means all
+             */
+            only?: string[];
+        };
+        /** ThreeWaySummary */
+        ThreeWaySummary: {
+            /** By Agency */
+            by_agency: {
+                [key: string]: {
+                    [key: string]: number;
+                };
+            };
+            /** By Class */
+            by_class: {
+                [key: string]: number;
+            };
+            /** By Field */
+            by_field: {
+                [key: string]: {
+                    [key: string]: number;
+                };
+            };
+            /** By Type */
+            by_type: {
+                [key: string]: {
+                    [key: string]: number;
+                };
+            };
+            /** Emphasis */
+            emphasis: components["schemas"]["Emphasis"][];
+            /** Fields */
+            fields: number;
+            /** Made At */
+            made_at: string;
+            /** Tenant Id */
+            tenant_id: string;
+            /** Tenders */
+            tenders: number;
+            /** Tenders Without Agent Pass */
+            tenders_without_agent_pass: string[];
+        };
         /** ValidationError */
         ValidationError: {
             /** Context */
@@ -2413,6 +2509,59 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ReportsOut"];
+                };
+            };
+        };
+    };
+    get_threeway_api_v1_admin_threeway_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ThreeWayOut"];
+                };
+            };
+        };
+    };
+    run_threeway_api_v1_admin_threeway_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ThreeWayRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ThreeWayOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

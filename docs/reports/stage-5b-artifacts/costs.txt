@@ -1,0 +1,72 @@
+Queries run on the app database on 2026-10-18 (psql -e: each statement is printed before its result).
+select case when model like 'gpt%' then 'openai' else 'anthropic' end as provider, count(*) as calls, round(sum(cost_usd),2) as usd, min(created_at)::date as first, max(created_at)::date as last from llm_call_log where not is_fixture group by 1 order by 1;
+ provider  | calls |  usd   |   first    |    last    
+-----------+-------+--------+------------+------------
+ anthropic |   976 | 421.28 | 2026-10-04 | 2026-10-15
+ openai    |   497 |   9.80 | 2026-10-18 | 2026-10-18
+(2 rows)
+
+select to_char(created_at,'YYYY-MM-DD') as day, model, round(sum(cost_usd),2) as usd, count(*) from llm_call_log where not is_fixture and created_at >= '2026-10-18' group by 1,2;
+    day     |    model    | usd  | count 
+------------+-------------+------+-------
+ 2026-10-18 | gpt-6.1-sol | 9.80 |   497
+(1 row)
+
+select t.slug, a.object_version as v, a.status, a.turns, a.tokens_in, a.tokens_cached, a.tokens_out, a.cost_usd, a.started_at, a.finished_at, jsonb_array_length(a.documents) as docs, (select sum(jsonb_array_length(v)) from jsonb_each(a.pages_offered) e(k,v)) as offered, (select sum(jsonb_array_length(v)) from jsonb_each(a.pages_read) e(k,v)) as read, coalesce(a.error,'') as error from agent_run a join tender t on t.id=a.object_id order by t.slug;
+             slug             | v | status | turns | tokens_in | tokens_cached | tokens_out | cost_usd |          started_at           |          finished_at          | docs | offered | read | error 
+------------------------------+---+--------+-------+-----------+---------------+------------+----------+-------------------------------+-------------------------------+------+---------+------+-------
+ nhpc-fdre-ii                 | 1 | done   |    23 |   1582979 |       1475895 |      19360 |   0.8303 | 2026-10-18 08:40:51.155477+00 | 2026-10-18 08:47:36.496986+00 |    1 |     224 |   97 | 
+ ntpc-hybrid-03               | 1 | done   |   125 |   5594579 |       5518817 |      15008 |   1.7192 | 2026-10-18 08:50:22.609137+00 | 2026-10-18 09:01:17.445126+00 |    1 |     119 |   64 | 
+ ntpc-phes-2000mw             | 1 | done   |    13 |    173030 |        155381 |       8096 |   0.1639 | 2026-10-18 08:47:36.519946+00 | 2026-10-18 08:50:22.594911+00 |    2 |       4 |    4 | 
+ ntpc-rel-600mw-anantapur-wtg | 1 | done   |   117 |   2710872 |       2672586 |      10937 |   0.8732 | 2026-10-18 09:00:28.194268+00 | 2026-10-18 09:09:08.895798+00 |    2 |      14 |   14 | 
+ seci-cfd-i                   | 4 | done   |    28 |   1570892 |       1473569 |      16836 |   0.7801 | 2026-10-18 08:40:51.340144+00 | 2026-10-18 08:47:18.185822+00 |    6 |     333 |  103 | 
+ seci-cni-1-700mw             | 2 | done   |    29 |   1711420 |       1611429 |      16670 |   0.8195 | 2026-10-18 08:54:43.335007+00 | 2026-10-18 09:00:28.180905+00 |    5 |     231 |  119 | 
+ seci-ess-iv                  | 1 | done   |    38 |   1799939 |       1711685 |      16346 |   0.8120 | 2026-10-18 08:31:47.400129+00 | 2026-10-18 08:38:56.818865+00 |    2 |     129 |   78 | 
+ seci-fdre-ix                 | 2 | done   |    33 |   2193371 |       2073477 |      20016 |   1.0183 | 2026-10-18 08:47:09.46254+00  | 2026-10-18 08:54:28.634326+00 |    5 |     240 |  119 | 
+ seci-fdre-rtc-v              | 5 | done   |    28 |   2134923 |       2010433 |      20440 |   1.0182 | 2026-10-18 08:47:18.205166+00 | 2026-10-18 08:54:43.323318+00 |    8 |     287 |  118 | 
+ seci-gaya-60mw               | 1 | done   |    36 |   2015699 |       1894805 |      19764 |   0.9736 | 2026-10-18 08:38:56.837275+00 | 2026-10-18 08:47:09.44364+00  |    3 |     469 |   97 | 
+ wbsedcl-re-rtc-2026-01       | 1 | done   |    27 |   1493689 |       1390998 |      18893 |   0.7934 | 2026-10-18 08:54:28.647464+00 | 2026-10-18 09:00:52.34805+00  |    2 |     159 |   93 | 
+(11 rows)
+
+select t.slug, f.status, count(*) from agent_finding f join agent_run a on a.id=f.agent_run_id join tender t on t.id=a.object_id group by 1,2 order by 1,2;
+             slug             |   status   | count 
+------------------------------+------------+-------
+ nhpc-fdre-ii                 | accepted   |    90
+ nhpc-fdre-ii                 | not_found  |    17
+ ntpc-hybrid-03               | accepted   |    83
+ ntpc-hybrid-03               | not_found  |    20
+ ntpc-hybrid-03               | superseded |     1
+ ntpc-phes-2000mw             | accepted   |    31
+ ntpc-phes-2000mw             | not_found  |    71
+ ntpc-rel-600mw-anantapur-wtg | accepted   |    33
+ ntpc-rel-600mw-anantapur-wtg | not_found  |    69
+ ntpc-rel-600mw-anantapur-wtg | superseded |     1
+ seci-cfd-i                   | accepted   |    88
+ seci-cfd-i                   | not_found  |    19
+ seci-cfd-i                   | superseded |     1
+ seci-cni-1-700mw             | accepted   |    83
+ seci-cni-1-700mw             | not_found  |    22
+ seci-ess-iv                  | accepted   |    82
+ seci-ess-iv                  | not_found  |    29
+ seci-ess-iv                  | superseded |     1
+ seci-fdre-ix                 | accepted   |    88
+ seci-fdre-ix                 | not_found  |    19
+ seci-fdre-ix                 | superseded |     3
+ seci-fdre-rtc-v              | accepted   |    87
+ seci-fdre-rtc-v              | not_found  |    16
+ seci-fdre-rtc-v              | superseded |     1
+ seci-fdre-rtc-v              | withdrawn  |     4
+ seci-gaya-60mw               | accepted   |    77
+ seci-gaya-60mw               | not_found  |    32
+ seci-gaya-60mw               | superseded |     3
+ wbsedcl-re-rtc-2026-01       | accepted   |    90
+ wbsedcl-re-rtc-2026-01       | not_found  |    21
+ wbsedcl-re-rtc-2026-01       | superseded |     4
+(31 rows)
+
+select kind, status, count(*) from job where kind='agent_pass' group by 1,2;
+    kind    | status | count 
+------------+--------+-------
+ agent_pass | done   |    11
+(1 row)
+

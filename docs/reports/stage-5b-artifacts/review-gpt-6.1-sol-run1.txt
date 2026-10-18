@@ -1,0 +1,78 @@
+reviewer: gpt-6.1-sol  input chars: 198292  tokens in/out: 56497/3439
+
+## (a) Non-negotiable invariants
+
+Assessment is limited to changed code; unchanged implementations cannot be certified from this diff.
+
+| Invariant | Assessment and evidence |
+|---|---|
+| **The LLM never writes truth** | No new model invocation or canonical-write path is shown. The comparison reads existing candidates and agent findings (`evals/threeway.py:126–171, 277–284`). The review change sets presentation emphasis, not approval (`tender/services/review.py:202–205`). |
+| **Every value carries its evidence** | No candidate validation, evidence resolution or canonical evidence handling is changed. The comparison retains evidence-check outcomes (`evals/threeway.py:251–258`). Preservation of the underlying approval safeguards cannot be independently verified because their implementation is absent. |
+| **The tender is a versioned object** | The agent query explicitly selects the gold record’s reviewed version (`evals/threeway.py:134–140`); gold-pass scheduling uses that version (`scripts/agent_pass.py:85–86`). No tender-version mutation is added. |
+| **Candidates are immutable** | Candidates are read for comparison, not edited (`evals/threeway.py:283–284`). The reviewer service adds only `emphasis` to its output (`tender/services/review.py:205`). |
+| **Validation is deterministic** | Classification and emphasis use plain Python and existing scorer functions, with no LLM invocation (`evals/threeway.py:182–217, 297–318`). The underlying candidate validator is outside the supplied diff. |
+| **Everything is audited and tenant-scoped** | New production ORM queries explicitly filter by tenant (`evals/threeway.py:134–153`; `scripts/agent_pass.py:48–50, 62–67`). Gold and result-file access are tenant-keyed (`evals/threeway.py:495–496, 531, 542`). No new table or explicit write to an audited truth-pipeline table is shown. |
+| **Feedback is stored, never auto-applied** | The comparison neither reads feedback nor changes prompts, thresholds or models from it. Its runtime output affects only review emphasis (`evals/threeway.py:510–517`; `tender/services/review.py:205`). |
+| **API first** | Comparison execution and retrieval have API routes (`api/v1/admin/threeway.py:33–55, 58–71`), registered in the versioned router collection (`api/main.py:32`). The reviewer receives emphasis through its existing API (`api/v1/tenders/review.py:127–131`). |
+
+FINDINGS: none
+
+## (b) Tests for added API endpoints
+
+| Added endpoint | Test |
+|---|---|
+| `POST /api/v1/admin/threeway` (`api/v1/admin/threeway.py:33`) | `tests/api/test_admin.py:254–294`, `test_the_three_way_comparison_is_an_api_operation`: empty comparison, artifact creation, slug filtering and missing-pass exclusion. |
+| `GET /api/v1/admin/threeway` (`api/v1/admin/threeway.py:58`) | Same test, `tests/api/test_admin.py:267–269, 289–291`: unauthenticated refusal, no-result response and latest-summary retrieval. |
+
+The existing review endpoint is modified, not added. Its emphasis integration is tested at `tests/tender/test_review_emphasis.py:65–74`.
+
+FINDINGS: none
+
+## (c) Audit coverage of writes
+
+No explicit new write to `candidate`, `approval`, `canonical_fact`, `tender_version` or `feedback` appears in the changed production code.
+
+- Comparison code reads candidates and agent findings (`evals/threeway.py:126–171, 277–284`).
+- Comparison persistence writes report/result/emphasis files, not those tables (`evals/threeway.py:535–551`).
+- The review-service modification changes a response property only (`tender/services/review.py:205`).
+- The management command delegates agent-run creation to existing `AgentPassService.start` (`scripts/agent_pass.py:102`). That implementation is not supplied; the diff does not establish an additional write to any checklist table through it.
+
+Existing truth-pipeline writes invoked by test fixtures cannot be independently audited without their unchanged implementations.
+
+FINDINGS: none
+
+## (d) `make trace` reproducibility
+
+Cannot determine from these inputs. `trace` is already listed as a Makefile target, so **“not applicable” is not justified**. The inputs contain neither its recipe/generator implementation nor execution output establishing that regeneration leaves `docs/FIELD-TRACE.md` unchanged. An unchanged generated file in a diff does not establish reproducibility.
+
+FINDINGS: 1
+1. `Makefile:6` — `trace` is declared, but the supplied diff does not demonstrate a successful regeneration with no diff.
+
+## (e) Draft stage-report claims unsupported by the diff
+
+The generated comparison report supports the quoted aggregate class counts as checked-in artifact contents. It does not independently establish production execution, source-data correctness, deployment or test outcomes.
+
+FINDINGS: 12
+1. `docs/reports/STAGE-5B-REPORT.md:5, 69` — The claim that 210 wrong-value rows are text, record and list fields is inconsistent with the stated breakdown: `128 + 36 + 33 = 197`, not 210. Neither code nor supplied result rows establish that these errors are merely independently phrased equivalents.
+
+2. `docs/reports/STAGE-5B-REPORT.md:5, 76` — “Five SECI tenders” with the `procurement_mode` mismatch is contradicted by the generated list: four are SECI tenders and one is WBSEDCL (`docs/reports/THREEWAY-REPORT.md:154–158`). Calling these mismatches definitively “schema work” also exceeds what value comparison alone establishes.
+
+3. `docs/reports/STAGE-5B-REPORT.md:21` — A “quieter border” on the low-review field card is not implemented by the shown change. `web/src/review/FieldCard.tsx:253–261` adds a badge and styles its border; no conditional field-card border change is shown.
+
+4. `docs/reports/STAGE-5B-REPORT.md:27` — Tests “at, above and below both thresholds” are not shown. `tests/evals/test_threeway.py:310–324` exercises 14 and 15 instances, and agreement of 100% and approximately 93.33%; it does not exercise exactly 97% agreement or more than 15 instances.
+
+5. `docs/reports/STAGE-5B-REPORT.md:28` — The claimed test coverage of gold-mode skipping and successful explicit-version selection is not shown. The gold-mode test queues only one previously unqueued record (`tests/scripts/test_agent_pass.py:48–60`); the explicit `--version` case tests a nonexistent version and refusal (`tests/scripts/test_agent_pass.py:63–67`).
+
+6. `docs/reports/STAGE-5B-REPORT.md:29` — Refusal of the new endpoints to a review token is not tested in the additions. `tests/api/test_admin.py:254–294` tests unauthenticated GET refusal and authenticated operations, but sends no review token to either new endpoint.
+
+7. `docs/reports/STAGE-5B-REPORT.md:30` — The cited Python emphasis-test location is unsupported: the diff adds `tests/tender/test_review_emphasis.py`, not emphasis tests in `tests/tender/test_review.py`.
+
+8. `docs/reports/STAGE-5B-REPORT.md:31` — A green full suite, nine successful checks and pre-commit certification are not demonstrated. No check output, watcher status or hook execution record is supplied.
+
+9. `docs/reports/STAGE-5B-REPORT.md:23, 35, 50–67` — Production queueing and execution of eleven passes, deployment success, rebuilt/restarted services, health status, watcher shutdown, three-container scaling, execution times, per-pass operational metrics, and the parallel-tool-call explanation are not established by the diff. The command implementation and report assertions do not demonstrate that these operations occurred.
+
+10. `docs/reports/STAGE-5B-REPORT.md:39` — The claim that the report names the agent’s evidence page and quote is false for the shown implementation. `evals/threeway.py:365–379` renders only tender, field and three values; the row model does not retain the agent quote or cited page (`evals/threeway.py:84–104`).
+
+11. `docs/reports/STAGE-5B-REPORT.md:69, 75` — The assertions that extra/missing rows are “the real misses,” that the other wrong-value rows are mostly equivalent facts, and that money/date/number/enum fields agree at 93% are not established by the supplied code or artifacts. The comparison does not perform semantic equivalence adjudication or generate that value-type aggregate.
+
+12. `docs/reports/STAGE-5B-REPORT.md:81` — The claimed historical costs and call totals, fixture exclusion, Stage 5A test-pass cost, absence of Anthropic activity this stage, and approximately USD 455 cumulative total lack supporting logs or database results in the inputs. The code shown does not compute these figures.
