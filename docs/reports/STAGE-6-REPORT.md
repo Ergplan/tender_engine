@@ -72,7 +72,8 @@ The end-to-end case runs on a real publication without a model: `tests/fixtures/
 
 ## Deployment
 
-<<DEPLOY_SECTION>>
+`make deploy` after the Stage 6 commit (f0a280e), 2026-10-20 11:40 UTC (`stage-6-artifacts/deploy.txt`): images rebuilt, migration 0020 already applied as the owner (it had been applied as soon as the model changed, while the API was up, so that the live review links kept resolving; `alembic_version` 0020), `api`, `worker`, `agent`, `web`, `caddy` and `tests` recreated with the dataset mount. The deploy's own health probe timed out at its 60 s as it has since Stage 4; `/health` answered 200 once the API had started and the `api` container reports healthy. After the deploy, through the public proxy with one award link (`live-checks.txt`, the last section): the session names the award, `GET /awards/{id}/review` 200, the review state's run mode `import`, `GET /tenders` with the award link 403, the review page 200, `GET /api/v1/awards` without identity 401, `POST /mcp` without a token 401; 116 awards and 0 award facts in the database. The test watcher came up with the stack and ran its startup pass; it is stopped again afterwards, as you asked for the review period, and `make check` is run before each commit meanwhile.
+
 
 ## What was skipped and why
 

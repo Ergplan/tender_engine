@@ -79,3 +79,16 @@ live tenders|14
 today|0
 since 2026-10-18 14:51 UTC (stage-6-start)|0
 latest call|2026-10-18 09:09:08.869667+00
+
+--- after the deploy of f0a280e (make deploy, 2026-10-20T11:45Z): alembic_version, health, the same probes ---
+0020
+116
+0
+GET /health: 200
+GET /api/v1/review-session with an award link: 200
+GET /awards/{id}/review with it: 200
+review-state run mode: import
+GET /api/v1/tenders with it: 403
+GET /review/<token> page: 200
+GET /api/v1/awards without identity: 401
+POST /mcp without a token: 401

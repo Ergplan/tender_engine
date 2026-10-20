@@ -1,0 +1,380 @@
+git pull --ff-only
+Already up to date.
+docker compose build
+ Image tender-engine-web Building 
+ Image tender-engine-python Building 
+ Image tender-engine-tests Building 
+ Image tender-engine-python Building 
+ Image tender-engine-python Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 2.33kB done
+#1 DONE 0.0s
+
+#2 [agent internal] load build definition from Dockerfile.python
+#2 transferring dockerfile: 1.20kB 0.0s done
+#2 DONE 0.0s
+
+#3 [web internal] load build definition from Dockerfile.web
+#3 transferring dockerfile: 272B 0.0s done
+#3 DONE 0.0s
+
+#4 [api internal] load metadata for docker.io/library/python:3.12-slim-bookworm
+#4 DONE 1.7s
+
+#5 [tests internal] load metadata for docker.io/library/node:22-bookworm-slim
+#5 DONE 1.7s
+
+#6 [web internal] load .dockerignore
+#6 transferring context: 101B done
+#6 DONE 0.0s
+
+#7 [tests internal] load build context
+#7 ...
+
+#8 [web internal] load build context
+#8 transferring context: 518.49kB 0.1s done
+#8 DONE 0.1s
+
+#9 [web 1/5] FROM docker.io/library/node:22-bookworm-slim@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392
+#9 resolve docker.io/library/node:22-bookworm-slim@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392 0.1s done
+#9 DONE 0.1s
+
+#10 [web 2/5] WORKDIR /app/web
+#10 CACHED
+
+#11 [web 3/5] COPY web/package.json web/package-lock.json ./
+#11 CACHED
+
+#12 [web 4/5] RUN npm ci --no-audit --no-fund && chown -R node:node /app
+#12 CACHED
+
+#13 [tests app 1/6] FROM docker.io/library/python:3.12-slim-bookworm@sha256:34386ef0cb081344d7ec1c103ba398e6e9f64e9ab3a1509accc92a4e24a07258
+#13 resolve docker.io/library/python:3.12-slim-bookworm@sha256:34386ef0cb081344d7ec1c103ba398e6e9f64e9ab3a1509accc92a4e24a07258 0.1s done
+#13 DONE 0.1s
+
+#7 [tests internal] load build context
+#7 transferring context: 1.91MB 0.2s done
+#7 transferring context: 1.91MB 0.2s done
+#7 DONE 0.2s
+
+#9 [web 1/5] FROM docker.io/library/node:22-bookworm-slim@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392
+#9 CACHED
+
+#14 [api app 2/6] RUN pip install --no-cache-dir uv==0.12.23
+#14 CACHED
+
+#15 [api app 3/6] WORKDIR /app
+#15 CACHED
+
+#16 [api app 4/6] COPY pyproject.toml uv.lock ./
+#16 CACHED
+
+#17 [api app 5/6] RUN uv sync --frozen --no-dev --no-cache
+#17 CACHED
+
+#18 [api app 6/6] COPY . .
+#18 ...
+
+#19 [web 5/5] COPY --chown=node:node web/ ./
+#19 DONE 0.3s
+
+#20 [web] exporting to image
+#20 exporting layers 0.1s done
+#20 exporting manifest sha256:e931dc75186fab69b4b990437b9aa15badc7989eacadf03a5c1809cff8eb0337 0.0s done
+#20 exporting config sha256:5899bad60c3d68e53060ca97285d9cdc57ab253eff720c2485e5e99aabc907bf 0.0s done
+#20 exporting attestation manifest sha256:d6439869594900da7ec1093b6d7a7b9c7ab2cae3fb15c9a4236051c4cb245b18 0.0s done
+#20 exporting manifest list sha256:e992d6a98d103c313a9bdaa88b9e8fc91b83a23105c2fed2df6f250a38c004cf 0.0s done
+#20 naming to docker.io/library/tender-engine-web:latest done
+#20 unpacking to docker.io/library/tender-engine-web:latest 0.0s done
+#20 DONE 0.3s
+
+#21 [web] resolving provenance for metadata file
+#21 DONE 0.0s
+
+#18 [api app 6/6] COPY . .
+#18 DONE 1.7s
+
+#22 [api] exporting to image
+#22 ...
+
+#23 [tests tests 1/2] COPY --from=node:22-bookworm-slim /usr/local/bin/node /usr/local/bin/node
+#23 DONE 2.0s
+
+#24 [tests tests 2/2] RUN apt-get update && apt-get install -y --no-install-recommends libstdc++6 git     && rm -rf /var/lib/apt/lists/*     && uv sync --frozen --no-cache
+#24 0.956 Get:1 http://deb.debian.org/debian bookworm InRelease [151 kB]
+#24 0.975 Get:2 http://deb.debian.org/debian bookworm-updates InRelease [55.4 kB]
+#24 0.977 Get:3 http://deb.debian.org/debian-security bookworm-security InRelease [34.8 kB]
+#24 1.154 Get:4 http://deb.debian.org/debian bookworm/main amd64 Packages [8790 kB]
+#24 1.314 Get:5 http://deb.debian.org/debian bookworm-updates/main amd64 Packages [6924 B]
+#24 1.475 Get:6 http://deb.debian.org/debian-security bookworm-security/main amd64 Packages [354 kB]
+#24 2.616 Fetched 9393 kB in 2s (5524 kB/s)
+#24 2.616 Reading package lists...#24 ...
+
+#22 [api] exporting to image
+#22 exporting layers 2.7s done
+#22 exporting manifest sha256:41a44454f68a6fa81fbf6bacf1e2923b4c57cfac4ed1e9da17f18374346354b5 0.0s done
+#22 exporting config sha256:6e0ecdb42a477f66da842cc4270d4e89e1ac19a05a1728f55b78a1ecacac7cae 0.0s done
+#22 exporting attestation manifest sha256:6769afaa23d0bf67c6db521aa4da3d2cb565184ee6f0a4be7ca3d4ebbd53b31b 0.0s done
+#22 exporting manifest list sha256:dcdb50e09267c8dd06a77a8b4f14059d98fedd6830d83a6301bd268e0d7e9dc2 0.0s done
+#22 naming to docker.io/library/tender-engine-python:latest done
+#22 unpacking to docker.io/library/tender-engine-python:latest 2.7s done
+#22 DONE 5.6s
+
+#24 [tests tests 2/2] RUN apt-get update && apt-get install -y --no-install-recommends libstdc++6 git     && rm -rf /var/lib/apt/lists/*     && uv sync --frozen --no-cache
+#24 2.616 Reading package lists...
+#24 3.705 Reading package lists...
+#24 ...
+
+#25 [agent] exporting to image
+#25 exporting layers 2.7s done
+#25 exporting manifest sha256:50b4e49364b9f7e099f29334423949aa47062132f3c22f2e6d87988e8d8dc1d2 0.0s done
+#25 exporting config sha256:fb470e55f823e629c1777cd5897e39bc82131ce01df7b36048df9d0f0eaa61ed 0.0s done
+#25 exporting attestation manifest sha256:2a1066a06e735a02a15f5edea3fcfbb6625939f52c3d6e2988323ca501cdad11 0.0s done
+#25 exporting manifest list sha256:c6ae70bc081c57b7d95022f1a258c3caf581c707f88f8ab8fd79c87a41f2241f 0.0s done
+#25 naming to docker.io/library/tender-engine-python:latest done
+#25 unpacking to docker.io/library/tender-engine-python:latest 2.9s done
+#25 DONE 5.8s
+
+#26 [worker] exporting to image
+#26 exporting layers 2.7s done
+#26 exporting manifest sha256:19c90333d4996362dd52bba4e8377ac18004a7250f3e651ab867c2dea14e3e48 0.0s done
+#26 exporting config sha256:a62e9fb4920de95e8debd5dc7c69509645385ecc09a5173290f36bedae1ca448 0.0s done
+#26 exporting attestation manifest sha256:cc9e5c6b96d92abf71ce07ff19b8498916056fba04aa784c25968de1acd359cc 0.0s done
+#26 exporting manifest list sha256:86642657970d79d694edf2bda325c5b0cfc484e330ea377bcf3ec5c06235b5c8 0.0s done
+#26 naming to docker.io/library/tender-engine-python:latest done
+#26 unpacking to docker.io/library/tender-engine-python:latest 3.0s done
+#26 DONE 5.9s
+
+#27 [api] resolving provenance for metadata file
+#27 DONE 0.1s
+
+#28 [agent] resolving provenance for metadata file
+#28 DONE 0.0s
+
+#29 [worker] resolving provenance for metadata file
+#29 DONE 0.0s
+
+#24 [tests tests 2/2] RUN apt-get update && apt-get install -y --no-install-recommends libstdc++6 git     && rm -rf /var/lib/apt/lists/*     && uv sync --frozen --no-cache
+#24 3.705 Reading package lists...
+#24 4.534 Building dependency tree...
+#24 4.733 Reading state information...
+#24 4.854 libstdc++6 is already the newest version (12.2.0-14+deb12u1).
+#24 4.854 libstdc++6 set to manually installed.
+#24 4.854 The following additional packages will be installed:
+#24 4.854   git-man libbrotli1 libcurl3-gnutls liberror-perl libexpat1 libgdbm-compat4
+#24 4.854   libldap-2.5-0 libnghttp2-14 libperl5.36 libpsl5 librtmp1 libsasl2-2
+#24 4.855   libsasl2-modules-db libssh2-1 perl perl-modules-5.36
+#24 4.855 Suggested packages:
+#24 4.855   gettext-base git-daemon-run | git-daemon-sysvinit git-doc git-email git-gui
+#24 4.855   gitk gitweb git-cvs git-mediawiki git-svn sensible-utils perl-doc
+#24 4.855   libterm-readline-gnu-perl | libterm-readline-perl-perl make
+#24 4.855   libtap-harness-archive-perl
+#24 4.855 Recommended packages:
+#24 4.855   patch less ssh-client libldap-common publicsuffix libsasl2-modules
+#24 4.945 The following NEW packages will be installed:
+#24 4.945   git git-man libbrotli1 libcurl3-gnutls liberror-perl libexpat1
+#24 4.946   libgdbm-compat4 libldap-2.5-0 libnghttp2-14 libperl5.36 libpsl5 librtmp1
+#24 4.947   libsasl2-2 libsasl2-modules-db libssh2-1 perl perl-modules-5.36
+#24 4.969 0 upgraded, 17 newly installed, 0 to remove and 0 not upgraded.
+#24 4.969 Need to get 18.1 MB of archives.
+#24 4.969 After this operation, 100 MB of additional disk space will be used.
+#24 4.969 Get:1 http://deb.debian.org/debian-security bookworm-security/main amd64 perl-modules-5.36 all 5.36.0-7+deb12u4 [2817 kB]
+#24 4.985 Get:2 http://deb.debian.org/debian bookworm/main amd64 libgdbm-compat4 amd64 1.23-3 [48.2 kB]
+#24 4.986 Get:3 http://deb.debian.org/debian-security bookworm-security/main amd64 libperl5.36 amd64 5.36.0-7+deb12u4 [4208 kB]
+#24 5.000 Get:4 http://deb.debian.org/debian-security bookworm-security/main amd64 perl amd64 5.36.0-7+deb12u4 [239 kB]
+#24 5.002 Get:5 http://deb.debian.org/debian bookworm/main amd64 libbrotli1 amd64 1.0.9-2+b6 [275 kB]
+#24 5.003 Get:6 http://deb.debian.org/debian bookworm/main amd64 libsasl2-modules-db amd64 2.1.28+dfsg-10 [20.3 kB]
+#24 5.006 Get:7 http://deb.debian.org/debian bookworm/main amd64 libsasl2-2 amd64 2.1.28+dfsg-10 [59.7 kB]
+#24 5.006 Get:8 http://deb.debian.org/debian bookworm/main amd64 libldap-2.5-0 amd64 2.5.13+dfsg-5 [183 kB]
+#24 5.007 Get:9 http://deb.debian.org/debian bookworm/main amd64 libnghttp2-14 amd64 1.52.0-1+deb12u3 [72.4 kB]
+#24 5.007 Get:10 http://deb.debian.org/debian bookworm/main amd64 libpsl5 amd64 0.21.2-1 [58.7 kB]
+#24 5.010 Get:11 http://deb.debian.org/debian bookworm/main amd64 librtmp1 amd64 2.4+20151223.gitfa8646d.1-2+b2 [60.8 kB]
+#24 5.010 Get:12 http://deb.debian.org/debian-security bookworm-security/main amd64 libssh2-1 amd64 1.10.0-3+deb12u1 [176 kB]
+#24 5.011 Get:13 http://deb.debian.org/debian bookworm/main amd64 libcurl3-gnutls amd64 7.88.1-10+deb12u15 [386 kB]
+#24 5.012 Get:14 http://deb.debian.org/debian-security bookworm-security/main amd64 libexpat1 amd64 2.5.0-1+deb12u4 [106 kB]
+#24 5.013 Get:15 http://deb.debian.org/debian bookworm/main amd64 liberror-perl all 0.17029-2 [29.0 kB]
+#24 5.014 Get:16 http://deb.debian.org/debian bookworm/main amd64 git-man all 1:2.39.5-0+deb12u3 [2053 kB]
+#24 5.024 Get:17 http://deb.debian.org/debian bookworm/main amd64 git amd64 1:2.39.5-0+deb12u3 [7264 kB]
+#24 5.405 debconf: delaying package configuration, since apt-utils is not installed
+#24 5.468 Fetched 18.1 MB in 0s (86.2 MB/s)
+#24 5.514 Selecting previously unselected package perl-modules-5.36.
+#24 5.514 (Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 6704 files and directories currently installed.)
+#24 5.572 Preparing to unpack .../00-perl-modules-5.36_5.36.0-7+deb12u4_all.deb ...
+#24 5.578 Unpacking perl-modules-5.36 (5.36.0-7+deb12u4) ...
+#24 6.121 Selecting previously unselected package libgdbm-compat4:amd64.
+#24 6.124 Preparing to unpack .../01-libgdbm-compat4_1.23-3_amd64.deb ...
+#24 6.132 Unpacking libgdbm-compat4:amd64 (1.23-3) ...
+#24 6.173 Selecting previously unselected package libperl5.36:amd64.
+#24 6.173 Preparing to unpack .../02-libperl5.36_5.36.0-7+deb12u4_amd64.deb ...
+#24 6.177 Unpacking libperl5.36:amd64 (5.36.0-7+deb12u4) ...
+#24 6.575 Selecting previously unselected package perl.
+#24 6.577 Preparing to unpack .../03-perl_5.36.0-7+deb12u4_amd64.deb ...
+#24 6.589 Unpacking perl (5.36.0-7+deb12u4) ...
+#24 6.642 Selecting previously unselected package libbrotli1:amd64.
+#24 6.644 Preparing to unpack .../04-libbrotli1_1.0.9-2+b6_amd64.deb ...
+#24 6.647 Unpacking libbrotli1:amd64 (1.0.9-2+b6) ...
+#24 6.700 Selecting previously unselected package libsasl2-modules-db:amd64.
+#24 6.702 Preparing to unpack .../05-libsasl2-modules-db_2.1.28+dfsg-10_amd64.deb ...
+#24 6.705 Unpacking libsasl2-modules-db:amd64 (2.1.28+dfsg-10) ...
+#24 6.743 Selecting previously unselected package libsasl2-2:amd64.
+#24 6.745 Preparing to unpack .../06-libsasl2-2_2.1.28+dfsg-10_amd64.deb ...
+#24 6.749 Unpacking libsasl2-2:amd64 (2.1.28+dfsg-10) ...
+#24 6.792 Selecting previously unselected package libldap-2.5-0:amd64.
+#24 6.792 Preparing to unpack .../07-libldap-2.5-0_2.5.13+dfsg-5_amd64.deb ...
+#24 6.796 Unpacking libldap-2.5-0:amd64 (2.5.13+dfsg-5) ...
+#24 6.843 Selecting previously unselected package libnghttp2-14:amd64.
+#24 6.846 Preparing to unpack .../08-libnghttp2-14_1.52.0-1+deb12u3_amd64.deb ...
+#24 6.851 Unpacking libnghttp2-14:amd64 (1.52.0-1+deb12u3) ...
+#24 6.906 Selecting previously unselected package libpsl5:amd64.
+#24 6.907 Preparing to unpack .../09-libpsl5_0.21.2-1_amd64.deb ...
+#24 6.911 Unpacking libpsl5:amd64 (0.21.2-1) ...
+#24 6.955 Selecting previously unselected package librtmp1:amd64.
+#24 6.961 Preparing to unpack .../10-librtmp1_2.4+20151223.gitfa8646d.1-2+b2_amd64.deb ...
+#24 6.965 Unpacking librtmp1:amd64 (2.4+20151223.gitfa8646d.1-2+b2) ...
+#24 7.018 Selecting previously unselected package libssh2-1:amd64.
+#24 7.021 Preparing to unpack .../11-libssh2-1_1.10.0-3+deb12u1_amd64.deb ...
+#24 7.024 Unpacking libssh2-1:amd64 (1.10.0-3+deb12u1) ...
+#24 7.072 Selecting previously unselected package libcurl3-gnutls:amd64.
+#24 7.076 Preparing to unpack .../12-libcurl3-gnutls_7.88.1-10+deb12u15_amd64.deb ...
+#24 7.080 Unpacking libcurl3-gnutls:amd64 (7.88.1-10+deb12u15) ...
+#24 7.157 Selecting previously unselected package libexpat1:amd64.
+#24 7.159 Preparing to unpack .../13-libexpat1_2.5.0-1+deb12u4_amd64.deb ...
+#24 7.162 Unpacking libexpat1:amd64 (2.5.0-1+deb12u4) ...
+#24 7.198 Selecting previously unselected package liberror-perl.
+#24 7.200 Preparing to unpack .../14-liberror-perl_0.17029-2_all.deb ...
+#24 7.204 Unpacking liberror-perl (0.17029-2) ...
+#24 7.238 Selecting previously unselected package git-man.
+#24 7.240 Preparing to unpack .../15-git-man_1%3a2.39.5-0+deb12u3_all.deb ...
+#24 7.243 Unpacking git-man (1:2.39.5-0+deb12u3) ...
+#24 7.352 Selecting previously unselected package git.
+#24 7.352 Preparing to unpack .../16-git_1%3a2.39.5-0+deb12u3_amd64.deb ...
+#24 7.360 Unpacking git (1:2.39.5-0+deb12u3) ...
+#24 8.051 Setting up libexpat1:amd64 (2.5.0-1+deb12u4) ...
+#24 8.068 Setting up libpsl5:amd64 (0.21.2-1) ...
+#24 8.081 Setting up libbrotli1:amd64 (1.0.9-2+b6) ...
+#24 8.090 Setting up libnghttp2-14:amd64 (1.52.0-1+deb12u3) ...
+#24 8.101 Setting up libsasl2-modules-db:amd64 (2.1.28+dfsg-10) ...
+#24 8.109 Setting up perl-modules-5.36 (5.36.0-7+deb12u4) ...
+#24 8.118 Setting up librtmp1:amd64 (2.4+20151223.gitfa8646d.1-2+b2) ...
+#24 8.126 Setting up libgdbm-compat4:amd64 (1.23-3) ...
+#24 8.136 Setting up libsasl2-2:amd64 (2.1.28+dfsg-10) ...
+#24 8.147 Setting up git-man (1:2.39.5-0+deb12u3) ...
+#24 8.156 Setting up libssh2-1:amd64 (1.10.0-3+deb12u1) ...
+#24 8.165 Setting up libperl5.36:amd64 (5.36.0-7+deb12u4) ...
+#24 8.174 Setting up libldap-2.5-0:amd64 (2.5.13+dfsg-5) ...
+#24 8.184 Setting up perl (5.36.0-7+deb12u4) ...
+#24 8.212 Setting up libcurl3-gnutls:amd64 (7.88.1-10+deb12u15) ...
+#24 8.221 Setting up liberror-perl (0.17029-2) ...
+#24 8.229 Setting up git (1:2.39.5-0+deb12u3) ...
+#24 8.248 Processing triggers for libc-bin (2.36-9+deb12u14) ...
+#24 9.055 Downloading pygments (1.2MiB)
+#24 9.075 Downloading ast-serialize (1.3MiB)
+#24 9.076 Downloading ruff (9.9MiB)
+#24 9.076 Downloading mypy (14.8MiB)
+#24 9.169  Downloaded ast-serialize
+#24 9.174  Downloaded pygments
+#24 9.291  Downloaded ruff
+#24 9.424  Downloaded mypy
+#24 9.424 Prepared 15 packages in 453ms
+#24 10.41 Installed 15 packages in 986ms
+#24 10.41  + ast-serialize==0.12.1
+#24 10.41  + httpcore==1.0.9
+#24 10.41  + httpx==0.28.1
+#24 10.41  + iniconfig==2.3.0
+#24 10.41  + librt==0.16.0
+#24 10.41  + mypy==2.4.0
+#24 10.41  + mypy-extensions==1.1.0
+#24 10.41  + packaging==26.3
+#24 10.41  + pathspec==1.1.1
+#24 10.41  + pluggy==1.6.0
+#24 10.41  + pygments==2.21.0
+#24 10.41  + pytest==8.4.2
+#24 10.41  + pytest-timeout==2.4.0
+#24 10.41  + ruff==0.16.10
+#24 10.41  + types-pyyaml==6.0.12.20260906
+#24 DONE 10.7s
+
+#30 [tests] exporting to image
+#30 exporting layers
+#30 exporting layers 9.8s done
+#30 exporting manifest sha256:c3c8f377b174f45ab1c622f0b58e1093fe4982a4e2d9accf91ccc74e4ee3cc65
+#30 exporting manifest sha256:c3c8f377b174f45ab1c622f0b58e1093fe4982a4e2d9accf91ccc74e4ee3cc65 0.0s done
+#30 exporting config sha256:6731d024807db24133706d18197c986b9cf71c14a3c147276ed986d632ae52b7 0.0s done
+#30 exporting attestation manifest sha256:53098227f52cd30846d23cd395a956577918d73a3a5c9c2afc54ef67a801326e 0.0s done
+#30 exporting manifest list sha256:b14253795e922294d1b8f1527393c21846bd45eb92b48c34047b67dbbca2c0f8 0.0s done
+#30 naming to docker.io/library/tender-engine-tests:latest done
+#30 unpacking to docker.io/library/tender-engine-tests:latest
+#30 unpacking to docker.io/library/tender-engine-tests:latest 2.7s done
+#30 DONE 12.6s
+
+#31 [tests] resolving provenance for metadata file
+#31 DONE 0.0s
+ Image tender-engine-python Built 
+ Image tender-engine-python Built 
+ Image tender-engine-python Built 
+ Image tender-engine-tests Built 
+ Image tender-engine-web Built 
+docker compose up -d db
+ Container tender-engine-db-1 Running 
+docker compose run --rm -T api alembic upgrade head
+ Container tender-engine-db-1 Running 
+ Container tender-engine-db-1 Waiting 
+ Container tender-engine-db-1 Healthy 
+ Container tender-engine-api-run-70757a2e523b Creating 
+ Container tender-engine-api-run-70757a2e523b Created 
+docker compose run --rm -T --no-deps web npm ci --no-audit --no-fund
+ Container tender-engine-web-run-1f9eddc5fafe Creating 
+ Container tender-engine-web-run-1f9eddc5fafe Created 
+npm warn deprecated whatwg-encoding@3.1.1: Use @exodus/bytes instead for a more spec-conformant and faster implementation
+
+added 262 packages in 8s
+npm notice
+npm notice New major version of npm available! 10.9.9 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
+docker compose up -d --force-recreate api worker agent web caddy tests
+ Container tender-engine-db-1 Running 
+ Container tender-engine-agent-1 Recreate 
+ Container tender-engine-api-1 Recreate 
+ Container tender-engine-web-1 Recreate 
+ Container tender-engine-worker-1 Recreate 
+ Container tender-engine-api-1 Recreated 
+ Container tender-engine-web-1 Recreated 
+ Container tender-engine-tests-1 Recreate 
+ Container tender-engine-caddy-1 Recreate 
+ Container tender-engine-tests-1 Recreated 
+ Container tender-engine-worker-1 Recreated 
+ Container tender-engine-agent-1 Recreated 
+ Container tender-engine-caddy-1 Recreated 
+ Container tender-engine-web-1 Starting 
+ Container tender-engine-db-1 Waiting 
+ Container tender-engine-db-1 Waiting 
+ Container tender-engine-db-1 Waiting 
+ Container tender-engine-db-1 Healthy 
+ Container tender-engine-agent-1 Starting 
+ Container tender-engine-db-1 Healthy 
+ Container tender-engine-api-1 Starting 
+ Container tender-engine-db-1 Healthy 
+ Container tender-engine-worker-1 Starting 
+ Container tender-engine-web-1 Started 
+ Container tender-engine-db-1 Waiting 
+ Container tender-engine-db-1 Healthy 
+ Container tender-engine-tests-1 Starting 
+ Container tender-engine-agent-1 Started 
+ Container tender-engine-api-1 Started 
+ Container tender-engine-caddy-1 Starting 
+ Container tender-engine-caddy-1 Started 
+ Container tender-engine-worker-1 Started 
+ Container tender-engine-tests-1 Started 
+health check failed: https://34.131.65.108/health
+NAME                     IMAGE                  COMMAND                  SERVICE   CREATED              STATUS                                 PORTS
+tender-engine-agent-1    tender-engine-python   "python -m agent.main"   agent     About a minute ago   Up About a minute                      
+tender-engine-api-1      tender-engine-python   "uvicorn api.main:cr…"   api       About a minute ago   Up About a minute (health: starting)   
+tender-engine-caddy-1    caddy:2                "caddy run --config …"   caddy     About a minute ago   Up About a minute                      80/tcp, 2019/tcp, 443/udp, 0.0.0.0:443->443/tcp, [::]:443->443/tcp
+tender-engine-db-1       postgres:16            "docker-entrypoint.s…"   db        2 weeks ago          Up 4 hours (healthy)                   127.0.0.1:5432->5432/tcp
+tender-engine-tests-1    tender-engine-tests    "python infra/ci/run…"   tests     About a minute ago   Up About a minute                      
+tender-engine-web-1      tender-engine-web      "docker-entrypoint.s…"   web       About a minute ago   Up About a minute                      5173/tcp
+tender-engine-worker-1   tender-engine-python   "python -m worker.ma…"   worker    About a minute ago   Up About a minute                      
+make: *** [Makefile:44: deploy] Error 1
+exit 2
