@@ -9,14 +9,21 @@ from core.models.base import Base, IdMixin, TenantAuditMixin
 
 
 class ReviewToken(IdMixin, TenantAuditMixin, Base):
-    """The link a reviewer opens: an unguessable token for one tender, mapped to the
-    reviewer's name. One live token per tender; creating another revokes it. The only
-    identity mechanism of phase 1."""
+    """The link a reviewer opens: an unguessable token for one object, mapped to the
+    reviewer's name. One live token per object; creating another revokes it. The only
+    identity mechanism of phase 1. Since Stage 6 the object is (object_type, object_id):
+    a tender, or an award; tender_id is kept for a tender's token."""
 
     __tablename__ = "review_token"
 
     token: Mapped[str] = mapped_column(String(64), nullable=False, unique=True)
-    tender_id: Mapped[str] = mapped_column(ForeignKey("tender.id"), nullable=False, index=True)
+    object_type: Mapped[str] = mapped_column(
+        String(20), nullable=False, default="tender", server_default="tender"
+    )
+    object_id: Mapped[str] = mapped_column(String(32), nullable=False, index=True)
+    tender_id: Mapped[str | None] = mapped_column(
+        ForeignKey("tender.id"), nullable=True, index=True
+    )
     reviewer_name: Mapped[str] = mapped_column(String(200), nullable=False)
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)

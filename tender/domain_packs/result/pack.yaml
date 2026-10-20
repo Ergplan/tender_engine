@@ -1,0 +1,13 @@
+# Result pack: award results (Stage 6). Not a tender: one `award` object per source
+# publication (a result sheet, a CERC adoption order, an allocation), whose fields are
+# written by the importer from the RE-tender-results dataset (producer IMPORT), never by a
+# model, and become canonical only when a reviewer approves them against the PDF.
+# Field paths are result.<subdomain>.<field>; the schema is `result.<type>`.
+pack: result
+version: v1
+object_type: award
+namespace: result
+sector: result
+subdomains: [award]
+sections: {}
+fields: {}

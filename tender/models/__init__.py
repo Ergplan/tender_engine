@@ -1,5 +1,6 @@
 """Tender tables. Importing this package registers them on core's Base.metadata."""
 
+from tender.models.award import AWARD_STATUSES, LINK_BASES, Award
 from tender.models.library import (
     CorrectionCase,
     ModelAssumption,
@@ -21,6 +22,9 @@ from tender.models.tender import (
 )
 
 __all__ = [
+    "AWARD_STATUSES",
+    "Award",
+    "LINK_BASES",
     "CorrectionCase",
     "ModelAssumption",
     "OAuthClient",

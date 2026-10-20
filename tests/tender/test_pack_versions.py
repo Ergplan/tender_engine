@@ -10,6 +10,7 @@ from scripts.release_schema import released_text
 from tender.services.packs import (
     PACKS_ROOT,
     Catalog,
+    CompiledType,
     PackError,
     TenderField,
     field_signature,
@@ -217,8 +218,14 @@ def test_signature_holds_type_unit_values_and_record_keys_only() -> None:
 # --- the real packs
 
 
+def power_types(catalog: Catalog) -> dict[str, CompiledType]:
+    """The power pack's types; the result pack's award (Stage 6, v1, reads nothing) is apart."""
+    return {name: c for name, c in catalog.types.items() if c.pack == "power"}
+
+
 def test_the_power_pack_reads_v1_with_one_declared_change(catalog: Catalog) -> None:
-    for name, compiled in catalog.types.items():
+    assert catalog.types["award"].reads_versions == () and catalog.types["award"].pack == "result"
+    for name, compiled in power_types(catalog).items():
         assert compiled.reads_versions == ("v1", "v2", "v3"), name
         expected = (
             (("v1", ("sector.power.transmission.elements",)),) if name == "transmission" else ()
@@ -239,7 +246,7 @@ def test_every_v1_field_of_every_type_is_still_present_in_the_current_version(
 ) -> None:
     released = read_released(PACKS_ROOT / "power", "v1")
     # Types added since v1 (re_rtc, 2026-10-08) have nothing in v1 to keep.
-    assert released is not None and set(released) == set(catalog.types) - {"re_rtc"}
+    assert released is not None and set(released) == set(power_types(catalog)) - {"re_rtc"}
     for name in released:
         compiled = catalog.types[name]
         current = type_signature(compiled.fields)
@@ -249,8 +256,10 @@ def test_every_v1_field_of_every_type_is_still_present_in_the_current_version(
 
 
 def test_the_release_file_round_trips(catalog: Catalog) -> None:
-    version = next(iter(catalog.types.values())).schema.version
+    power = power_types(catalog)
+    version = next(iter(power.values())).schema.version
     data = yaml.safe_load(released_text(catalog, "power", version))
     assert (data["pack"], data["version"]) == ("power", version)
-    for name, compiled in catalog.types.items():
+    assert set(data["types"]) == set(power)
+    for name, compiled in power.items():
         assert data["types"][name] == type_signature(compiled.fields)

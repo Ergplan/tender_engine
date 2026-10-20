@@ -79,10 +79,16 @@ export function EditForm({
       return setProblem("Give the page and the text that state this value.");
     if (hasEvidence && !(Number(page) >= 1 && quote.trim()))
       return setProblem("Evidence needs both a page number and the quoted text.");
+    // Several quotes on the one page are separated by "||" (a table whose rows were not
+    // all found needs one per kept row).
+    const quotes = quote
+      .split("||")
+      .map((part) => part.trim())
+      .filter(Boolean);
     onSave({
       value,
       note: note.trim() || null,
-      evidence: hasEvidence ? [{ page_no: Number(page), quote: quote.trim() }] : null,
+      evidence: hasEvidence ? quotes.map((part) => ({ page_no: Number(page), quote: part })) : null,
     });
   }
 
@@ -221,7 +227,7 @@ export function EditForm({
           />
           <input
             type="text"
-            placeholder="The words on that page, copied exactly"
+            placeholder="The words on that page, copied exactly (several: separate with ||)"
             aria-label="Evidence quote"
             data-testid="evidence-quote"
             className={INPUT}

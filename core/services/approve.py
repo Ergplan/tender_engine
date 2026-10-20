@@ -8,7 +8,7 @@ import re
 from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import UTC, datetime
-from typing import Any, Protocol
+from typing import Any, Protocol, runtime_checkable
 
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
@@ -57,6 +57,23 @@ class DecisionGuard(Protocol):
         self, session: Session, service: "ApprovalService", approval: Approval, run: ExtractionRun
     ) -> None:
         """Called after the decision is committed."""
+
+
+@runtime_checkable
+class DecisionDetailGuard(Protocol):
+    """A guard that needs the decision's content: the final value and the reviewer's
+    evidence (Stage 6, the award table whose rows are not all located)."""
+
+    def check(
+        self,
+        session: Session,
+        candidate: Candidate,
+        run: ExtractionRun,
+        decision: str,
+        final_value: Any,
+        evidence: list[dict[str, Any]] | None,
+    ) -> None:
+        """Raise ApprovalError to refuse the decision. Nothing has been written."""
 
 
 @dataclass(frozen=True)
@@ -132,6 +149,8 @@ class ApprovalService:
         for guard in self._guards:
             try:
                 guard.before(session, candidate, run, decision)
+                if isinstance(guard, DecisionDetailGuard):
+                    guard.check(session, candidate, run, decision, final_value, evidence)
             except ApprovalError:
                 session.rollback()
                 raise

@@ -9,7 +9,12 @@ from sqlalchemy.orm import Mapped, mapped_column
 from core.models.base import Base, IdMixin, TenantAuditMixin
 
 RUN_STATUSES = ("queued", "running", "extracted", "validated", "failed")
+# The modes a caller may ask ExtractService.start_run for.
 RUN_MODES = ("sync", "batch")
+# A run that read no page and made no model call: its candidates were written by an
+# importer from a reviewed dataset (Stage 6), each with its evidence resolved on the page
+# the dataset cites. Written by the importer alone; start_run does not offer it.
+IMPORT_MODE = "import"
 # A run that read no page: its candidates were written from the object's other candidates
 # (the record), and their evidence is inherited from those. Not a mode a caller can ask
 # ExtractService.start_run for.

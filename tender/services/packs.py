@@ -34,6 +34,9 @@ PACKS_ROOT = Path(__file__).resolve().parents[1] / "domain_packs"
 CORE_PACK = "core"
 _CORE_PATH = re.compile(r"^core\.[a-z0-9_]+\.[a-z0-9_]+$")
 _SECTOR_PATH = re.compile(r"^sector\.([a-z0-9_]+)\.([a-z0-9_]+)\.[a-z0-9_]+$")
+# The result pack (Stage 6): result.<subdomain>.<field>, an object that is not a tender.
+_RESULT_PATH = re.compile(r"^result\.([a-z0-9_]+)\.[a-z0-9_]+$")
+TENDER_NAMESPACE = "tender"
 
 
 class PackError(ValueError):
@@ -61,6 +64,10 @@ class SectionDef(_Strict):
     # `prompt` names the rule module under derivations/ and `roles` the documents the
     # inherited evidence may come from.
     derived: bool = False
+    # An imported section is not read from pages either: its fields are written by an
+    # importer from a reviewed dataset (producer IMPORT, Stage 6), each with its evidence
+    # located on the page the dataset cites. Its `prompt` is the importer's label.
+    imported: bool = False
 
 
 class RawKey(_Strict):
@@ -108,6 +115,10 @@ class RawField(_Strict):
 class RawFile(_Strict):
     pack: str
     version: str | None = None
+    # What the pack's types are objects of: tenders, or (the result pack) awards. The
+    # schema of a type is named `<namespace>.<type>`.
+    object_type: str = "tender"
+    namespace: str = TENDER_NAMESPACE
     # Earlier versions whose runs are read under this one. Checked field by field against
     # released/<version>.yaml when the pack is loaded (see verify_reads).
     reads_versions: list[str] = Field(default_factory=list)
@@ -155,6 +166,7 @@ class CompiledSection(BaseModel):
     roles: list[str]
     order: int
     derived: bool = False
+    imported: bool = False
 
 
 @dataclass(frozen=True)
@@ -164,6 +176,8 @@ class CompiledType:
     schema: ExtractionSchema
     sections: list[CompiledSection]
     fields: list[TenderField]
+    # tender, or award (the result pack).
+    object_type: str = "tender"
     # Earlier schema versions whose runs are read under this schema.
     reads_versions: tuple[str, ...] = ()
     # Per earlier version, the fields of this type that it does not hand on: this version
@@ -208,8 +222,8 @@ class Catalog:
                 registry.exclude_fields(compiled.schema.name, earlier, paths)
 
 
-def schema_name(tender_type: str) -> str:
-    return f"tender.{tender_type}"
+def schema_name(tender_type: str, namespace: str = TENDER_NAMESPACE) -> str:
+    return f"{namespace}.{tender_type}"
 
 
 def _read(path: Path) -> RawFile:
@@ -225,9 +239,12 @@ def _namespace(path: str, where: Path) -> tuple[str, str | None, str | None]:
     match = _SECTOR_PATH.match(path)
     if match:
         return "sector", match.group(1), match.group(2)
+    match = _RESULT_PATH.match(path)
+    if match:
+        return "result", "result", match.group(1)
     raise PackError(
-        f"{where}: {path!r} is neither core.<section>.<field> nor "
-        "sector.<domain>.<subdomain>.<field>"
+        f"{where}: {path!r} is neither core.<section>.<field>, "
+        "sector.<domain>.<subdomain>.<field> nor result.<subdomain>.<field>"
     )
 
 
@@ -324,14 +341,12 @@ def compile_type(pack_dir: Path, tender_type: str, core_dir: Path | None = None)
                 namespace, domain, subdomain = _namespace(path, where)
                 if raw is core and namespace != "core":
                     raise PackError(f"{where}: the core pack may only define core.* fields")
+                wanted = "sector" if pack.namespace == TENDER_NAMESPACE else pack.namespace
                 if raw is not core and (
-                    namespace != "sector"
-                    or domain != pack.sector
-                    or subdomain not in pack.subdomains
+                    namespace != wanted or domain != pack.sector or subdomain not in pack.subdomains
                 ):
-                    raise PackError(
-                        f"{where}: {path!r} must be sector.{pack.sector}.<subdomain>.<field>"
-                    )
+                    prefix = f"sector.{pack.sector}" if wanted == "sector" else wanted
+                    raise PackError(f"{where}: {path!r} must be {prefix}.<subdomain>.<field>")
                 order = len(fields) + 1
                 required = field.required or path in own.required
                 fields.append(
@@ -381,13 +396,24 @@ def compile_type(pack_dir: Path, tender_type: str, core_dir: Path | None = None)
     if unknown_required:
         raise PackError(f"{pack_dir}: {tender_type!r} requires unknown field(s) {unknown_required}")
 
+    # The core pack's rules concern core fields: a type that includes none of them (the
+    # result pack's award) does not carry them.
+    has_core = any(field.namespace == "core" for field in fields)
     rules = list(
-        dict.fromkeys([*core.cross_field_rules, *pack.cross_field_rules, *own.cross_field_rules])
+        dict.fromkeys(
+            [
+                *(core.cross_field_rules if has_core else []),
+                *pack.cross_field_rules,
+                *own.cross_field_rules,
+            ]
+        )
     )
-    run_rules = list(dict.fromkeys([*core.run_rules, *pack.run_rules]))
+    run_rules = list(
+        dict.fromkeys([*(core.run_rules if has_core else []), *pack.run_rules, *own.run_rules])
+    )
     try:
         schema = ExtractionSchema(
-            name=schema_name(tender_type),
+            name=schema_name(tender_type, pack.namespace),
             version=pack.version or "v1",
             groups=[
                 FieldGroup(
@@ -400,6 +426,7 @@ def compile_type(pack_dir: Path, tender_type: str, core_dir: Path | None = None)
                         keywords=sections[name].keywords,
                     ),
                     derived=sections[name].derived,
+                    imported=sections[name].imported,
                 )
                 for name in included
             ],
@@ -426,10 +453,12 @@ def compile_type(pack_dir: Path, tender_type: str, core_dir: Path | None = None)
                 roles=sections[name].roles,
                 order=order,
                 derived=sections[name].derived,
+                imported=sections[name].imported,
             )
             for order, name in enumerate(included, start=1)
         ],
         fields=fields,
+        object_type=pack.object_type,
         reads_versions=reads_versions,
         not_read_from=not_read_from,
     )

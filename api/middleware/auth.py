@@ -67,6 +67,11 @@ _READS = (
     r"/tenders/search",
     r"/tenders/match",
     r"/me/watchlist",
+    # Award results (Stage 6): the imported publications, their review and approved rows.
+    r"/awards",
+    rf"/awards/{ID}",
+    rf"/awards/{ID}/(review|review-state|results)",
+    rf"/tenders/{ID}/awards",
 )
 _INTELLIGENCE = (
     rf"/tenders/{ID}/(published|published\.pdf|changes)",
@@ -81,6 +86,7 @@ ALLOWED_BY_ROLE: dict[str, tuple[tuple[str, str], ...]] = {
         *((m, p) for m in ("GET",) for p in _READS),
         ("POST", r"/approvals"),
         ("POST", rf"/tenders/{ID}/complete-review"),
+        ("POST", rf"/awards/{ID}/complete-review"),
         ("POST", r"/auth/logout"),
         # The library (Stage 5D): the model and its assumptions (a free tenant is refused
         # by the route with `tier_required`), the watchlist, a correction.

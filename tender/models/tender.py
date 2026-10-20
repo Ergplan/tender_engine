@@ -31,6 +31,8 @@ DOCUMENT_ROLES = (
     "technical",
     "contractual",
     "nit",
+    # A result publication (Stage 6): a result sheet, an adoption order, an allocation.
+    "result",
 )
 
 

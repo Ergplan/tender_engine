@@ -1,0 +1,74 @@
+reviewer: gpt-6.1-sol  input chars: 436594  tokens in/out: 121807/2678
+
+## (a) Non-negotiable invariants
+
+| Invariant | Assessment |
+|---|---|
+| **The LLM never writes truth** | No new canonical-fact writer is shown. Imported values enter the candidate insertion path (`core/services/extract.py:776–838`); human decisions still call `ApprovalService.approve` (`api/v1/core/review.py:41–55`). The existing canonical-write implementation is outside the supplied diff. |
+| **Every value carries its evidence** | **Not upheld.** The row approval guard can be bypassed by renaming an unlocated bidder, and merely counts supplied evidence rather than associating it with rows. Numeric quote generation can also substitute rounded numbers for the imported value. See findings below. Values without any quotes are assigned `rejected` (`core/services/extract.py:817–820`). |
+| **The tender is a versioned object** | No production tender-version write or in-place amendment is added. Document authorization reads existing version associations (`tender/services/tokens.py:231–248`). Existing version creation and projection implementations are not supplied. |
+| **Candidates are immutable** | No reviewer mutation of candidate values is added. Decisions delegate to the approval service with object scope (`api/v1/core/review.py:41–55`). Import inserts through `_add_candidate` (`core/services/extract.py:827–838`). |
+| **Validation is deterministic** | Added rules use Python comparisons and tenant-filtered evidence queries, without model calls (`tender/domain_packs/result/validation/rules.py:51–177`). The importer invokes the existing validator (`tender/services/results_import.py:657–658`); its status-update implementation is not supplied. |
+| **Everything is audited and tenant-scoped** | The new table inherits tenant/audit columns (`tender/models/award.py:12`), also explicitly present in the migration (`migrations/versions/0020_awards.py:39–44`). Added production ORM queries shown include tenant predicates, including the previously questioned document, candidate and span queries (`tender/services/awards.py:177–181`; `tender/services/results_import.py:662–664, 701–704`). Complete protected-write audit coverage cannot be verified; see (c). |
+| **Feedback is stored, never auto-applied** | No runtime feedback reader or automatic prompt/threshold adaptation is added. Import proceeds through candidate creation and validation (`tender/services/results_import.py:560–658`). Existing correction-feedback persistence is outside the diff. |
+| **API first** | Added award review, review-state, canonical results and completion operations have routes (`api/v1/awards/awards.py:48–128`), registered with the application (`api/main.py:42`). The UI calls those routes and the existing approval route through its API adapter (`web/src/api/client.ts:95–99`; `web/src/review/award.ts:32–40`). The importer is a management command as expressly required by the stage prompt. |
+
+FINDINGS: 2
+1. `tender/services/awards.py:368–388` — `AwardRowsGuard` checks retained unlocated rows by their original bidder name. Renaming the bidder removes the evidence requirement; supplied evidence is only counted, not matched to each retained row. `tests/api/test_awards.py:333–348` demonstrates acceptance of a replacement row with only its bidder quoted, not its numeric value. The guard therefore does not enforce located evidence row by row.
+2. `tender/services/results_import.py:820–827` — `_printed_number` tries rounded representations, including one decimal place. For an imported price of `2.41`, a page containing only `2.4` can supply a located quote while the candidate retains `2.41`. This allows numeric values to be treated as evidenced by a different number.
+
+## (b) Tests for every added endpoint
+
+All seven added endpoints are exercised by `tests/api/test_awards.py::test_real_result_sheet_imported_reviewed_approved_and_read_back_as_canonical`.
+
+| Endpoint | Test location |
+|---|---|
+| `GET /api/v1/awards` | `tests/api/test_awards.py:91–94`, including tender filtering |
+| `GET /api/v1/awards/{award_id}` | `tests/api/test_awards.py:95–96`, including not-found |
+| `GET /api/v1/awards/{award_id}/review` | `tests/api/test_awards.py:126–149` |
+| `GET /api/v1/awards/{award_id}/review-state` | `tests/api/test_awards.py:111–113` |
+| `GET /api/v1/awards/{award_id}/results` | `tests/api/test_awards.py:99–104, 177–182, 207–210` |
+| `POST /api/v1/awards/{award_id}/complete-review` | `tests/api/test_awards.py:185–215` |
+| `GET /api/v1/tenders/{tender_id}/awards` | `tests/api/test_awards.py:105–109, 180–182` |
+
+The widened existing token and approval routes also have award coverage (`tests/api/test_awards.py:116–124, 229–288`). Test definitions are shown; execution results are not.
+
+FINDINGS: none
+
+## (c) Audit coverage for protected writes
+
+| Write path | Audit evidence |
+|---|---|
+| Imported candidate insertion | `core/services/extract.py:803–805, 827–838` delegates to `_add_candidate`. Its implementation and audit call are not supplied. |
+| Candidate validation/status updates | `tender/services/results_import.py:658` delegates to `ValidationService.validate`. Its writes and audit calls are not supplied. |
+| Approval, canonical-fact and correction-feedback writes | `api/v1/core/review.py:41–55` delegates to `ApprovalService.approve`. The added guard invocation precedes writes (`core/services/approve.py:149–156`), but the underlying writes and audit calls are not supplied. |
+| Tender-version writes | None added in production code shown. |
+| Other direct feedback writes | None added. |
+
+The API test asserts that audit entries exist for several table names (`tests/api/test_awards.py:218–226`), not that each protected write has a corresponding entry. No directly shown protected-table write is definitively unaudited, but complete coverage cannot be certified.
+
+FINDINGS: 1
+1. `core/services/extract.py:803–805, 827–838`; `tender/services/results_import.py:658`; `api/v1/core/review.py:41–55` — Protected writes delegate to existing implementations omitted from the diff; their individual audit calls cannot be cited or verified.
+
+## (d) `make trace` regeneration
+
+**Cannot be determined from the supplied inputs.** This is not “not applicable”: the generator and generated document exist. The diff adds award-route checks and IMPORT rows (`scripts/gen_field_trace.py:130–153, 277–285`; `docs/FIELD-TRACE.md:11–15`), but supplies no regeneration execution or clean-diff result.
+
+FINDINGS: 1
+1. `docs/reports/STAGE-6-REPORT.md:19` — The claimed clean regeneration and green `field_trace` check are not demonstrated by an execution artifact.
+
+## (e) Unsupported draft-report claims
+
+The supplied import and live-check artifacts support the recorded import totals, five recorded links, token-file measurements and proxy probes. They do not establish the following claims.
+
+FINDINGS: 10
+1. `docs/reports/STAGE-6-REPORT.md:5` — “116 publications imported with 607 rows” conflicts with the report’s own total of 608 rows at line 49 and `docs/reports/stage-6-artifacts/live-checks.txt:2`. The 607 figure describes only the later run, not all 116 publications.
+2. `docs/reports/STAGE-6-REPORT.md:17` — The report describes tender-route token refusals as 403. The supplied tests expect 404 for an award token accessing a specific tender or tender review (`tests/api/test_awards.py:164–168`). It also claims an award-token refusal on a tender’s stored file; the shown file-refusal test checks the reverse direction (`tests/api/test_awards.py:242–245`).
+3. `docs/reports/STAGE-6-REPORT.md:19` — Successful trace regeneration and a green trace check have no execution evidence.
+4. `docs/reports/STAGE-6-REPORT.md:29` — “Every write” to candidates having its audit line is not verifiable because candidate insertion and status-change audit implementations are omitted; see (c).
+5. `docs/reports/STAGE-6-REPORT.md:33` — The claim that `RunView.mode` “is served” is not established by adding a defaulted schema member alone (`core/services/review_state.py:102–104`). The population code is absent; the new HTTP assertion is a test definition, not an execution result.
+6. `docs/reports/STAGE-6-REPORT.md:51` — “None of the 8 can be approved as it stands” is supported for plain approval, but the accompanying claim that the reviewer must quote each retained unlocated row is not enforced. Renaming bypasses the check, and evidence is counted rather than associated with rows (`tender/services/awards.py:368–388`).
+7. `docs/reports/STAGE-6-REPORT.md:51` — The assertion that NTPC_118 has “no located quote at all” conflicts with its `fields.winners: true` in `docs/reports/stage-6-artifacts/import-report.json`. That boolean is generated using `any(span.char_start is not None ...)` (`tender/services/results_import.py:573–577`); zero fully located rows is not zero located quotes.
+8. `docs/reports/STAGE-6-REPORT.md:60` — No supplied artifact establishes that precisely two live runs were revalidated with audited status changes. The live-check file supports the final aggregate counts, not that execution history or its audit entries.
+9. `docs/reports/STAGE-6-REPORT.md:62` — Five recorded links do not establish exhaustive overlap with all 14 tenders or prove that no other tender number occurs anywhere. The supplied artifacts contain neither the complete tender inventory nor the full page corpus.
+10. `docs/reports/STAGE-6-REPORT.md:93` — Historical spend/call totals and unchanged running totals are not supported by the supplied cost artifacts; the referenced Stage 5B cost file is absent. The assertion of no model spend for the whole stage also does not account for the separately recorded independent model review (`docs/reports/stage-6-artifacts/review-gpt-6.1-sol-run1.txt:1`).

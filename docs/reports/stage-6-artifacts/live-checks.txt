@@ -1,0 +1,81 @@
+awards|116
+rows|608
+documents of awards|116
+pages of award documents|1171
+pages without text layer|0
+section rows of award documents (expect 0)|0
+canonical facts of awards|0
+llm_call_log rows since 08:00 UTC today|0
+import runs|import|validated|116
+winners by status|needs_review|8
+winners by status|validated|108
+rows located (all quotes of the row located), tables with every row located|108|116
+located rows total|594
+failing rules|award_rows_located|8
+failing rules|evidence_not_located|22
+linked|nhpc-fdre-ii|page_text|3|NHPC_235_AT_2025_2026.pdf|8
+linked|ntpc-hybrid-03|page_text|3|NTPC_774_AT_2025_2026.pdf|4
+linked|seci-fdre-ix|rfs_number||SECI000258_result_1.pdf|3
+linked|seci-fdre-rtc-v|rfs_number||SECI000240_result_1.pdf|7
+linked|seci-wind-tranche-xx|rfs_number||SECI000250_result_1.pdf|12
+awards by procurer/kind|IREDA|allocation|1
+awards by procurer/kind|NHPC|cerc_adoption_order|11
+awards by procurer/kind|NTPC|cerc_adoption_order|22
+awards by procurer/kind|SECI|auction_result|73
+awards by procurer/kind|SJVN|allocation|9
+award tokens|116|2026-11-19
+links file: -rw------- 12276 bytes /work/stage6-award-links.txt
+links file lines: 116
+--- public proxy probes with one award link (token redacted) ---
+{"object_type":"award","object_id":"<id>","tender_id":null,"reviewer_name":"venture@aayuda.energy","expires_at":"2026-11-19T09:06:49.487569Z","completed_at":null,"round_no":1,"from_version":null}
+GET /awards/{id}/review: 200
+GET /tenders with the award link: 403
+GET /review/<token> page: 200
+GET /api/v1/awards without identity from outside: 401
+
+--- revalidation of SECI000096 and SECI000157 after the inr_per_kg band change: audited status changes ---
+SECI000096_result_1.pdf|status_change|raw|needs_review|2026-10-20 08:47:37.983488+00
+SECI000096_result_1.pdf|status_change|raw|validated|2026-10-20 08:47:37.983488+00
+SECI000096_result_1.pdf|status_change|raw|validated|2026-10-20 08:47:37.983488+00
+SECI000096_result_1.pdf|status_change|raw|validated|2026-10-20 08:47:37.983488+00
+SECI000157_result_1.pdf|status_change|raw|needs_review|2026-10-20 08:48:00.575815+00
+SECI000157_result_1.pdf|status_change|raw|validated|2026-10-20 08:48:00.575815+00
+SECI000157_result_1.pdf|status_change|raw|validated|2026-10-20 08:48:00.575815+00
+SECI000157_result_1.pdf|status_change|raw|validated|2026-10-20 08:48:00.575815+00
+SECI000157_result_1.pdf|status_change|raw|validated|2026-10-20 08:48:00.575815+00
+SECI000157_result_1.pdf|status_change|needs_review|validated|2026-10-20 09:08:37.077136+00
+
+--- every tender's external_ref searched in every award page's text (whitespace collapsed); only the two orders print one ---
+nhpc-fdre-ii|NHPC_235_AT_2025_2026.pdf|3
+ntpc-hybrid-03|NTPC_774_AT_2025_2026.pdf|3
+seci-fdre-ix|SECI000258_result_1.pdf|1
+seci-fdre-rtc-v|SECI000240_result_1.pdf|1
+seci-wind-tranche-xx|SECI000250_result_1.pdf|1
+
+--- tenders with an external_ref equal to a publication's reference ---
+seci-fdre-ix|SECI000258_result_1.pdf
+seci-fdre-rtc-v|SECI000240_result_1.pdf
+seci-wind-tranche-xx|SECI000250_result_1.pdf
+
+--- tender inventory (live tenants' tenders, status, external_ref) ---
+nhpc-fdre-ii|reviewed|2024_NHPC_800202_1
+ntpc-hybrid-03|reviewed|NTPC/RE-CS/2024-25/HYBRID-03
+ntpc-phes-2000mw|reviewed|NRE-CS-5846-004
+ntpc-rel-600mw-anantapur-wtg|reviewed|NRE-CS-5924-003
+recpdcl-beed-tbcb|extracted|(none)
+seci-cfd-i|reviewed|SECI/C&P/IPP/13/0002/26-27
+seci-cni-1-700mw|reviewed|SECI/C&P/IPP/15/0009/26-27
+seci-ess-iv|reviewed|SECI/C&P/IPP/15/0010/26-27
+seci-fdre-ix|reviewed|SECI/C&P/IPP/13/0006/26-27
+seci-fdre-rtc-v|reviewed|SECI/C&P/IPP/13/0020/25-26
+seci-gaya-60mw|reviewed|SECI/C&P/OP/11/0007/26-27
+seci-ramagiri-70mw-bess|extracted|SECI/C&P/OP/11/0002/26-27
+seci-wind-tranche-xx|in_review|SECI/C&P/IPP/12/0003/26-27
+wbsedcl-re-rtc-2026-01|reviewed|WBSEDCL/PT&P/RE-RTC/2026/01
+seci-ramagiri-70mw-bess-superseded-20261015|superseded|SECI/C&P/OP/11/0002/26-27
+live tenders|14
+
+--- application model calls: llm_call_log rows today (UTC) and since the stage tag ---
+today|0
+since 2026-10-18 14:51 UTC (stage-6-start)|0
+latest call|2026-10-18 09:09:08.869667+00

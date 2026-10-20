@@ -7,7 +7,14 @@ import pytest
 from core.llm.registry import load_prompt
 from core.schemas import SchemaRegistry
 from tender.models import DOCUMENT_ROLES, TENDER_TYPES
-from tender.services.packs import PACKS_ROOT, Catalog, PackError, build_registry, compile_type
+from tender.services.packs import (
+    PACKS_ROOT,
+    Catalog,
+    CompiledType,
+    PackError,
+    build_registry,
+    compile_type,
+)
 
 COMMON_SECTIONS = [
     "summary",
@@ -24,9 +31,17 @@ COMMON_SECTIONS = [
 ]
 
 
+def tender_types(catalog: Catalog) -> dict[str, CompiledType]:
+    """The catalog's tender types; the result pack's `award` (Stage 6) is not one."""
+    return {name: c for name, c in catalog.types.items() if c.object_type == "tender"}
+
+
 def test_every_tender_type_has_a_yaml_that_loads(catalog: Catalog) -> None:
-    assert sorted(catalog.types) == sorted(TENDER_TYPES)
+    assert sorted(tender_types(catalog)) == sorted(TENDER_TYPES)
     assert len(list((PACKS_ROOT / "power").glob("*.yaml"))) == len(TENDER_TYPES) + 1
+    # The one type that is not a tender: the award of the result pack.
+    assert set(catalog.types) - set(TENDER_TYPES) == {"award"}
+    assert catalog.types["award"].object_type == "award"
 
 
 def test_every_field_has_a_section_a_value_type_a_label_and_help(catalog: Catalog) -> None:
@@ -34,9 +49,16 @@ def test_every_field_has_a_section_a_value_type_a_label_and_help(catalog: Catalo
     catalog.register(registry)
     for compiled in catalog.types.values():
         section_names = [section.name for section in compiled.sections]
-        assert section_names[: len(COMMON_SECTIONS)] == COMMON_SECTIONS
-        assert len(section_names) == len(COMMON_SECTIONS) + 1, "one section of its own"
-        assert [s.name for s in compiled.sections if s.derived] == ["derived"]
+        if compiled.object_type == "tender":
+            assert section_names[: len(COMMON_SECTIONS)] == COMMON_SECTIONS
+            assert len(section_names) == len(COMMON_SECTIONS) + 1, "one section of its own"
+            assert [s.name for s in compiled.sections if s.derived] == ["derived"]
+            assert not any(s.imported for s in compiled.sections)
+        else:
+            # The award (Stage 6): one imported section, no core section, nothing derived.
+            assert section_names == ["award_result"]
+            assert [s.imported for s in compiled.sections] == [True]
+            assert not any(s.derived for s in compiled.sections)
         assert [field.review_order for field in compiled.fields] == list(
             range(1, len(compiled.fields) + 1)
         )
@@ -68,6 +90,11 @@ def test_field_paths_carry_their_origin(catalog: Catalog) -> None:
             if field.namespace == "core":
                 assert parts[0] == "core" and len(parts) == 3
                 assert (field.domain, field.subdomain) == (None, None)
+            elif field.namespace == "result":
+                # The result pack (Stage 6): result.<subdomain>.<field>, schema result.<type>.
+                assert parts[:2] == ["result", "award"] and len(parts) == 3
+                assert (field.domain, field.subdomain) == ("result", "award")
+                assert compiled.schema.name == "result.award" and compiled.object_type == "award"
             else:
                 assert parts[:2] == ["sector", "power"] and len(parts) == 4
                 assert field.domain == "power" and field.subdomain in ("common", tender_type)
@@ -132,9 +159,14 @@ def test_every_section_has_a_registered_prompt_that_extends_the_core_extract_pro
 ) -> None:
     core_text = load_prompt("extract", "v1").text
     names = {
-        s.prompt for compiled in catalog.types.values() for s in compiled.sections if not s.derived
+        s.prompt
+        for compiled in tender_types(catalog).values()
+        for s in compiled.sections
+        if not s.derived
     }
     assert len(names) == 20
+    # The award's section is imported: its prompt is a label, nothing a model reads.
+    assert [s.prompt for s in catalog.types["award"].sections] == ["import/re-tender-results"]
     for name in names:
         prompt = load_prompt(name, "v1", catalog.prompt_roots)
         assert prompt.text.startswith(core_text) and "Domain guidance" in prompt.text
@@ -355,7 +387,9 @@ def test_every_type_has_its_structured_fields_beside_the_prose(catalog: Catalog)
 def test_schema_v4_also_reads_the_runs_of_v1_v2_and_v3(catalog: Catalog) -> None:
     registry = SchemaRegistry()
     catalog.register(registry)
-    for compiled in catalog.types.values():
+    assert catalog.types["award"].schema.version == "v1"
+    assert catalog.types["award"].reads_versions == ()
+    for compiled in tender_types(catalog).values():
         assert compiled.schema.version == "v4" and compiled.reads_versions == ("v1", "v2", "v3")
         # re_rtc arrived with v3: nothing earlier than that to read.
         earliest = ("v3",) if compiled.tender_type == "re_rtc" else ("v1", "v2", "v3")

@@ -1,7 +1,7 @@
 """Stored files served by the API itself (Stage 5C): `GET /files/documents/<sha>.pdf` and
 `GET /files/renders/<sha>/<n>.png` straight from the storage backend, for the Cloud Run
 deployment where no proxy serves /data from disk. The check is the one `/files-auth` makes
-for the proxy: the file must belong to a document of the caller's review link's tender; a
+for the proxy: the file must belong to a document of the caller's review link's object; a
 request from outside without a link is refused. Locally Caddy keeps serving the files
 from disk after asking `/files-auth`, and this route is simply unused.
 """
@@ -11,7 +11,6 @@ from typing import Annotated
 
 from fastapi import APIRouter, Header, Request
 from fastapi.responses import Response
-from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from api.deps import SessionDep, SettingsDep, StorageDep, TenantDep
@@ -23,34 +22,12 @@ from api.middleware.review_token import (
     TOKEN_HEADER,
     ReviewContext,
 )
-from core.models import Document
-from tender.models import TenderVersion, TenderVersionDocument
-from tender.services.tokens import TokenError, TokenService
+from tender.services.tokens import TokenError, TokenService, document_belongs
 
 router = APIRouter(tags=["files"])
 KEY = re.compile(r"^(documents/([0-9a-f]{64})\.pdf|renders/([0-9a-f]{64})/\d+\.png)$")
 CACHE = "private, max-age=86400, immutable"
 RANGE = re.compile(r"^bytes=(\d*)-(\d*)$")
-
-
-def file_is_linked(session: Session, tenant_id: str, sha256: str, tender_id: str) -> bool:
-    """Whether a stored file (by its document's sha256) belongs to the tender."""
-    return (
-        session.scalar(
-            select(TenderVersionDocument.id)
-            .join(TenderVersion, TenderVersion.id == TenderVersionDocument.tender_version_id)
-            .join(Document, Document.id == TenderVersionDocument.document_id)
-            .where(
-                Document.tenant_id == tenant_id,
-                TenderVersionDocument.tenant_id == tenant_id,
-                TenderVersion.tenant_id == tenant_id,
-                Document.sha256 == sha256,
-                TenderVersion.tender_id == tender_id,
-            )
-            .limit(1)
-        )
-        is not None
-    )
 
 
 def _review_of(request: Request, session: Session, tenant_id: str) -> ReviewContext | None:
@@ -68,7 +45,8 @@ def _review_of(request: Request, session: Session, tenant_id: str) -> ReviewCont
         raise AppError(TOKEN_ERRORS[exc.reason]) from exc
     return ReviewContext(
         token_id=row.id,
-        tender_id=row.tender_id,
+        object_type=row.object_type,
+        object_id=row.object_id,
         reviewer=row.reviewer_name,
         completed=row.completed_at is not None,
     )
@@ -94,7 +72,9 @@ def get_file(
     review = _review_of(request, session, tenant_id)
     if review is None and PUBLIC_HEADER in request.headers:
         raise AppError("review_link_required")
-    if review is not None and not file_is_linked(session, tenant_id, sha256, review.tender_id):
+    if review is not None and not document_belongs(
+        session, tenant_id, review.object_type, review.object_id, sha256=sha256
+    ):
         raise AppError("not_found", "no such file")
     if not storage.exists(path):
         raise AppError("not_found", "no such file")

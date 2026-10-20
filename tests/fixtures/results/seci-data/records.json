@@ -1,0 +1,22 @@
+[
+ {
+  "tender_id": "SECI000013",
+  "category": "Battery storage",
+  "project": "Request for Selection (RFS) for setting up of 04 MW Floating Solar Power Plant with 02 MW/01 MWh BESS at Kalpong Dam, Diglipur, North Andaman & Nicobar",
+  "bidder": "SUNSOURCE ENERGY PRIVATE LIMITED",
+  "status": "Awarded",
+  "awarded_capacity": 4,
+  "capacity_unit": "MW",
+  "project_or_quoted_capacity": null,
+  "price": 6.95,
+  "price_unit": "INR/kWh",
+  "auction_date": "",
+  "loa_dates_as_published": "",
+  "notes": "4 MW floating solar with 2 MW/1 MWh BESS; source contains inconsistent location text.",
+  "source_page": 1,
+  "source_url": "https://www.seci.co.in/Upload/Bidder/637412277389447572.pdf",
+  "tender_url": "https://seci.co.in/tender-details/YWE",
+  "tender_title": "Request for Selection (RFS) for setting up of 04 MW Floating Solar Power Plant with 02 MW/01 MWh BESS at Kalpong Dam, Diglipur, North Andaman & Nicobar",
+  "tender_reference": "SECI/C&P/SPD/RfS/A&N/4MW/012020"
+ }
+]

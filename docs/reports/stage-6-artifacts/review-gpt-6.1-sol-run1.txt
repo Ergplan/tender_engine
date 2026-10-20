@@ -1,0 +1,77 @@
+reviewer: gpt-6.1-sol  input chars: 410956  tokens in/out: 115323/4627
+
+## (a) Non-negotiable invariants
+
+| Invariant | Assessment against the supplied diff |
+|---|---|
+| **The LLM never writes truth** | No additional canonical-fact writer is shown. Imported values enter through `ExtractService.import_candidate()` (`core/services/extract.py:776–838`); decisions still call the existing approval service (`api/v1/core/review.py:41–55`). The existing approval implementation is not supplied, so its exclusive ownership cannot be independently verified. |
+| **Every value carries its evidence** | **Not upheld.** Imported tables can contain unlocated rows while being treated as located because another quote resolves. The new confidence/location test uses `any(...)`, not complete row evidence (`core/services/extract.py:818–827`). The decision to permit whole-table approval despite unlocated rows is explicit in `docs/DECISIONS.md:207–209`. A `needs_review` result does not establish an approval prohibition. |
+| **The tender is a versioned object** | No production write to an existing tender version is added. The new document-scope checks read version associations rather than modifying versions (`tender/services/tokens.py:231–248`). Existing versioning and current-view implementations are outside the supplied diff. |
+| **Candidates are immutable** | No reviewer edit to a candidate value is added. Approval requests remain delegated to the existing handler, now with an object scope (`api/v1/core/review.py:41–55`). The imported candidate is inserted through the existing `_add_candidate()` path (`core/services/extract.py:827–838`). |
+| **Validation is deterministic** | The new rules use Python comparisons and evidence-table queries, without model calls (`tender/domain_packs/result/validation/rules.py:51–177`). Import validation is delegated to `ValidationService.validate()` (`tender/services/results_import.py:640–651`); its status-update implementation is not supplied. |
+| **Everything is audited and tenant-scoped** | **Not fully upheld.** The new award table has tenant/audit columns and RLS (`migrations/versions/0020_awards.py:25–65`). However, several new queries omit an explicit tenant filter: the document lookup, candidate-status query, and evidence-span lookup listed below. Audit verification limitations are addressed in (c). |
+| **Feedback is stored, never auto-applied** | No feedback reader or runtime prompt/threshold adaptation is added. Imported values are inserted and validated without reading feedback (`tender/services/results_import.py:531–651`). Correction persistence remains in the existing approval handler, whose implementation is not supplied. |
+| **API first** | The added review/results operations have versioned HTTP routes, exercised under `/api/v1/` (`api/v1/awards/awards.py:30–110`; `tests/api/test_awards.py:91–215`). The web adapter uses the API client rather than a separate intelligence path (`web/src/review/award.ts:32–40`). |
+
+FINDINGS: 2
+1. `core/services/extract.py:818–827`; `docs/DECISIONS.md:207–209` — A table can retain unlocated row values yet qualify through other located quotes; the documented approval policy permits those values to become canonical without requiring resolving reviewer evidence for the missing rows.
+2. `tender/services/awards.py:175`; `tender/services/results_import.py:646–651, 682–689` — The new `session.get(Document, ...)`, candidate-status query, and `_spans()` query lack explicit `tenant_id` filters. RLS does not satisfy the invariant’s separate requirement that every query filter by tenant.
+
+## (b) Tests for added API endpoints
+
+All seven added endpoints are exercised by `tests/api/test_awards.py::test_real_result_sheet_imported_reviewed_approved_and_read_back_as_canonical`:
+
+| Endpoint | Test location |
+|---|---|
+| `GET /api/v1/awards` | `tests/api/test_awards.py:91–95`, including the tender filter |
+| `GET /api/v1/awards/{award_id}` | `tests/api/test_awards.py:95–96`, including not-found |
+| `GET /api/v1/awards/{award_id}/review` | `tests/api/test_awards.py:126–149` |
+| `GET /api/v1/awards/{award_id}/review-state` | `tests/api/test_awards.py:111–113` |
+| `GET /api/v1/awards/{award_id}/results` | `tests/api/test_awards.py:99–104, 177–182, 207–210` |
+| `POST /api/v1/awards/{award_id}/complete-review` | `tests/api/test_awards.py:185–215`, covering blocked, completed, and subsequent read-only behavior |
+| `GET /api/v1/tenders/{tender_id}/awards` | `tests/api/test_awards.py:105–109, 180–182` |
+
+The widened existing token endpoints are also exercised: creation/session at `tests/api/test_awards.py:116–124`, invalid object selection and replacement at `:245–270`, and cross-object approval refusal at `:272–285`.
+
+These are test definitions; no execution results are supplied.
+
+FINDINGS: none
+
+## (c) Audit coverage for protected writes
+
+| Protected table/write path | Audit evidence shown |
+|---|---|
+| Candidate insertion through `import_candidate()` → `_add_candidate()` | Calls appear at `core/services/extract.py:803–805, 827–838`. `_add_candidate()` and its audit implementation are outside the supplied diff. |
+| Candidate status changes through import validation | `tender/services/results_import.py:644–645` calls the existing validator. Its writes and corresponding audit calls are outside the supplied diff. |
+| Approval, canonical-fact, and correction-feedback writes following an award decision | `api/v1/core/review.py:41–55` delegates to the existing approval handler. Its writes and audit calls are outside the supplied diff. |
+| Tender-version writes | No production tender-version write is added in the supplied diff. |
+| Other feedback writes | None added in the supplied diff. |
+
+The HTTP test checks that audit entries exist for several table names (`tests/api/test_awards.py:218–226`), but that does not establish a corresponding audit entry for every write. No directly shown protected-table write can be identified as definitively unaudited; complete coverage cannot be certified from these inputs.
+
+FINDINGS: 1
+1. `core/services/extract.py:803–805, 827–838`; `tender/services/results_import.py:644–645`; `api/v1/core/review.py:41–55` — Protected writes are delegated to existing implementations not included in the diff, so their individual audit calls cannot be cited or verified.
+
+## (d) `make trace` regeneration
+
+**Cannot be determined from the supplied inputs.** This is not “not applicable”: a trace generator and generated document exist. The generator adds award-route checks and IMPORT production (`scripts/gen_field_trace.py:130–153, 274–285`), and corresponding rows appear in `docs/FIELD-TRACE.md:11–15`. No regeneration output, clean-diff result, or CI status is supplied.
+
+FINDINGS: 1
+1. `docs/reports/STAGE-6-REPORT.md:19` — The assertion that regeneration produces no diff and `field_trace` is green is not demonstrated by an execution result in the supplied diff.
+
+## (e) Draft-report claims unsupported by the supplied code or artifacts
+
+FINDINGS: 13
+1. `docs/reports/STAGE-6-REPORT.md:5` — “Nothing from the dataset reaches a reader unreviewed” is broader than the implementation. Listing/get endpoints return dataset-supplied procurer, reference, result kind, verification, and row count before review (`api/v1/schemas/awards.py:16–20`; `api/v1/awards/awards.py:30–40`).
+2. `docs/reports/STAGE-6-REPORT.md:11–12, 79` — The report presents the evidence invariant as preserved while explicitly allowing whole-table approval with unlocated rows. The new location test accepts any located quote (`core/services/extract.py:818–827`); no added approval gate requires resolving the missing rows.
+3. `docs/reports/STAGE-6-REPORT.md:14` — A hash mismatch does not generally leave “nothing written.” Sources are checked and imported sequentially, and earlier sources commit before a later source’s hash is checked (`tender/services/results_import.py:378–410, 644–673`). The test tampers with the first source only.
+4. `docs/reports/STAGE-6-REPORT.md:17` — The claimed tests for an award token being refused on “every tender route” and on the tender’s files are not shown. The award-token test checks two tender routes, not every route; the file-refusal test shown is the opposite direction, a tender token accessing an award file (`tests/api/test_awards.py:164–170, 238–243`).
+5. `docs/reports/STAGE-6-REPORT.md:19` — The successful trace regeneration and green CI claim has no execution evidence; adding generator code and generated rows does not prove a clean regeneration.
+6. `docs/reports/STAGE-6-REPORT.md:5, 20–21` — Live deployment of the award review screen, minting 116 links, the external file’s mode `600`, and the public-proxy response checks are not supported by deployment, token-command, permission, or HTTP execution artifacts. The Deployment section remains a placeholder (`:69–71`).
+7. `docs/reports/STAGE-6-REPORT.md:29` — “Every write” to candidates having an audit line cannot be verified: the new importer delegates to `_add_candidate()` and the existing validation service, neither audit implementation being supplied.
+8. `docs/reports/STAGE-6-REPORT.md:33` — The command is described as writing links outside the repository, but it accepts an unrestricted output path and performs no repository-location check (`scripts/review_token.py:181–195`). The claimed actual external-file write is also unverified.
+9. `docs/reports/STAGE-6-REPORT.md:39–60` — The reported live total of 1,171 pages, every page having a text layer, zero live canonical facts, and the absence of `llm_call_log` rows during the run are not included in the import artifacts. Fixture tests establish behavior on fixtures, not these live database measurements.
+10. `docs/reports/STAGE-6-REPORT.md:39–60` — The “Winners tables located” explanation says only NTPC_118 has no located row. The supplied JSON also records zero located rows for SECI000210 and SECI000213. Its candidate-level `winners` boolean can be true despite zero fully located rows, so it does not support the report’s row-level explanation.
+11. `docs/reports/STAGE-6-REPORT.md:39–63` — The claimed post-change totals of 108 validated / 8 needs-review tables and successful revalidation of two live runs lack a post-revalidation artifact. The supplied JSON still records SECI000157’s winners as `needs_review`.
+12. `docs/reports/STAGE-6-REPORT.md:65` — The assertion that the 34 linked rows are the *whole* overlap with a corpus of 14 tenders is not established by the supplied corpus data or a database inventory. The artifacts support five recorded links, not exhaustive corpus coverage.
+13. `docs/reports/STAGE-6-REPORT.md:93` — Whole-stage model-spend totals, unchanged historical call totals, and independent review using `gpt-6.1-sol` are not supported by supplied cost or review-run artifacts. The Independent review section remains `<<REVIEW_SECTION>>` (`:83–85`); the referenced review logs are absent.

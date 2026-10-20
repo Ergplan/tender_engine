@@ -1,0 +1,62 @@
+type: award
+pack: result
+includes: [award_result]
+sections:
+  award_result:
+    label: Award result
+    # The importer's label, stored on the run and its candidates as the prompt name and
+    # version are for a model's reading. No prompt file exists: nothing is sent to a model.
+    prompt: import/re-tender-results
+    prompt_version: v1
+    roles: [result]
+    imported: true
+cross_field_rules:
+  - award_rows_have_status
+  - award_capacity_positive
+  - award_adopted_within_awarded
+  - award_price_in_band
+  - award_unit_matches_kind
+run_rules:
+  - award_rows_located
+fields:
+  result.award.procurer:
+    section: award_result
+    label: Procurer
+    type: text
+    required: true
+    help: "The agency that ran the tender or whose tariff the order adopts, as the publication names it (SECI, NTPC, NHPC, SJVN, IREDA)."
+  result.award.reference:
+    section: award_result
+    label: Reference
+    type: text
+    required: true
+    help: "The RfS number of the tender the result belongs to, or the petition number of the adoption order."
+  result.award.result_kind:
+    section: award_result
+    label: Kind of publication
+    type: enum
+    required: true
+    enum: [auction_result, cerc_adoption_order, allocation, register]
+    help: "What the document is: the result of an e-reverse auction, a CERC order adopting a tariff, an allocation or empanelment list, or a company register page."
+  result.award.result_date:
+    section: award_result
+    label: Date
+    type: date
+    help: "The auction or letter-of-award date of a result, the date of an order. When the publication carries several dates, the one most rows carry; the others are in the note."
+  result.award.winners:
+    section: award_result
+    label: Winners
+    type: record_list
+    required: true
+    help: "One row per bidder and allocation as the publication lists them: the capacity and price awarded, what a CERC order adopted of it, and the row's status. Units are as published; a price in INR per kg or a viability-gap amount per MW is not a tariff."
+    keys:
+      bidder: {label: Bidder, type: text}
+      allocation: {label: Allocation, type: enum, enum: [published_result, base, greenshoe]}
+      capacity: {label: Capacity, type: decimal, min: 0}
+      capacity_unit: {label: Capacity unit, type: enum, enum: [mw, kw, mw_per_year, mt_per_year, mt, mw_manufacturing]}
+      price: {label: Price, type: decimal, min: 0}
+      price_unit: {label: Price unit, type: enum, enum: [inr_per_kwh, inr_per_kg, inr_per_mw_vgf, inr_per_mw_month, inr_per_mw_annum, months_ppa_term, inr_contract_value, inr_two_year_charges]}
+      adopted_capacity: {label: Adopted capacity, type: decimal, min: 0}
+      adopted_price: {label: Adopted price, type: decimal, min: 0}
+      status: {label: Status, type: enum, enum: [awarded, tariff_adopted, l1_ranked_award_not_confirmed, tariff_adoption_recorded, empanelled, company_register_disclosure, partially_adopted, historical_award_not_adopted, published_allocation, award_reported_not_adopted, selected, adoption_quantity_ambiguous]}
+      notes: {label: Notes, type: text}

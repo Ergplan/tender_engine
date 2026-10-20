@@ -7,6 +7,7 @@ from sqlalchemy import select
 
 from api.deps import (
     ActorDep,
+    AwardsDep,
     CatalogDep,
     DerivedWriterDep,
     ReviewDep,
@@ -27,13 +28,13 @@ from api.v1.schemas.tenders import (
     ReviewTokenOut,
     SnapshotOut,
 )
-from core.models import Document
 from evals.threeway import low_review_fields
-from tender.models import ReviewToken, TenderVersion, TenderVersionDocument
+from tender.models import ReviewToken
 from tender.services import review as reviews
 from tender.services.amendments import TenderAmendments, tender_amendments
 from tender.services.review import TenderReview
 from tender.services.tenders import TenderError
+from tender.services.tokens import document_belongs
 
 router = APIRouter(tags=["review"])
 _SHA = re.compile(r"/files/(?:documents|renders)/([0-9a-f]{64})[./]")
@@ -54,23 +55,39 @@ def create_review_token(
     body: ReviewTokenCreate,
     session: SessionDep,
     tenders: TendersDep,
+    awards: AwardsDep,
     tokens: TokensDep,
     settings: SettingsDep,
     actor: ActorDep,
 ) -> ReviewTokenOut:
-    """A review link for one tender and one reviewer, valid for 30 days. An earlier link
-    for the tender stops working. Not reachable with a review token or from outside."""
+    """A review link for one object (a tender, or an award since Stage 6) and one
+    reviewer, valid for 30 days. An earlier link for the object stops working. Not
+    reachable with a review token or from outside."""
+    if (body.tender_id is None) == (body.award_id is None):
+        raise AppError("validation_failed", "name exactly one of tender_id and award_id")
+    if body.tender_id is not None:
+        try:
+            tender = tenders.get(session, body.tender_id)
+        except LookupError as exc:
+            raise AppError("not_found", f"tender {body.tender_id} does not exist") from exc
+        object_type, object_id = "tender", tender.id
+    else:
+        try:
+            award = awards.get(session, body.award_id or "")
+        except LookupError as exc:
+            raise AppError("not_found", f"award {body.award_id} does not exist") from exc
+        object_type, object_id = "award", award.id
     try:
-        tender = tenders.get(session, body.tender_id)
-    except LookupError as exc:
-        raise AppError("not_found", f"tender {body.tender_id} does not exist") from exc
-    try:
-        token = tokens.create(session, tender, body.reviewer_name, created_by=actor)
+        token = tokens.create_for(
+            session, object_type, object_id, body.reviewer_name, created_by=actor
+        )
     except ValueError as exc:
         raise AppError("validation_failed", str(exc)) from exc
     return ReviewTokenOut(
         url=review_url(settings.public_base_url, token.token),
         token=token.token,
+        object_type=token.object_type,
+        object_id=token.object_id,
         tender_id=token.tender_id,
         reviewer_name=token.reviewer_name,
         expires_at=token.expires_at,
@@ -81,11 +98,13 @@ def create_review_token(
 def get_review_session(
     session: SessionDep, review: ReviewDep, tenant_id: TenantDep
 ) -> ReviewSessionOut:
-    """Who the review token is and which tender it opens."""
+    """Who the review token is and which object (tender or award) it opens."""
     if review is None:
         raise AppError("review_link_required")
     token = _token(session, tenant_id, review.token_id)
     return ReviewSessionOut(
+        object_type=token.object_type,
+        object_id=token.object_id,
         tender_id=token.tender_id,
         reviewer_name=token.reviewer_name,
         expires_at=token.expires_at,
@@ -228,26 +247,15 @@ def authorise_file(
     x_forwarded_uri: Annotated[str | None, Header()] = None,
 ) -> None:
     """Asked by the proxy before it serves a stored file (a PDF or a page image): the file
-    must belong to a document of the review token's tender."""
+    must belong to a document of the review token's object (its tender or its award)."""
     if review is None:
         return
     found = _SHA.search(x_forwarded_uri or "")
     if found is None:
         raise AppError("not_found", "no such file")
-    linked = session.scalar(
-        select(TenderVersionDocument.id)
-        .join(TenderVersion, TenderVersion.id == TenderVersionDocument.tender_version_id)
-        .join(Document, Document.id == TenderVersionDocument.document_id)
-        .where(
-            Document.tenant_id == tenant_id,
-            TenderVersionDocument.tenant_id == tenant_id,
-            TenderVersion.tenant_id == tenant_id,
-            Document.sha256 == found.group(1),
-            TenderVersion.tender_id == review.tender_id,
-        )
-        .limit(1)
-    )
-    if linked is None:
+    if not document_belongs(
+        session, tenant_id, review.object_type, review.object_id, sha256=found.group(1)
+    ):
         raise AppError("not_found", "no such file")
 
 

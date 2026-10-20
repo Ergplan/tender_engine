@@ -53,9 +53,10 @@ def checks() -> list[Check]:
     ]
 
 
-# The full Python suite passed 900 s on the 2-vCPU VM once Stage 5C added its sixty tests;
-# the limit is a guard against a hung run, not a budget.
-COMMAND_TIMEOUT_S = 1500
+# The whole pytest suite took about 1,360 s on the two-core VM at Stage 5D and grows with
+# every stage (Stage 6: 1,500 s was no longer enough while anything else ran); the cap is
+# a guard against a hung check, not a budget. Resizing the VM is the owner's step.
+COMMAND_TIMEOUT_S = 2700
 
 
 def run_command(command: tuple[str, ...], cwd: Path) -> tuple[int, str]:

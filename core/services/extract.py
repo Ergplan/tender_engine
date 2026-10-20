@@ -38,7 +38,7 @@ from core.models import (
     Page,
     Section,
 )
-from core.models.extraction import DERIVED_MODE, RECORD_MODES, RUN_MODES
+from core.models.extraction import DERIVED_MODE, IMPORT_MODE, RECORD_MODES, RUN_MODES
 from core.schemas import (
     ExtractionSchema,
     FieldDef,
@@ -55,6 +55,8 @@ from core.storage import Storage
 
 ACTOR = "extraction"
 UNLOCATED_CONFIDENCE_CAP = 0.3
+# An imported row never ranks above a located, validated reading of a model (Stage 6).
+IMPORT_CONFIDENCE_CAP = 0.8
 MAX_PDF_BYTES = 20 * 1024 * 1024
 LIVE_STATUSES = ("raw", "validated", "needs_review", "not_found")
 _PY_TYPES: dict[JsonKind, Any] = {
@@ -277,7 +279,7 @@ class ExtractService:
         if not has_sections:
             raise ExtractionError("document has no section map yet")
         schema = self._schemas.get(schema_name, schema_version)
-        readable = {group.name for group in schema.groups if not group.derived}
+        readable = {group.name for group in schema.groups if not (group.derived or group.imported)}
         if groups is not None:
             unknown = sorted(set(groups) - readable)
             if unknown or not groups:
@@ -771,6 +773,70 @@ class ExtractService:
             prompt=(prompt_name, prompt_version),
         )
 
+    def import_candidate(
+        self,
+        session: Session,
+        run: ExtractionRun,
+        field_path: str,
+        *,
+        value: Any,
+        confidence: float,
+        rationale: str,
+        quotes: list[tuple[int, str, int | None]],
+        prompt: tuple[str, str],
+    ) -> Candidate:
+        """Insert the candidate of an import run (Stage 6): a value a reviewed dataset
+        gives for the field, with the quotes that should state it on the pages it cites,
+        as (page_no, quote, ordinal). Each quote is located by core's resolver on that
+        page (then its neighbours); a candidate none of whose quotes is located stays
+        unlocated at capped confidence and cannot be approved without reviewer evidence.
+        Confidence is capped at IMPORT_CONFIDENCE_CAP so that no imported row ranks above
+        a located, validated reading. No model call; the same insert, audit line and
+        refusal of a value without a quote as for any other candidate."""
+        if run.mode != IMPORT_MODE:
+            raise ExtractionError("only an import run takes an imported candidate")
+        schema = self._schemas.get(run.schema_name, run.schema_version)
+        field = schema.field(field_path)
+        group = next(group for group in schema.groups if group.name == field.group)
+        window = sorted({page_no for page_no, _, _ in quotes})
+        if value is None:
+            return self._add_candidate(
+                session, run, group, field, None, 0.0, rationale, "not_found", window, None, []
+            )
+        pages = _PageCache(session, run.document_id, run.tenant_id)
+        spans = [
+            {
+                **self._resolve(
+                    EvidenceQuote(page_no=1, quote=quote), [page_no], run.document_id, pages
+                ),
+                "ordinal": ordinal,
+            }
+            for page_no, quote, ordinal in quotes
+            if quote.strip()
+        ]
+        if not spans:
+            status, capped = "rejected", min(float(confidence), IMPORT_CONFIDENCE_CAP)
+        else:
+            status = "raw"
+            located = any(span["char_start"] is not None for span in spans)
+            capped = min(float(confidence), IMPORT_CONFIDENCE_CAP)
+            if not located:
+                capped = min(capped, UNLOCATED_CONFIDENCE_CAP)
+        return self._add_candidate(
+            session,
+            run,
+            group,
+            field,
+            value,
+            max(capped, 0.0),
+            rationale,
+            status,
+            window,
+            None,
+            spans,
+            prompt=prompt,
+        )
+
     def unsupported_candidate(
         self,
         session: Session,
@@ -1025,11 +1091,11 @@ class ExtractService:
 
 
 def _run_groups(schema: ExtractionSchema, groups: list[str] | None) -> list[FieldGroup]:
-    """The groups a run reads from pages: never a derived one."""
+    """The groups a run reads from pages: never a derived or an imported one."""
     return [
         group
         for group in schema.groups
-        if not group.derived and (groups is None or group.name in groups)
+        if not (group.derived or group.imported) and (groups is None or group.name in groups)
     ]
 
 

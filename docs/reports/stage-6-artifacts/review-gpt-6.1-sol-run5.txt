@@ -1,0 +1,74 @@
+reviewer: gpt-6.1-sol  input chars: 486840  tokens in/out: 134922/3402
+
+## (a) Non-negotiable invariants
+
+| Invariant | Assessment against the supplied diff |
+|---|---|
+| **The LLM never writes truth** | No additional canonical-fact writer is shown. Imported values enter the candidate insertion path (`core/services/extract.py:776–838`). Decisions still delegate to `ApprovalService.approve` with the review token’s object scope (`api/v1/core/review.py:41–55`). The existing canonical-write implementation is outside the diff. |
+| **Every value carries its evidence** | **Not fully upheld.** Numeric quote generation can still return a rounded fallback, and edited-row evidence is pooled without associating numbers with the row they support. See findings below. Non-null imported values without quotes are assigned `rejected` (`core/services/extract.py:817–820`). |
+| **The tender is a versioned object** | No production tender-version write or in-place amendment is added. Document authorization reads existing version associations (`tender/services/tokens.py:231–248`); imported awards use object version 1 (`tender/services/results_import.py:521–531`). Existing tender version creation and projection implementations are outside the diff. |
+| **Candidates are immutable** | No reviewer mutation of candidate values is added. Import delegates insertion to `_add_candidate` (`core/services/extract.py:803–805, 827–838`); review decisions remain delegated to the approval handler (`api/v1/core/review.py:41–55`). |
+| **Validation is deterministic** | Added validators use Python comparisons and tenant-filtered evidence queries, without model calls (`tender/domain_packs/result/validation/rules.py:51–177`). Import invokes the existing validator (`tender/services/results_import.py:657–658`); its status-update implementation is outside the diff. |
+| **Everything is audited and tenant-scoped** | The new award table carries tenant/audit columns and RLS (`migrations/versions/0020_awards.py:25–65`). Added production ORM reads shown include tenant predicates (`tender/services/awards.py:113–136, 177–181, 362–367`; `tender/services/results_import.py:662–664, 701–704`). Complete protected-write audit coverage cannot be verified; see (c). |
+| **Feedback is stored, never auto-applied** | No runtime feedback reader or automatic prompt/threshold adaptation is added. Import writes candidates and invokes validation without reading feedback (`tender/services/results_import.py:560–658`). Existing correction-feedback persistence is outside the diff. |
+| **API first** | Award review, state, results and completion have versioned routes (`api/v1/awards/awards.py:48–128`), registered with the application (`api/main.py:42`). The UI uses the API client and award adapter (`web/src/api/client.ts:95–99`; `web/src/review/award.ts:32–40`). The management-command importer is expressly required by the stage prompt. |
+
+FINDINGS: 2
+1. `tender/services/results_import.py:819–838` — `_printed_number()` filters rounded *matches*, but its fallback still uses six-significant-digit `:g` formatting. For example, importing `2.410001` against page text containing only `2.41` returns the quote `"2.41"` while retaining candidate value `2.410001`. `_row_quote()` can then select that printed quote (`:798–812`). The candidate can therefore receive located evidence for a different number.
+2. `tender/services/awards.py:449–468` — `_covered()` pools numbers from every supplied quote. It requires the bidder somewhere and each numeric value somewhere, but does not associate those numbers with that bidder’s row. An edited row can obtain capacity or adopted-capacity evidence from an unrelated row’s located quote, allowing an unsupported row value to become canonical.
+
+## (b) Tests for every added API endpoint
+
+All seven added endpoints are exercised by `tests/api/test_awards.py::test_real_result_sheet_imported_reviewed_approved_and_read_back_as_canonical`.
+
+| Endpoint | Test location |
+|---|---|
+| `GET /api/v1/awards` | `tests/api/test_awards.py:90–93`, including tender filtering |
+| `GET /api/v1/awards/{award_id}` | `tests/api/test_awards.py:94–95`, including not-found |
+| `GET /api/v1/awards/{award_id}/review` | `tests/api/test_awards.py:126–149` |
+| `GET /api/v1/awards/{award_id}/review-state` | `tests/api/test_awards.py:111–113`, including import mode |
+| `GET /api/v1/awards/{award_id}/results` | `tests/api/test_awards.py:98–104, 179–182, 208–210` |
+| `POST /api/v1/awards/{award_id}/complete-review` | `tests/api/test_awards.py:186–217`, covering blocked, completed and subsequent read-only behavior |
+| `GET /api/v1/tenders/{tender_id}/awards` | `tests/api/test_awards.py:105–109, 183–185` |
+
+The widened existing token/session and approval routes also have award coverage (`tests/api/test_awards.py:116–124, 230–297`). These are test definitions, not execution results.
+
+FINDINGS: none
+
+## (c) Audit coverage for protected writes
+
+| Write path | Audit evidence shown |
+|---|---|
+| Imported candidate insertion | `core/services/extract.py:803–805, 827–838` delegates to `_add_candidate()`. Its implementation and audit call are outside the diff. |
+| Candidate validation/status updates | `tender/services/results_import.py:657–658` delegates to `ValidationService.validate()`. Its writes and audit calls are outside the diff. Selected live status-change audit records appear at `docs/reports/stage-6-artifacts/live-checks.txt:36–46`. |
+| Approval, canonical-fact and correction-feedback writes | `api/v1/core/review.py:41–55` delegates to `ApprovalService.approve()`. The diff adds guard invocation before writes (`core/services/approve.py:149–156`), but does not show the underlying writes or audit calls. |
+| Tender-version writes | No production tender-version write is added in the code shown. |
+| Other feedback writes | None added in the code shown. |
+
+The API test checks that audit entries exist for several table names, not that every protected write has a corresponding entry (`tests/api/test_awards.py:222–230`). No directly shown protected write is definitively unaudited.
+
+FINDINGS: 1
+1. `core/services/extract.py:803–805, 827–838`; `tender/services/results_import.py:657–658`; `api/v1/core/review.py:41–55` — Protected writes delegate to implementations omitted from the diff, so their individual audit calls cannot be cited or verified.
+
+## (d) `make trace` regeneration
+
+**Cannot be determined from the supplied inputs.** This is not “not applicable”: the generator and generated document exist. The diff adds award-route checks and IMPORT generation (`scripts/gen_field_trace.py:130–153, 277–285`), with corresponding trace rows (`docs/FIELD-TRACE.md:11–15`). No regeneration execution, clean-diff output or CI status artifact is supplied.
+
+FINDINGS: 1
+1. `docs/reports/STAGE-6-REPORT.md:19, 100` — Clean regeneration and a green `field_trace` check are asserted, but the referenced `stage-6-artifacts/ci-status.json` is not included in the supplied diff.
+
+## (e) Unsupported draft-report claims
+
+The import and live-check artifacts support their recorded import totals, tender links, token-file measurements, proxy responses and zero application-log calls during the stage. The following claims are unsupported or stronger than the code shown.
+
+FINDINGS: 10
+1. `docs/reports/STAGE-6-REPORT.md:5, 11, 29, 49` — The evidence-preservation claims are stronger than the implementation. Rounded numeric fallbacks and numbers borrowed from unrelated quoted rows leave the evidence bypasses identified in (a).
+2. `docs/reports/STAGE-6-REPORT.md:30` — Completion is described as refused whenever a required field is undecided. The implementation counts only required undecided fields whose `current` is not `None` (`tender/services/awards.py:174–176`). A required field with no current entry is excluded, so deciding another field can permit completion despite that missing required decision.
+3. `docs/reports/STAGE-6-REPORT.md:19, 100` — Successful trace regeneration without diff and a green trace check have no supplied execution evidence.
+4. `docs/reports/STAGE-6-REPORT.md:29, 99` — “Every write” to candidates having its audit line cannot be verified because candidate insertion and validation/status-update audit implementations are omitted. The test’s table-name presence assertion does not prove per-write coverage.
+5. `docs/reports/STAGE-6-REPORT.md:32, 101` — The statement that `RunView` is populated using `model_validate(run, from_attributes=True)` is not shown in the diff. The defaulted schema member and HTTP test assertion are shown, but the claimed population implementation and passing execution are not.
+6. `docs/reports/STAGE-6-REPORT.md:5, 20, 73–75, 102` — The recorded proxy responses do not establish successful `make deploy` on the required static-IP deployment. The Deployment section remains `<<DEPLOY_SECTION>>`, and the referenced `deploy.txt` is absent from the supplied diff.
+7. `docs/reports/STAGE-6-REPORT.md:66` — All continuous-pipeline checks being green, strict mypy covering 151 files, the first timeout and the successful second full run with recorded timings are unsupported by supplied execution artifacts. Neither the cited CI status nor latest log appears in the diff.
+8. `docs/reports/STAGE-6-REPORT.md:68` — The claimed whole-web-suite total of 127 cases is not established by the diff or an execution/collection artifact. Three new award web tests are shown. The Python definitions support 21 new cases, but no `pytest --collect-only` execution is supplied.
+9. `docs/reports/STAGE-6-REPORT.md:87, 95, 102` — The review logs do not independently establish the claimed fresh-context invocation or exact input construction. The report’s current review entry remains `<<RUN4>>` despite a fourth review artifact being supplied, and its assertion that the diff carries deployment and CI artifacts is unsupported because those files are absent.
+10. `docs/reports/STAGE-6-REPORT.md:103, 115` — Historical application spend and call totals, and their unchanged running totals, are not supported by supplied cost artifacts. The referenced Stage 5B cost file is outside the diff; the zero-call live checks establish no new logged calls, not the historical totals.

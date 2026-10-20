@@ -128,6 +128,8 @@ export function makeRound(): TenderReview {
 }
 
 export const ROUND_SESSION: ReviewSession = {
+  object_type: "tender",
+  object_id: "t".repeat(32),
   tender_id: "t".repeat(32),
   reviewer_name: "Asha Rao",
   expires_at: "2026-11-14T00:00:00Z",
@@ -195,6 +197,8 @@ export function makeReview(): TenderReview {
 }
 
 export const SESSION: ReviewSession = {
+  object_type: "tender",
+  object_id: "t".repeat(32),
   tender_id: "t".repeat(32),
   reviewer_name: "Asha Rao",
   expires_at: "2026-11-04T00:00:00Z",

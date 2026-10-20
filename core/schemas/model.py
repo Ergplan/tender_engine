@@ -67,6 +67,10 @@ class FieldGroup(BaseModel):
     # A derived group is never sent to the model: its candidates are written by
     # deterministic code from the object's decided fields (run mode "derived").
     derived: bool = False
+    # An imported group is never sent to the model either: its candidates are written by
+    # an importer from a reviewed dataset, with their evidence located on the cited page
+    # (run mode "import", producer IMPORT; Stage 6).
+    imported: bool = False
 
 
 class ExtractionSchema(BaseModel):

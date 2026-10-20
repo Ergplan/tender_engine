@@ -38,7 +38,7 @@ def post_approval(
     An identical repeat returns the existing approval with 200 and writes nothing. When
     the request names `previous_approval_id` (null: the field was undecided) and the field
     has been decided again since, the write is refused with 409. With a review token, only
-    candidates of the token's tender can be decided."""
+    candidates of the token's object (its tender or its award) can be decided."""
     try:
         outcome = approvals.approve(
             session,
@@ -51,7 +51,7 @@ def post_approval(
             previous_approval_id=body.previous_approval_id
             if "previous_approval_id" in body.model_fields_set
             else UNCHECKED,
-            object_scope=("tender", review.tender_id) if review else None,
+            object_scope=review.scope if review else None,
         )
     except StaleDecisionError as exc:
         raise AppError("conflict", str(exc)) from exc

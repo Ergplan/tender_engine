@@ -182,6 +182,8 @@ def mint_review_token(
     return ReviewTokenOut(
         url=review_url(settings.public_base_url, token.token),
         token=token.token,
+        object_type=token.object_type,
+        object_id=token.object_id,
         tender_id=token.tender_id,
         reviewer_name=token.reviewer_name,
         expires_at=token.expires_at,

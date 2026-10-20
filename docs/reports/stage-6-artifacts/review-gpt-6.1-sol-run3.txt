@@ -1,0 +1,71 @@
+reviewer: gpt-6.1-sol  input chars: 453336  tokens in/out: 126288/2754
+
+## (a) Non-negotiable invariants
+
+| Invariant | Assessment against the supplied diff |
+|---|---|
+| **The LLM never writes truth** | No additional canonical-fact writer is shown. Imported values enter the candidate insertion path (`core/services/extract.py:776–838`). Human decisions still delegate to `ApprovalService.approve`, with the token’s object scope (`api/v1/core/review.py:41–55`). The existing canonical-write implementation is outside the diff. |
+| **Every value carries its evidence** | **Not upheld.** The award guard still permits edits whose changed values have no corresponding located evidence; see findings below. Values without quotes are assigned `rejected` by the import path (`core/services/extract.py:817–820`). |
+| **The tender is a versioned object** | No production tender-version write or in-place amendment is added. Document authorization reads version associations (`tender/services/tokens.py:231–248`), and award runs are attached to object version 1 (`tender/services/results_import.py:521–531`). Existing tender version creation and projection implementations are outside the diff. |
+| **Candidates are immutable** | No reviewer mutation of candidate values is added. Decisions delegate to the existing approval service (`api/v1/core/review.py:41–55`); import inserts through `_add_candidate` (`core/services/extract.py:827–838`). |
+| **Validation is deterministic** | The added validators use plain Python and tenant-filtered evidence queries, without model calls (`tender/domain_packs/result/validation/rules.py:51–177`). The importer invokes `ValidationService.validate` (`tender/services/results_import.py:658`); its status-update implementation is outside the diff. |
+| **Everything is audited and tenant-scoped** | The award table has tenant/audit columns and RLS (`migrations/versions/0020_awards.py:25–65`). Added production ORM queries shown include tenant predicates, including award/document reads and evidence queries (`tender/services/awards.py:113–136, 177–181, 362–367`; `tender/services/results_import.py:662–664, 701–704`). Protected-write audit coverage cannot be fully verified; see (c). |
+| **Feedback is stored, never auto-applied** | No runtime feedback reader or automatic prompt/threshold adaptation is added. Import proceeds through candidate creation and validation (`tender/services/results_import.py:560–658`). Existing correction-feedback persistence is outside the diff. |
+| **API first** | Award review, review-state, results and completion have versioned routes (`api/v1/awards/awards.py:48–128`), registered with the app (`api/main.py:42`). The UI uses the API client and award adapter (`web/src/api/client.ts:95–99`; `web/src/review/award.ts:32–40`). The management-command importer is expressly required by the stage prompt. |
+
+FINDINGS: 2
+1. `tender/services/awards.py:389–396, 409–423` — `_row_key` compares only bidder, capacity, price and allocation. An edit changing `adopted_capacity`, `adopted_price`, units, status or notes can be treated as an unchanged located row, bypassing reviewer evidence for the changed values.
+2. `tender/services/awards.py:397–400, 430–441`; `tests/api/test_awards.py:360–369` — Reviewer evidence coverage accepts the bidder **or** a price/capacity substring, rather than evidence locating the row’s bidder and numeric value. The test explicitly accepts a replacement row with only its bidder quoted. A reviewer can therefore change a numeric value while supplying only a located bidder name; quote counts also do not establish distinct evidence for each row.
+
+## (b) Tests for added API endpoints
+
+All seven added endpoints are exercised by `tests/api/test_awards.py::test_real_result_sheet_imported_reviewed_approved_and_read_back_as_canonical`.
+
+| Endpoint | Test location |
+|---|---|
+| `GET /api/v1/awards` | `tests/api/test_awards.py:91–94`, including tender filtering |
+| `GET /api/v1/awards/{award_id}` | `tests/api/test_awards.py:95–96`, including not-found |
+| `GET /api/v1/awards/{award_id}/review` | `tests/api/test_awards.py:126–149` |
+| `GET /api/v1/awards/{award_id}/review-state` | `tests/api/test_awards.py:111–113` |
+| `GET /api/v1/awards/{award_id}/results` | `tests/api/test_awards.py:99–104, 177–182, 207–210` |
+| `POST /api/v1/awards/{award_id}/complete-review` | `tests/api/test_awards.py:185–215` |
+| `GET /api/v1/tenders/{tender_id}/awards` | `tests/api/test_awards.py:105–109, 180–182` |
+
+The widened existing token/session endpoints and cross-object approval refusal also have coverage (`tests/api/test_awards.py:116–124, 229–288`). These are test definitions, not supplied execution results.
+
+FINDINGS: none
+
+## (c) Audit coverage for protected writes
+
+| Write path | Audit evidence shown |
+|---|---|
+| Imported candidate insertion | `core/services/extract.py:803–805, 827–838` delegates to `_add_candidate`. Its implementation and audit call are outside the diff. |
+| Candidate validation/status updates | `tender/services/results_import.py:658` delegates to `ValidationService.validate`. Its writes and audit calls are outside the diff. The live artifact records selected audited status changes (`docs/reports/stage-6-artifacts/live-checks.txt:36–46`), not every write. |
+| Approval, canonical-fact and correction-feedback writes | `api/v1/core/review.py:41–55` delegates to `ApprovalService.approve`. The diff adds guard invocation before writes (`core/services/approve.py:149–156`), but does not show the underlying writes or audit calls. |
+| Tender-version writes | No production tender-version write is added in the code shown. |
+| Other direct feedback writes | None added. |
+
+The API test checks the presence of audit entries for several table names (`tests/api/test_awards.py:218–226`), not a corresponding entry for every protected write. No directly shown protected write is definitively unaudited.
+
+FINDINGS: 1
+1. `core/services/extract.py:803–805, 827–838`; `tender/services/results_import.py:658`; `api/v1/core/review.py:41–55` — Protected writes delegate to existing implementations omitted from the diff, so their individual audit calls cannot be cited or verified.
+
+## (d) `make trace` regeneration
+
+**Cannot be determined from the supplied inputs.** This is not “not applicable”: the generator and generated document exist. The diff adds award-route checks and IMPORT generation (`scripts/gen_field_trace.py:130–153, 277–285`) and corresponding trace rows (`docs/FIELD-TRACE.md:11–15`). No regeneration execution, clean-diff output or CI status is supplied.
+
+FINDINGS: 1
+1. `docs/reports/STAGE-6-REPORT.md:19` — The claim that regeneration produces no diff and `field_trace` is green is not demonstrated by an execution artifact.
+
+## (e) Unsupported draft-report claims
+
+The supplied import and live-check artifacts support their recorded import totals, links, token-file measurements and proxy probes. The following claims remain unsupported or stronger than the shown implementation.
+
+FINDINGS: 7
+1. `docs/reports/STAGE-6-REPORT.md:5, 11, 51` — The claim that the evidence invariant is preserved, with reviewer evidence required for each retained unlocated row, is not enforced for all edited values. `_row_key` omits several row values, and `_covered` accepts bidder-only or numeric-substring evidence (`tender/services/awards.py:389–441`).
+2. `docs/reports/STAGE-6-REPORT.md:19` — Successful trace regeneration and a green trace check have no supplied execution evidence.
+3. `docs/reports/STAGE-6-REPORT.md:29` — “Every write” to candidates having its audit line cannot be verified: candidate insertion and validation/status-update audit implementations are omitted; see (c).
+4. `docs/reports/STAGE-6-REPORT.md:32–34` — The assertion that `RunView.mode` is populated using `model_validate(run, from_attributes=True)` is not established by the diff. Only the defaulted schema member is added (`core/services/review_state.py:102–104`); the population code is absent. The HTTP assertion is a test definition, not an execution result.
+5. `docs/reports/STAGE-6-REPORT.md:5, 20, 69–71` — The proxy probes support recorded HTTP responses, but do not demonstrate the required successful `make deploy` on the static-IP deployment. The Deployment section remains `<<DEPLOY_SECTION>>`.
+6. `docs/reports/STAGE-6-REPORT.md:65` — The supplied search artifact records five matching publications, but does not establish the stated denominator of **14 tenders**: no complete tender inventory is supplied.
+7. `docs/reports/STAGE-6-REPORT.md:93` — Historical application spend/call totals and their unchanged running totals are not supported by the supplied artifacts; the referenced Stage 5B cost file is absent. The supplied zero-call measurement covers calls since 08:00 UTC (`docs/reports/stage-6-artifacts/live-checks.txt:8`), not the report’s stronger claim of no application-log row for the whole day or whole stage.

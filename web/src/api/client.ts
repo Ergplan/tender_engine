@@ -25,6 +25,8 @@ export type AmendmentVersion = Schemas["AmendmentVersion"];
 export type AmendmentChange = Schemas["AmendmentChange"];
 export type ApprovalRequest = Schemas["ApprovalRequest"];
 export type ApprovalResult = Schemas["ApprovalOut"];
+export type AwardReview = Schemas["AwardReview"];
+export type AwardInfo = Schemas["AwardOut"];
 
 export class ApiError extends Error {
   constructor(
@@ -90,6 +92,10 @@ export function reviewApi(token: string) {
     complete: (tenderId: string) =>
       request<Snapshot>("POST", `/tenders/${tenderId}/complete-review`, token),
     snapshot: (tenderId: string) => get<Snapshot>(`/tenders/${tenderId}/snapshot`),
+    /** An award (Stage 6): the publication's review and its completion. */
+    award: (awardId: string) => get<AwardReview>(`/awards/${awardId}/review`),
+    completeAward: (awardId: string) =>
+      request<AwardInfo>("POST", `/awards/${awardId}/complete-review`, token),
     amendments: (tenderId: string) => get<TenderAmendments>(`/tenders/${tenderId}/amendments`),
     document: (documentId: string) => get<DocumentInfo>(`/documents/${documentId}`),
     pages: (documentId: string) => get<PageInfo[]>(`/documents/${documentId}/pages`),

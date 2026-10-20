@@ -1,0 +1,17 @@
+# Domains whose publications are admissible as sources of award results (DECISIONS.md,
+# 2026-10-07): the procuring agency or the regulator on its own domain. A subdomain of a
+# listed domain qualifies (www.seci.co.in, ntpctender.ntpc.co.in); nothing else does. Trade
+# press, aggregators, consultancy mirrors, social posts and secondary databases are never a
+# source for a value, whatever they report. A secondary source may find a document, never
+# supply a figure. Adding a legitimate agency domain is an edit here and a rerun of the
+# importer; it is read by `tender.services.source_domains`.
+domains:
+  - seci.co.in
+  - ntpc.co.in
+  - nhpc.nic.in
+  - sjvn.nic.in
+  - ireda.in
+  - cercind.gov.in
+  # The other procurers of the tender corpus.
+  - recpdcl.in
+  - wbsedcl.in

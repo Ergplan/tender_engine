@@ -18,6 +18,7 @@ from core.services.identity import Principal
 from core.services.ingest import IngestService
 from core.services.review_state import ReviewStateService
 from core.storage import Storage
+from tender.services.awards import AwardRowsGuard, AwardService
 from tender.services.derive import DerivedGuard, DerivedWriter
 from tender.services.packs import Catalog
 from tender.services.summary import SummaryGuard, SummaryWriter
@@ -147,6 +148,7 @@ def get_approvals(
     guards: list[DecisionGuard] = [
         SummaryGuard(writer, tenders),
         DerivedGuard(derived_writer(catalog, extract, schemas, tenant_id), tenders, catalog),
+        AwardRowsGuard(tenant_id),
     ]
     return ApprovalService(schemas, tenant_id, settings.evidence_match_threshold, guards=guards)
 
@@ -198,6 +200,13 @@ def get_derived_writer(
 
 
 DerivedWriterDep = Annotated[DerivedWriter, Depends(get_derived_writer)]
+
+
+def get_awards(catalog: CatalogDep, tenant_id: TenantDep) -> AwardService:
+    return AwardService(catalog, tenant_id)
+
+
+AwardsDep = Annotated[AwardService, Depends(get_awards)]
 
 
 def get_tokens(tenant_id: TenantDep) -> TokenService:

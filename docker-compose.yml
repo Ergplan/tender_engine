@@ -11,6 +11,8 @@ x-python: &python
     - .:/app
     - /data:/data
     - /work/tenders:/work/tenders:ro
+    # The RE-tender-results dataset the Stage 6 importer reads once per commit (read-only).
+    - /work/ref/RE-tender-results:/work/ref/RE-tender-results:ro
   depends_on:
     db:
       condition: service_healthy

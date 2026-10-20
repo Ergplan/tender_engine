@@ -1,0 +1,3466 @@
+{
+  "dataset": "RE-tender-results@f6d1d33",
+  "as_of": "7 October 2026",
+  "hosts": {
+    "cercind.gov.in": true,
+    "ireda.in": true,
+    "sjvn.nic.in": true,
+    "www.seci.co.in": true
+  },
+  "outcomes": [
+    {
+      "source_id": "50215d346a52500e",
+      "name": "SECI000001_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 4,
+      "rows_located": 4,
+      "document_id": "ed320f500a334948abb14e8286e93438",
+      "award_id": "24c42dcac58e4490834170f6130ec420",
+      "run_id": "f5a33af2824e400a9e92823cfcb63cfa",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "result_kind": "validated",
+        "result_date": "validated",
+        "winners": "validated",
+        "procurer": "validated",
+        "reference": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "11dbb83c02369af3",
+      "name": "SECI000005_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 2,
+      "rows_located": 2,
+      "document_id": "10c13352af784b95a9791aea8099117a",
+      "award_id": "b4cdf42ae4454fa9a778924637b26a13",
+      "run_id": "ad9d1a4ca6d64866a22c79b16fdbfddf",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": false,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "reference": "needs_review",
+        "procurer": "validated",
+        "result_kind": "validated",
+        "result_date": "validated",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "57f52a0efa62663f",
+      "name": "SECI000006_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 7,
+      "rows_located": 7,
+      "document_id": "e612432913bd4ccb89f96b85185d667a",
+      "award_id": "083a5612e6b24759bcd78fe2fc4e22b9",
+      "run_id": "c3389d8027ad4e7ca54d594cce663b35",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "reference": "validated",
+        "result_kind": "validated",
+        "result_date": "validated",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "b6a6881ce1696323",
+      "name": "SECI000007_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 1,
+      "rows_located": 1,
+      "document_id": "88d7ecd321e447eb8d50d38eb90b6f9d",
+      "award_id": "b7a7967981ae40549c8f4f3b3fe3b64d",
+      "run_id": "27ed46f7bb324ceea8b7de8dfc06d199",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "winners": "validated",
+        "result_kind": "validated",
+        "procurer": "validated",
+        "result_date": "validated",
+        "reference": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "f95889971752217d",
+      "name": "SECI000018_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 3,
+      "rows_located": 3,
+      "document_id": "5deb84507cc9481ca26e6626c273bfe7",
+      "award_id": "1c8ca5f24ed54452bfae0325ea5e05f7",
+      "run_id": "cbfb679eafac4d60a80fa69406a1e18f",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "reference": "validated",
+        "result_kind": "validated",
+        "result_date": "validated",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "86083f04cb76b4af",
+      "name": "SECI000025_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 4,
+      "rows_located": 4,
+      "document_id": "f442fb13d25e40d882f024106f09ca4e",
+      "award_id": "6f19c13fe608474fbe95fc3a7c1ff891",
+      "run_id": "af9a9eaca6134a3bbc8c8a437dafbbfd",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "reference": "validated",
+        "result_kind": "validated",
+        "result_date": "validated",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "5dae25a6d92b4a69",
+      "name": "SECI000030_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 6,
+      "rows_located": 4,
+      "document_id": "e439074173704dad94753f7f9adc5760",
+      "award_id": "a877dad5420a49d3a23a12bce147558a",
+      "run_id": "3b6fd376c1cd412ab3720a604470c289",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "reference": "validated",
+        "result_kind": "validated",
+        "result_date": "validated",
+        "winners": "needs_review"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "c2cfae719e09adb5",
+      "name": "SECI000032_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 4,
+      "rows_located": 4,
+      "document_id": "45deb00330f14fa89d2f3fba1ff562e4",
+      "award_id": "dad7c0cc64d145c1903d92e21dce58db",
+      "run_id": "fb8d5bf0781f4a7e99f67cb538b35c0b",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "result_kind": "validated",
+        "result_date": "validated",
+        "procurer": "validated",
+        "reference": "validated",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "5551cf979aae16bc",
+      "name": "SECI000033_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 5,
+      "rows_located": 5,
+      "document_id": "11d7cb86b64a4d3f822f1b00b9921154",
+      "award_id": "a0935837c09d4417879af9ed4ef98a82",
+      "run_id": "f070609a19be4770a1933f2e735dbef3",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "reference": "validated",
+        "result_kind": "validated",
+        "procurer": "validated",
+        "result_date": "validated",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "fe49a8c98623b162",
+      "name": "SECI000036_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 4,
+      "rows_located": 4,
+      "document_id": "8c3b013b8b0c4bc0a4e9c491ba87c85f",
+      "award_id": "3db516c6c31449d49d09eb46e7dd43d3",
+      "run_id": "7082a9f53e3f4734841353b190776019",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "winners": "validated",
+        "procurer": "validated",
+        "result_kind": "validated",
+        "result_date": "validated",
+        "reference": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "198741561de2d531",
+      "name": "SECI000042_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 4,
+      "rows_located": 4,
+      "document_id": "8fc20364882141fca490422af1f20ff1",
+      "award_id": "821c292cbf4c469796698a3b8c63d60f",
+      "run_id": "3b5137918a2143a8947c4293c3b51b9a",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "result_date": "validated",
+        "winners": "validated",
+        "result_kind": "validated",
+        "reference": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "e8c994c8a954967f",
+      "name": "SECI000043_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 3,
+      "rows_located": 3,
+      "document_id": "b3a6678cc6604f618da342dee86ec993",
+      "award_id": "183127b9e05249cb92001f8399f74431",
+      "run_id": "885f55ebaefe49ab8c17ab13e1cc1a23",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "result_kind": "validated",
+        "result_date": "validated",
+        "procurer": "validated",
+        "winners": "validated",
+        "reference": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "cc49ffa07f66522d",
+      "name": "SECI000047_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 3,
+      "rows_located": 3,
+      "document_id": "1d32750d304c489b802912fc7032f38f",
+      "award_id": "f756dc13f36843e19e29f7cb0b442fd1",
+      "run_id": "7b65477421344ae2a2d586af8b23ccc1",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "result_date": "validated",
+        "winners": "validated",
+        "reference": "validated",
+        "result_kind": "validated",
+        "procurer": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "55eb038e128096d3",
+      "name": "SECI000054_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 1,
+      "rows_located": 1,
+      "document_id": "423bef9f9a844c9db9343e9adeca2efa",
+      "award_id": "7f247cab9820400da82ea0278e6c2383",
+      "run_id": "fa968d722c414b0cb81a23d55cd4658d",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "reference": "validated",
+        "result_kind": "validated",
+        "result_date": "validated",
+        "winners": "validated",
+        "procurer": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "e4bd063668689c40",
+      "name": "SECI000075_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 4,
+      "rows_located": 4,
+      "document_id": "491e682196b64fda9b636db362f13c03",
+      "award_id": "fed0b7cff2384c4a92ab17b54e9bbfd9",
+      "run_id": "0f594b7de7a44883b37bb2135dbc272a",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "result_kind": "validated",
+        "procurer": "validated",
+        "reference": "validated",
+        "result_date": "validated",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "90f5af66f569c454",
+      "name": "SECI000077_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 11,
+      "rows_located": 11,
+      "document_id": "c8f15dde197745fe929bd33225f81ace",
+      "award_id": "181ea37c62434415a471db5072e51973",
+      "run_id": "e7c25d8e427e403880aa891cf457be35",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": null,
+        "winners": true
+      },
+      "statuses": {
+        "result_kind": "validated",
+        "result_date": "not_found",
+        "winners": "validated",
+        "procurer": "validated",
+        "reference": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "dccea52cbed7f42a",
+      "name": "SECI000081_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 3,
+      "rows_located": 3,
+      "document_id": "251791da44b8429eb7c4d7ff18e85a4f",
+      "award_id": "ef8b5b689c0e40059444fe78a77319c8",
+      "run_id": "a66354b4edc941f6965d4deb118e2ef7",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "reference": "validated",
+        "result_kind": "validated",
+        "result_date": "validated",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "ed51757d0374cf92",
+      "name": "SECI000087_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 6,
+      "rows_located": 6,
+      "document_id": "409b45024f3c4b81bcc09902deeec2d8",
+      "award_id": "7273c0220a2c4abd833cacadc3af1622",
+      "run_id": "941cf35b82164518bafb7c8e7d81ef42",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "reference": "validated",
+        "result_kind": "validated",
+        "result_date": "validated",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "b6fb5f9a53720087",
+      "name": "SECI000095_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 8,
+      "rows_located": 8,
+      "document_id": "9d17e826d244448a863b743523f34bc6",
+      "award_id": "e072fb08dfcb4552881475c1b73d0c95",
+      "run_id": "73a9c6cc7e214d1099bab33f977c8849",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": null,
+        "winners": true
+      },
+      "statuses": {
+        "result_date": "not_found",
+        "procurer": "validated",
+        "result_kind": "validated",
+        "reference": "validated",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "3e67f69bd3687fea",
+      "name": "SECI000096_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 10,
+      "rows_located": 7,
+      "document_id": "028d08b39ed3411296add78b2f7d5cec",
+      "award_id": "7c05f44b1a0a4177b78de6cdcdd112e5",
+      "run_id": "5c9b950705b747888cc78c669b1e2ce0",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": null,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "reference": "validated",
+        "result_kind": "validated",
+        "result_date": "not_found",
+        "winners": "needs_review"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "aa636c07805a0da1",
+      "name": "SECI000105_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 5,
+      "rows_located": 5,
+      "document_id": "4a2313488f654018b8b3c94a407da9cd",
+      "award_id": "0ad230dae87a4935b09ee02bc385596e",
+      "run_id": "de0b78625e24449ebb585490bd898609",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "winners": "validated",
+        "procurer": "validated",
+        "result_kind": "validated",
+        "reference": "validated",
+        "result_date": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "b186aa352ab05f8b",
+      "name": "SECI000107_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 4,
+      "rows_located": 4,
+      "document_id": "b092bfe0284b4ab3b61bdd6dfc227a34",
+      "award_id": "8d991937983d40f691f7d049c3e2c3de",
+      "run_id": "63cecc30b53a45349deacec76454715e",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "result_kind": "validated",
+        "result_date": "validated",
+        "winners": "validated",
+        "reference": "validated",
+        "procurer": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "bec89ac0e47490c2",
+      "name": "SECI000108_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 3,
+      "rows_located": 3,
+      "document_id": "e482fb1684274ac3b459a64ed0e2085a",
+      "award_id": "eb95b821e55240a6b570ef6f23b4fed7",
+      "run_id": "34849bee70554972902a1a49e217c8b3",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "reference": "validated",
+        "result_kind": "validated",
+        "procurer": "validated",
+        "result_date": "validated",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "c30a6fb154fc1b3f",
+      "name": "SECI000112_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 6,
+      "rows_located": 6,
+      "document_id": "233dbbabcec644e0873b2173e38e9c9a",
+      "award_id": "caf9cdc7bdf54245bab28caec9f4a18d",
+      "run_id": "017aa3f37e2945869171386f32bac5d2",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": false,
+        "result_kind": true,
+        "result_date": null,
+        "winners": true
+      },
+      "statuses": {
+        "result_date": "not_found",
+        "winners": "validated",
+        "procurer": "validated",
+        "result_kind": "validated",
+        "reference": "needs_review"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "01e281316a397c8d",
+      "name": "SECI000119_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 4,
+      "rows_located": 4,
+      "document_id": "c3fdb3ce65bb4b6ab9a4be33a1b93b2f",
+      "award_id": "3a302f321bd74bfa94025e1b9a594b0f",
+      "run_id": "390fe5888b604143b6340225f8936344",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "reference": "validated",
+        "result_kind": "validated",
+        "result_date": "validated",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "c240660a443d1bf1",
+      "name": "SECI000121_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 5,
+      "rows_located": 5,
+      "document_id": "4a1845cfe1084e38b19be3af63be894d",
+      "award_id": "1fc6169c875e4c60a49d28aa5fa76dc3",
+      "run_id": "49c46e9e29644fcfa65723b830e18ce8",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "result_kind": "validated",
+        "procurer": "validated",
+        "reference": "validated",
+        "result_date": "validated",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "f68727b31a9a60bb",
+      "name": "SECI000123_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 6,
+      "rows_located": 6,
+      "document_id": "7c091dad5dd04eda97e99a7edbb5d9df",
+      "award_id": "73012fb17bce4d50b8f6a122f1030e34",
+      "run_id": "d0b000a98da14d369fbae85ea3d6fb66",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "winners": "validated",
+        "result_kind": "validated",
+        "procurer": "validated",
+        "result_date": "validated",
+        "reference": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "6eac2beee8bb321a",
+      "name": "SECI000131_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 13,
+      "rows_located": 13,
+      "document_id": "86dba91f47a641129997ad657be2cfce",
+      "award_id": "4a6f12e4b74d4432b553d2801893c72e",
+      "run_id": "9f5b6f40f4264cc49eeaa5c6c5997416",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "reference": "validated",
+        "result_kind": "validated",
+        "result_date": "validated",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "3610015bbae63f91",
+      "name": "SECI000132_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 4,
+      "rows_located": 4,
+      "document_id": "ea3cd784f21a465b9a7dbfc8ce98f680",
+      "award_id": "985e66203d0a400c9a46cb1866294a6c",
+      "run_id": "551dd2605505490e97ef371778808cd3",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "reference": "validated",
+        "result_kind": "validated",
+        "result_date": "validated",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "2615370eaa4f1739",
+      "name": "SECI000139_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 2,
+      "rows_located": 2,
+      "document_id": "76a4874640a0457b842c83f4d806bdab",
+      "award_id": "53372ffc5b5e4956b9ee384b87dce4d1",
+      "run_id": "a61214e1222b466d952e9c9243548ef3",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "reference": "validated",
+        "result_kind": "validated",
+        "result_date": "validated",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "7ad662214fc0713c",
+      "name": "SECI000140_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 2,
+      "rows_located": 2,
+      "document_id": "ed2f07db5e794f21a9774b771400b142",
+      "award_id": "aec602ba0da349068929c32b75bbf50d",
+      "run_id": "f0266dd00bd94854ae0109c81b0c3338",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "winners": "validated",
+        "result_kind": "validated",
+        "procurer": "validated",
+        "reference": "validated",
+        "result_date": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "89187fd285f10243",
+      "name": "SECI000146_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 3,
+      "rows_located": 3,
+      "document_id": "feaa9990936e42178ea89ca0d412b8a1",
+      "award_id": "7b8d526992a74373b8467133b64bfe01",
+      "run_id": "bff64eb5ed104a05876b8a58a211b78c",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "result_date": "validated",
+        "result_kind": "validated",
+        "reference": "validated",
+        "procurer": "validated",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "58d507be8378f134",
+      "name": "SECI000147_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 1,
+      "rows_located": 1,
+      "document_id": "2b560624ea964f44883a7e7ada700aff",
+      "award_id": "e26c0c0c4cce477880e234467371fc17",
+      "run_id": "ac17ed7abde447749f12230bc41c3d47",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": null,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "reference": "validated",
+        "result_kind": "validated",
+        "result_date": "not_found",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "3b517593815b33dd",
+      "name": "SECI000148_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 2,
+      "rows_located": 2,
+      "document_id": "fcd4c8b641f34f5baa369e76e3b76797",
+      "award_id": "b068408b81564727bb25365712ef1e1d",
+      "run_id": "142b4b5b5b2d457891e5bba7415c28eb",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": null,
+        "winners": true
+      },
+      "statuses": {
+        "reference": "validated",
+        "result_kind": "validated",
+        "procurer": "validated",
+        "result_date": "not_found",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "e628520c3f26ea75",
+      "name": "SECI000157_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 9,
+      "rows_located": 9,
+      "document_id": "362a22031aa347e1a4e0048d4934a286",
+      "award_id": "db7cc66046444c22a04aecdf73ad1755",
+      "run_id": "95acd59629ed47b094925998c1e540bb",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "winners": "needs_review",
+        "result_kind": "validated",
+        "procurer": "validated",
+        "reference": "validated",
+        "result_date": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "e8e8847456aff07e",
+      "name": "SECI000162_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 5,
+      "rows_located": 5,
+      "document_id": "b7756f4141e94c359afbc1a561dca33e",
+      "award_id": "a48895fcbf1b437785dfbdcf20ecb653",
+      "run_id": "cc74046554574ef691eb1a266a181d22",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "result_date": "validated",
+        "winners": "validated",
+        "result_kind": "validated",
+        "reference": "validated",
+        "procurer": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "444ad9af18189317",
+      "name": "SECI000170_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 1,
+      "rows_located": 1,
+      "document_id": "bb17d449f98543598b64fb74fe874cc8",
+      "award_id": "cac457d18709443895fc894e191a19a1",
+      "run_id": "0a4c849496aa450687a24606dfa7e871",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "result_kind": "validated",
+        "procurer": "validated",
+        "reference": "validated",
+        "result_date": "validated",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "de326edc1ea6ff28",
+      "name": "SECI000171_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 2,
+      "rows_located": 2,
+      "document_id": "bbf8e958bc014c2c846f9a88bec3bcd1",
+      "award_id": "2fa0a090cf5949f4a466e70a7aa24cbe",
+      "run_id": "8abbd2c5091e46f3966345b2a0820f96",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "winners": "validated",
+        "result_date": "validated",
+        "procurer": "validated",
+        "result_kind": "validated",
+        "reference": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "b15def051f48feac",
+      "name": "SECI000176_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 4,
+      "rows_located": 4,
+      "document_id": "3e9b1ef2c07743afb32ba903c8e1e322",
+      "award_id": "ddfe8dfa8d604eff80cb8a1c798d9f50",
+      "run_id": "2ea52b6f558844d4b164d24873cdb082",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "result_kind": "validated",
+        "winners": "validated",
+        "procurer": "validated",
+        "result_date": "validated",
+        "reference": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "a3c97cdc52ed52db",
+      "name": "SECI000181_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 1,
+      "rows_located": 1,
+      "document_id": "ccca8462cbe94d8385b9b1d736df12eb",
+      "award_id": "9e5df19fecad4fe5a55fa1efa22242df",
+      "run_id": "b52f660c215140a3a45441185f98df42",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "reference": "validated",
+        "result_kind": "validated",
+        "result_date": "validated",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "eb8891d446cef3bc",
+      "name": "SECI000202_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 11,
+      "rows_located": 11,
+      "document_id": "bf71daa6d08c43a3a6ed9b80cdfb573a",
+      "award_id": "32e28887bbee4cfba7a549343a6d4170",
+      "run_id": "14552b85856840d3bbefd7546e93cc8d",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": null,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "reference": "validated",
+        "result_kind": "validated",
+        "result_date": "not_found",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "651ae049c9c2f4c5",
+      "name": "SECI000204_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 4,
+      "rows_located": 4,
+      "document_id": "09d9cbf338ba4d119609ab14a7dbd404",
+      "award_id": "539a601160a94a9b947ad7e3f3930dbb",
+      "run_id": "1307a2e46111400e85294b3d878597f9",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": null,
+        "winners": true
+      },
+      "statuses": {
+        "result_date": "not_found",
+        "winners": "validated",
+        "procurer": "validated",
+        "reference": "validated",
+        "result_kind": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "3c8d4e5755d44b00",
+      "name": "SECI000221_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 4,
+      "rows_located": 4,
+      "document_id": "7371abbf45ff40e48caa5d48df6e8905",
+      "award_id": "c9235557ed03416ebf543f32fa154d3f",
+      "run_id": "6d6562ac3bec454d843a5d35fe96f39f",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "result_date": "validated",
+        "winners": "validated",
+        "result_kind": "validated",
+        "reference": "validated",
+        "procurer": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "f1c32ca332ad101e",
+      "name": "SECI000222_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 7,
+      "rows_located": 7,
+      "document_id": "ecda5ccc18c642aea1e564af71efc9b5",
+      "award_id": "784edcd984f34f389eac83b0eaf846c5",
+      "run_id": "5fa03853386748e9894b0dd9b7ede549",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "reference": "validated",
+        "procurer": "validated",
+        "result_kind": "validated",
+        "result_date": "validated",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "d39f83bedc335cd7",
+      "name": "SECI000228_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 3,
+      "rows_located": 3,
+      "document_id": "7d8e52a4796b4c1488c5644c452f421c",
+      "award_id": "c08f922f3f95472a8a0622f4eafbccde",
+      "run_id": "a0faca9ce610418db5614516ec76edeb",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "reference": "validated",
+        "result_kind": "validated",
+        "result_date": "validated",
+        "winners": "validated",
+        "procurer": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "c9e1c52b83f32ecd",
+      "name": "SECI000230_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 3,
+      "rows_located": 3,
+      "document_id": "486660f979b04190bf5103099ccea628",
+      "award_id": "82a1ffe41ecc40d3bee6926b09f4038a",
+      "run_id": "13c4c1bebf9346eba5767570ad1e86f7",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "result_date": "validated",
+        "reference": "validated",
+        "procurer": "validated",
+        "result_kind": "validated",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "6d9a9c4e6a9f7c3f",
+      "name": "SECI000240_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 7,
+      "rows_located": 7,
+      "document_id": "0507026706c14055b44929f8deed142d",
+      "award_id": "40de84ba98374230a45ba115972dd59f",
+      "run_id": "a1ed9660921041e1bda219057a671e07",
+      "tender_slug": "seci-fdre-rtc-v",
+      "link_basis": "rfs_number",
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "result_kind": "validated",
+        "procurer": "validated",
+        "reference": "validated",
+        "winners": "validated",
+        "result_date": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "585a3026509fa381",
+      "name": "SECI000250_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 12,
+      "rows_located": 12,
+      "document_id": "61227b1de05147268b5fd18f332d3e92",
+      "award_id": "310d6c86770141919e5f5b3248334e37",
+      "run_id": "3e14f57ed27c430e8b3a94f90b027ab3",
+      "tender_slug": "seci-wind-tranche-xx",
+      "link_basis": "rfs_number",
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "reference": "validated",
+        "result_kind": "validated",
+        "result_date": "validated",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "8cb10e8a80629561",
+      "name": "SECI000258_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 3,
+      "rows_located": 3,
+      "document_id": "7141335922834ff09f75ab7bf651eef1",
+      "award_id": "b5edf6abe1b748cf915a85acefb2efda",
+      "run_id": "a57fb5775a4c442a895aef8dcccf9a20",
+      "tender_slug": "seci-fdre-ix",
+      "link_basis": "rfs_number",
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "reference": "validated",
+        "winners": "validated",
+        "result_date": "validated",
+        "procurer": "validated",
+        "result_kind": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "773fe894b5d8420e",
+      "name": "SECI000179_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 1,
+      "rows_located": 1,
+      "document_id": "637396de7e754226b03be842c59db0e4",
+      "award_id": "f5d43c1b4dc54b55bb3e7ee36aa1919c",
+      "run_id": "807fcada7f204e7ab0bcf20f3a0c2d5e",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": false,
+        "result_kind": false,
+        "result_date": null,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "reference": "needs_review",
+        "result_kind": "needs_review",
+        "result_date": "not_found",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "28af15200c39827c",
+      "name": "SECI000180_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 4,
+      "rows_located": 4,
+      "document_id": "2c299167b86b4e69a9e53e4ec2df6409",
+      "award_id": "b303687ea05d40a79576cfedd6974f01",
+      "run_id": "e18f0e20743b4c6dab698dda0a71501d",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": false,
+        "result_date": null,
+        "winners": true
+      },
+      "statuses": {
+        "result_date": "not_found",
+        "winners": "validated",
+        "procurer": "validated",
+        "result_kind": "needs_review",
+        "reference": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "f6a39eb5cb65013f",
+      "name": "SECI000186_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 5,
+      "rows_located": 5,
+      "document_id": "2343a17aa7154c0fb840561aa46dd7ad",
+      "award_id": "3cd5ca4953dc476ebe981fadfaac9f83",
+      "run_id": "7862f16eb04a4bf98cfab9dc60c2c308",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": false,
+        "result_date": null,
+        "winners": true
+      },
+      "statuses": {
+        "reference": "validated",
+        "procurer": "validated",
+        "result_kind": "needs_review",
+        "result_date": "not_found",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "62462e014aa63013",
+      "name": "SECI000192_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 4,
+      "rows_located": 4,
+      "document_id": "6036356052c54c548bf7f88357b3edde",
+      "award_id": "37660df13b904b4ba008d034eccebf14",
+      "run_id": "34f252538b5d416eae353574268fceb0",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": false,
+        "result_date": null,
+        "winners": true
+      },
+      "statuses": {
+        "result_date": "not_found",
+        "winners": "validated",
+        "procurer": "validated",
+        "result_kind": "needs_review",
+        "reference": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "1af337b016b374c1",
+      "name": "SECI000194_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 9,
+      "rows_located": 9,
+      "document_id": "713e0953a37e4e9583808e28f3216982",
+      "award_id": "6b361c90123f48a6aa88f5268c9ecd24",
+      "run_id": "6de14df59449494880a8383489a8808b",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": false,
+        "result_date": null,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "reference": "validated",
+        "result_kind": "needs_review",
+        "result_date": "not_found",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "4b403cad38548d49",
+      "name": "SECI000206_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 6,
+      "rows_located": 6,
+      "document_id": "e89843c33e18461696261b2a5794f5aa",
+      "award_id": "62debfb6b7b44473a99ef8d96f8718f4",
+      "run_id": "18ebbfd602e64eb9bca82de5bc56c8e7",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": false,
+        "result_date": null,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "reference": "validated",
+        "result_kind": "needs_review",
+        "result_date": "not_found",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "b4540051e2b10587",
+      "name": "SECI000216_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 1,
+      "rows_located": 1,
+      "document_id": "41809fdcb56044f5b8a34fb906badb08",
+      "award_id": "55c9117ad326400083029bdbf6717d9b",
+      "run_id": "af96263f967a460eac1d2d4875e9ab83",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": false,
+        "result_date": null,
+        "winners": true
+      },
+      "statuses": {
+        "result_kind": "needs_review",
+        "result_date": "not_found",
+        "winners": "validated",
+        "reference": "validated",
+        "procurer": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "2341434f35365fe7",
+      "name": "SECI000220_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 10,
+      "rows_located": 10,
+      "document_id": "d94125e84589413b9ddebb918991b046",
+      "award_id": "743008df30e041e6816a0c4195ac7bef",
+      "run_id": "b65e46b27e1a4032bf84061ac7bdf65c",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": null,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "reference": "validated",
+        "result_kind": "validated",
+        "result_date": "not_found",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "7a0805f8f2c4a9b4",
+      "name": "SECI000227_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 12,
+      "rows_located": 12,
+      "document_id": "fdb892357dcd47d7b857d3f9681ed21c",
+      "award_id": "4426b8ad567f4b90a897029001fa8147",
+      "run_id": "22d9d7782c6f42c2bf6b516e6f2f474d",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": null,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "reference": "validated",
+        "result_kind": "validated",
+        "result_date": "not_found",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "b912320f85b0125b",
+      "name": "SECI000234_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 14,
+      "rows_located": 14,
+      "document_id": "1ba5a029593b4b758871a3d4841d3b8a",
+      "award_id": "8cc9ce9901324fc59f4ad80d03b07f93",
+      "run_id": "12fbd30b672944b4849e6b5b08645ed9",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": null,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "reference": "validated",
+        "result_kind": "validated",
+        "result_date": "not_found",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "25e02ddec51cfaad",
+      "name": "SECI000243_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 14,
+      "rows_located": 14,
+      "document_id": "82f393c3ff994c07aaf7161cb1029c3f",
+      "award_id": "c472e859118c4d438491f6835c93e839",
+      "run_id": "2964aec1b0114553ac2dd671999ceb99",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": null,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "reference": "validated",
+        "result_kind": "validated",
+        "result_date": "not_found",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "66e2b8c128af828b",
+      "name": "SECI000013_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "already_imported",
+      "rows": 1,
+      "rows_located": 0,
+      "document_id": "7988dea3149b4118b38854eb34e3c6be",
+      "award_id": "2af3e28f9eea4ac2823f63a53ddca37f",
+      "run_id": null,
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {},
+      "statuses": {},
+      "note": ""
+    },
+    {
+      "source_id": "f428609ce8ef4c9c",
+      "name": "SECI000023_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 5,
+      "rows_located": 5,
+      "document_id": "737ae860a6b74aa296da572cf2a9234e",
+      "award_id": "4d5f7798fada47deb5571e787495a313",
+      "run_id": "0e33ca79aaba4dc3a9b43d3c923636c1",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": false,
+        "result_date": null,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "reference": "validated",
+        "result_kind": "needs_review",
+        "result_date": "not_found",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "c7c56fce0b7ae684",
+      "name": "SECI000072_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 8,
+      "rows_located": 8,
+      "document_id": "8cde50f78c5146749ca928e4f8983745",
+      "award_id": "cb4eb797d17b45eeb352d49a32f1e4da",
+      "run_id": "e05add8e8f0a4db1a03094dafd879b25",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": false,
+        "result_date": null,
+        "winners": true
+      },
+      "statuses": {
+        "reference": "validated",
+        "procurer": "validated",
+        "result_kind": "needs_review",
+        "result_date": "not_found",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "66396f954db92bc6",
+      "name": "SECI000073_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 11,
+      "rows_located": 11,
+      "document_id": "143522b3f1734781a550ac58f06e5732",
+      "award_id": "7c4a5e77493e48b69ce3eed0eba2fbe3",
+      "run_id": "c03e72a40f9f4652b415df084f767197",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": null,
+        "winners": true
+      },
+      "statuses": {
+        "result_date": "not_found",
+        "procurer": "validated",
+        "result_kind": "validated",
+        "winners": "validated",
+        "reference": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "c57c6eab494a71cf",
+      "name": "SECI000092_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 10,
+      "rows_located": 10,
+      "document_id": "0f110f4355a94a6ebb400f88efc5fbba",
+      "award_id": "d2660347122c4ed5a5385e20e384bcb4",
+      "run_id": "a9ef6f39a19248f7886335d83366cbf5",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": null,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "reference": "validated",
+        "result_kind": "validated",
+        "result_date": "not_found",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "ae35ff65fe2f7768",
+      "name": "SECI000142_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 13,
+      "rows_located": 13,
+      "document_id": "d9c3e9172d8a476fb4be6ad02e9dbc69",
+      "award_id": "1b25195c68d540e1bafad2efb4172838",
+      "run_id": "888fe5295b9443eebe921b377d2441ce",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "result_date": "validated",
+        "winners": "validated",
+        "result_kind": "validated",
+        "reference": "validated",
+        "procurer": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "a1c9443c4df812aa",
+      "name": "SECI000175_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 1,
+      "rows_located": 1,
+      "document_id": "0b5ede6620c346b28da17314769e68fc",
+      "award_id": "b93636fc3e174af4bcaef109d335caf4",
+      "run_id": "9460d48f7c834730875f16464737f859",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": null,
+        "winners": true
+      },
+      "statuses": {
+        "winners": "validated",
+        "procurer": "validated",
+        "reference": "validated",
+        "result_kind": "validated",
+        "result_date": "not_found"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "dc1c2a648cf0d5a9",
+      "name": "SECI000183_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 1,
+      "rows_located": 1,
+      "document_id": "639dd0fb4e8f4254b894693fa2a31327",
+      "award_id": "abc34fbb0fa749e4bccd5ce8a66deb11",
+      "run_id": "88d164ad9363498a9b48d676a23bc693",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": null,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "result_kind": "validated",
+        "reference": "validated",
+        "result_date": "not_found",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "ac1c23a7dddf2117",
+      "name": "SECI000184_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 1,
+      "rows_located": 1,
+      "document_id": "8c27d02d99354bb7bfe6b59e26566722",
+      "award_id": "d3ce332212834bc7817d9845a4589851",
+      "run_id": "5a62c5cbfc484704a7c1493819881883",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": null,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "reference": "validated",
+        "result_kind": "validated",
+        "result_date": "not_found",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "ce8102fb0ad1f50a",
+      "name": "SECI000210_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 1,
+      "rows_located": 0,
+      "document_id": "052d4faf9a7347fea1058b42c7d9fa59",
+      "award_id": "362d1242d301489db6e016bba7ea8bb7",
+      "run_id": "caac58dddbe345fa826c1f1914d7847e",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": null,
+        "winners": false
+      },
+      "statuses": {
+        "reference": "validated",
+        "result_date": "not_found",
+        "winners": "needs_review",
+        "result_kind": "validated",
+        "procurer": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "71f5d4d034f5ecaf",
+      "name": "SECI000213_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 1,
+      "rows_located": 0,
+      "document_id": "eac7b1c3e96e457895ef07f8766bdde8",
+      "award_id": "25de62f8545d418da0b04abfa3ccb33b",
+      "run_id": "ae433bad765a43f59b21dd630e587377",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": null,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "reference": "validated",
+        "result_kind": "validated",
+        "result_date": "not_found",
+        "winners": "needs_review"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "4545ae9952ceb474",
+      "name": "SECI000218_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 2,
+      "rows_located": 2,
+      "document_id": "23aa7674fedb41b292d95c1bdb15cfa3",
+      "award_id": "46d2206d12f54b22a532f2e6e4a64e23",
+      "run_id": "1566cc8aff434de782df42183c9c906a",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": null,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "result_date": "not_found",
+        "winners": "validated",
+        "reference": "validated",
+        "result_kind": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "7af27f1b7eedd393",
+      "name": "SECI000238_result_1.pdf",
+      "host": "www.seci.co.in",
+      "action": "imported",
+      "rows": 1,
+      "rows_located": 1,
+      "document_id": "13a4607af4f94d82bc432c8441edac3a",
+      "award_id": "1cb32dc27c944c1c9737c1233446f833",
+      "run_id": "d8692ed762df4a8a9698625b3011e352",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "reference": "validated",
+        "result_kind": "validated",
+        "result_date": "validated",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "4174c64f100319c4",
+      "name": "NHPC_721_AT_2020_2021.pdf",
+      "host": "cercind.gov.in",
+      "action": "imported",
+      "rows": 5,
+      "rows_located": 5,
+      "document_id": "e0e6cde22b314ac3a8d774ef2ac29b03",
+      "award_id": "b47814cc4ba3434f9e3bfd049974958d",
+      "run_id": "bc953aaf59f54f49b109383882c41f7e",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "result_date": "validated",
+        "reference": "validated",
+        "winners": "validated",
+        "result_kind": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "a1941a96d03e148e",
+      "name": "NHPC_366_AT_2024_2025.pdf",
+      "host": "cercind.gov.in",
+      "action": "imported",
+      "rows": 8,
+      "rows_located": 8,
+      "document_id": "bda39d469ca24e60a55affa2e83cc75a",
+      "award_id": "1f9a3d4414e54843932804930c4d7d67",
+      "run_id": "525da8d8b36d43aabc2af6a41800d2e5",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "winners": "validated",
+        "reference": "validated",
+        "procurer": "validated",
+        "result_kind": "validated",
+        "result_date": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "50b1d8add46fb452",
+      "name": "NHPC_68_AT_2025_2025.pdf",
+      "host": "cercind.gov.in",
+      "action": "imported",
+      "rows": 9,
+      "rows_located": 9,
+      "document_id": "d9b39239df2545c496073a67e98eb5b7",
+      "award_id": "e98875a9175147fc935e74817bce7ce2",
+      "run_id": "a75bcc4bb77a4634aa1efbfc1ee189f2",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "result_date": "validated",
+        "result_kind": "validated",
+        "procurer": "validated",
+        "winners": "validated",
+        "reference": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "cc03116c8d373d2a",
+      "name": "NHPC_86_AT_2025_2025.pdf",
+      "host": "cercind.gov.in",
+      "action": "imported",
+      "rows": 3,
+      "rows_located": 3,
+      "document_id": "46d03f2f1bf74927b54048dc1f317e3b",
+      "award_id": "40f3d30de84c47e49f60e0f84140b7a9",
+      "run_id": "b5736acb6d5b47788a270479b13f6ce7",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "reference": "validated",
+        "result_kind": "validated",
+        "result_date": "validated",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "57fad7c7854a8ab8",
+      "name": "NHPC_87_AT_2025_2025.pdf",
+      "host": "cercind.gov.in",
+      "action": "imported",
+      "rows": 5,
+      "rows_located": 5,
+      "document_id": "c6830b6e3a7d43a0a6d4cee10ad20e3c",
+      "award_id": "6153b82d347e4831b2d031d39465432d",
+      "run_id": "039f9fcb14e04de29b4e8a199e2ee4df",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "result_date": "validated",
+        "procurer": "validated",
+        "reference": "validated",
+        "result_kind": "validated",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "22c7d47bcd78db3a",
+      "name": "NHPC_88_AT_2025_2025.pdf",
+      "host": "cercind.gov.in",
+      "action": "imported",
+      "rows": 6,
+      "rows_located": 6,
+      "document_id": "38cd040b4f544beeb56ff5b3fc8e65ba",
+      "award_id": "6af4cbd3fd8e43628488f21e2fd2fb2a",
+      "run_id": "fa954fab3f214b6c93a27fd0b8147e95",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "reference": "validated",
+        "procurer": "validated",
+        "result_date": "validated",
+        "winners": "validated",
+        "result_kind": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "4b89f5e39baece45",
+      "name": "NHPC_235_AT_2025_2026.pdf",
+      "host": "cercind.gov.in",
+      "action": "imported",
+      "rows": 8,
+      "rows_located": 8,
+      "document_id": "c8470c405cf246b3b21d0613cef9a086",
+      "award_id": "0d808aa5b9014073a91a9f8baacf4c0a",
+      "run_id": "30169976a8c148879562682cde4cb16a",
+      "tender_slug": "nhpc-fdre-ii",
+      "link_basis": "page_text",
+      "link_page": 3,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "result_date": "validated",
+        "winners": "validated",
+        "reference": "validated",
+        "result_kind": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "2167c26f9cbe16e9",
+      "name": "NHPC_310_AT_2025_2026.pdf",
+      "host": "cercind.gov.in",
+      "action": "imported",
+      "rows": 12,
+      "rows_located": 10,
+      "document_id": "06403c8d0def404a9254eab261f19b3d",
+      "award_id": "857a4d6553e2414ebfc8dd16864b436d",
+      "run_id": "cb1f2bd3ef604ad59da6fa34b8ea1192",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "reference": "validated",
+        "result_kind": "validated",
+        "result_date": "validated",
+        "winners": "needs_review",
+        "procurer": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "299a83ac6b49d8a6",
+      "name": "NHPC_457_AT_2025_2026.pdf",
+      "host": "cercind.gov.in",
+      "action": "imported",
+      "rows": 6,
+      "rows_located": 6,
+      "document_id": "d75f2b025d384374bfbe99d671e751ea",
+      "award_id": "15727af8fc074fbcba4c08a84f28a6ea",
+      "run_id": "66da58aee42841e38bb9c96a7af6336f",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "reference": "validated",
+        "result_kind": "validated",
+        "result_date": "validated",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "0c81b2771a9a7ea3",
+      "name": "NHPC_643_AT_2025_2026.pdf",
+      "host": "cercind.gov.in",
+      "action": "imported",
+      "rows": 6,
+      "rows_located": 5,
+      "document_id": "de2fa884656241d3b2b153064ea1c805",
+      "award_id": "3ee97768c02041ba95f7f1a6d21d843a",
+      "run_id": "7dcdc628ff6d42cea125933b0d6c8fe8",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "reference": "validated",
+        "result_kind": "validated",
+        "result_date": "validated",
+        "winners": "needs_review"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "bae81ab1851f74bb",
+      "name": "NHPC_773_AT_2025_2026.pdf",
+      "host": "cercind.gov.in",
+      "action": "imported",
+      "rows": 7,
+      "rows_located": 7,
+      "document_id": "4579a1314b6c43429e11d3214100bd59",
+      "award_id": "c1666455132b4e90a6f5527507d60ec4",
+      "run_id": "ac8783b6f7a74cedb50784885e16d9d5",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "winners": "validated",
+        "procurer": "validated",
+        "result_date": "validated",
+        "result_kind": "validated",
+        "reference": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "87ebe7a4e81ba81d",
+      "name": "NTPC_188_AT_2020_2020.pdf",
+      "host": "cercind.gov.in",
+      "action": "imported",
+      "rows": 6,
+      "rows_located": 6,
+      "document_id": "f7b61289bb874a398b3220ff602fb7f9",
+      "award_id": "4b7ad12e87c548cd8b17daca27f9a665",
+      "run_id": "8dc0d7ecdb95427f834912c8855b9b30",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "result_date": "validated",
+        "winners": "validated",
+        "result_kind": "validated",
+        "reference": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "3982dcd571ee3b44",
+      "name": "NTPC_57_AT_2020_2020.pdf",
+      "host": "cercind.gov.in",
+      "action": "imported",
+      "rows": 1,
+      "rows_located": 1,
+      "document_id": "f77cbf6dc37448a1ba08b86af9abc997",
+      "award_id": "ac2021c3def54e09ada7762236a66cb0",
+      "run_id": "672f07d6bbe945e593c3bc60a7d5ad32",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "reference": "validated",
+        "result_kind": "validated",
+        "result_date": "validated",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "f802c522f4603cd7",
+      "name": "NTPC_126_AT_2021_2021.pdf",
+      "host": "cercind.gov.in",
+      "action": "imported",
+      "rows": 1,
+      "rows_located": 1,
+      "document_id": "3417d5bde8ae402bac0f39a6b759a6fe",
+      "award_id": "3d773903583741c7be2e0740f4dd499c",
+      "run_id": "280902da6a3d4875a40ac6e27d0a5a75",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "result_kind": "validated",
+        "reference": "validated",
+        "result_date": "validated",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "d9d6b131e3e58e85",
+      "name": "NTPC_210_AT_2021_2021.pdf",
+      "host": "cercind.gov.in",
+      "action": "imported",
+      "rows": 1,
+      "rows_located": 1,
+      "document_id": "ccbcde0b62e2482f880e57ad76194d5f",
+      "award_id": "69c74a1e87974eb6b42354c43951f564",
+      "run_id": "50b706a07b934c9d9aa3939ca13e6526",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "reference": "validated",
+        "result_kind": "validated",
+        "result_date": "validated",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "447079509732fce9",
+      "name": "NTPC_549_AT_2020_2021.pdf",
+      "host": "cercind.gov.in",
+      "action": "imported",
+      "rows": 31,
+      "rows_located": 31,
+      "document_id": "5abb9e87fdc2403ca6d00ace7722a498",
+      "award_id": "15fcada55c3242a991a0a4d12381fb28",
+      "run_id": "8e904a7243dd41bba8b29e1944b9f6c5",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "result_date": "validated",
+        "winners": "validated",
+        "reference": "validated",
+        "result_kind": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "f9abc15f95c2a922",
+      "name": "NTPC_254_AT_2022_along_with_IA_No__69_2022_2023.pdf",
+      "host": "cercind.gov.in",
+      "action": "imported",
+      "rows": 4,
+      "rows_located": 4,
+      "document_id": "672c0cd1b46445d493afb1312d253e5d",
+      "award_id": "45551d4349f24938a84c50603294518f",
+      "run_id": "48448d87f4224015bc529a3be4471c6e",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "reference": "validated",
+        "result_date": "validated",
+        "winners": "validated",
+        "result_kind": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "476f5270d2607bdd",
+      "name": "NTPC_118_AT_2024_2024.pdf",
+      "host": "cercind.gov.in",
+      "action": "imported",
+      "rows": 2,
+      "rows_located": 0,
+      "document_id": "eb449fbe142d47969bffeb3d2f9f6fa1",
+      "award_id": "9ca9a0f1635a4736918dc4bd8f9b49b2",
+      "run_id": "f3e1c8793d504945ade14208d00a0759",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "reference": "validated",
+        "result_kind": "validated",
+        "result_date": "validated",
+        "winners": "needs_review"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "cd10430281263d04",
+      "name": "NTPC_233_AT_2023_2024.pdf",
+      "host": "cercind.gov.in",
+      "action": "imported",
+      "rows": 3,
+      "rows_located": 3,
+      "document_id": "a501d29008ac4bc09e615baa05c1434f",
+      "award_id": "d3eb1f4cffbb40e9956a246119b5556f",
+      "run_id": "86172ecc556b451487b3fc0b7c61a6d1",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "reference": "validated",
+        "result_kind": "validated",
+        "result_date": "validated",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "82edac563875bafc",
+      "name": "NTPC_237_AT_2024_2024.pdf",
+      "host": "cercind.gov.in",
+      "action": "imported",
+      "rows": 5,
+      "rows_located": 5,
+      "document_id": "7c0a2092bfe84a6787364475eb26de2f",
+      "award_id": "86918141977d4213880172f9356ca325",
+      "run_id": "544eb4d7df6948a0a6bec394e372b300",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "result_kind": "validated",
+        "winners": "validated",
+        "procurer": "validated",
+        "result_date": "validated",
+        "reference": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "1ecf514d9df7a666",
+      "name": "NTPC_71_AT_2024_2024.pdf",
+      "host": "cercind.gov.in",
+      "action": "imported",
+      "rows": 4,
+      "rows_located": 4,
+      "document_id": "bf34ba441e9449e8bc37779a4f80dafa",
+      "award_id": "b8c6ae33bd0c4fb6b53bf3612dee22ba",
+      "run_id": "990daa2abfdb4e2fa3605f195a7e5eb9",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "result_date": "validated",
+        "winners": "validated",
+        "result_kind": "validated",
+        "reference": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "8185d1f1ca80e927",
+      "name": "NTPC_88_AT_2024_2024.pdf",
+      "host": "cercind.gov.in",
+      "action": "imported",
+      "rows": 4,
+      "rows_located": 4,
+      "document_id": "d5a1ad0a8ec44e95a4b9d4477f927920",
+      "award_id": "1e08b31eefb64bcc8b00e80aa08ec84d",
+      "run_id": "075844f476a84937bc013c7c4272770b",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "result_kind": "validated",
+        "reference": "validated",
+        "winners": "validated",
+        "result_date": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "a4d1ed3feda2340a",
+      "name": "NTPC_222_AT_2024_2025.pdf",
+      "host": "cercind.gov.in",
+      "action": "imported",
+      "rows": 4,
+      "rows_located": 4,
+      "document_id": "50d07e00c6f346aebf6cbda35476875a",
+      "award_id": "38c7474d693d491e973b8a2d2b078e69",
+      "run_id": "b77b4b63545f437abd0593910b993bbd",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "reference": "validated",
+        "result_date": "validated",
+        "winners": "validated",
+        "result_kind": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "eaa88f61f550a5b8",
+      "name": "NTPC_223_AT_2024_2025.pdf",
+      "host": "cercind.gov.in",
+      "action": "imported",
+      "rows": 3,
+      "rows_located": 3,
+      "document_id": "b693fd9193e248f4a5f7c71e405ddbf6",
+      "award_id": "4fa1f067046d489aa28ecfcaa6be5c46",
+      "run_id": "765d060fa0f94399b4a909de57fe0fce",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "reference": "validated",
+        "result_kind": "validated",
+        "result_date": "validated",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "a6b69c40f4ef663b",
+      "name": "NTPC_226_AT_2024_2025.pdf",
+      "host": "cercind.gov.in",
+      "action": "imported",
+      "rows": 7,
+      "rows_located": 7,
+      "document_id": "c97ccab3dbb5463eaa5a4643302f7a78",
+      "award_id": "c58858dd9aac48658f0c3f02633a2e91",
+      "run_id": "ba794a6724264752a938f6b0235ed52f",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "reference": "validated",
+        "result_kind": "validated",
+        "result_date": "validated",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "77a53e35bcfd2656",
+      "name": "NTPC_239_AT_2025_2025.pdf",
+      "host": "cercind.gov.in",
+      "action": "imported",
+      "rows": 5,
+      "rows_located": 5,
+      "document_id": "d934bc4fc0344cf49e2d773b84706ab0",
+      "award_id": "072c6d8d91954d1492b0323895731f58",
+      "run_id": "a1e67339742e43048594291b1926b601",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "reference": "validated",
+        "result_kind": "validated",
+        "result_date": "validated",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "feedc5cf9a754084",
+      "name": "NTPC_240_AT_2025_2025.pdf",
+      "host": "cercind.gov.in",
+      "action": "imported",
+      "rows": 4,
+      "rows_located": 4,
+      "document_id": "118f3977931c4a9fa9a26e5a16f7ff27",
+      "award_id": "a8d0246a438943c298626dc8302fb7a4",
+      "run_id": "365de6caf77e4e96b14ec000d519bd5b",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "winners": "validated",
+        "procurer": "validated",
+        "reference": "validated",
+        "result_kind": "validated",
+        "result_date": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "67f4be883abcf099",
+      "name": "NTPC_254_AT_2025_2025.pdf",
+      "host": "cercind.gov.in",
+      "action": "imported",
+      "rows": 3,
+      "rows_located": 3,
+      "document_id": "150c5f74ba084929b1e7be523d770171",
+      "award_id": "94c7014789774f9c82fe03a60ccd1c17",
+      "run_id": "c121acf679a94185bec50b4fceac3a06",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "result_date": "validated",
+        "winners": "validated",
+        "result_kind": "validated",
+        "reference": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "015251b3e293471b",
+      "name": "NTPC_402_AT_2024_2025.pdf",
+      "host": "cercind.gov.in",
+      "action": "imported",
+      "rows": 5,
+      "rows_located": 5,
+      "document_id": "7804c2af37ef46feaada5cc7afa2c10f",
+      "award_id": "cc7273f2178740f29eabb7aed48de34b",
+      "run_id": "7589228291464e919d9453e332e2f6bc",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "result_kind": "validated",
+        "result_date": "validated",
+        "winners": "validated",
+        "reference": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "cfe9cc35892390b5",
+      "name": "NTPC_238_AT_2025_2026.pdf",
+      "host": "cercind.gov.in",
+      "action": "imported",
+      "rows": 4,
+      "rows_located": 4,
+      "document_id": "bcec4bd5b43c487f96193611a89d0ac5",
+      "award_id": "01f97cfac4cd40059a0c3c3d36eaaf2d",
+      "run_id": "afe0d481c84e429cb469fab704514512",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "reference": "validated",
+        "result_kind": "validated",
+        "result_date": "validated",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "e9d7fa7047e1ecbd",
+      "name": "NTPC_735_AT_2025_2026.pdf",
+      "host": "cercind.gov.in",
+      "action": "imported",
+      "rows": 5,
+      "rows_located": 5,
+      "document_id": "22850f1a214f47ae914ceb0c767172c2",
+      "award_id": "66b414a1a2a64aa88055e63920f04920",
+      "run_id": "809647bf32304faabf807099804e8e31",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "reference": "validated",
+        "result_date": "validated",
+        "winners": "validated",
+        "result_kind": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "3b7e3d9f1ff13cc3",
+      "name": "NTPC_771_AT_2025_2026.pdf",
+      "host": "cercind.gov.in",
+      "action": "imported",
+      "rows": 5,
+      "rows_located": 5,
+      "document_id": "68563ad35c764acb8ee5a2ac0325bdd2",
+      "award_id": "355fc484466f4e2aaac393bb36893d98",
+      "run_id": "a3b448a997f64ce781f7a5752aee5d6f",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "reference": "validated",
+        "result_kind": "validated",
+        "result_date": "validated",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "3cc1f767dd56adfb",
+      "name": "NTPC_774_AT_2025_2026.pdf",
+      "host": "cercind.gov.in",
+      "action": "imported",
+      "rows": 4,
+      "rows_located": 4,
+      "document_id": "0df252808736486a9021d284ba48a611",
+      "award_id": "d3b6ad68e8f74d509109d2cf0b97eaea",
+      "run_id": "9dbf6afe16c44114955ed910ae7abc42",
+      "tender_slug": "ntpc-hybrid-03",
+      "link_basis": "page_text",
+      "link_page": 3,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "result_date": "validated",
+        "result_kind": "validated",
+        "procurer": "validated",
+        "reference": "validated",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "fca22b9ab1348cf0",
+      "name": "SJVN_274_AT_2024_2024.pdf",
+      "host": "cercind.gov.in",
+      "action": "imported",
+      "rows": 5,
+      "rows_located": 5,
+      "document_id": "f1f7ffff882842528e83796b1abc387e",
+      "award_id": "2f8fd38ca1904745be8f152784090830",
+      "run_id": "f7ffb801043f449dacffb41947589031",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "result_date": "validated",
+        "result_kind": "validated",
+        "reference": "validated",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "f6e997fc46c19661",
+      "name": "SJVN_79_AT_2024_2024.pdf",
+      "host": "cercind.gov.in",
+      "action": "imported",
+      "rows": 13,
+      "rows_located": 13,
+      "document_id": "4c8a8d843b8d4690b8ce251c33c75a15",
+      "award_id": "0ffd3c088f3b46a2ac13856b4cfbeb9a",
+      "run_id": "4653ebd5f94442108b6196ae993d6ae0",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "winners": "validated",
+        "reference": "validated",
+        "result_kind": "validated",
+        "procurer": "validated",
+        "result_date": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "1ccc249e2233f8cc",
+      "name": "SJVN_312_AT_2025_2025.pdf",
+      "host": "cercind.gov.in",
+      "action": "imported",
+      "rows": 10,
+      "rows_located": 10,
+      "document_id": "8de4b3c5a37e499382b0456a1f6a5ec4",
+      "award_id": "bb104fff47d647c6aa9ce01e1d5eabbd",
+      "run_id": "f6269acf07db417c8cfab52ce0fad463",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "reference": "validated",
+        "result_kind": "validated",
+        "result_date": "validated",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "8bcf2b6a5ce17913",
+      "name": "SJVN_404_AT_2024_2025.pdf",
+      "host": "cercind.gov.in",
+      "action": "imported",
+      "rows": 5,
+      "rows_located": 5,
+      "document_id": "218668f5ae82479e8d8e748a92f91965",
+      "award_id": "dad980a2f5874f35bb92eae284b5ac8a",
+      "run_id": "1526dc5a4f8445f7bc97401f6c6daaa1",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "reference": "validated",
+        "result_kind": "validated",
+        "result_date": "validated",
+        "winners": "validated",
+        "procurer": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "e8b1b7d2d4c04e5e",
+      "name": "SJVN_420_AT_2024_2025.pdf",
+      "host": "cercind.gov.in",
+      "action": "imported",
+      "rows": 2,
+      "rows_located": 2,
+      "document_id": "a35f73766e1743feb3dedeb68c65ceca",
+      "award_id": "e71bbceb63004eb8987f8d1db5e6d4c1",
+      "run_id": "f80bd2fff8a041dda557709735b0966d",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "reference": "validated",
+        "winners": "validated",
+        "result_date": "validated",
+        "result_kind": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "68a3b5d1ccd8323b",
+      "name": "SJVN_31_AT_2026_2026.pdf",
+      "host": "cercind.gov.in",
+      "action": "imported",
+      "rows": 4,
+      "rows_located": 2,
+      "document_id": "1914c031e7734971b3ff1cd9afc9ac59",
+      "award_id": "7a96d617532848c0b4cd7867948674bc",
+      "run_id": "f0eae853d8e84800aa7875244c01c572",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "reference": "validated",
+        "result_kind": "validated",
+        "result_date": "validated",
+        "winners": "needs_review"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "a3de7bcf7b50ef17",
+      "name": "SJVN_684_AT_2025_2026.pdf",
+      "host": "cercind.gov.in",
+      "action": "imported",
+      "rows": 5,
+      "rows_located": 5,
+      "document_id": "0b534f042cf640fd92dbb831c78b5b82",
+      "award_id": "ba9a9f42569d46ad93af80703f36d29f",
+      "run_id": "e6785aa9e08b49b1bda72dbfe797207c",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "reference": "validated",
+        "result_kind": "validated",
+        "result_date": "validated",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "c03ede5b2e66ba4d",
+      "name": "SJVN_828_AT_2025_2026.pdf",
+      "host": "cercind.gov.in",
+      "action": "imported",
+      "rows": 6,
+      "rows_located": 6,
+      "document_id": "3e9189505a4d461bbf7208eb206a2f3b",
+      "award_id": "8ac3cf3294f64cc4a9d3db9c12c92571",
+      "run_id": "56f4c573cbd0494a9873c95d86a9b967",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "result_date": "validated",
+        "reference": "validated",
+        "result_kind": "validated",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "6789680095dec6a4",
+      "name": "SJVN_582_AT_2025_2026.pdf",
+      "host": "cercind.gov.in",
+      "action": "imported",
+      "rows": 2,
+      "rows_located": 2,
+      "document_id": "be2fd84804844a1f973a8507f7f70607",
+      "award_id": "1d0b736a989c4dee8b3bf000c1b8cc98",
+      "run_id": "49108307501149ae9ea38c844346eb12",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": true,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "procurer": "validated",
+        "reference": "validated",
+        "result_kind": "validated",
+        "result_date": "validated",
+        "winners": "validated"
+      },
+      "note": ""
+    },
+    {
+      "source_id": "92476b8746b977fe",
+      "name": "sjvn_awards_2.html",
+      "host": "sjvn.nic.in",
+      "action": "left_out_html",
+      "rows": 4,
+      "rows_located": 0,
+      "document_id": null,
+      "award_id": null,
+      "run_id": null,
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {},
+      "statuses": {},
+      "note": "an HTML register page; not converted"
+    },
+    {
+      "source_id": "ca9357031e455518",
+      "name": "sjvn_awards_5.html",
+      "host": "sjvn.nic.in",
+      "action": "left_out_html",
+      "rows": 2,
+      "rows_located": 0,
+      "document_id": null,
+      "award_id": null,
+      "run_id": null,
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {},
+      "statuses": {},
+      "note": "an HTML register page; not converted"
+    },
+    {
+      "source_id": "e6c19169a694a3a1",
+      "name": "sjvn_awards_6.html",
+      "host": "sjvn.nic.in",
+      "action": "left_out_html",
+      "rows": 3,
+      "rows_located": 0,
+      "document_id": null,
+      "award_id": null,
+      "run_id": null,
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {},
+      "statuses": {},
+      "note": "an HTML register page; not converted"
+    },
+    {
+      "source_id": "88f5813e7de0fc30",
+      "name": "sjvn_awards_8.html",
+      "host": "sjvn.nic.in",
+      "action": "left_out_html",
+      "rows": 2,
+      "rows_located": 0,
+      "document_id": null,
+      "award_id": null,
+      "run_id": null,
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {},
+      "statuses": {},
+      "note": "an HTML register page; not converted"
+    },
+    {
+      "source_id": "f5140349fe4b8458",
+      "name": "sjvn_awards_12.html",
+      "host": "sjvn.nic.in",
+      "action": "left_out_html",
+      "rows": 2,
+      "rows_located": 0,
+      "document_id": null,
+      "award_id": null,
+      "run_id": null,
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {},
+      "statuses": {},
+      "note": "an HTML register page; not converted"
+    },
+    {
+      "source_id": "8e1bc30740c8e0d6",
+      "name": "sjvn_awards_13.html",
+      "host": "sjvn.nic.in",
+      "action": "left_out_html",
+      "rows": 2,
+      "rows_located": 0,
+      "document_id": null,
+      "award_id": null,
+      "run_id": null,
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {},
+      "statuses": {},
+      "note": "an HTML register page; not converted"
+    },
+    {
+      "source_id": "23d61687b01256bb",
+      "name": "IREDA_CPSU_III.pdf",
+      "host": "ireda.in",
+      "action": "imported",
+      "rows": 5,
+      "rows_located": 5,
+      "document_id": "1eb5fcf00fbd4fefa5e96f4c2e4242a9",
+      "award_id": "6efcff710700478289e4a6b31762b2ce",
+      "run_id": "10a130987b2c465da79e95bcb9d02548",
+      "tender_slug": null,
+      "link_basis": null,
+      "link_page": null,
+      "fields": {
+        "procurer": true,
+        "reference": false,
+        "result_kind": true,
+        "result_date": true,
+        "winners": true
+      },
+      "statuses": {
+        "result_kind": "validated",
+        "procurer": "validated",
+        "reference": "needs_review",
+        "winners": "validated",
+        "result_date": "validated"
+      },
+      "note": ""
+    }
+  ]
+}

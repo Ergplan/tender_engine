@@ -10,6 +10,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from api.middleware import audit, auth, errors
 from api.v1.admin import freshness, identity, reliability, threeway
 from api.v1.admin import library as admin_library
+from api.v1.awards import awards
 from api.v1.core import auth as auth_routes
 from api.v1.core import documents, extraction, files, health, oauth, review
 from api.v1.tenders import agent_pass, library, published, tenders
@@ -38,6 +39,7 @@ V1_ROUTERS = (
     tenders.router,
     tender_review.router,
     agent_pass.router,
+    awards.router,
     reliability.router,
     freshness.router,
     threeway.router,
@@ -57,9 +59,10 @@ API_PRODUCT_ROUTERS = (
     published.router,
     library.router,
     tenders.router,
+    awards.router,
     reliability.router,
 )
-API_PRODUCT_READ_ONLY = ("documents", "tenders", "reliability", "published", "library")
+API_PRODUCT_READ_ONLY = ("documents", "tenders", "reliability", "published", "library", "awards")
 
 
 def routers_for(product: str) -> tuple[APIRouter, ...]:

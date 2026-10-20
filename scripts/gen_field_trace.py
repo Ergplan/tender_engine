@@ -25,13 +25,14 @@ from core.schemas import SchemaRegistry
 from core.services.approve import ApprovalService
 from core.services.extract import ExtractService
 from tender.domain_packs.power import derivations
-from tender.services import summary
+from tender.services import results_import, summary
 from tender.services.packs import Catalog, TenderField, load_catalog
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "docs" / "FIELD-TRACE.md"
 WEB = ROOT / "web" / "src"
 READ_ROUTE = ("GET", "/api/v1/tenders/{tender_id}/review")
+AWARD_READ_ROUTE = ("GET", "/api/v1/awards/{award_id}/review")
 WRITE_ROUTE = ("POST", "/api/v1/approvals")
 PROMPT_VERSION = "v1"
 AGENT_PROMPT = "agent_pass"
@@ -103,7 +104,7 @@ def run_rule_fields() -> dict[str, Any]:
     """Run rule -> the test of which fields it concerns, declared beside the rules in each
     pack (`RUN_RULE_FIELDS`). A run rule sees a whole run and names no field paths."""
     declared: dict[str, Any] = {}
-    for pack in ("core", "power"):
+    for pack in ("core", "power", "result"):
         module = importlib.import_module(f"tender.domain_packs.{pack}.validation")
         declared.update(module.RUN_RULE_FIELDS)
     return declared
@@ -129,15 +130,26 @@ def build(catalog: Catalog | None = None) -> str:
     catalog = catalog or load_catalog()
     components = ui_components()
     registered = routes()
-    for route in (READ_ROUTE, WRITE_ROUTE):
+    for route in (READ_ROUTE, AWARD_READ_ROUTE, WRITE_ROUTE):
         if route not in registered:
             raise TraceError(f"the API has no route {route[0]} {route[1]}")
     allowed = {method for method, pattern in review_token.ALLOWED if pattern.match(WRITE_ROUTE[1])}
     if "POST" not in allowed or not callable(audit.install):
         raise TraceError("the review token does not reach POST /approvals")
-    for owner, method in ((ExtractService, "extract"), (ApprovalService, "approve")):
+    award_read = AWARD_READ_ROUTE[1].replace("{award_id}", "0" * 32)
+    if not any(
+        method == "GET" and pattern.match(award_read) for method, pattern in review_token.ALLOWED
+    ):
+        raise TraceError("the review token does not reach GET /awards/{award_id}/review")
+    for owner, method in (
+        (ExtractService, "extract"),
+        (ExtractService, "import_candidate"),
+        (ApprovalService, "approve"),
+    ):
         if not callable(getattr(owner, method, None)):
             raise TraceError(f"{owner.__name__}.{method} does not exist")
+    if not callable(getattr(results_import.ResultsImporter, "run", None)):
+        raise TraceError("ResultsImporter.run does not exist")
     database = " → ".join(
         (
             _column(Candidate, "value"),
@@ -172,6 +184,8 @@ def build(catalog: Catalog | None = None) -> str:
                     "prompt": sections[field.section].prompt,
                     "prompt_version": sections[field.section].prompt_version or PROMPT_VERSION,
                     "derived": sections[field.section].derived,
+                    "imported": sections[field.section].imported,
+                    "object_type": compiled.object_type,
                 },
             )
             row["types"].append(tender_type)
@@ -200,9 +214,18 @@ def build(catalog: Catalog | None = None) -> str:
         "with the three tools read_pages, search_text and submit_finding): its finding is "
         "written to `agent_finding` by `agent.harness.Harness.submit_finding()` with "
         "evidence located on the cited page, for the three-way comparison, and never "
-        "becomes a candidate or a canonical fact.",
+        "becomes a candidate or a canonical fact. A field tagged IMPORT (Stage 6, the "
+        "`result` pack, object type `award`) is written by "
+        "`tender.services.results_import.ResultsImporter.run()` from the named dataset and "
+        "commit through `ExtractService.import_candidate()`, its quotes located on the page "
+        "the dataset cites by core's resolver, with no model call; it is validated and "
+        f"decided like any other, served by `{AWARD_READ_ROUTE[0]} "
+        f"{AWARD_READ_ROUTE[1].replace('/api', '')}` through the same middleware and written "
+        "by the same approval route.",
         "",
-        f"{len(rows)} fields over {len(catalog.types)} tender types.",
+        f"{len(rows)} fields over {len(catalog.types)} types "
+        f"({sum(1 for c in catalog.types.values() if c.object_type == 'tender')} tender types, "
+        f"{sum(1 for c in catalog.types.values() if c.object_type != 'tender')} other).",
         "",
         "| Field | Tender types | UI (web/src) | Section and service | Producer | Rules |",
         "| --- | --- | --- | --- | --- | --- |",
@@ -214,7 +237,7 @@ def build(catalog: Catalog | None = None) -> str:
             raise TraceError(f"{path}: no UI component for value type {field.value_type!r}")
         prompt = (
             None
-            if row["derived"]
+            if row["derived"] or row["imported"]
             else load_prompt(row["prompt"], row["prompt_version"], catalog.prompt_roots)
         )
         rules = ["type", "evidence_located"]
@@ -231,7 +254,17 @@ def build(catalog: Catalog | None = None) -> str:
                 raise TraceError(f"run rule {run_rule!r} does not say which fields it concerns")
             if concerns[run_rule](definition):
                 rules.append(run_rule)
-        types = "all" if row["types"] == all_types else ", ".join(row["types"])
+        tender_types = [t for t in all_types if catalog.types[t].object_type == "tender"]
+        types = (
+            "all"
+            if row["types"] == tender_types
+            else ", ".join(
+                f"{t} ({catalog.types[t].object_type})"
+                if catalog.types[t].object_type != "tender"
+                else t
+                for t in row["types"]
+            )
+        )
         producer = f"LLM {prompt.name} {prompt.version}" if prompt else ""
         service = f"extract('{field.section}')"
         if row["derived"]:
@@ -241,12 +274,19 @@ def build(catalog: Catalog | None = None) -> str:
                 f"`{p}`" for p in rule.inputs
             )
             service = "tender.services.derive.DerivedWriter.write()"
+        if row["imported"]:
+            # Written by the importer from the dataset; no model, no agent pass.
+            producer = (
+                f"IMPORT {results_import.DATASET_NAME}@<commit> ({row['prompt']} "
+                f"{row['prompt_version']})"
+            )
+            service = "tender.services.results_import.ResultsImporter.run()"
         if path == summary.SUMMARY_FIELD:
             # Written in a second pass from the record; the page-read summary feeds it.
             record = load_prompt(summary.PROMPT_NAME, summary.PROMPT_VERSION, catalog.prompt_roots)
             producer = f"LLM {record.name} {record.version} from the record (narrative: {producer})"
             service = "tender.services.summary.SummaryWriter.write()"
-        elif not row["derived"]:
+        elif not (row["derived"] or row["imported"]):
             producer = f"{producer}; {agent_tag}"
         lines.append(
             f"| `{path}` | {types} | review/FieldCard value ({field.value_type}); "

@@ -993,6 +993,421 @@
         "title": "AssumptionsOut",
         "type": "object"
       },
+      "AwardOut": {
+        "description": "One imported result publication: its identity and provenance. The `dataset_*`\nfields are the dataset's own labels for the publication (which agency, which\nreference, which kind), for listing and matching; they are not reviewed facts. What\nthe publication says is in its review state (candidates) and, once approved, in its\nresults (facts, `/awards/{id}/results`).",
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "dataset": {
+            "title": "Dataset",
+            "type": "string"
+          },
+          "dataset_procurer": {
+            "title": "Dataset Procurer",
+            "type": "string"
+          },
+          "dataset_reference": {
+            "title": "Dataset Reference",
+            "type": "string"
+          },
+          "dataset_result_kind": {
+            "title": "Dataset Result Kind",
+            "type": "string"
+          },
+          "dataset_verification": {
+            "title": "Dataset Verification",
+            "type": "string"
+          },
+          "document_id": {
+            "title": "Document Id",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "row_count": {
+            "title": "Row Count",
+            "type": "integer"
+          },
+          "source_id": {
+            "title": "Source Id",
+            "type": "string"
+          },
+          "source_name": {
+            "title": "Source Name",
+            "type": "string"
+          },
+          "source_sha256": {
+            "title": "Source Sha256",
+            "type": "string"
+          },
+          "source_url": {
+            "title": "Source Url",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "tender_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tender Id"
+          },
+          "tender_link_basis": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tender Link Basis"
+          },
+          "tender_link_page": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tender Link Page"
+          }
+        },
+        "required": [
+          "id",
+          "source_id",
+          "source_name",
+          "source_url",
+          "source_sha256",
+          "dataset",
+          "dataset_procurer",
+          "dataset_reference",
+          "dataset_result_kind",
+          "dataset_verification",
+          "row_count",
+          "document_id",
+          "tender_id",
+          "tender_link_basis",
+          "tender_link_page",
+          "status",
+          "created_at"
+        ],
+        "title": "AwardOut",
+        "type": "object"
+      },
+      "AwardResults": {
+        "description": "What a reader may see of an award: its canonical facts, approved by a reviewer,\nand nothing from the dataset that was not. An award without an approved winners\ntable has no rows.",
+        "properties": {
+          "authority_note": {
+            "default": "The source publication is the authoritative record; every value shown was approved by a reviewer against it.",
+            "title": "Authority Note",
+            "type": "string"
+          },
+          "award_id": {
+            "title": "Award Id",
+            "type": "string"
+          },
+          "dataset": {
+            "title": "Dataset",
+            "type": "string"
+          },
+          "document_id": {
+            "title": "Document Id",
+            "type": "string"
+          },
+          "evidence_pages": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Evidence Pages",
+            "type": "array"
+          },
+          "procurer": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Procurer"
+          },
+          "reference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reference"
+          },
+          "result_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Result Date"
+          },
+          "result_kind": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Result Kind"
+          },
+          "reviewed": {
+            "title": "Reviewed",
+            "type": "boolean"
+          },
+          "rows": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Rows",
+            "type": "array"
+          },
+          "source_sha256": {
+            "title": "Source Sha256",
+            "type": "string"
+          },
+          "source_url": {
+            "title": "Source Url",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "tender_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tender Id"
+          },
+          "tender_link_basis": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tender Link Basis"
+          },
+          "tender_link_page": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tender Link Page"
+          }
+        },
+        "required": [
+          "award_id",
+          "document_id",
+          "source_url",
+          "source_sha256",
+          "dataset",
+          "status",
+          "tender_id",
+          "tender_link_basis",
+          "tender_link_page",
+          "procurer",
+          "reference",
+          "result_kind",
+          "result_date",
+          "rows",
+          "evidence_pages",
+          "reviewed"
+        ],
+        "title": "AwardResults",
+        "type": "object"
+      },
+      "AwardReview": {
+        "description": "The award as the reviewer sees it: the same field list the tender screen reads,\nover the one version an award has (the publication itself).",
+        "properties": {
+          "award_id": {
+            "title": "Award Id",
+            "type": "string"
+          },
+          "can_complete": {
+            "title": "Can Complete",
+            "type": "boolean"
+          },
+          "dataset": {
+            "title": "Dataset",
+            "type": "string"
+          },
+          "decided": {
+            "title": "Decided",
+            "type": "integer"
+          },
+          "document_id": {
+            "title": "Document Id",
+            "type": "string"
+          },
+          "fields": {
+            "items": {
+              "$ref": "#/components/schemas/ReviewField"
+            },
+            "title": "Fields",
+            "type": "array"
+          },
+          "object_type": {
+            "default": "award",
+            "title": "Object Type",
+            "type": "string"
+          },
+          "procurer": {
+            "title": "Procurer",
+            "type": "string"
+          },
+          "reference": {
+            "title": "Reference",
+            "type": "string"
+          },
+          "required_undecided": {
+            "title": "Required Undecided",
+            "type": "integer"
+          },
+          "result_kind": {
+            "title": "Result Kind",
+            "type": "string"
+          },
+          "sections": {
+            "items": {
+              "$ref": "#/components/schemas/ReviewSection"
+            },
+            "title": "Sections",
+            "type": "array"
+          },
+          "source_sha256": {
+            "title": "Source Sha256",
+            "type": "string"
+          },
+          "source_url": {
+            "title": "Source Url",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "tender_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tender Id"
+          },
+          "tender_link_basis": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tender Link Basis"
+          },
+          "tender_link_page": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tender Link Page"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          },
+          "verification": {
+            "title": "Verification",
+            "type": "string"
+          },
+          "versions": {
+            "items": {
+              "$ref": "#/components/schemas/ReviewVersion"
+            },
+            "title": "Versions",
+            "type": "array"
+          }
+        },
+        "required": [
+          "award_id",
+          "title",
+          "procurer",
+          "reference",
+          "result_kind",
+          "status",
+          "document_id",
+          "source_url",
+          "source_sha256",
+          "dataset",
+          "verification",
+          "tender_id",
+          "tender_link_basis",
+          "tender_link_page",
+          "versions",
+          "sections",
+          "fields",
+          "decided",
+          "total",
+          "required_undecided",
+          "can_complete"
+        ],
+        "title": "AwardReview",
+        "type": "object"
+      },
       "Body_add_version_api_v1_tenders__tender_id__versions_post": {
         "properties": {
           "file": {
@@ -1650,6 +2065,11 @@
           "derived": {
             "default": false,
             "title": "Derived",
+            "type": "boolean"
+          },
+          "imported": {
+            "default": false,
+            "title": "Imported",
             "type": "boolean"
           },
           "label": {
@@ -4469,6 +4889,15 @@
             ],
             "title": "From Version"
           },
+          "object_id": {
+            "title": "Object Id",
+            "type": "string"
+          },
+          "object_type": {
+            "default": "tender",
+            "title": "Object Type",
+            "type": "string"
+          },
           "reviewer_name": {
             "title": "Reviewer Name",
             "type": "string"
@@ -4479,11 +4908,19 @@
             "type": "integer"
           },
           "tender_id": {
-            "title": "Tender Id",
-            "type": "string"
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tender Id"
           }
         },
         "required": [
+          "object_id",
           "tender_id",
           "reviewer_name",
           "expires_at",
@@ -4558,18 +4995,36 @@
         "type": "object"
       },
       "ReviewTokenCreate": {
+        "description": "A link for one object: a tender (`tender_id`) or, since Stage 6, an award\n(`award_id`); exactly one of the two.",
         "properties": {
+          "award_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Award Id"
+          },
           "reviewer_name": {
             "title": "Reviewer Name",
             "type": "string"
           },
           "tender_id": {
-            "title": "Tender Id",
-            "type": "string"
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tender Id"
           }
         },
         "required": [
-          "tender_id",
           "reviewer_name"
         ],
         "title": "ReviewTokenCreate",
@@ -4603,13 +5058,29 @@
             "title": "Expires At",
             "type": "string"
           },
+          "object_id": {
+            "title": "Object Id",
+            "type": "string"
+          },
+          "object_type": {
+            "default": "tender",
+            "title": "Object Type",
+            "type": "string"
+          },
           "reviewer_name": {
             "title": "Reviewer Name",
             "type": "string"
           },
           "tender_id": {
-            "title": "Tender Id",
-            "type": "string"
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tender Id"
           },
           "token": {
             "title": "Token",
@@ -4623,6 +5094,7 @@
         "required": [
           "url",
           "token",
+          "object_id",
           "tender_id",
           "reviewer_name",
           "expires_at"
@@ -4710,6 +5182,11 @@
           },
           "id": {
             "title": "Id",
+            "type": "string"
+          },
+          "mode": {
+            "default": "sync",
+            "title": "Mode",
             "type": "string"
           },
           "model": {
@@ -5327,6 +5804,27 @@
           "untouched"
         ],
         "title": "TenderAmendments",
+        "type": "object"
+      },
+      "TenderAwards": {
+        "properties": {
+          "awards": {
+            "items": {
+              "$ref": "#/components/schemas/AwardResults"
+            },
+            "title": "Awards",
+            "type": "array"
+          },
+          "tender_id": {
+            "title": "Tender Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tender_id",
+          "awards"
+        ],
+        "title": "TenderAwards",
         "type": "object"
       },
       "TenderCreate": {
@@ -7783,7 +8281,7 @@
     },
     "/api/v1/approvals": {
       "post": {
-        "description": "Record a reviewer's decision. This is the only route that produces a canonical fact.\nAn identical repeat returns the existing approval with 200 and writes nothing. When\nthe request names `previous_approval_id` (null: the field was undecided) and the field\nhas been decided again since, the write is refused with 409. With a review token, only\ncandidates of the token's tender can be decided.",
+        "description": "Record a reviewer's decision. This is the only route that produces a canonical fact.\nAn identical repeat returns the existing approval with 200 and writes nothing. When\nthe request names `previous_approval_id` (null: the field was undecided) and the field\nhas been decided again since, the write is refused with 409. With a review token, only\ncandidates of the token's object (its tender or its award) can be decided.",
         "operationId": "post_approval_api_v1_approvals_post",
         "parameters": [
           {
@@ -8015,6 +8513,274 @@
         "summary": "Programmatic Signup",
         "tags": [
           "auth"
+        ]
+      }
+    },
+    "/api/v1/awards": {
+      "get": {
+        "description": "Every imported result publication, or those linked to one tender.",
+        "operationId": "list_awards_api_v1_awards_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "tender_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Tender Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AwardOut"
+                  },
+                  "title": "Response List Awards Api V1 Awards Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Awards",
+        "tags": [
+          "awards"
+        ]
+      }
+    },
+    "/api/v1/awards/{award_id}": {
+      "get": {
+        "operationId": "get_award_api_v1_awards__award_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "award_id",
+            "required": true,
+            "schema": {
+              "title": "Award Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AwardOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Award",
+        "tags": [
+          "awards"
+        ]
+      }
+    },
+    "/api/v1/awards/{award_id}/complete-review": {
+      "post": {
+        "description": "Complete the review of the link's award: refused while a required field has no\ndecision. Marks the link completed and the award reviewed.",
+        "operationId": "complete_award_review_api_v1_awards__award_id__complete_review_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "award_id",
+            "required": true,
+            "schema": {
+              "title": "Award Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AwardOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Complete Award Review",
+        "tags": [
+          "awards"
+        ]
+      }
+    },
+    "/api/v1/awards/{award_id}/results": {
+      "get": {
+        "description": "The award's approved rows and facts; nothing a reviewer did not approve.",
+        "operationId": "get_award_results_api_v1_awards__award_id__results_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "award_id",
+            "required": true,
+            "schema": {
+              "title": "Award Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AwardResults"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Award Results",
+        "tags": [
+          "awards"
+        ]
+      }
+    },
+    "/api/v1/awards/{award_id}/review": {
+      "get": {
+        "description": "The award as the reviewer sees it: every field with its imported candidate, the\nevidence located on the cited page, the validation and the decision.",
+        "operationId": "get_award_review_api_v1_awards__award_id__review_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "award_id",
+            "required": true,
+            "schema": {
+              "title": "Award Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AwardReview"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Award Review",
+        "tags": [
+          "awards"
+        ]
+      }
+    },
+    "/api/v1/awards/{award_id}/review-state": {
+      "get": {
+        "description": "Core's review state of the award (its one version).",
+        "operationId": "get_award_review_state_api_v1_awards__award_id__review_state_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "award_id",
+            "required": true,
+            "schema": {
+              "title": "Award Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewState"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Award Review State",
+        "tags": [
+          "awards"
         ]
       }
     },
@@ -8504,7 +9270,7 @@
     },
     "/api/v1/files-auth": {
       "get": {
-        "description": "Asked by the proxy before it serves a stored file (a PDF or a page image): the file\nmust belong to a document of the review token's tender.",
+        "description": "Asked by the proxy before it serves a stored file (a PDF or a page image): the file\nmust belong to a document of the review token's object (its tender or its award).",
         "operationId": "authorise_file_api_v1_files_auth_get",
         "parameters": [
           {
@@ -8805,7 +9571,7 @@
     },
     "/api/v1/review-session": {
       "get": {
-        "description": "Who the review token is and which tender it opens.",
+        "description": "Who the review token is and which object (tender or award) it opens.",
         "operationId": "get_review_session_api_v1_review_session_get",
         "responses": {
           "200": {
@@ -8895,7 +9661,7 @@
     },
     "/api/v1/review-tokens": {
       "post": {
-        "description": "A review link for one tender and one reviewer, valid for 30 days. An earlier link\nfor the tender stops working. Not reachable with a review token or from outside.",
+        "description": "A review link for one object (a tender, or an award since Stage 6) and one\nreviewer, valid for 30 days. An earlier link for the object stops working. Not\nreachable with a review token or from outside.",
         "operationId": "create_review_token_api_v1_review_tokens_post",
         "parameters": [
           {
@@ -9608,6 +10374,49 @@
         "summary": "Save Assumptions",
         "tags": [
           "library"
+        ]
+      }
+    },
+    "/api/v1/tenders/{tender_id}/awards": {
+      "get": {
+        "description": "The result publications linked to the tender, each with its approved rows only.",
+        "operationId": "get_tender_awards_api_v1_tenders__tender_id__awards_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tender_id",
+            "required": true,
+            "schema": {
+              "title": "Tender Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TenderAwards"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Tender Awards",
+        "tags": [
+          "awards"
         ]
       }
     },

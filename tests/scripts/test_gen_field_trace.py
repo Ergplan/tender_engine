@@ -20,13 +20,24 @@ def test_every_field_of_every_tender_type_has_a_complete_row(catalog: Catalog) -
             "extract('" in cells[3]
             or "SummaryWriter.write()" in cells[3]
             or "DerivedWriter.write()" in cells[3]
+            or "ResultsImporter.run()" in cells[3]
         )
         if "DerivedWriter" in cells[3]:
             assert cells[4].startswith("DERIVED tender.domain_packs.power.derivations.")
             assert " from `" in cells[4] and "LLM" not in cells[4]
-        assert cells[4].startswith(("LLM ", "DERIVED ")) and "; HUMAN approval" in cells[4]
+        if "ResultsImporter" in cells[3]:
+            # Stage 6: the dataset and commit named, no model and no agent pass.
+            assert cells[4].startswith("IMPORT RE-tender-results@")
+            assert "import/re-tender-results v1" in cells[4]
+            assert "LLM" not in cells[4] and "AGENT" not in cells[4]
+            assert cells[1] == "award (award)"
+        assert (
+            cells[4].startswith(("LLM ", "DERIVED ", "IMPORT ")) and "; HUMAN approval" in cells[4]
+        )
         assert cells[5].startswith("RULE type, evidence_located")
     assert "GET /v1/tenders/{tender_id}/review" in text and "POST /v1/approvals" in text
+    assert "GET /v1/awards/{award_id}/review" in text
+    assert sum(1 for row in rows if "IMPORT " in row) == 5
     assert "candidate.value → approval.final_value → canonical_fact.value" in text
 
 
@@ -72,10 +83,24 @@ def test_rows_name_the_run_rules_that_concern_the_field(catalog: Catalog) -> Non
         if line.startswith("| `")
     }
     # A rule on the whole run names no field paths; each says which fields it concerns.
-    assert all("later_version_evidence" in row for row in rows.values())
+    assert all(
+        "later_version_evidence" in row
+        for path, row in rows.items()
+        if not path.startswith("result.")
+    )
+    # The award's run rule concerns its winners table and nothing else (Stage 6).
+    assert "award_rows_located" in rows["result.award.winners"]
+    assert "award_rows_located" not in rows["result.award.procurer"]
+    assert not any("later_version_evidence" in rows[p] for p in rows if p.startswith("result."))
     structured = {path for path, row in rows.items() if "structured_numbers_quoted" in row}
+    # The quoted-numbers rule is the core pack's: it concerns the tenders' keyed fields,
+    # not the award's winners table (the result pack has its own rule).
     with_keys = {
-        field.path for compiled in catalog.types.values() for field in compiled.fields if field.keys
+        field.path
+        for compiled in catalog.types.values()
+        if compiled.object_type == "tender"
+        for field in compiled.fields
+        if field.keys
     }
     assert structured == with_keys and "core.guarantees.emd_structured" in structured
     assert "core.identity.tender_number" not in structured

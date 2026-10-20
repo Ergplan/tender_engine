@@ -78,20 +78,29 @@ class SummaryQueued(BaseModel):
 
 
 class ReviewTokenCreate(BaseModel):
-    tender_id: str
+    """A link for one object: a tender (`tender_id`) or, since Stage 6, an award
+    (`award_id`); exactly one of the two."""
+
+    tender_id: str | None = None
+    award_id: str | None = None
     reviewer_name: str
 
 
 class ReviewTokenOut(BaseModel):
     url: str
     token: str
-    tender_id: str
+    object_type: str = "tender"
+    object_id: str
+    tender_id: str | None
     reviewer_name: str
     expires_at: datetime
 
 
 class ReviewSessionOut(BaseModel):
-    tender_id: str
+    # The object the link opens: a tender (tender_id set) or an award (Stage 6).
+    object_type: str = "tender"
+    object_id: str
+    tender_id: str | None
     reviewer_name: str
     expires_at: datetime
     # Set once the review is completed: it can then be read and no longer changed.

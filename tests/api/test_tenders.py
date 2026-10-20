@@ -315,6 +315,7 @@ def test_schema_endpoint_returns_the_compiled_field_list(client: TestClient) -> 
     assert [section["name"] for section in body["sections"]][-1] == "fdre_profile"
     assert body["sections"][0] == {
         "derived": False,
+        "imported": False,
         "name": "summary",
         "label": "Summary",
         "prompt": "summary",

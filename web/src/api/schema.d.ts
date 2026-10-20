@@ -384,7 +384,7 @@ export interface paths {
          *     An identical repeat returns the existing approval with 200 and writes nothing. When
          *     the request names `previous_approval_id` (null: the field was undecided) and the field
          *     has been decided again since, the write is refused with 409. With a review token, only
-         *     candidates of the token's tender can be decided.
+         *     candidates of the token's object (its tender or its award) can be decided.
          */
         post: operations["post_approval_api_v1_approvals_post"];
         delete?: never;
@@ -492,6 +492,125 @@ export interface paths {
          *     address, outside the enterprise domains, no account yet.
          */
         post: operations["programmatic_signup_api_v1_auth_signup_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/awards": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Awards
+         * @description Every imported result publication, or those linked to one tender.
+         */
+        get: operations["list_awards_api_v1_awards_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/awards/{award_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Award */
+        get: operations["get_award_api_v1_awards__award_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/awards/{award_id}/complete-review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Complete Award Review
+         * @description Complete the review of the link's award: refused while a required field has no
+         *     decision. Marks the link completed and the award reviewed.
+         */
+        post: operations["complete_award_review_api_v1_awards__award_id__complete_review_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/awards/{award_id}/results": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Award Results
+         * @description The award's approved rows and facts; nothing a reviewer did not approve.
+         */
+        get: operations["get_award_results_api_v1_awards__award_id__results_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/awards/{award_id}/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Award Review
+         * @description The award as the reviewer sees it: every field with its imported candidate, the
+         *     evidence located on the cited page, the validation and the decision.
+         */
+        get: operations["get_award_review_api_v1_awards__award_id__review_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/awards/{award_id}/review-state": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Award Review State
+         * @description Core's review state of the award (its one version).
+         */
+        get: operations["get_award_review_state_api_v1_awards__award_id__review_state_get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -683,7 +802,7 @@ export interface paths {
         /**
          * Authorise File
          * @description Asked by the proxy before it serves a stored file (a PDF or a page image): the file
-         *     must belong to a document of the review token's tender.
+         *     must belong to a document of the review token's object (its tender or its award).
          */
         get: operations["authorise_file_api_v1_files_auth_get"];
         put?: never;
@@ -813,7 +932,7 @@ export interface paths {
         };
         /**
          * Get Review Session
-         * @description Who the review token is and which tender it opens.
+         * @description Who the review token is and which object (tender or award) it opens.
          */
         get: operations["get_review_session_api_v1_review_session_get"];
         put?: never;
@@ -855,8 +974,9 @@ export interface paths {
         put?: never;
         /**
          * Create Review Token
-         * @description A review link for one tender and one reviewer, valid for 30 days. An earlier link
-         *     for the tender stops working. Not reachable with a review token or from outside.
+         * @description A review link for one object (a tender, or an award since Stage 6) and one
+         *     reviewer, valid for 30 days. An earlier link for the object stops working. Not
+         *     reachable with a review token or from outside.
          */
         post: operations["create_review_token_api_v1_review_tokens_post"];
         delete?: never;
@@ -1073,6 +1193,26 @@ export interface paths {
          *     model: a read never saves, a save never computes. Never a canonical fact.
          */
         put: operations["save_assumptions_api_v1_tenders__tender_id__assumptions_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tenders/{tender_id}/awards": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Tender Awards
+         * @description The result publications linked to the tender, each with its approved rows only.
+         */
+        get: operations["get_tender_awards_api_v1_tenders__tender_id__awards_get"];
+        put?: never;
         post?: never;
         delete?: never;
         options?: never;
@@ -1737,6 +1877,154 @@ export interface components {
             /** Tender Id */
             tender_id: string;
         };
+        /**
+         * AwardOut
+         * @description One imported result publication: its identity and provenance. The `dataset_*`
+         *     fields are the dataset's own labels for the publication (which agency, which
+         *     reference, which kind), for listing and matching; they are not reviewed facts. What
+         *     the publication says is in its review state (candidates) and, once approved, in its
+         *     results (facts, `/awards/{id}/results`).
+         */
+        AwardOut: {
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Dataset */
+            dataset: string;
+            /** Dataset Procurer */
+            dataset_procurer: string;
+            /** Dataset Reference */
+            dataset_reference: string;
+            /** Dataset Result Kind */
+            dataset_result_kind: string;
+            /** Dataset Verification */
+            dataset_verification: string;
+            /** Document Id */
+            document_id: string;
+            /** Id */
+            id: string;
+            /** Row Count */
+            row_count: number;
+            /** Source Id */
+            source_id: string;
+            /** Source Name */
+            source_name: string;
+            /** Source Sha256 */
+            source_sha256: string;
+            /** Source Url */
+            source_url: string;
+            /** Status */
+            status: string;
+            /** Tender Id */
+            tender_id: string | null;
+            /** Tender Link Basis */
+            tender_link_basis: string | null;
+            /** Tender Link Page */
+            tender_link_page: number | null;
+        };
+        /**
+         * AwardResults
+         * @description What a reader may see of an award: its canonical facts, approved by a reviewer,
+         *     and nothing from the dataset that was not. An award without an approved winners
+         *     table has no rows.
+         */
+        AwardResults: {
+            /**
+             * Authority Note
+             * @default The source publication is the authoritative record; every value shown was approved by a reviewer against it.
+             */
+            authority_note: string;
+            /** Award Id */
+            award_id: string;
+            /** Dataset */
+            dataset: string;
+            /** Document Id */
+            document_id: string;
+            /** Evidence Pages */
+            evidence_pages: number[];
+            /** Procurer */
+            procurer: string | null;
+            /** Reference */
+            reference: string | null;
+            /** Result Date */
+            result_date: string | null;
+            /** Result Kind */
+            result_kind: string | null;
+            /** Reviewed */
+            reviewed: boolean;
+            /** Rows */
+            rows: {
+                [key: string]: unknown;
+            }[];
+            /** Source Sha256 */
+            source_sha256: string;
+            /** Source Url */
+            source_url: string;
+            /** Status */
+            status: string;
+            /** Tender Id */
+            tender_id: string | null;
+            /** Tender Link Basis */
+            tender_link_basis: string | null;
+            /** Tender Link Page */
+            tender_link_page: number | null;
+        };
+        /**
+         * AwardReview
+         * @description The award as the reviewer sees it: the same field list the tender screen reads,
+         *     over the one version an award has (the publication itself).
+         */
+        AwardReview: {
+            /** Award Id */
+            award_id: string;
+            /** Can Complete */
+            can_complete: boolean;
+            /** Dataset */
+            dataset: string;
+            /** Decided */
+            decided: number;
+            /** Document Id */
+            document_id: string;
+            /** Fields */
+            fields: components["schemas"]["ReviewField"][];
+            /**
+             * Object Type
+             * @default award
+             */
+            object_type: string;
+            /** Procurer */
+            procurer: string;
+            /** Reference */
+            reference: string;
+            /** Required Undecided */
+            required_undecided: number;
+            /** Result Kind */
+            result_kind: string;
+            /** Sections */
+            sections: components["schemas"]["ReviewSection"][];
+            /** Source Sha256 */
+            source_sha256: string;
+            /** Source Url */
+            source_url: string;
+            /** Status */
+            status: string;
+            /** Tender Id */
+            tender_id: string | null;
+            /** Tender Link Basis */
+            tender_link_basis: string | null;
+            /** Tender Link Page */
+            tender_link_page: number | null;
+            /** Title */
+            title: string;
+            /** Total */
+            total: number;
+            /** Verification */
+            verification: string;
+            /** Versions */
+            versions: components["schemas"]["ReviewVersion"][];
+        };
         /** Body_add_version_api_v1_tenders__tender_id__versions_post */
         Body_add_version_api_v1_tenders__tender_id__versions_post: {
             /** File */
@@ -1962,6 +2250,11 @@ export interface components {
              * @default false
              */
             derived: boolean;
+            /**
+             * Imported
+             * @default false
+             */
+            imported: boolean;
             /** Label */
             label: string;
             /** Name */
@@ -2902,6 +3195,13 @@ export interface components {
             expires_at: string;
             /** From Version */
             from_version?: number | null;
+            /** Object Id */
+            object_id: string;
+            /**
+             * Object Type
+             * @default tender
+             */
+            object_type: string;
             /** Reviewer Name */
             reviewer_name: string;
             /**
@@ -2910,7 +3210,7 @@ export interface components {
              */
             round_no: number;
             /** Tender Id */
-            tender_id: string;
+            tender_id: string | null;
         };
         /** ReviewState */
         ReviewState: {
@@ -2932,12 +3232,18 @@ export interface components {
             /** Total */
             total: number;
         };
-        /** ReviewTokenCreate */
+        /**
+         * ReviewTokenCreate
+         * @description A link for one object: a tender (`tender_id`) or, since Stage 6, an award
+         *     (`award_id`); exactly one of the two.
+         */
         ReviewTokenCreate: {
+            /** Award Id */
+            award_id?: string | null;
             /** Reviewer Name */
             reviewer_name: string;
             /** Tender Id */
-            tender_id: string;
+            tender_id?: string | null;
         };
         /** ReviewTokenMint */
         ReviewTokenMint: {
@@ -2956,10 +3262,17 @@ export interface components {
              * Format: date-time
              */
             expires_at: string;
+            /** Object Id */
+            object_id: string;
+            /**
+             * Object Type
+             * @default tender
+             */
+            object_type: string;
             /** Reviewer Name */
             reviewer_name: string;
             /** Tender Id */
-            tender_id: string;
+            tender_id: string | null;
             /** Token */
             token: string;
             /** Url */
@@ -2994,6 +3307,11 @@ export interface components {
             groups: string[] | null;
             /** Id */
             id: string;
+            /**
+             * Mode
+             * @default sync
+             */
+            mode: string;
             /** Model */
             model: string;
             /** Prompt Version */
@@ -3246,6 +3564,13 @@ export interface components {
             untouched: number;
             /** Versions */
             versions: components["schemas"]["AmendmentVersion"][];
+        };
+        /** TenderAwards */
+        TenderAwards: {
+            /** Awards */
+            awards: components["schemas"]["AwardResults"][];
+            /** Tender Id */
+            tender_id: string;
         };
         /** TenderCreate */
         TenderCreate: {
@@ -4550,6 +4875,192 @@ export interface operations {
             };
         };
     };
+    list_awards_api_v1_awards_get: {
+        parameters: {
+            query?: {
+                tender_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AwardOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_award_api_v1_awards__award_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                award_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AwardOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    complete_award_review_api_v1_awards__award_id__complete_review_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                award_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AwardOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_award_results_api_v1_awards__award_id__results_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                award_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AwardResults"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_award_review_api_v1_awards__award_id__review_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                award_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AwardReview"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_award_review_state_api_v1_awards__award_id__review_state_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                award_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewState"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     get_canonical_api_v1_canonical_get: {
         parameters: {
             query: {
@@ -5542,6 +6053,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AssumptionsOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_tender_awards_api_v1_tenders__tender_id__awards_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                tender_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TenderAwards"];
                 };
             };
             /** @description Validation Error */

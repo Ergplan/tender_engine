@@ -1,7 +1,8 @@
 """Review tokens: the link a reviewer opens, and the only identity of phase 1.
 
-A token belongs to one tender and one reviewer name. It is live until it expires (30
-days), is replaced by a newer token for the same tender, or the review is completed.
+A token belongs to one object and one reviewer name: a tender (the first and usual case)
+or, since Stage 6, an award. It is live until it expires (30 days), is replaced by a newer
+token for the same object, or the review is completed.
 """
 
 import secrets
@@ -10,10 +11,14 @@ from datetime import UTC, datetime, timedelta
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
+from core.models import Document
 from core.services import audit
-from tender.models import ReviewToken, Tender
+from tender.models import Award, ReviewToken, Tender, TenderVersion, TenderVersionDocument
 
 TOKEN_DAYS = 30
+TENDER = "tender"
+AWARD = "award"
+OBJECT_TYPES = (TENDER, AWARD)
 
 
 class TokenError(LookupError):
@@ -41,14 +46,39 @@ class TokenService:
         one reviewer per tender. The link of a completed review stays readable. With
         `from_version`, the token opens a round scoped to the fields that version and the
         ones after it touched (`open_round` is the usual way)."""
+        return self.create_for(
+            session,
+            TENDER,
+            tender.id,
+            reviewer_name,
+            created_by=created_by,
+            from_version=from_version,
+        )
+
+    def create_for(
+        self,
+        session: Session,
+        object_type: str,
+        object_id: str,
+        reviewer_name: str,
+        *,
+        created_by: str,
+        from_version: int | None = None,
+    ) -> ReviewToken:
+        """A new token for one object (a tender or an award): the earlier live token of
+        the object is revoked, one reviewer per object."""
+        if object_type not in OBJECT_TYPES:
+            raise ValueError(f"a review token is for one of {OBJECT_TYPES}, not {object_type!r}")
         name = reviewer_name.strip()
         if not name:
             raise ValueError("a reviewer name is required")
         now = datetime.now(UTC)
-        self._revoke(session, tender, created_by, {"replaced_for": name})
+        self._revoke(session, object_type, object_id, created_by, {"replaced_for": name})
         rounds = session.scalar(
             select(func.max(ReviewToken.round_no)).where(
-                ReviewToken.tenant_id == self._tenant_id, ReviewToken.tender_id == tender.id
+                ReviewToken.tenant_id == self._tenant_id,
+                ReviewToken.object_type == object_type,
+                ReviewToken.object_id == object_id,
             )
         )
         row = ReviewToken(
@@ -56,7 +86,9 @@ class TokenService:
             created_by=created_by,
             # 24 random bytes are 32 url-safe characters.
             token=secrets.token_urlsafe(24),
-            tender_id=tender.id,
+            object_type=object_type,
+            object_id=object_id,
+            tender_id=object_id if object_type == TENDER else None,
             reviewer_name=name,
             expires_at=now + timedelta(days=TOKEN_DAYS),
             round_no=(rounds or 0) + 1,
@@ -72,7 +104,9 @@ class TokenService:
             table_name="review_token",
             row_id=row.id,
             after={
-                "tender_id": tender.id,
+                "object_type": object_type,
+                "object_id": object_id,
+                "tender_id": row.tender_id,
                 "reviewer_name": name,
                 "round_no": row.round_no,
                 "from_version": from_version,
@@ -92,7 +126,8 @@ class TokenService:
             select(ReviewToken.id)
             .where(
                 ReviewToken.tenant_id == self._tenant_id,
-                ReviewToken.tender_id == tender.id,
+                ReviewToken.object_type == TENDER,
+                ReviewToken.object_id == tender.id,
                 ReviewToken.revoked_at.is_(None),
                 ReviewToken.completed_at.is_(None),
                 ReviewToken.expires_at > datetime.now(UTC),
@@ -105,7 +140,8 @@ class TokenService:
             select(ReviewToken)
             .where(
                 ReviewToken.tenant_id == self._tenant_id,
-                ReviewToken.tender_id == tender.id,
+                ReviewToken.object_type == TENDER,
+                ReviewToken.object_id == tender.id,
                 ReviewToken.completed_at.is_not(None),
             )
             .order_by(ReviewToken.completed_at.desc())
@@ -120,17 +156,26 @@ class TokenService:
     def revoke(self, session: Session, tender: Tender, *, created_by: str) -> int:
         """Stop the tender's live links (a link that went to the wrong person). Returns
         how many were stopped. A completed review keeps its read-only link."""
-        count = self._revoke(session, tender, created_by, {"reason": "revoked"})
+        return self.revoke_for(session, TENDER, tender.id, created_by=created_by)
+
+    def revoke_for(
+        self, session: Session, object_type: str, object_id: str, *, created_by: str
+    ) -> int:
+        """Stop the live links of one object (a tender or an award)."""
+        count = self._revoke(session, object_type, object_id, created_by, {"reason": "revoked"})
         session.commit()
         return count
 
-    def _revoke(self, session: Session, tender: Tender, actor: str, why: dict[str, str]) -> int:
+    def _revoke(
+        self, session: Session, object_type: str, object_id: str, actor: str, why: dict[str, str]
+    ) -> int:
         now = datetime.now(UTC)
         rows = list(
             session.scalars(
                 select(ReviewToken).where(
                     ReviewToken.tenant_id == self._tenant_id,
-                    ReviewToken.tender_id == tender.id,
+                    ReviewToken.object_type == object_type,
+                    ReviewToken.object_id == object_id,
                     ReviewToken.revoked_at.is_(None),
                     ReviewToken.completed_at.is_(None),
                 )
@@ -164,3 +209,47 @@ class TokenService:
         if row.expires_at <= datetime.now(UTC) and row.completed_at is None:
             raise TokenError("expired")
         return row
+
+
+def document_belongs(
+    session: Session,
+    tenant_id: str,
+    object_type: str,
+    object_id: str,
+    *,
+    document_id: str | None = None,
+    sha256: str | None = None,
+) -> bool:
+    """Whether a document (by id, or by its file's sha256) is one of the object's: a
+    document of any version of the tender, or the award's source publication. What a
+    review link may reach of the stored files is decided here, for the middleware, the
+    file routes and the proxy's authorisation call alike."""
+    if (document_id is None) == (sha256 is None):
+        raise ValueError("name the document by id or by sha256")
+    if object_type == TENDER:
+        query = (
+            select(TenderVersionDocument.id)
+            .join(TenderVersion, TenderVersion.id == TenderVersionDocument.tender_version_id)
+            .where(
+                TenderVersionDocument.tenant_id == tenant_id,
+                TenderVersion.tenant_id == tenant_id,
+                TenderVersion.tender_id == object_id,
+            )
+        )
+        if document_id is not None:
+            query = query.where(TenderVersionDocument.document_id == document_id)
+        else:
+            query = query.join(Document, Document.id == TenderVersionDocument.document_id).where(
+                Document.tenant_id == tenant_id, Document.sha256 == sha256
+            )
+    elif object_type == AWARD:
+        query = select(Award.id).where(Award.tenant_id == tenant_id, Award.id == object_id)
+        if document_id is not None:
+            query = query.where(Award.document_id == document_id)
+        else:
+            query = query.join(Document, Document.id == Award.document_id).where(
+                Document.tenant_id == tenant_id, Document.sha256 == sha256
+            )
+    else:
+        return False
+    return session.scalar(query.limit(1)) is not None

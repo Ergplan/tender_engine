@@ -99,6 +99,8 @@ class RunView(BaseModel):
     groups: list[str] | None
     model: str
     status: str
+    # sync or batch (a model's reading), record, derived, import (Stage 6).
+    mode: str = "sync"
 
 
 class ReviewState(BaseModel):

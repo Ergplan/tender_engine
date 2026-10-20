@@ -24,8 +24,10 @@ class ParseService:
         self._storage = storage
         self._settings = settings
 
-    def parse(self, session: Session, document_id: str) -> Document:
-        """Store one Page row and one render per page; mark the document parsed.
+    def parse(self, session: Session, document_id: str, *, map_sections: bool = True) -> Document:
+        """Store one Page row and one render per page; mark the document parsed, and queue
+        its section map (a model call) unless `map_sections` is false: an imported result
+        publication (Stage 6) is read by no model and gets no map.
 
         Safe to re-run: existing pages of the document are replaced.
         """
@@ -54,13 +56,14 @@ class ParseService:
         document.page_count = len(pages)
         document.status = "parsed"
         document.error = None
-        jobs.enqueue(
-            session,
-            tenant_id=document.tenant_id,
-            kind="section_map",
-            payload={"document_id": document.id},
-            created_by="worker",
-        )
+        if map_sections:
+            jobs.enqueue(
+                session,
+                tenant_id=document.tenant_id,
+                kind="section_map",
+                payload={"document_id": document.id},
+                created_by="worker",
+            )
         session.commit()
         return document
 

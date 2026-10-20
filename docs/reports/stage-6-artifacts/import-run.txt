@@ -1,0 +1,12 @@
+RE-tender-results@f6d1d33 (as of 7 October 2026)
+hosts: cercind.gov.in (ok), ireda.in (ok), sjvn.nic.in (ok), www.seci.co.in (ok)
+imported 115, already imported 1, HTML registers left out 6 (15 rows), rejected hosts 0
+rows imported 607, of which located on their page 593
+linked to tenders: seci-fdre-rtc-v (rfs_number) <- SECI000240_result_1.pdf, seci-wind-tranche-xx (rfs_number) <- SECI000250_result_1.pdf, seci-fdre-ix (rfs_number) <- SECI000258_result_1.pdf, nhpc-fdre-ii (page_text, p.3) <- NHPC_235_AT_2025_2026.pdf, ntpc-hybrid-03 (page_text, p.3) <- NTPC_774_AT_2025_2026.pdf
+procurer: located 115, unlocated 0, no value 0
+reference: located 111, unlocated 4, no value 0
+result_kind: located 106, unlocated 9, no value 0
+result_date: located 86, unlocated 0, no value 29
+winners: located 114, unlocated 1, no value 0
+candidate statuses: needs_review 22, not_found 29, validated 524
+exit 0
