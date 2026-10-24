@@ -1,0 +1,350 @@
+[
+ {
+  "tender": "seci-cfd-i",
+  "version_no": 2,
+  "kind": "amendment",
+  "issued_on": "2026-07-15",
+  "documents": [
+   "Revised_RfS_for_1000_MWh_assured_Peak_Supply_under_CfD_Mechanism_(CfD-I).pdf"
+  ],
+  "changes": 78,
+  "by_class": {
+   "annexure_replaced": 3,
+   "date_moved": 1,
+   "requirement_added": 4,
+   "restated": 33,
+   "value_changed": 37
+  },
+  "decided": 56,
+  "undecided": 22,
+  "changes_decided": 0,
+  "with_impacts": 15,
+  "round": null
+ },
+ {
+  "tender": "seci-cfd-i",
+  "version_no": 3,
+  "kind": "amendment",
+  "issued_on": "2026-07-17",
+  "documents": [
+   "Amendment-01-SECI-CfD-I-final_upload.pdf"
+  ],
+  "changes": 9,
+  "by_class": {
+   "annexure_replaced": 1,
+   "restated": 6,
+   "value_changed": 2
+  },
+  "decided": 2,
+  "undecided": 7,
+  "changes_decided": 0,
+  "with_impacts": 3,
+  "round": null
+ },
+ {
+  "tender": "seci-cfd-i",
+  "version_no": 4,
+  "kind": "amendment",
+  "issued_on": "2026-08-03",
+  "documents": [
+   "Amendment-02-SECI-CfD-I-final_upload.pdf",
+   "Tender_notice_page_seci-cfd-i.pdf"
+  ],
+  "changes": 23,
+  "by_class": {
+   "date_moved": 1,
+   "requirement_added": 3,
+   "restated": 11,
+   "value_changed": 8
+  },
+  "decided": 23,
+  "undecided": 0,
+  "changes_decided": 0,
+  "with_impacts": 8,
+  "round": null
+ },
+ {
+  "tender": "seci-cfd-i",
+  "version_no": 5,
+  "kind": "corrigendum",
+  "issued_on": "2026-10-08",
+  "documents": [
+   "Amendment-03-SECI-CfD-I-final_upload.pdf"
+  ],
+  "changes": 16,
+  "by_class": {
+   "annexure_replaced": 1,
+   "clause_withdrawn": 1,
+   "requirement_added": 2,
+   "restated": 7,
+   "value_changed": 5
+  },
+  "decided": 0,
+  "undecided": 16,
+  "changes_decided": 14,
+  "with_impacts": 4,
+  "round": null
+ },
+ {
+  "tender": "seci-cni-1-700mw",
+  "version_no": 3,
+  "kind": "amendment",
+  "issued_on": "2026-10-12",
+  "documents": [
+   "Amendment_011.pdf"
+  ],
+  "changes": 6,
+  "by_class": {
+   "annexure_replaced": 1,
+   "restated": 2,
+   "value_changed": 3
+  },
+  "decided": 0,
+  "undecided": 6,
+  "changes_decided": 1,
+  "with_impacts": 1,
+  "round": {
+   "opened": "2026-10-24T12:18:36.011220+00:00",
+   "completed": null,
+   "revoked": false
+  }
+ },
+ {
+  "tender": "seci-cni-1-700mw",
+  "version_no": 2,
+  "kind": "clarification",
+  "issued_on": null,
+  "documents": [
+   "Pre-Bid_meeting_notification48.pdf",
+   "Tender_notice_page_seci-cni-1-700mw.pdf"
+  ],
+  "changes": 13,
+  "by_class": {
+   "requirement_added": 2,
+   "restated": 7,
+   "value_changed": 4
+  },
+  "decided": 13,
+  "undecided": 0,
+  "changes_decided": 1,
+  "with_impacts": 2,
+  "round": null
+ },
+ {
+  "tender": "seci-fdre-ix",
+  "version_no": 2,
+  "kind": "amendment",
+  "issued_on": "2026-07-08",
+  "documents": [
+   "Amendment-01-SECI-FDRE-IX-final_upload.pdf",
+   "Tender_notice_page_seci-fdre-ix.pdf"
+  ],
+  "changes": 16,
+  "by_class": {
+   "requirement_added": 3,
+   "restated": 5,
+   "value_changed": 8
+  },
+  "decided": 16,
+  "undecided": 0,
+  "changes_decided": 0,
+  "with_impacts": 5,
+  "round": null
+ },
+ {
+  "tender": "seci-fdre-rtc-v",
+  "version_no": 2,
+  "kind": "amendment",
+  "issued_on": "2026-04-02",
+  "documents": [
+   "Amendment-01-SECI-RTC-TM-V-final_upload.pdf"
+  ],
+  "changes": 37,
+  "by_class": {
+   "annexure_replaced": 2,
+   "date_moved": 1,
+   "requirement_added": 2,
+   "restated": 17,
+   "value_changed": 15
+  },
+  "decided": 10,
+  "undecided": 27,
+  "changes_decided": 1,
+  "with_impacts": 10,
+  "round": null
+ },
+ {
+  "tender": "seci-fdre-rtc-v",
+  "version_no": 3,
+  "kind": "amendment",
+  "issued_on": "2026-04-27",
+  "documents": [
+   "Amendment-02-SECI-RTC-TM-V-final_upload.pdf"
+  ],
+  "changes": 24,
+  "by_class": {
+   "annexure_replaced": 1,
+   "restated": 13,
+   "value_changed": 10
+  },
+  "decided": 9,
+  "undecided": 15,
+  "changes_decided": 0,
+  "with_impacts": 8,
+  "round": null
+ },
+ {
+  "tender": "seci-fdre-rtc-v",
+  "version_no": 4,
+  "kind": "clarification",
+  "issued_on": "2026-04-27",
+  "documents": [
+   "Clarifications-01_RTC-TM-V-_final_upload.pdf"
+  ],
+  "changes": 15,
+  "by_class": {
+   "date_moved": 1,
+   "restated": 5,
+   "value_changed": 9
+  },
+  "decided": 5,
+  "undecided": 10,
+  "changes_decided": 0,
+  "with_impacts": 5,
+  "round": null
+ },
+ {
+  "tender": "seci-fdre-rtc-v",
+  "version_no": 5,
+  "kind": "amendment",
+  "issued_on": "2026-06-25",
+  "documents": [
+   "Amendment-03-SECI-FDRE-RTC-V-final_upload.pdf",
+   "Tender_notice_page_seci-fdre-rtc-v.pdf"
+  ],
+  "changes": 31,
+  "by_class": {
+   "annexure_replaced": 3,
+   "requirement_added": 3,
+   "restated": 8,
+   "value_changed": 17
+  },
+  "decided": 31,
+  "undecided": 0,
+  "changes_decided": 1,
+  "with_impacts": 3,
+  "round": null
+ },
+ {
+  "tender": "seci-ramagiri-70mw-bess",
+  "version_no": 2,
+  "kind": "amendment",
+  "issued_on": "2026-07-28",
+  "documents": [
+   "Amendment-1_2.xlsx"
+  ],
+  "changes": 15,
+  "by_class": {
+   "annexure_replaced": 2,
+   "requirement_added": 2,
+   "restated": 3,
+   "value_changed": 8
+  },
+  "decided": 0,
+  "undecided": 15,
+  "changes_decided": 0,
+  "with_impacts": 2,
+  "round": null
+ },
+ {
+  "tender": "seci-ramagiri-70mw-bess",
+  "version_no": 3,
+  "kind": "clarification",
+  "issued_on": "2026-07-28",
+  "documents": [
+   "Clarification-1_to_Prebid_Queries_1.xlsx"
+  ],
+  "changes": 24,
+  "by_class": {
+   "annexure_replaced": 2,
+   "requirement_added": 2,
+   "restated": 10,
+   "value_changed": 10
+  },
+  "decided": 0,
+  "undecided": 24,
+  "changes_decided": 0,
+  "with_impacts": 4,
+  "round": null
+ },
+ {
+  "tender": "seci-ramagiri-70mw-bess",
+  "version_no": 4,
+  "kind": "amendment",
+  "issued_on": "2026-08-28",
+  "documents": [
+   "Amendment02_to_70_MW_BoS_tender_Package_1_Solar_paired_with_BESS_28082026.pdf"
+  ],
+  "changes": 36,
+  "by_class": {
+   "annexure_replaced": 3,
+   "requirement_added": 3,
+   "restated": 12,
+   "value_changed": 18
+  },
+  "decided": 0,
+  "undecided": 36,
+  "changes_decided": 0,
+  "with_impacts": 3,
+  "round": null
+ },
+ {
+  "tender": "seci-ramagiri-70mw-bess",
+  "version_no": 5,
+  "kind": "amendment",
+  "issued_on": "2026-09-15",
+  "documents": [
+   "Amendment-03 package-1 Solar plus BESS 15092026.pdf",
+   "Additional clauses to SUBSECTION B TECHNICAL SPECIFICATIONS (TS)  ELECTRICAL SYSTEM.pdf",
+   "GA H_FG Test_Procedure_15092026.pdf",
+   "SA-A (Revised) Tentative Land Layout (Solar + BESS Package) 15092026.pdf",
+   "SA-B (Revised) Indicative Single Line Diagram (SLD) 15092026.pdf",
+   "SA-D_Geo Tech Investigation Report of Adjacent Site (for Reference only) 15092026.pdf",
+   "Tender_notice_page_seci-ramagiri-70mw-bess.pdf"
+  ],
+  "changes": 33,
+  "by_class": {
+   "annexure_replaced": 3,
+   "requirement_added": 5,
+   "restated": 11,
+   "value_changed": 14
+  },
+  "decided": 0,
+  "undecided": 33,
+  "changes_decided": 0,
+  "with_impacts": 5,
+  "round": null
+ },
+ {
+  "tender": "seci-wind-tranche-xx",
+  "version_no": 2,
+  "kind": "amendment",
+  "issued_on": "2026-04-27",
+  "documents": [
+   "Amendment-01_Wind-Tranche-XX-final_upload.pdf",
+   "Tender_notice_page_seci-wind-tranche-xx.pdf"
+  ],
+  "changes": 16,
+  "by_class": {
+   "annexure_replaced": 2,
+   "requirement_added": 3,
+   "restated": 5,
+   "value_changed": 6
+  },
+  "decided": 16,
+  "undecided": 0,
+  "changes_decided": 0,
+  "with_impacts": 4,
+  "round": null
+ }
+]

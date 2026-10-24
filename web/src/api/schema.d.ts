@@ -744,6 +744,29 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/documents/{document_id}/link-amendment": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Link Amendment Document
+         * @description Which tender a parsed amending document belongs to (Stage 7, Block 3 a): linked by
+         *     the reference it prints or by its words above a clear margin; otherwise `ask` with the
+         *     candidates, and a person adds the version to the tender they choose. Nothing is
+         *     written.
+         */
+        post: operations["link_amendment_document_api_v1_documents__document_id__link_amendment_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/documents/{document_id}/pages": {
         parameters: {
             query?: never;
@@ -1659,6 +1682,12 @@ export interface components {
         AmendmentChange: {
             before: components["schemas"]["ChangeBefore"] | null;
             /**
+             * Change Class
+             * @default value_changed
+             * @enum {string}
+             */
+            change_class: "value_changed" | "date_moved" | "clause_withdrawn" | "annexure_replaced" | "requirement_added" | "restated";
+            /**
              * Changes Decided
              * @default false
              */
@@ -1703,10 +1732,55 @@ export interface components {
             /** Value Type */
             value_type: string;
         };
+        /** AmendmentLinkCandidateOut */
+        AmendmentLinkCandidateOut: {
+            /** External Ref */
+            external_ref: string | null;
+            /** Issuing Agency */
+            issuing_agency: string;
+            /** Score */
+            score: number;
+            /** Slug */
+            slug: string | null;
+            /** Tender Id */
+            tender_id: string;
+            /** Title */
+            title: string;
+            /** Why */
+            why: string;
+        };
+        /**
+         * AmendmentLinkOut
+         * @description Where an amending document belongs (Block 3 a). `linked` names the tender; `ask`
+         *     gives the candidates for a person to choose from; `none` found nothing.
+         */
+        AmendmentLinkOut: {
+            /** Candidates */
+            candidates: components["schemas"]["AmendmentLinkCandidateOut"][];
+            /** Confidence */
+            confidence: number;
+            /** Method */
+            method: string;
+            /** Reason */
+            reason: string;
+            /** References Found */
+            references_found: string[];
+            /** State */
+            state: string;
+            /** Tender Id */
+            tender_id: string | null;
+        };
         /** AmendmentVersion */
         AmendmentVersion: {
             /** Added */
             added: number;
+            /**
+             * By Class
+             * @default {}
+             */
+            by_class: {
+                [key: string]: number;
+            };
             /** Changed */
             changed: number;
             /** Changes */
@@ -5422,6 +5496,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ExtractionRunOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    link_amendment_document_api_v1_documents__document_id__link_amendment_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AmendmentLinkOut"];
                 };
             };
             /** @description Validation Error */

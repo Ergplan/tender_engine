@@ -1,0 +1,16 @@
+docker compose run --rm --no-deps -T tests python infra/ci/run_checks.py --once
+ Container tender-engine-tests-run-1ffdf01c0aea Creating 
+ Container tender-engine-tests-run-1ffdf01c0aea Created 
+pass  ruff_check
+pass  ruff_format
+pass  mypy
+pass  alembic_check
+pass  pytest
+pass  openapi_drift
+pass  field_trace
+FAIL  tsc
+pass  vitest
+--- RED in 2007s
+
+make: *** [Makefile:28: check] Error 1
+exit=2

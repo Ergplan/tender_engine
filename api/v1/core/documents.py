@@ -8,6 +8,7 @@ from sqlalchemy.exc import ProgrammingError
 from api.deps import ActorDep, IngestDep, SessionDep, StorageDep, TenantDep
 from api.middleware.errors import AppError
 from api.v1.schemas.core import (
+    AmendmentLinkOut,
     BundleMemberOut,
     BundleOut,
     DocumentOut,
@@ -19,6 +20,7 @@ from api.v1.schemas.core import (
 from core.models import Document, Page, Section
 from core.services import jobs
 from core.services.ingest import IngestError
+from tender.services.amendment_link import link_amendment
 
 router = APIRouter(tags=["documents"])
 
@@ -151,6 +153,21 @@ def classify_document(
     )
     session.commit()
     return _out(document, _classification(session, document))
+
+
+@router.post("/documents/{document_id}/link-amendment", response_model=AmendmentLinkOut)
+def link_amendment_document(
+    document_id: str, session: SessionDep, tenant_id: TenantDep
+) -> AmendmentLinkOut:
+    """Which tender a parsed amending document belongs to (Stage 7, Block 3 a): linked by
+    the reference it prints or by its words above a clear margin; otherwise `ask` with the
+    candidates, and a person adds the version to the tender they choose. Nothing is
+    written."""
+    document = _document(session, tenant_id, document_id)
+    if document.status != "parsed":
+        raise AppError("validation_failed", f"document is {document.status}, not parsed")
+    link = link_amendment(session, tenant_id, document.id)
+    return AmendmentLinkOut.model_validate(link.model_dump())
 
 
 @router.get("/documents/{document_id}", response_model=DocumentOut)

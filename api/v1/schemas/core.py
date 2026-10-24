@@ -136,3 +136,26 @@ class ApprovalOut(BaseModel):
     canonical_fact_id: str | None
     feedback_delta_kind: str | None
     created: bool
+
+
+class AmendmentLinkCandidateOut(BaseModel):
+    tender_id: str
+    slug: str | None
+    title: str
+    issuing_agency: str
+    external_ref: str | None
+    score: float
+    why: str
+
+
+class AmendmentLinkOut(BaseModel):
+    """Where an amending document belongs (Block 3 a). `linked` names the tender; `ask`
+    gives the candidates for a person to choose from; `none` found nothing."""
+
+    state: str
+    tender_id: str | None
+    confidence: float
+    method: str
+    references_found: list[str]
+    candidates: list[AmendmentLinkCandidateOut]
+    reason: str

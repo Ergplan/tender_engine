@@ -697,3 +697,9 @@ flowchart LR
 - Tender type classification: `tender/services/classify.py` (`TypeClassifier`, bands, `core_groups`, the `classify_type` job), prompt `tender/domain_packs/core/prompts/classify_type/v1.md`; `document.classification`, `tender.type_source` / `type_state` / `type_confidence` / `parser_llamaparse` (migration 0021); `POST /documents/{id}/classify`, `POST /tenders/{id}/type`, `TenderService.set_type` (audited).
 - `docker-compose.yml`: service `docling` (profile `parsing`). Settings `docling_url`, `docling_timeout_seconds`, `docling_tables`, `llamaparse_api_key`, `llamaparse_url`.
 - Tooling: `scripts/window_coverage.py` (plan 2e), `scripts/parser_benchmark.py` with `evals/parser_bench/hard_set.yaml` (plan 2b).
+
+### Stage 7, Block 3 (2026-10-24/25)
+
+- `tender/services/amendment_link.py`: `link_amendment` / `link_from_text` (reference match at 0.98, else title-word recall at 0.85 with a 0.10 margin, else `ask`); `POST /documents/{id}/link-amendment`.
+- `TenderService.versions` returns date order (`ordered_versions`); `add_version` sets the current version to the latest dated.
+- `tender/services/amendments.py`: `change_class`, `AmendmentChange.change_class`, `AmendmentVersion.by_class`; `scripts/amendment_report.py` over the corpus.

@@ -87,3 +87,23 @@ carrying forward (`rounds.py`, `review._current`); impact cues (`changes_decided
 - (d) Unchanged; the report shows the round opened for a version and the cues on it.
 - (e) Unchanged; the report shows the last run and the schedule.
 
+## Block 4, read as a stage (2026-10-24/25)
+
+- (a) Eight new tenders from official sites only, fetched on 2026-10-24 into
+  `/work/tenders/<type>/<slug>/` with manifests naming source URL and retrieval date:
+  RECPDCL Bikaner V Part A and Sharavathi PSP evacuation (transmission, TBCB, with
+  amendments; scanned amendments and appendices), MSEDCL medium-term BESS 1000 MW/4000 MWh
+  (corrigendum + two addenda) and MSEDCL BESS 2000 MW/4000 MWh (addenda 7 and 9), TGREDCO
+  solar 3000 MW + 6000 MWh ESS, TGREDCO wind 800 MW, TGREDCO FDRE-RTC 2000 MW, SJVN
+  WIND-4 600 MW (eleven corrigenda; scanned pages in the RfS). Five state tenders, two
+  transmission, five with amendments, four with scanned pages. **IPP is not covered**:
+  the one official IPP-class document found (SECI's short-term 80 MW RfP of 01.04.2026)
+  sits on seci.co.in, which refuses connections from the VM and from the fetch proxy
+  (ECONNREFUSED); the owner can drop it into `/work/tenders/ipp/` and it joins the set.
+- (b) Freeze: tag `stage-7-block-4-freeze` on the Block 3 commit before any model call on
+  the set; ingest, parse, map and extract under it; reviewer links wait for the names the
+  owner gives (a stop point).
+- (c) Score with the Block 1 metrics once the reviews are in; only then fix systematic
+  errors (the `procurement_mode` enum first) and report before and after.
+- (d) Targets as the plan states; misses reported as they are.
+

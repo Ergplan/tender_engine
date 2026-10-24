@@ -28,6 +28,39 @@ from tender.services.tenders import OBJECT_TYPE, TenderService
 # removed: the version withdraws the provision (a `withdrawn` reading); what stood before is
 # shown as the value it removes.
 ChangeKind = Literal["added", "changed", "restated", "removed"]
+# The plan's registered change kinds (Stage 7, Block 3 c), read from the kind, the value
+# type and the field: a date that moved, a clause withdrawn, an annexure or format replaced,
+# a new requirement, a value changed, or the same value restated.
+ChangeClass = Literal[
+    "value_changed",
+    "date_moved",
+    "clause_withdrawn",
+    "annexure_replaced",
+    "requirement_added",
+    "restated",
+]
+ANNEXURE_FIELDS = (
+    "core.documents.annexure_formats",
+    "core.documents.required_documents",
+    "core.documents.draft_agreements_referenced",
+)
+
+
+def change_class(kind: ChangeKind, value_type: str, field_path: str) -> ChangeClass:
+    """Which registered kind of change a field's reading in a later version is."""
+    if kind == "removed":
+        return "clause_withdrawn"
+    if kind == "added":
+        return "requirement_added"
+    if kind == "restated":
+        return "restated"
+    if value_type == "date":
+        return "date_moved"
+    if field_path in ANNEXURE_FIELDS or field_path.endswith(("_formats", "_format")):
+        return "annexure_replaced"
+    return "value_changed"
+
+
 DECIDED = ("approved", "edited", "not_in_document")
 
 
@@ -54,6 +87,7 @@ class AmendmentChange(BaseModel):
     keys: list[KeyDef] | None = None
     # added: nothing stood before; changed: the value differs; restated: the same value.
     kind: ChangeKind
+    change_class: ChangeClass = "value_changed"
     before: ChangeBefore | None
     # This version's reading, with its candidate, evidence and decision.
     entry: ReviewEntry
@@ -84,6 +118,8 @@ class AmendmentVersion(BaseModel):
     removed: int = 0
     decided: int
     undecided: int
+    # Per registered change class (Block 3 c): class name to count.
+    by_class: dict[str, int] = {}
 
 
 class TenderAmendments(BaseModel):
@@ -166,6 +202,7 @@ def tender_amendments(
                     enum_values=field.enum_values,
                     keys=field.keys,
                     kind=kind,
+                    change_class=change_class(kind, field.value_type, field.field_path),
                     before=before,
                     entry=entry,
                     is_current=field.current == index,
@@ -197,6 +234,7 @@ def tender_amendments(
                 removed=sum(1 for c in own if c.kind == "removed"),
                 decided=sum(1 for c in own if c.decided),
                 undecided=sum(1 for c in own if not c.decided),
+                by_class=_by_class(own),
             )
             for version in versions
             for own in [changes[version.version_no]]
@@ -245,3 +283,10 @@ def _sections_read(session: Session, tender: Tender) -> dict[int, list[str]]:
     ):
         read.setdefault(version_no, set()).update(groups or [])
     return {number: sorted(groups) for number, groups in read.items()}
+
+
+def _by_class(changes: list[AmendmentChange]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for change in changes:
+        counts[change.change_class] = counts.get(change.change_class, 0) + 1
+    return dict(sorted(counts.items()))

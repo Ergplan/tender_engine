@@ -1,0 +1,14 @@
+docker compose run --rm --no-deps -T tests python infra/ci/run_checks.py --once
+ Container tender-engine-tests-run-a24022250d91 Creating 
+ Container tender-engine-tests-run-a24022250d91 Created 
+pass  ruff_check
+pass  ruff_format
+pass  mypy
+pass  alembic_check
+pass  pytest
+pass  openapi_drift
+pass  field_trace
+pass  tsc
+pass  vitest
+--- GREEN in 1921s
+exit=0

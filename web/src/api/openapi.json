@@ -281,6 +281,19 @@
               }
             ]
           },
+          "change_class": {
+            "default": "value_changed",
+            "enum": [
+              "value_changed",
+              "date_moved",
+              "clause_withdrawn",
+              "annexure_replaced",
+              "requirement_added",
+              "restated"
+            ],
+            "title": "Change Class",
+            "type": "string"
+          },
           "changes_decided": {
             "default": false,
             "title": "Changes Decided",
@@ -412,11 +425,133 @@
         "title": "AmendmentChange",
         "type": "object"
       },
+      "AmendmentLinkCandidateOut": {
+        "properties": {
+          "external_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "External Ref"
+          },
+          "issuing_agency": {
+            "title": "Issuing Agency",
+            "type": "string"
+          },
+          "score": {
+            "title": "Score",
+            "type": "number"
+          },
+          "slug": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Slug"
+          },
+          "tender_id": {
+            "title": "Tender Id",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "why": {
+            "title": "Why",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tender_id",
+          "slug",
+          "title",
+          "issuing_agency",
+          "external_ref",
+          "score",
+          "why"
+        ],
+        "title": "AmendmentLinkCandidateOut",
+        "type": "object"
+      },
+      "AmendmentLinkOut": {
+        "description": "Where an amending document belongs (Block 3 a). `linked` names the tender; `ask`\ngives the candidates for a person to choose from; `none` found nothing.",
+        "properties": {
+          "candidates": {
+            "items": {
+              "$ref": "#/components/schemas/AmendmentLinkCandidateOut"
+            },
+            "title": "Candidates",
+            "type": "array"
+          },
+          "confidence": {
+            "title": "Confidence",
+            "type": "number"
+          },
+          "method": {
+            "title": "Method",
+            "type": "string"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          },
+          "references_found": {
+            "items": {
+              "type": "string"
+            },
+            "title": "References Found",
+            "type": "array"
+          },
+          "state": {
+            "title": "State",
+            "type": "string"
+          },
+          "tender_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tender Id"
+          }
+        },
+        "required": [
+          "state",
+          "tender_id",
+          "confidence",
+          "method",
+          "references_found",
+          "candidates",
+          "reason"
+        ],
+        "title": "AmendmentLinkOut",
+        "type": "object"
+      },
       "AmendmentVersion": {
         "properties": {
           "added": {
             "title": "Added",
             "type": "integer"
+          },
+          "by_class": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "default": {},
+            "title": "By Class",
+            "type": "object"
           },
           "changed": {
             "title": "Changed",
@@ -9350,6 +9485,49 @@
         "summary": "Start Extraction",
         "tags": [
           "extraction"
+        ]
+      }
+    },
+    "/api/v1/documents/{document_id}/link-amendment": {
+      "post": {
+        "description": "Which tender a parsed amending document belongs to (Stage 7, Block 3 a): linked by\nthe reference it prints or by its words above a clear margin; otherwise `ask` with the\ncandidates, and a person adds the version to the tender they choose. Nothing is\nwritten.",
+        "operationId": "link_amendment_document_api_v1_documents__document_id__link_amendment_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "document_id",
+            "required": true,
+            "schema": {
+              "title": "Document Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AmendmentLinkOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Link Amendment Document",
+        "tags": [
+          "documents"
         ]
       }
     },

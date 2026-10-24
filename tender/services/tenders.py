@@ -6,6 +6,7 @@ Candidates, approvals and canonical facts of a tender are attached to
 object_type='tender', object_id=tender.id, object_version=version_no.
 """
 
+from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import UTC, date, datetime
 
@@ -50,6 +51,17 @@ DEFAULT_ROLE = {
     "amendment": "amendment",
     "clarification": "clarification",
 }
+
+
+def ordered_versions(versions: Iterable[TenderVersion]) -> list[TenderVersion]:
+    """Date order: the original first, then by `issued_on` (undated last), then by number."""
+
+    def key(version: TenderVersion) -> tuple[int, date, int]:
+        if version.version_no == 1 or version.kind == "original":
+            return (0, date.min, version.version_no)
+        return (1, version.issued_on or date.max, version.version_no)
+
+    return sorted(versions, key=key)
 
 
 class TenderError(ValueError):
@@ -198,14 +210,19 @@ class TenderService:
         return tender.slug or ""
 
     def versions(self, session: Session, tender: Tender) -> list[VersionDocuments]:
-        versions = list(
+        """The tender's versions in **date order** (Stage 7, Block 3 b): the original first,
+        then the later versions by `issued_on`, an undated one after the dated ones, ties
+        and undated ones by arrival number. A version keeps its arrival number for ever
+        (candidates, facts and rounds name it); the order is how the engine projects the
+        readings, so an amendment that arrives late slots in where its date puts it and
+        everything downstream (the review, the amendments view, the current view, the
+        changelog) re-projects from the same list, with no reseed."""
+        versions = ordered_versions(
             session.scalars(
-                select(TenderVersion)
-                .where(
+                select(TenderVersion).where(
                     TenderVersion.tender_id == tender.id,
                     TenderVersion.tenant_id == self._tenant_id,
                 )
-                .order_by(TenderVersion.version_no)
             )
         )
         links: dict[str, list[tuple[TenderVersionDocument, Document]]] = {
@@ -288,7 +305,9 @@ class TenderService:
             },
         )
         self._link(session, version, document, role, created_by)
-        tender.current_version_id = version.id
+        # The current version is the latest dated one, not the latest arrived (Block 3 b).
+        session.flush()
+        tender.current_version_id = self.versions(session, tender)[-1].version.id
         session.commit()
         return version
 

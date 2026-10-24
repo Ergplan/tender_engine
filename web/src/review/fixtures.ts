@@ -236,6 +236,7 @@ export function makeAmendments(): TenderAmendments {
             enum_values: null,
             keys: null,
             kind: "changed",
+            change_class: "value_changed",
             before: { version_no: 1, version_kind: "original", value: "30.03.2026", decision: null },
             entry: deadline.entries[1],
             is_current: true,
@@ -252,6 +253,7 @@ export function makeAmendments(): TenderAmendments {
         removed: 0,
         decided: 0,
         undecided: 1,
+        by_class: { value_changed: 1 },
       },
     ],
   };
