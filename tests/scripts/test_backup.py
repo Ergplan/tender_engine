@@ -47,3 +47,19 @@ def test_the_repository_archive_carries_no_secret_file() -> None:
     names = {line.rsplit("/", 1)[-1] for line in out.stdout.splitlines()}
     assert ".env" not in names and "allowlist.yaml" not in names
     assert not any(name.endswith("-links.txt") for name in names)
+
+
+def test_a_key_file_overrides_the_metadata_account(tmp_path: Path) -> None:
+    """BACKUP_KEY_FILE (the stop-gap until the VM scope is widened) must be used as the gcloud
+    credential and the metadata account left aside; an unreadable key file stops the run."""
+    text = SCRIPT.read_text()
+    assert "CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE" in text
+    assert "BACKUP_KEY_FILE not readable" in text
+    # No key file may ever be tracked.
+    out = subprocess.run(
+        ["git", "-C", str(ROOT), "ls-files"], capture_output=True, text=True, check=True
+    )
+    assert not any(
+        name.endswith(".json") and "key" in name.lower()
+        for name in (line.rsplit("/", 1)[-1] for line in out.stdout.splitlines())
+    )

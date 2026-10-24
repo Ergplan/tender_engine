@@ -3,7 +3,8 @@
 #   1. a pg_dump of the app database (custom format, compressed) and a tar of /data
 #      (documents and page renders), kept under BACKUP_ROOT for RETENTION_DAYS;
 #   2. the same two files copied to the versioned GCS bucket BACKUP_BUCKET (when set) with
-#      the VM's service account (`gcloud --account`); the bucket's lifecycle keeps 30 days;
+#      the VM's service account (`gcloud --account`), or with the key file BACKUP_KEY_FILE
+#      when set (the stop-gap until the VM's scope is widened); the bucket's lifecycle keeps 30 days;
 #   3. a Drive bundle under BACKUP_ROOT/drive: the dump, the tar, `git archive` of the
 #      committed tree (tracked files only, so never .env or the allowlist) and a manifest
 #      of sha256 sums. Nothing in it is a secret; the owner syncs the folder to Drive.
@@ -21,6 +22,7 @@ RETENTION_DAYS="${RETENTION_DAYS:-14}"
 DATA_DIR="${DATA_DIR:-/data}"
 COMPOSE="${COMPOSE:-docker compose}"
 BACKUP_BUCKET="${BACKUP_BUCKET:-}"
+BACKUP_KEY_FILE="${BACKUP_KEY_FILE:-}"
 STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
 METADATA="http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/email"
 
@@ -65,10 +67,18 @@ fi
 chmod 600 "$DRIVE.new"/*
 rm -rf "$DRIVE" && mv "$DRIVE.new" "$DRIVE"
 
-# Off the VM: the versioned bucket, as the VM's own service account.
+# Off the VM: the versioned bucket. With BACKUP_KEY_FILE set, gcloud signs as that service
+# account's key (owner's stop-gap until the VM scope allows storage-rw); otherwise as the VM's
+# own service account from the metadata server.
 UPLOADED="not configured (BACKUP_BUCKET empty)"
 if [[ -n "$BACKUP_BUCKET" ]]; then
-  SA="$(curl -sf -H 'Metadata-Flavor: Google' "$METADATA" || true)"
+  SA=""
+  if [[ -n "$BACKUP_KEY_FILE" ]]; then
+    [[ -r "$BACKUP_KEY_FILE" ]] || { echo "BACKUP_KEY_FILE not readable: $BACKUP_KEY_FILE" >&2; exit 2; }
+    export CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE="$BACKUP_KEY_FILE"
+  else
+    SA="$(curl -sf -H 'Metadata-Flavor: Google' "$METADATA" || true)"
+  fi
   if gcloud ${SA:+--account="$SA"} storage cp "$DB_OUT" "$DATA_OUT" "gs://$BACKUP_BUCKET/$(date -u +%Y/%m)/" >/dev/null 2>"$BACKUP_ROOT/upload.err"; then
     UPLOADED="gs://$BACKUP_BUCKET/$(date -u +%Y/%m)/"
   else

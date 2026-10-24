@@ -19,3 +19,7 @@ web/dist/
 
 # data
 /data/
+
+# service-account key files never enter the repository
+*-key.json
+*sa-key*.json
