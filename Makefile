@@ -3,7 +3,7 @@ COMPOSE := docker compose
 STATIC_IP := $(shell cat infra/STATIC-IP.txt)
 RUN_TESTS := $(COMPOSE) run --rm --no-deps -T tests
 
-.PHONY: up down test test-e2e test-ui check watch migrate deploy build-prod logs smoke client hooks evidence-corpus trace gold eval feedback-report report threeway agent-pass freshness
+.PHONY: up down test test-e2e test-ui check watch migrate deploy build-prod logs smoke client hooks evidence-corpus trace gold eval feedback-report report threeway agent-pass freshness backup
 
 up: hooks ## start the app and the test watcher
 	$(COMPOSE) up -d --build
@@ -89,3 +89,5 @@ agent-pass: ## queue the agent pass over every gold tender at its reviewed versi
 freshness: ## read every tender's source page again and report new or changed files; nothing is ingested
 	$(COMPOSE) exec -T api python -m scripts.ingest_tenders freshness
 
+backup: ## pg_dump of the app database and a tar of /data under /work/backups (14-day retention); cron runs it nightly
+	infra/backup.sh

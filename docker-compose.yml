@@ -16,7 +16,7 @@ x-python: &python
   depends_on:
     db:
       condition: service_healthy
-  restart: unless-stopped
+  restart: always
 
 services:
   db:
@@ -35,7 +35,7 @@ services:
       interval: 3s
       timeout: 3s
       retries: 20
-    restart: unless-stopped
+    restart: always
 
   api:
     <<: *python
@@ -66,7 +66,7 @@ services:
     volumes:
       - ./web:/app/web
       - web_node_modules:/app/web/node_modules
-    restart: unless-stopped
+    restart: always
 
   caddy:
     image: caddy:2
@@ -82,7 +82,7 @@ services:
     depends_on:
       - api
       - web
-    restart: unless-stopped
+    restart: always
 
   tests:
     <<: *python
