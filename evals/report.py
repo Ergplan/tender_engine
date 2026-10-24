@@ -22,6 +22,7 @@ from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+import agent.models  # noqa: F401  (registers the agent pass tables on Base.metadata)
 from core.models import Approval
 from evals.gold import GoldRecord, load_all
 from evals.runner import RESULTS_ROOT, FieldScore, Summary, summarise

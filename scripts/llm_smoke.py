@@ -8,6 +8,8 @@ import base64
 import sys
 from pathlib import Path
 
+import agent.models  # noqa: F401  (registers the agent pass tables on Base.metadata)
+import tender.models  # noqa: F401  (registers the tender tables on Base.metadata)
 from core.config import Settings
 from core.db import make_engine, make_session_factory
 from core.llm.client import LLMClient, LLMRequest, PdfPart, TextPart

@@ -29,6 +29,7 @@ from rapidfuzz import fuzz
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+import agent.models  # noqa: F401  (registers the agent pass tables on Base.metadata)
 from core.schemas import FieldDef, KeyDef, SchemaRegistry
 from core.services.review_state import ReviewStateService
 from evals.gold import GoldField, GoldRecord, load_all

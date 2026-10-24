@@ -19,6 +19,7 @@ from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+import agent.models  # noqa: F401  (registers the agent pass tables on Base.metadata)
 from core.models import Approval, Feedback
 from evals.gold import tender_key
 from tender.models import Tender

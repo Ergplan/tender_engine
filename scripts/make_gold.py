@@ -11,6 +11,7 @@ import sys
 
 from sqlalchemy import select
 
+import agent.models  # noqa: F401  (registers the agent pass tables on Base.metadata)
 from core.config import Settings
 from core.db import make_engine, make_session_factory
 from evals import report
