@@ -226,7 +226,23 @@ Full suite: `.ci/status.json` at the commit (kept as `stage-7-artifacts/ci-statu
 
 ## Deployment
 
-TBD-DEPLOY
+**Not yet deployed: `make deploy` was refused to the build agent by the session's
+permission classifier ("production deploy") on 2026-10-24 at about 13:20 UTC.** The
+commits are pushed (`5b44dc8`, `8a821d8`, `06083d4`, `bce52d3`); the live stack still runs
+the containers started on 2026-10-20. Because the source tree is mounted, the API already
+has the new code (uvicorn reloads it), but the **worker process started on 20 October is
+still the one without the agent models**: a model call from the worker today would still
+fail to log. The owner runs, from `/work/tender_engine`:
+
+```bash
+! make deploy
+```
+
+which rebuilds the images, migrates (nothing to migrate), recreates the six services with
+`restart: always` and health-checks the static IP. Then `docker compose exec -T worker
+python -c "import worker.main; from core.models import Base; print('agent_run' in
+Base.metadata.tables)"` prints `True`. The deploy log goes in
+`stage-7-artifacts/deploy.txt` and this paragraph is replaced.
 
 ## Independent review (operating rule 15)
 
