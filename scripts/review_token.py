@@ -4,6 +4,7 @@
   python -m scripts.review_token create --award <source id, sha256 or id> --reviewer "Name"
   python -m scripts.review_token create-awards --reviewer "Name" [--out <path>]
   python -m scripts.review_token revoke --tender <slug or id> | --award <id>
+  python -m scripts.review_token round --tender <slug or id> --from-version N
   python -m scripts.review_token list
 
 `create` prints the link to send to the reviewer (WhatsApp, email). An object (a tender,
@@ -11,7 +12,9 @@ or an award since Stage 6) has one live link: creating another stops the earlier
 `revoke` stops it without a new one. A link is valid for 30 days. The link of a completed
 review stays readable. `create-awards` mints a link for every imported award that has no
 live or completed link and writes them to `--out` (a file outside the repository: links are
-credentials) or prints them.
+credentials) or prints them. `round` opens a review round for a reviewed tender that a
+later version reached before rounds existed (Stage 4, 2026-10-15): the round goes to the
+reviewer who completed the review, scoped to that version, and the link is printed.
 """
 
 import argparse
@@ -22,6 +25,7 @@ from pathlib import Path
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+import agent.models  # noqa: F401  (registers the agent pass tables on Base.metadata)
 from core.config import Settings
 from core.db import make_engine, make_session_factory
 from tender.models import Award, ReviewToken, Tender
@@ -109,6 +113,22 @@ def create_awards(settings: Settings, reviewer: str) -> list[str]:
     return lines
 
 
+def open_round(settings: Settings, tender_ref: str, from_version: int) -> str:
+    """A round for the reviewer of a completed review, scoped to `from_version` on. Refused
+    when the tender has a live link or no completed review (`TokenService.open_round`)."""
+    with make_session_factory(make_engine(settings), settings.tenant_id)() as session:
+        tender = _tender(session, settings, tender_ref)
+        token = TokenService(settings.tenant_id).open_round(
+            session, tender, from_version=from_version, created_by=ACTOR
+        )
+        if token is None:
+            raise SystemExit(
+                f"no round opened for {tender_ref!r}: it has a live link already, or no "
+                "completed review"
+            )
+        return review_url(settings.public_base_url, token.token)
+
+
 def revoke(settings: Settings, tender_ref: str) -> int:
     with make_session_factory(make_engine(settings), settings.tenant_id)() as session:
         tender = _tender(session, settings, tender_ref)
@@ -185,11 +205,12 @@ def listing(settings: Settings) -> list[str]:
 
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(prog="review_token", description=__doc__)
-    parser.add_argument("command", choices=("create", "create-awards", "revoke", "list"))
+    parser.add_argument("command", choices=("create", "create-awards", "revoke", "round", "list"))
     parser.add_argument("--tender", default="")
     parser.add_argument("--award", default="")
     parser.add_argument("--reviewer", default="")
     parser.add_argument("--out", type=Path, help="create-awards: write the links here")
+    parser.add_argument("--from-version", type=int, default=0, help="round: the version")
     args = parser.parse_args(argv[1:])
     settings = Settings()
     if args.command == "create":
@@ -211,6 +232,10 @@ def main(argv: list[str]) -> int:
             print(f"{len(lines)} link(s) written to {args.out}")
         else:
             print("\n".join(lines))
+    elif args.command == "round":
+        if not args.tender or args.from_version < 2:
+            parser.error("round needs --tender and --from-version (2 or more)")
+        print(open_round(settings, args.tender, args.from_version))
     elif args.command == "revoke":
         if bool(args.tender) == bool(args.award):
             parser.error("revoke needs one of --tender, --award")

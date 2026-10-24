@@ -192,3 +192,31 @@ def test_a_reading_of_a_version_the_review_already_saw_opens_no_round(
         is None
     )
     assert db.scalar(select(AuditLog).where(AuditLog.action == "open_round")) is None
+
+
+def test_the_round_command_opens_one_round_and_refuses_a_second(
+    pipeline: Pipeline, db: Session
+) -> None:
+    """`python -m scripts.review_token round`: for a tender reviewed before rounds existed
+    (seci-cni-1-700mw v3, 2026-10-13), the operator opens the round by hand."""
+    import pytest
+
+    from scripts.review_token import open_round, review_url
+
+    tender_id, first = reviewed_tender(pipeline, db)
+    tender = pipeline.tenders.get(db, tender_id)
+    db.commit()
+    url = open_round(pipeline.settings, tender.slug or tender.id, 2)
+    db.expire_all()
+    opened = db.scalars(
+        select(ReviewToken).where(
+            ReviewToken.tender_id == tender_id,
+            ReviewToken.revoked_at.is_(None),
+            ReviewToken.completed_at.is_(None),
+        )
+    ).one()
+    assert url == review_url(pipeline.settings.public_base_url, opened.token)
+    assert (opened.round_no, opened.from_version, opened.reviewer_name) == (2, 2, "Asha")
+    assert first.revoked_at is None, "the completed link stays readable"
+    with pytest.raises(SystemExit, match="live link already"):
+        open_round(pipeline.settings, tender.slug or tender.id, 2)
