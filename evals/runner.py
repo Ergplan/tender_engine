@@ -35,9 +35,37 @@ from core.services.review_state import ReviewStateService
 from evals.gold import GoldField, GoldRecord, load_all
 from tender.models import Tender
 from tender.services.packs import Catalog
+from tender.services.publication import CRITICAL_FIELDS
 
 RESULTS_ROOT = Path(__file__).resolve().parent / "results"
 TOLERANCE = 0.005
+# The confidence bands of the reviewer screen (web/src/lib/format.ts): a reading at or above
+# 0.8 is shown as high, at or above 0.5 as medium, below as low. Calibration is scored per
+# band; the completion plan wants every wrong reading below the high band.
+CONFIDENCE_BANDS: tuple[tuple[str, float], ...] = (("high", 0.8), ("medium", 0.5), ("low", 0.0))
+
+
+def confidence_band(confidence: float | None) -> str:
+    if confidence is None:
+        return "none"
+    for name, floor in CONFIDENCE_BANDS:
+        if confidence >= floor:
+            return name
+    return "low"
+
+
+def is_critical(field_path: str, value_type: str) -> bool:
+    """The completion plan's critical fields: dates, capacity, tariff and ceiling, EMD, PBG,
+    the eligibility thresholds and the penalties. The publication service's set (the fields
+    whose unreviewed change suspends publication) covers capacity, guarantees, ceilings,
+    SCOD and the thresholds; every date field and every penalty field is added here."""
+    return (
+        field_path in CRITICAL_FIELDS
+        or value_type == "date"
+        or field_path.startswith("core.penalties.")
+    )
+
+
 Outcome = Literal[
     "correct", "correct_abstention", "wrong_value", "format", "missing", "extra", "needs_judgement"
 ]
@@ -73,6 +101,12 @@ class FieldScore(BaseModel):
     key_outcomes: dict[str, str] | None = None
     prompt_name: str | None = None
     prompt_version: str | None = None
+    confidence: float | None = None
+    critical: bool = False
+
+    @property
+    def band(self) -> str:
+        return confidence_band(self.confidence)
 
     @property
     def counted(self) -> bool:
@@ -189,6 +223,8 @@ def score_field(
         "candidate_pages": candidate.pages if candidate else [],
         "prompt_name": candidate.prompt_name if candidate else None,
         "prompt_version": candidate.prompt_version if candidate else None,
+        "confidence": candidate.confidence if candidate and candidate.value is not None else None,
+        "critical": is_critical(field.field_path, field.value_type),
     }
     has_candidate = candidate is not None and candidate.value is not None
     if field.decision == "not_in_document":
@@ -399,6 +435,12 @@ class Summary(BaseModel):
     # and the kinds of miss (wrong_value, missing, extra, format). An item of a list of
     # records counts under its key name, whatever its place in the list.
     by_key: dict[str, dict[str, dict[str, Any]]]
+    # The completion plan's two cuts (Block 1): the critical fields apart from the rest, and
+    # calibration, the accuracy within each confidence band of the readings that had one.
+    by_critical: dict[str, dict[str, Any]] = {}
+    by_confidence_band: dict[str, dict[str, Any]] = {}
+    # Wrong readings the engine showed as high confidence: the plan wants this list empty.
+    high_confidence_misses: list[dict[str, Any]] = []
     misses: list[dict[str, Any]]
 
 
@@ -456,12 +498,17 @@ def summarise(scores: list[FieldScore]) -> Summary:
     by_section: dict[str, dict[str, Any]] = defaultdict(_bucket)
     by_type_field: dict[str, dict[str, dict[str, Any]]] = defaultdict(lambda: defaultdict(_bucket))
     by_key: dict[str, dict[str, dict[str, Any]]] = defaultdict(dict)
+    by_critical: dict[str, dict[str, Any]] = {"critical": _bucket(), "other": _bucket()}
+    by_band: dict[str, dict[str, Any]] = {name: _bucket() for name, _ in CONFIDENCE_BANDS}
     for score in counted:
         _add(by_field[score.field_path], score)
         _add(by_type[score.tender_type], score)
         _add(by_section[score.section], score)
         _add(by_type_field[score.tender_type][score.field_path], score)
         _add_keys(by_key, score)
+        _add(by_critical["critical" if score.critical else "other"], score)
+        if score.confidence is not None:
+            _add(by_band[score.band], score)
     evidence = [s for s in counted if s.evidence_ok is not None]
     return Summary(
         scored=len(counted),
@@ -483,22 +530,27 @@ def summarise(scores: list[FieldScore]) -> Summary:
             for t, fields in sorted(by_type_field.items())
         },
         by_key={path: _finish_keys(keys) for path, keys in sorted(by_key.items())},
-        misses=[
-            {
-                "slug": s.slug,
-                "tender_type": s.tender_type,
-                "field_path": s.field_path,
-                "outcome": s.outcome,
-                "gold": s.gold_value,
-                "candidate": s.candidate_value,
-                "fuzzy": s.fuzzy,
-                "keys": s.key_outcomes,
-                "evidence_ok": s.evidence_ok,
-            }
-            for s in counted
-            if not s.correct
-        ],
+        by_critical={k: _finish(v) for k, v in by_critical.items()},
+        by_confidence_band={k: _finish(v) for k, v in by_band.items()},
+        high_confidence_misses=[_miss(s) for s in counted if not s.correct and s.band == "high"],
+        misses=[_miss(s) for s in counted if not s.correct],
     )
+
+
+def _miss(s: FieldScore) -> dict[str, Any]:
+    return {
+        "slug": s.slug,
+        "tender_type": s.tender_type,
+        "field_path": s.field_path,
+        "outcome": s.outcome,
+        "gold": s.gold_value,
+        "candidate": s.candidate_value,
+        "fuzzy": s.fuzzy,
+        "keys": s.key_outcomes,
+        "evidence_ok": s.evidence_ok,
+        "confidence": s.confidence,
+        "critical": s.critical,
+    }
 
 
 def markdown_table(summary: Summary) -> str:
@@ -515,15 +567,27 @@ def markdown_table(summary: Summary) -> str:
                 else "-"
             )
             lines.append(f"| {tender_type} | `{path}` | {acc} | {bucket['n']} | {ev} |")
+    lines += ["", "| Cut | Accuracy | n | Evidence accuracy |", "| --- | --- | --- | --- |"]
+    for name, bucket in list(summary.by_critical.items()) + [
+        (f"confidence {band}", bucket) for band, bucket in summary.by_confidence_band.items()
+    ]:
+        acc, ev = _pct(bucket["accuracy"]), _pct(bucket["evidence_accuracy"])
+        lines.append(f"| {name} | {acc} | {bucket['n']} | {ev} |")
     lines.append("")
-    lines.append("| Tender | Field | Outcome | Candidate | Gold |")
-    lines.append("| --- | --- | --- | --- | --- |")
+    lines.append("| Tender | Field | Outcome | Confidence | Critical | Candidate | Gold |")
+    lines.append("| --- | --- | --- | --- | --- | --- | --- |")
     for miss in summary.misses:
+        conf = "-" if miss.get("confidence") is None else f"{miss['confidence']:.2f}"
         lines.append(
-            f"| {miss['slug']} | `{miss['field_path']}` | {miss['outcome']} | "
+            f"| {miss['slug']} | `{miss['field_path']}` | {miss['outcome']} | {conf} | "
+            f"{'yes' if miss.get('critical') else ''} | "
             f"{_cell(miss['candidate'])} | {_cell(miss['gold'])} |"
         )
     return "\n".join(lines) + "\n"
+
+
+def _pct(value: float | None) -> str:
+    return "-" if value is None else f"{value * 100:.0f}%"
 
 
 def _cell(value: Any) -> str:

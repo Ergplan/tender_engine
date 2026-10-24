@@ -11,6 +11,8 @@ from evals.gold import GoldField, GoldRecord
 from evals.runner import (
     CandidateUnderTest,
     FieldScore,
+    confidence_band,
+    is_critical,
     markdown_table,
     match_record,
     match_scalar,
@@ -308,7 +310,7 @@ def test_summary_buckets_and_results_file(registry: SchemaRegistry, tmp_path: Pa
     assert summary.misses[0]["candidate"] == 1 and summary.misses[0]["gold"] == 928000
     table = markdown_table(summary)
     assert "| solar | `core.x.y` | 50% | 2 | 100% |" in table
-    assert "| acme-solar | `core.x.y` | wrong_value | 1 | 928000 |" in table
+    assert "| acme-solar | `core.x.y` | wrong_value | 0.00 |  | 1 | 928000 |" in table
     path, written = write_results(
         scores, label="unit", tenant_id="ergplan", root=tmp_path, prompt="commercial/v3"
     )
@@ -321,3 +323,79 @@ def test_summary_buckets_and_results_file(registry: SchemaRegistry, tmp_path: Pa
 def test_match_scalar_handles_values_that_are_not_of_the_type() -> None:
     assert match_scalar("money_inr", "number", "x", 1) == ("wrong_value", None)
     assert match_scalar("text", "string", "", "") == ("correct", 0.0)
+
+
+def test_the_critical_fields_are_the_plan_s_list() -> None:
+    """Dates, capacity, tariff and ceiling, EMD, PBG, the eligibility thresholds and the
+    penalties (completion plan, Block 1); everything else is 'other'."""
+    for path, value_type in [
+        ("core.key_dates.bid_submission_deadline", "date"),
+        ("core.key_dates.pre_bid_meeting_date", "date"),
+        ("sector.power.common.total_capacity_mw", "capacity_mw"),
+        ("sector.power.common.tariff_ceiling_inr_per_kwh", "money_inr"),
+        ("core.guarantees.emd_per_mw_inr", "money_inr"),
+        ("core.guarantees.pbg_per_mw_inr", "money_inr"),
+        ("core.eligibility.turnover_requirement_inr", "money_inr"),
+        ("sector.power.common.net_worth_per_mw_inr", "money_inr"),
+        ("core.penalties.delay_ld_per_mw_per_day_inr", "money_inr"),
+        ("core.penalties.shortfall_rules", "long_text"),
+    ]:
+        assert is_critical(path, value_type), path
+    for path, value_type in [
+        ("core.identity.title", "text"),
+        ("core.key_dates.bid_validity", "int"),
+        ("sector.power.common.land_responsibility", "enum"),
+        ("core.guarantees.emd_form", "text"),
+    ]:
+        assert not is_critical(path, value_type), path
+
+
+def test_confidence_bands_are_the_reviewer_screen_s() -> None:
+    assert [confidence_band(c) for c in (0.95, 0.8, 0.79, 0.5, 0.49, 0.0, None)] == [
+        "high", "high", "medium", "medium", "low", "low", "none",
+    ]  # fmt: skip
+
+
+def test_summary_cuts_critical_fields_and_confidence_bands(registry: SchemaRegistry) -> None:
+    """The critical cut counts the plan's fields apart; calibration buckets each counted
+    reading by its band; a wrong reading shown as high confidence is listed by itself."""
+
+    def with_confidence(value_type: str, final: Any, candidate: Any, conf: float) -> FieldScore:
+        found = score_field(
+            record(),
+            gold(value_type, final),
+            definition(value_type),
+            registry,
+            CandidateUnderTest(id="c", value=candidate, pages=[3], confidence=conf),
+        )
+        assert found is not None
+        return found
+
+    sure_right = with_confidence("money_inr", 928000, 928000, 0.95)
+    sure_wrong = with_confidence("money_inr", 928000, 1, 0.9)
+    unsure_wrong = with_confidence("money_inr", 928000, 2, 0.6)
+    doubtful_right = with_confidence("money_inr", 928000, 928000, 0.2)
+    a_date = with_confidence("date", "2026-03-12", "12.03.2026", 0.7)
+    assert a_date.critical and not sure_right.critical
+    assert (sure_right.band, unsure_wrong.band, doubtful_right.band) == ("high", "medium", "low")
+    missing = score(registry, "money_inr", 928000, None, decision="missing")
+    assert missing.confidence is None and missing.band == "none"
+
+    summary = summarise([sure_right, sure_wrong, unsure_wrong, doubtful_right, a_date, missing])
+    assert summary.by_critical["critical"]["n"] == 1
+    assert summary.by_critical["critical"]["accuracy"] == 1.0
+    assert summary.by_critical["other"]["n"] == 5
+    assert summary.by_confidence_band["high"] == {
+        "n": 2, "correct": 1, "evidence_n": 2, "evidence_correct": 2, "misses": 1,
+        "accuracy": 0.5, "evidence_accuracy": 1.0,
+    }  # fmt: skip
+    assert summary.by_confidence_band["medium"]["n"] == 2
+    assert summary.by_confidence_band["low"]["accuracy"] == 1.0
+    # a reading without a confidence (nothing was read) is in no band
+    assert sum(b["n"] for b in summary.by_confidence_band.values()) == 5
+    assert [m["candidate"] for m in summary.high_confidence_misses] == [1]
+    assert summary.high_confidence_misses[0]["confidence"] == 0.9
+    table = markdown_table(summary)
+    assert "| critical | 100% | 1 | 100% |" in table
+    assert "| confidence high | 50% | 2 | 100% |" in table
+    assert "| acme-solar | `core.x.y` | wrong_value | 0.90 |  | 1 | 928000 |" in table
