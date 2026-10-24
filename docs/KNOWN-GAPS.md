@@ -133,6 +133,9 @@ Kept current every stage. Each gap says what is missing, why, and what closes it
 | The award's review completes without a snapshot and `make gold` does not take awards | The award's facts are its canonical rows (DECISIONS 2026-10-20); the Stage 6 prompt leaves gold out | A results gold set from completed award reviews when the import is scored |
 | `tender_field_def.tender_type` and `GET /schemas/tender/award` carry the award type among the tender types | The result pack compiles through the same catalog, and the table and route are keyed by type name | An `object_type` column on `tender_field_def` and a `/schemas/{object_type}/{type}` route when a second non-tender object arrives |
 | The dataset's record `id` is positional and not stored | It changes on rebuild (assessment of 2026-10-07); the stable key is (source sha256, page, bidder, allocation), which the award row and the winners rows carry | None needed |
+| The 116 `section_map` jobs of 2026-10-20 stay `failed` and their 464 model calls are not in `llm_call_log` | The worker could not flush a log row until 2026-10-24 (DECISIONS); the calls were made before the failure | The Anthropic console for the window 08:54–09:50 UTC, 2026-10-20; the jobs are history and are not re-run without the owner's word |
+| Backups reach the bucket only once the VM's service account may write to Cloud Storage | The instance was created with the `devstorage.read_only` scope; changing scopes needs the instance stopped | The owner's commands in the Block 0 report (set the scopes with the resize); until then the nightly backup stays on the VM and in the Drive bundle |
+| The VM's disk is not snapshotted on a schedule | Snapshot schedules are a GCP mutation | `gcloud compute resource-policies create snapshot-schedule` and attach it, in the Block 0 report |
 
 ## Takedowns
 

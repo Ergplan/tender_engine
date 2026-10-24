@@ -539,6 +539,8 @@ A failure is stored with its traceback in `job.last_error`. A retryable failure 
 
 **Today: the VM.** One GCE VM (`instance-20261004-081207`, asia-south2-b), static IP `34.131.65.108` (`infra/STATIC-IP.txt`). `make deploy` pulls, builds, migrates (as the owner, `MIGRATION_DATABASE_URL`), restarts `api`, `worker`, `agent`, `web`, `caddy` and `tests`, and health-checks `https://34.131.65.108/health`. The app connects as `tender_app` (`DATABASE_URL`); on the VM its password is the dev one from `infra/db/init.sql`, since the database listens only on the compose network and on the VM's loopback. Firewall rules are recreated from `infra/allowlist.yaml` by `infra/firewall.sh`. Data lives on the `/data` host directory mounted into api, worker and agent. The `agent` service runs the same Python image with `OPENAI_API_KEY` and the `OPENAI_*`/`AGENT_*` settings from `.env`; it makes no outbound call but to the OpenAI API. Compose stays the development stack after the cutover.
 
+**Operating the VM (Stage 7, Block 0, 2026-10-24).** Every process that opens a session imports `agent.models` and `tender.models` at its entry point (`worker/main.py`, the management commands under `scripts/`, the eval modules), as `migrations/env.py` does, so that `Base.metadata` resolves every foreign key `llm_call_log` carries; `tests/worker/test_registry.py` imports each entry point in a fresh interpreter and resolves them the way a flush does. `infra/backup.sh` (cron, 02:30 UTC, the VM user; `make backup`): `pg_dump -Fc` of the app database and a tar of `/data` under `/work/backups` for 14 days, the same two files to the versioned bucket `BACKUP_BUCKET` as the VM's service account when it may write, and a Drive bundle (`/work/backups/drive`: dump, tar, `git archive HEAD`, sha256 manifest) that holds no secret. The VM carries 4 GB of swap (`/swapfile`, swappiness 10); the app services restart `always`, the test services never by themselves.
+
 **Cloud Run (Stage 5C, `infra/cloudrun/`).** The same three roles of process become services, from one Python image built for production (`Dockerfile.python` target `prod`: no reload, no mounts) and one web image (`Dockerfile.web.prod`: the bundle built once, served by nginx):
 
 ```mermaid
@@ -674,3 +676,10 @@ flowchart LR
 - `api/v1/awards/`; `POST /review-tokens` with `award_id`; `GET /review-session` with `object_type`/`object_id`.
 - The trace generator tags `IMPORT <dataset>@<commit> (<label> <version>)` and checks the award read route; the trace lists the award type apart from the tender types.
 - Web: an award link opens the split screen over the publication (`ReviewApp`, `award.ts`), completing it leaves the screen read-only.
+
+### Stage 7, Block 0 (2026-10-24)
+
+- Entry points register every table (`import agent.models`, `import tender.models`); `tests/worker/test_registry.py` holds each of thirteen entry points to it in a fresh interpreter.
+- `infra/backup.sh`, `make backup`, the cron entry; the Drive bundle; the bucket copy once the service account may write.
+- `scripts.review_token round --tender <slug> --from-version N`: a review round opened by hand for a tender a version reached before rounds existed (`seci-cni-1-700mw` v3).
+- `docker-compose.yml`: `restart: always` on `api`, `worker`, `agent`, `web`, `db`, `caddy`.

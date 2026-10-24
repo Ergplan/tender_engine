@@ -1,0 +1,12 @@
+ Container tender-engine-tests-run-c82ce3923446 Creating 
+ Container tender-engine-tests-run-c82ce3923446 Created 
+pass  ruff_check
+pass  ruff_format
+pass  mypy
+pass  alembic_check
+pass  pytest
+pass  openapi_drift
+pass  field_trace
+pass  tsc
+pass  vitest
+--- GREEN in 1973s

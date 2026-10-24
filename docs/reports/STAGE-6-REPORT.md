@@ -133,3 +133,15 @@ Findings that are not code defects, listed with their rationale as rule 15 asks:
 ## Costs
 
 No application model spend in this stage: the import makes no call (the section map is not queued for a publication; `llm_call_log` has no row since the stage tag of 2026-10-18 14:51 UTC, `live-checks.txt`), no extraction, no agent pass. The running totals of application calls since Stage 1 therefore stand where the Stage 5B report left them (USD 9.80 over 497 OpenAI calls, USD 421.28 over 976 Anthropic calls, `stage-5b-artifacts/costs.txt`, which the Stage 5B report describes). The independent review runs on `gpt-6.1-sol` are build tooling outside `core/llm/` and are not in that log: their tokens are on the first line of each `stage-6-artifacts/review-gpt-6.1-sol-runN.txt` (run 1: 115,323 in, 4,627 out; run 2: 121,807 in, 2,678 out); the script does not price them.
+
+
+**Corrected 2026-10-24 (Block 0 of the completion plan).** The paragraph above is wrong on
+the first point. The 116 parse jobs of the import's first run (queued 08:46–09:05 UTC on
+2026-10-20, before the importer passed `map_sections=False`) each queued a `section_map`
+job; every one of those jobs called the model and then failed to write its log row (the
+worker's metadata lacked `agent_run`, which `llm_call_log.agent_run_id` references, so the
+flush raised `NoReferencedTableError`), four attempts each. **464 Anthropic calls between
+08:54:04 and 09:50:16 UTC on 2026-10-20 are not in `llm_call_log`**; the invoice (the
+Anthropic console, that window) is the only record of their cost. No section map was
+stored, so "none given a section map" above stands. The defect, its test and the fix are
+in `docs/reports/STAGE-7-BLOCK-0-REPORT.md`.

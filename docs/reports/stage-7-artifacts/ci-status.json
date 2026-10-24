@@ -1,0 +1,65 @@
+{
+  "state": "done",
+  "ok": true,
+  "started_at": 1792845543.1040852,
+  "finished_at": 1792847515.8023705,
+  "trigger": [
+    "manual"
+  ],
+  "checks": [
+    {
+      "name": "ruff_check",
+      "status": "pass",
+      "duration_s": 0.4,
+      "first_failure": null
+    },
+    {
+      "name": "ruff_format",
+      "status": "pass",
+      "duration_s": 0.3,
+      "first_failure": null
+    },
+    {
+      "name": "mypy",
+      "status": "pass",
+      "duration_s": 45.5,
+      "first_failure": null
+    },
+    {
+      "name": "alembic_check",
+      "status": "pass",
+      "duration_s": 6.8,
+      "first_failure": null
+    },
+    {
+      "name": "pytest",
+      "status": "pass",
+      "duration_s": 1783.0,
+      "first_failure": null
+    },
+    {
+      "name": "openapi_drift",
+      "status": "pass",
+      "duration_s": 29.0,
+      "first_failure": null
+    },
+    {
+      "name": "field_trace",
+      "status": "pass",
+      "duration_s": 33.5,
+      "first_failure": null
+    },
+    {
+      "name": "tsc",
+      "status": "pass",
+      "duration_s": 19.5,
+      "first_failure": null
+    },
+    {
+      "name": "vitest",
+      "status": "pass",
+      "duration_s": 54.7,
+      "first_failure": null
+    }
+  ]
+}
