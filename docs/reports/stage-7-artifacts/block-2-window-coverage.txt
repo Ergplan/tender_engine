@@ -1,0 +1,46 @@
+| Tender | Document | Role | Pages | Groups | Covered | Sent | Untouched substantive sections |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| nhpc-fdre-ii | RfS_FDRE_1200MW_NHPC_Tranche-II.pdf | rfs | 264 | 11 | 224 (85%) | 464 in 11 | 7 |
+| ntpc-hybrid-03 | NTPC-1200-MW-Wind-Solar-Hybrid-Pan-India | rfs | 138 | 11 | 119 (86%) | 289 in 11 | 0 |
+| ntpc-phes-2000mw | job_45538.pdf | nit | 3 | 11 | 3 (100%) | 3 in 1 | 0 |
+| ntpc-phes-2000mw | Tender_notice_page_ntpc-phes-2000mw.pdf | nit | 1 | 11 | 1 (100%) | 1 in 1 | 0 |
+| ntpc-rel-600mw-anantapur-wtg | job_45811.pdf | nit | 13 | 11 | 13 (100%) | 13 in 1 | 0 |
+| ntpc-rel-600mw-anantapur-wtg | tech_job_45811.pdf | technical | 1 | 1 | 1 (100%) | 1 in 1 | 0 |
+| recpdcl-beed-tbcb | RFP_Beed_05052026.pdf | rfs | 166 | 11 | 151 (91%) | 300 in 6 | 0 |
+| seci-cfd-i | Amendment-03-SECI-CfD-I-final_upload.pdf | amendment | 5 | 10 | 5 (100%) | 5 in 1 | 0 |
+| seci-cni-1-700mw | Amendment_011.pdf | amendment | 1 | 10 | 1 (100%) | 1 in 1 | 0 |
+| seci-ess-iv | RfS-ESS-IV-final_upload.pdf | rfs | 137 | 11 | 128 (93%) | 346 in 10 | 0 |
+| seci-ess-iv | Tender_notice_page_seci-ess-iv.pdf | nit | 1 | 11 | 1 (100%) | 1 in 1 | 0 |
+| seci-fdre-ix | Amendment-01-SECI-FDRE-IX-final_upload.p | amendment | 4 | 10 | 4 (100%) | 4 in 1 | 0 |
+| seci-fdre-ix | Tender_notice_page_seci-fdre-ix.pdf | nit | 1 | 11 | 1 (100%) | 1 in 1 | 0 |
+| seci-fdre-rtc-v | Amendment-03-SECI-FDRE-RTC-V-final_uploa | amendment | 15 | 10 | 15 (100%) | 15 in 1 | 0 |
+| seci-fdre-rtc-v | Tender_notice_page_seci-fdre-rtc-v.pdf | nit | 1 | 11 | 1 (100%) | 1 in 1 | 0 |
+| seci-gaya-60mw | Contractual_tender_document_60_MW_Gaya.p | contractual | 305 | 11 | 228 (75%) | 436 in 10 | 2 |
+| seci-gaya-60mw | Technical_tender_document_60_MW_Gaya.pdf | technical | 340 | 1 | 80 (24%) | 80 in 1 | 8 |
+| seci-gaya-60mw | Tender_notice_page_seci-gaya-60mw.pdf | nit | 1 | 11 | 1 (100%) | 1 in 1 | 0 |
+| seci-ramagiri-70mw-bess | Amendment-03 package-1 Solar plus BESS 1 | amendment | 13 | 10 | 13 (100%) | 13 in 1 | 0 |
+| seci-ramagiri-70mw-bess | Additional clauses to SUBSECTION B TECHN | technical | 9 | 1 | 9 (100%) | 9 in 1 | 0 |
+| seci-ramagiri-70mw-bess | GA H_FG Test_Procedure_15092026.pdf | technical | 23 | 1 | 19 (83%) | 19 in 1 | 1 |
+| seci-ramagiri-70mw-bess | SA-A (Revised) Tentative Land Layout (So | technical | 1 | 1 | 1 (100%) | 1 in 1 | 0 |
+| seci-ramagiri-70mw-bess | SA-B (Revised) Indicative Single Line Di | technical | 1 | 1 | 1 (100%) | 1 in 1 | 0 |
+| seci-ramagiri-70mw-bess | SA-D_Geo Tech Investigation Report of Ad | technical | 2 | 1 | 2 (100%) | 2 in 1 | 0 |
+| seci-ramagiri-70mw-bess | Tender_notice_page_seci-ramagiri-70mw-be | nit | 1 | 11 | 1 (100%) | 1 in 1 | 0 |
+| seci-wind-tranche-xx | Amendment-01_Wind-Tranche-XX-final_uploa | amendment | 4 | 10 | 4 (100%) | 4 in 1 | 0 |
+| seci-wind-tranche-xx | Tender_notice_page_seci-wind-tranche-xx. | nit | 1 | 11 | 1 (100%) | 1 in 1 | 0 |
+| wbsedcl-re-rtc-2026-01 | RFQ_RFP_Final_22_09.pdf | rfs | 79 | 11 | 77 (97%) | 114 in 2 | 0 |
+| wbsedcl-re-rtc-2026-01 | PPA_Final_22_09.pdf | ppa | 93 | 4 | 76 (82%) | 76 in 1 | 0 |
+
+documents: 29; pages: 1624; covered: 1181 (72.7%)
+untouched sections by kind: {'formats_and_annexures': 34, 'technical_requirements': 8, 'draft_agreement': 7, 'other': 2, 'commercial_terms': 2, 'cover_and_notice': 2, 'evaluation': 1}
+untouched sections of a kind some group routes to: 10
+  seci-gaya-60mw Contractual_tender_document_60 p187-188 commercial_terms [H] LABOUR LAWS
+  seci-gaya-60mw Contractual_tender_document_60 p189-190 commercial_terms [I] APPLICABLE LAWS & SETTLEMENT OF DISPUTES
+  seci-gaya-60mw Technical_tender_document_60_M p71-74 technical_requirements 14 Earthing / 15 Lightning Protection System
+  seci-gaya-60mw Technical_tender_document_60_M p75-82 technical_requirements 16 Communication Cables / 17 SCADA
+  seci-gaya-60mw Technical_tender_document_60_M p89-92 technical_requirements 20 Power Transformer / 21 Nitrogen Injection Fire Protection
+  seci-gaya-60mw Technical_tender_document_60_M p115-121 technical_requirements 25 Weather Monitoring Station / 26 CCTV Camera / 27 Fire Ala
+  seci-gaya-60mw Technical_tender_document_60_M p135-137 technical_requirements SUB-SECTION C TECHNICAL SPECIFICATIONS (TS)- CIVIL, MECHANIC
+  seci-gaya-60mw Technical_tender_document_60_M p145-150 technical_requirements 5 Area Grading and Land Development / 6 Roads / 7 Surface/Ar
+  seci-gaya-60mw Technical_tender_document_60_M p151-154 technical_requirements 10 Design Loads / 11 Foundations (General)
+  seci-gaya-60mw Technical_tender_document_60_M p155-162 technical_requirements 12 MMS Foundations and Piles / 13 Module Mounting Structure 
+exit=0

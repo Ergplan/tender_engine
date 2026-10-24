@@ -1,6 +1,7 @@
 from datetime import date
 
-from sqlalchemy import Boolean, Date, ForeignKey, Integer, String, Text, UniqueConstraint
+from sqlalchemy import Boolean, Date, Float, ForeignKey, Integer, String, Text, UniqueConstraint
+from sqlalchemy import false as sa_false
 from sqlalchemy.orm import Mapped, mapped_column
 
 from core.models.base import Base, IdMixin, TenantAuditMixin
@@ -17,6 +18,9 @@ TENDER_TYPES = (
     "ipp",
     "re_rtc",
 )
+# Who named a tender's type and how sure (Stage 7, Block 2 d).
+TYPE_SOURCES = ("manifest", "caller", "model", "reviewer")
+TYPE_STATES = ("set", "unsure", "unknown")
 # superseded: built again as a new tender (its documents in date order); kept, with its
 # candidates and runs, out of every list.
 TENDER_STATUSES = ("ingested", "extracted", "in_review", "reviewed", "published", "superseded")
@@ -51,6 +55,23 @@ class Tender(IdMixin, TenantAuditMixin, Base):
     # command; makes the command safe to repeat. Null for tenders created through the API.
     slug: Mapped[str | None] = mapped_column(String(100), nullable=True)
     status: Mapped[str] = mapped_column(String(20), nullable=False, default="ingested")
+    # How the type was set (Stage 7, Block 2): `manifest` (the ingestion command), `caller`
+    # (an API client named it), `model` (the classifier), `reviewer` (a person confirmed or
+    # corrected it). `type_confidence` is the classifier's, null when a person set the type.
+    # `type_state`: `set`, `unsure` (the classifier was below the sure band and a reviewer
+    # is asked), `unknown` (no type fits: the core sections are read and the record says so).
+    type_source: Mapped[str] = mapped_column(
+        String(20), nullable=False, server_default="manifest", default="manifest"
+    )
+    type_confidence: Mapped[float | None] = mapped_column(Float, nullable=True)
+    type_state: Mapped[str] = mapped_column(
+        String(20), nullable=False, server_default="set", default="set"
+    )
+    # LlamaParse may read this tender's documents (they leave the VM). Off unless the owner
+    # turns it on for the tender; the pages it read carry `parser_layer = llamaparse`.
+    parser_llamaparse: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, server_default=sa_false(), default=False
+    )
     current_version_id: Mapped[str | None] = mapped_column(
         ForeignKey("tender_version.id", use_alter=True, name="fk_tender_current_version"),
         nullable=True,

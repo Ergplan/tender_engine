@@ -683,3 +683,17 @@ flowchart LR
 - `infra/backup.sh`, `make backup`, the cron entry; the Drive bundle; the bucket copy once the service account may write.
 - `scripts.review_token round --tender <slug> --from-version N`: a review round opened by hand for a tender a version reached before rounds existed (`seci-cni-1-700mw` v3).
 - `docker-compose.yml`: `restart: always` on `api`, `worker`, `agent`, `web`, `db`, `caddy`.
+- `infra/backup.sh` takes `BACKUP_KEY_FILE` (a `tender-backup` service-account key, the stop-gap until the VM's storage scope is widened at the Block 2 resize).
+
+### Stage 7, Block 1 (2026-10-24)
+
+- `evals/runner.py`: `FieldScore.confidence` and `FieldScore.critical`; `Summary.by_critical`, `Summary.by_confidence_band`, `Summary.high_confidence_misses`; `is_critical` (the publication service's critical set, every `date` field, every `core.penalties.` field) and `confidence_band` (the reviewer screen's 0.8 / 0.5). The markdown table carries the two cuts and the misses' confidence.
+- Baseline on the eleven gold tenders: `evals/results/20261024T155809Z-ergplan-latest.json`, `docs/reports/STAGE-7-BLOCK-1-REPORT.md`.
+
+### Stage 7, Block 2 (2026-10-24)
+
+- Parsing layers: `core/parsing/layers.py` (the shape every layer returns: text items with boxes, character boxes built from them), `core/parsing/docling.py` (docling-serve client and DoclingDocument mapper), `core/parsing/llamaparse.py` (optional, off). `ParseService` sends the pages without a text layer to Docling as one sub-PDF, OCR forced, when `DOCLING_URL` is set; `page.parser_layer` and `page.layer_detail` (migration 0021) say which layer read each page and what it reported. The text-layer rule: fewer than 50 characters *and* a raster image over at least half the page.
+- Inputs: `core/services/inputs.py` (`classify`, `normalise`, `bundle_members`, `render_docx_pdf`); `IngestService.upload` stores every accepted kind as a PDF and keeps the upload's media type; `IngestService.upload_bundle` and `POST /documents/bundle` for a .zip. python-docx added; httpx moved from the dev group to the runtime dependencies (the worker's Docling and LlamaParse clients), so the app image rebuilds at the next deploy.
+- Tender type classification: `tender/services/classify.py` (`TypeClassifier`, bands, `core_groups`, the `classify_type` job), prompt `tender/domain_packs/core/prompts/classify_type/v1.md`; `document.classification`, `tender.type_source` / `type_state` / `type_confidence` / `parser_llamaparse` (migration 0021); `POST /documents/{id}/classify`, `POST /tenders/{id}/type`, `TenderService.set_type` (audited).
+- `docker-compose.yml`: service `docling` (profile `parsing`). Settings `docling_url`, `docling_timeout_seconds`, `docling_tables`, `llamaparse_api_key`, `llamaparse_url`.
+- Tooling: `scripts/window_coverage.py` (plan 2e), `scripts/parser_benchmark.py` with `evals/parser_bench/hard_set.yaml` (plan 2b).

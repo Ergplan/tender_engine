@@ -1,13 +1,23 @@
 from datetime import date
-from typing import Annotated
+from typing import Annotated, Any
 
 from fastapi import APIRouter, Form, Response, UploadFile
 from sqlalchemy import select
+from sqlalchemy.exc import ProgrammingError
 
 from api.deps import ActorDep, IngestDep, SessionDep, StorageDep, TenantDep
 from api.middleware.errors import AppError
-from api.v1.schemas.core import DocumentOut, PageOut, SearchHit, SectionOut
+from api.v1.schemas.core import (
+    BundleMemberOut,
+    BundleOut,
+    DocumentOut,
+    PageOut,
+    RejectedOut,
+    SearchHit,
+    SectionOut,
+)
 from core.models import Document, Page, Section
+from core.services import jobs
 from core.services.ingest import IngestError
 
 router = APIRouter(tags=["documents"])
@@ -26,7 +36,18 @@ FILES = "/files/"
 MAX_HITS = 200
 
 
-def _out(document: Document) -> DocumentOut:
+def _classification(session: SessionDep, document: Document) -> dict[str, Any] | None:
+    """The classifier's answer, read on its own: the column is deferred, and a database that
+    has not run migration 0022 yet answers with an error this swallows inside a savepoint,
+    so the rest of the document still comes back."""
+    try:
+        with session.begin_nested():
+            return session.scalar(select(Document.classification).where(Document.id == document.id))
+    except ProgrammingError:
+        return None
+
+
+def _out(document: Document, classification: dict[str, Any] | None = None) -> DocumentOut:
     return DocumentOut(
         id=document.id,
         sha256=document.sha256,
@@ -40,6 +61,7 @@ def _out(document: Document) -> DocumentOut:
         file_url=FILES + document.storage_path,
         source_url=document.source_url,
         retrieved_on=document.retrieved_on,
+        classification=classification,
     )
 
 
@@ -53,7 +75,9 @@ async def upload_document(
     source_url: Annotated[str | None, Form(max_length=1000)] = None,
     retrieved_on: Annotated[date | None, Form()] = None,
 ) -> DocumentOut:
-    """Upload a PDF with, where known, the URL it was taken from and the day it was fetched.
+    """Upload a PDF, a .docx or an .xlsx workbook (a workbook or a .docx is stored as its
+    rendering to a text PDF; a .zip goes to `POST /documents/bundle`) with, where known, the
+    URL it was taken from and the day it was fetched.
     The same file uploaded twice returns the first document with 200; provenance given
     then fills what the first upload left blank."""
     data = await file.read()
@@ -73,9 +97,66 @@ async def upload_document(
     return _out(document)
 
 
+@router.post("/documents/bundle", response_model=BundleOut, status_code=201)
+async def upload_bundle(
+    file: UploadFile,
+    session: SessionDep,
+    ingest: IngestDep,
+    actor: ActorDep,
+    source_url: Annotated[str | None, Form()] = None,
+    retrieved_on: Annotated[date | None, Form()] = None,
+) -> BundleOut:
+    """Upload a .zip of a tender pack (Stage 7, Block 2). Every member that is a PDF, a
+    .docx or an .xlsx workbook becomes a document (an identical file returns the existing
+    one, `created` false); every other member is listed with the reason it was left out.
+    One PDF, .docx or workbook on its own goes to `POST /documents`."""
+    data = await file.read()
+    try:
+        uploaded, rejected = ingest.upload_bundle(
+            session,
+            filename=file.filename or "bundle.zip",
+            data=data,
+            created_by=actor,
+            source_url=source_url,
+            retrieved_on=retrieved_on,
+        )
+    except IngestError as exc:
+        raise AppError("validation_failed", str(exc)) from exc
+    return BundleOut(
+        documents=[
+            BundleMemberOut(name=name, document=_out(document), created=created)
+            for name, document, created in uploaded
+        ],
+        rejected=[RejectedOut(name=r.name, reason=r.reason) for r in rejected],
+    )
+
+
+@router.post("/documents/{document_id}/classify", response_model=DocumentOut, status_code=202)
+def classify_document(
+    document_id: str, session: SessionDep, tenant_id: TenantDep, actor: ActorDep
+) -> DocumentOut:
+    """Queue the tender type classifier on a parsed document (Stage 7, Block 2 d). One
+    text-only model call; the answer appears as `classification` on the document: a type,
+    a state (`set`, `unsure`: a reviewer should confirm, `unknown`: no type fits and the
+    core sections alone would be read) and a calibrated confidence. Never a fact."""
+    document = _document(session, tenant_id, document_id)
+    if document.status != "parsed":
+        raise AppError("validation_failed", f"document is {document.status}, not parsed")
+    jobs.enqueue(
+        session,
+        tenant_id=tenant_id,
+        kind="classify_type",
+        payload={"document_id": document.id, "created_by": actor},
+        created_by=actor,
+    )
+    session.commit()
+    return _out(document, _classification(session, document))
+
+
 @router.get("/documents/{document_id}", response_model=DocumentOut)
 def get_document(document_id: str, session: SessionDep, tenant_id: TenantDep) -> DocumentOut:
-    return _out(_document(session, tenant_id, document_id))
+    document = _document(session, tenant_id, document_id)
+    return _out(document, _classification(session, document))
 
 
 @router.get("/documents/{document_id}/pages", response_model=list[PageOut])

@@ -124,6 +124,13 @@ class ScriptedSDK:
         self.before_call = before_call
         # What the amendment map returns: a list of {clause, section, summary, page_no}.
         self.amendment_changes: list[dict[str, Any]] = []
+        # What the type classifier returns (Stage 7, Block 2).
+        self.tender_type_answer: dict[str, Any] = {
+            "tender_type": "solar",
+            "confidence": 0.9,
+            "reasons": "The notice procures solar PV power.",
+            "alternatives": [],
+        }
         self.calls: list[dict[str, Any]] = []
         self.messages = self
         # The batch API: batches[id] is the list of submitted requests. A batch reports
@@ -148,6 +155,8 @@ class ScriptedSDK:
             parsed = SectionMapOutput.model_validate({"sections": self.sections})
         elif model.__name__ == "AmendmentMapOutput":
             parsed = model.model_validate({"changes": self.amendment_changes})
+        elif model.__name__ == "TenderTypeOutput":
+            parsed = model.model_validate(self.tender_type_answer)
         elif model.__name__ == "RecordSummary":
             parsed = model.model_validate(self.record_summary(kwargs))
         elif model.__name__ == "SharedAnswer":

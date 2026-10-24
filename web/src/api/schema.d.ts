@@ -648,11 +648,36 @@ export interface paths {
         put?: never;
         /**
          * Upload Document
-         * @description Upload a PDF with, where known, the URL it was taken from and the day it was fetched.
+         * @description Upload a PDF, a .docx or an .xlsx workbook (a workbook or a .docx is stored as its
+         *     rendering to a text PDF; a .zip goes to `POST /documents/bundle`) with, where known, the
+         *     URL it was taken from and the day it was fetched.
          *     The same file uploaded twice returns the first document with 200; provenance given
          *     then fills what the first upload left blank.
          */
         post: operations["upload_document_api_v1_documents_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/documents/bundle": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upload Bundle
+         * @description Upload a .zip of a tender pack (Stage 7, Block 2). Every member that is a PDF, a
+         *     .docx or an .xlsx workbook becomes a document (an identical file returns the existing
+         *     one, `created` false); every other member is listed with the reason it was left out.
+         *     One PDF, .docx or workbook on its own goes to `POST /documents`.
+         */
+        post: operations["upload_bundle_api_v1_documents_bundle_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -670,6 +695,29 @@ export interface paths {
         get: operations["get_document_api_v1_documents__document_id__get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/documents/{document_id}/classify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Classify Document
+         * @description Queue the tender type classifier on a parsed document (Stage 7, Block 2 d). One
+         *     text-only model call; the answer appears as `classification` on the document: a type,
+         *     a state (`set`, `unsure`: a reviewer should confirm, `unknown`: no type fits and the
+         *     core sections alone would be read) and a calibrated confidence. Never a fact.
+         */
+        post: operations["classify_document_api_v1_documents__document_id__classify_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1439,6 +1487,28 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/tenders/{tender_id}/type": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Set Tender Type
+         * @description A person confirms or corrects the tender type (the answer to an `unsure` or
+         *     `unknown` classification). Audited. Refused once the tender has been read, because
+         *     the schema a run used is part of what its candidates mean.
+         */
+        post: operations["set_tender_type_api_v1_tenders__tender_id__type_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/tenders/{tender_id}/versions": {
         parameters: {
             query?: never;
@@ -2047,6 +2117,15 @@ export interface components {
             /** Request */
             request: string;
         };
+        /** Body_upload_bundle_api_v1_documents_bundle_post */
+        Body_upload_bundle_api_v1_documents_bundle_post: {
+            /** File */
+            file: string;
+            /** Retrieved On */
+            retrieved_on?: string | null;
+            /** Source Url */
+            source_url?: string | null;
+        };
         /** Body_upload_document_api_v1_documents_post */
         Body_upload_document_api_v1_documents_post: {
             /** File */
@@ -2055,6 +2134,24 @@ export interface components {
             retrieved_on?: string | null;
             /** Source Url */
             source_url?: string | null;
+        };
+        /** BundleMemberOut */
+        BundleMemberOut: {
+            /** Created */
+            created: boolean;
+            document: components["schemas"]["DocumentOut"];
+            /** Name */
+            name: string;
+        };
+        /**
+         * BundleOut
+         * @description What a .zip of a tender pack became: documents for its members, and the rest.
+         */
+        BundleOut: {
+            /** Documents */
+            documents: components["schemas"]["BundleMemberOut"][];
+            /** Rejected */
+            rejected: components["schemas"]["RejectedOut"][];
         };
         /** CandidateView */
         CandidateView: {
@@ -2320,6 +2417,10 @@ export interface components {
         };
         /** DocumentOut */
         DocumentOut: {
+            /** Classification */
+            classification?: {
+                [key: string]: unknown;
+            } | null;
             /**
              * Created At
              * Format: date-time
@@ -3050,6 +3151,16 @@ export interface components {
             /** Title */
             title: string;
         };
+        /**
+         * RejectedOut
+         * @description A member of a bundle that did not become a document, and why.
+         */
+        RejectedOut: {
+            /** Name */
+            name: string;
+            /** Reason */
+            reason: string;
+        };
         /** Reliability */
         Reliability: {
             /** As Of */
@@ -3481,6 +3592,24 @@ export interface components {
          * @description Accuracy per field path, per tender type, per section, and the misses.
          */
         Summary: {
+            /**
+             * By Confidence Band
+             * @default {}
+             */
+            by_confidence_band: {
+                [key: string]: {
+                    [key: string]: unknown;
+                };
+            };
+            /**
+             * By Critical
+             * @default {}
+             */
+            by_critical: {
+                [key: string]: {
+                    [key: string]: unknown;
+                };
+            };
             /** By Field */
             by_field: {
                 [key: string]: {
@@ -3521,6 +3650,13 @@ export interface components {
             evidence_correct: number;
             /** Evidence Scored */
             evidence_scored: number;
+            /**
+             * High Confidence Misses
+             * @default []
+             */
+            high_confidence_misses: {
+                [key: string]: unknown;
+            }[];
             /** Misses */
             misses: {
                 [key: string]: unknown;
@@ -3582,6 +3718,20 @@ export interface components {
             title: string;
             /** Type */
             type: string;
+            /** Type Confidence */
+            type_confidence?: number | null;
+            /**
+             * Type Source
+             * @default caller
+             * @enum {string}
+             */
+            type_source: "caller" | "model";
+            /**
+             * Type State
+             * @default set
+             * @enum {string}
+             */
+            type_state: "set" | "unsure" | "unknown";
         };
         /** TenderExtractRequest */
         TenderExtractRequest: {
@@ -3684,6 +3834,18 @@ export interface components {
             tender_type: string;
             /** Title */
             title: string;
+            /** Type Confidence */
+            type_confidence?: number | null;
+            /**
+             * Type Source
+             * @default manifest
+             */
+            type_source: string;
+            /**
+             * Type State
+             * @default set
+             */
+            type_state: string;
         };
         /** TenderReview */
         TenderReview: {
@@ -3819,6 +3981,14 @@ export interface components {
             versions: number;
             /** With Value */
             with_value: number;
+        };
+        /**
+         * TenderTypeSet
+         * @description A person confirms or corrects the type.
+         */
+        TenderTypeSet: {
+            /** Type */
+            type: string;
         };
         /** TenderView */
         TenderView: {
@@ -5129,6 +5299,41 @@ export interface operations {
             };
         };
     };
+    upload_bundle_api_v1_documents_bundle_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-reviewer"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_upload_bundle_api_v1_documents_bundle_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BundleOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     get_document_api_v1_documents__document_id__get: {
         parameters: {
             query?: never;
@@ -5142,6 +5347,39 @@ export interface operations {
         responses: {
             /** @description Successful Response */
             200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DocumentOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    classify_document_api_v1_documents__document_id__classify_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-reviewer"?: string | null;
+            };
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            202: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -6406,6 +6644,43 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SummaryQueued"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    set_tender_type_api_v1_tenders__tender_id__type_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-reviewer"?: string | null;
+            };
+            path: {
+                tender_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TenderTypeSet"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TenderOut"];
                 };
             };
             /** @description Validation Error */

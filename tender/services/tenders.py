@@ -18,6 +18,8 @@ from core.services.extract import ExtractService
 from tender.models import (
     DOCUMENT_ROLES,
     TENDER_TYPES,
+    TYPE_SOURCES,
+    TYPE_STATES,
     VERSION_KINDS,
     Tender,
     TenderVersion,
@@ -76,9 +78,17 @@ class TenderService:
         title: str,
         created_by: str,
         slug: str | None = None,
+        type_source: str = "manifest",
+        type_state: str = "set",
+        type_confidence: float | None = None,
     ) -> Tender:
+        """`type_source` says who named the type (manifest, caller, model, reviewer);
+        `type_state` `set`, or `unsure` / `unknown` from the classifier's bands (Stage 7,
+        Block 2): an unknown type is read with the core sections only."""
         if tender_type not in TENDER_TYPES:
             raise TenderError(f"unknown tender type {tender_type!r}; one of {list(TENDER_TYPES)}")
+        if type_source not in TYPE_SOURCES or type_state not in TYPE_STATES:
+            raise TenderError(f"type provenance {type_source!r}/{type_state!r} is not known")
         self._catalog.get(tender_type)
         if not issuing_agency.strip() or not title.strip():
             raise TenderError("a tender needs an issuing agency and a title")
@@ -91,8 +101,55 @@ class TenderService:
             title=title.strip(),
             slug=slug,
             status="ingested",
+            type_source=type_source,
+            type_state=type_state,
+            type_confidence=type_confidence,
         )
         session.add(tender)
+        session.commit()
+        return tender
+
+    def set_type(
+        self, session: Session, tender: Tender, tender_type: str, *, created_by: str
+    ) -> Tender:
+        """A person confirms or corrects the type (the answer to an `unsure` or `unknown`
+        classification, or a plain correction). Audited; the state becomes `set` and the
+        source `reviewer`. Refused once the tender has an extraction run, because the
+        schema a run read with is part of what its candidates mean."""
+        if tender_type not in TENDER_TYPES:
+            raise TenderError(f"unknown tender type {tender_type!r}; one of {list(TENDER_TYPES)}")
+        self._catalog.get(tender_type)
+        if tender.status not in ("ingested",) and tender_type != tender.tender_type:
+            raise TenderError(
+                f"tender is {tender.status}: its type cannot change after it was read; "
+                "ingest it again under the right type"
+            )
+        before = {
+            "tender_type": tender.tender_type,
+            "type_source": tender.type_source,
+            "type_state": tender.type_state,
+            "type_confidence": tender.type_confidence,
+        }
+        tender.tender_type = tender_type
+        tender.type_source = "reviewer"
+        tender.type_state = "set"
+        tender.type_confidence = None
+        session.flush()
+        audit.record(
+            session,
+            tenant_id=self._tenant_id,
+            actor=created_by,
+            action="set_type",
+            table_name="tender",
+            row_id=tender.id,
+            before=before,
+            after={
+                "tender_type": tender_type,
+                "type_source": "reviewer",
+                "type_state": "set",
+                "type_confidence": None,
+            },
+        )
         session.commit()
         return tender
 

@@ -1,0 +1,88 @@
+# The parser benchmark's hard set (Stage 7, Block 2 b): pages pdfplumber finds no text
+# layer on, with quotes transcribed by hand from the page renders. A layer "locates" a
+# quote when core.evidence.resolver.resolve finds it on the page text the layer produced.
+# Documents are named by filename and matched by sha256 prefix in the database.
+scanned:
+  - document: Technical_Documents_Package-1_Solar_BESS_NDMC_3.pdf
+    sha256_prefix: c7aaf8c9fedd
+    pages:
+      - page_no: 305
+        note: rotated scanned specification page, static pile test
+        quotes:
+          - This specification deals with the testing of bored cast in situ piles
+          - "Kentledge: The dead weight used for applying a test load on pile"
+          - SAFETY PRECAUTIONS
+          - Solar Energy Corporation of India
+      - page_no: 310
+        note: rotated scanned specification page
+        quotes:
+          - EQUIPMENT FOR APPLYING LOAD
+          - The total capacity of the jacks shall exceed by 50% or more the required maximum test load
+          - Load Measurement Procedure
+          - Page 6 of 15
+      - page_no: 320
+        note: rotated scanned specification page, lateral pile test
+        quotes:
+          - STANDARD SPECIFICATION FOR STATIC TEST ON PILE (LATERAL)
+          - "Allowable load defined as per IS: 2911 (part 2)"
+          - Reaction Piles/ Reaction Pedestals
+          - Page 1 of 10
+  - document: Technical_tender_document_60_MW_Gaya.pdf
+    sha256_prefix: c578a8a8f316
+    pages:
+      - page_no: 272
+        note: CAD drawing rendered as an image, small notes text
+        quotes:
+          - CHAIN LINK FENCE DRAWING
+          - ALL DIMENSIONS ARE IN MILLIMETERS AND ELEVATION IN METERS
+          - GALVANIZATION THICKNESS SHALL BE MIN 85 MICRONS FOR ALL OTHER STEEL MEMBERS
+          - PLAN OF FOUNDATION
+      - page_no: 1
+        note: section divider with a border image and one line of native text
+        quotes:
+          - SECTION – VII
+divider_pages:
+  # Pages with a few native characters that the old rule (fewer than 50 characters) called
+  # scanned; the new rule keeps their text layer. Listed so the benchmark shows them apart.
+  - document: PPA_Final_22_09.pdf
+    sha256_prefix: d783c18dba29
+    pages:
+      - page_no: 2
+        quotes: ["PART I", "Preliminary"]
+      - page_no: 13
+        quotes: ["The Supply Contract"]
+  - document: RFQ_RFP_Final_22_09.pdf
+    sha256_prefix: 18118185b4d5
+    pages:
+      - page_no: 42
+        quotes: ["NOT USED"]
+  - document: SECI_PPA_Solar_CnI_T1.pdf
+    sha256_prefix: 9969b009feba
+    pages:
+      - page_no: 68
+        quotes: ["Guidelines.", "Page 68 of 85"]
+tables:
+  # Native pages with tables: the cell text as the quote. pdfplumber reads these today;
+  # Docling (no forced OCR) is measured against it before it is wired for table pages.
+  - document: RfS-ESS-IV-final_upload.pdf
+    sha256_prefix: 7e6c27ee9047
+    pages:
+      - page_no: 3
+        note: bid information sheet, nested yes/no boxes
+        quotes:
+          - BID INFORMATION SHEET
+          - "RfS NO. & DATE"
+          - SECI/C&P/IPP/15/0010/26-27 dated 01.10.2026
+          - TWO BID SYSTEM
+          - As mentioned in RfS Document
+          - "Amount: INR 50,000/- (Indian Rupees Fifty Thousand Only) + applicable GST"
+          - BID PROCESSING FEE
+      - page_no: 43
+        note: envelope sticker table and a bold paragraph
+        quotes:
+          - Cumulative Capacity of the projects applied for
+          - Organization ID (OID) on ETS portal
+          - Executive Director (C&P)
+          - 6th Floor, Plate-B, NBCC Office Block Tower-2
+          - Documents to be Submitted Online
+          - fails to submit the Bank Guarantee/POI/ Surety Bond against EMD for requisite amount offline within 2 working days

@@ -9,8 +9,16 @@ from sqlalchemy.orm import Session
 
 from core.models import Document
 from core.services import jobs
-from core.services.spreadsheet import is_spreadsheet, render_pdf
+from core.services.inputs import InputError, Kind, Rejected, bundle_members, normalise
 from core.storage import Storage
+
+# What the upload was, kept as the document's media type; the stored file is always a PDF.
+MIME_BY_KIND: dict[Kind, str] = {
+    "pdf": "application/pdf",
+    "spreadsheet": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "zip": "application/zip",
+}
 
 
 class IngestError(ValueError):
@@ -34,14 +42,14 @@ class IngestService:
     ) -> tuple[Document, bool]:
         """Returns (document, created). An identical file returns the existing document;
         provenance given for it fills what the existing document lacks, never overwrites.
-        A spreadsheet (.xlsx) is stored as its rendering to a text PDF
-        (`core.services.spreadsheet`); its sha256 and filename are the workbook's own."""
-        if is_spreadsheet(filename, data):
-            stored = render_pdf(data)
-        elif data.startswith(b"%PDF-"):
-            stored = data
-        else:
-            raise IngestError("the file is not a PDF or an .xlsx workbook")
+        What is stored is always a PDF (`core.services.inputs.normalise`): a workbook or a
+        .docx is rendered to a text PDF, a protected PDF saved plain; the sha256 and the
+        filename are the upload's own, the media type says what the upload was. A .zip is
+        refused here: `upload_bundle` opens it."""
+        try:
+            kind, stored = normalise(filename, data)
+        except InputError as exc:
+            raise IngestError(str(exc)) from exc
         sha256 = hashlib.sha256(data).hexdigest()
         by_hash = select(Document).where(
             Document.tenant_id == self._tenant_id, Document.sha256 == sha256
@@ -57,7 +65,7 @@ class IngestService:
             created_by=created_by,
             sha256=sha256,
             filename=filename,
-            mime="application/pdf",
+            mime=MIME_BY_KIND[kind],
             storage_path=key,
             status="uploaded",
             source_url=source_url,
@@ -79,6 +87,42 @@ class IngestService:
         )
         session.commit()
         return document, True
+
+    def upload_bundle(
+        self,
+        session: Session,
+        *,
+        filename: str,
+        data: bytes,
+        created_by: str,
+        source_url: str | None = None,
+        retrieved_on: date | None = None,
+    ) -> tuple[list[tuple[str, Document, bool]], list[Rejected]]:
+        """A .zip of a tender pack: every member that is a document is uploaded as one
+        (member name, document, created), in archive order; the members left out come back
+        with their reasons. A member that fails to normalise is rejected, not fatal."""
+        try:
+            members, rejected = bundle_members(data)
+        except InputError as exc:
+            raise IngestError(str(exc)) from exc
+        uploaded: list[tuple[str, Document, bool]] = []
+        for member in members:
+            try:
+                document, created = self.upload(
+                    session,
+                    filename=member.name.rsplit("/", 1)[-1],
+                    data=member.data,
+                    created_by=created_by,
+                    source_url=source_url,
+                    retrieved_on=retrieved_on,
+                )
+            except IngestError as exc:
+                rejected.append(Rejected(member.name, str(exc)))
+                continue
+            uploaded.append((member.name, document, created))
+        if not uploaded and not rejected:
+            raise IngestError(f"{filename}: the bundle holds no document")
+        return uploaded, rejected
 
 
 def fill_provenance(document: Document, source_url: str | None, retrieved_on: date | None) -> bool:

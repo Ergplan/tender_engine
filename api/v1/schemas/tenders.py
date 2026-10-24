@@ -14,11 +14,28 @@ class TenderCreate(BaseModel):
     agency: str
     external_ref: str | None = None
     title: str
+    # Who named the type (Stage 7, Block 2 d): `caller` by default; `model` with the
+    # classifier's state and confidence when the caller created the tender from a
+    # `classification` it read on the document.
+    type_source: Literal["caller", "model"] = "caller"
+    type_state: Literal["set", "unsure", "unknown"] = "set"
+    type_confidence: float | None = None
+
+
+class TenderTypeSet(BaseModel):
+    """A person confirms or corrects the type."""
+
+    type: str
 
 
 class TenderOut(BaseModel):
     id: str
     tender_type: str
+    # How the type was set and how sure (Stage 7, Block 2 d): an `unsure` or `unknown`
+    # state asks a reviewer; `unknown` is read with the core sections only.
+    type_source: str = "manifest"
+    type_state: str = "set"
+    type_confidence: float | None = None
     issuing_agency: str
     external_ref: str | None
     title: str

@@ -27,6 +27,15 @@ class Document(IdMixin, TenantAuditMixin, Base):
     # documents ingested before 2026-10-07 whose manifest does not say.
     source_url: Mapped[str | None] = mapped_column(String(1000), nullable=True)
     retrieved_on: Mapped[date | None] = mapped_column(Date, nullable=True)
+    # The type classifier's answer for this document (Stage 7, Block 2 d): tender_type,
+    # state (set, unsure, unknown), confidence, reasons, alternatives, prompt_version. Null
+    # until the `classify_type` job has run. A guess, never a fact; a tender created from
+    # it carries the same provenance on its own row.
+    # Deferred: loaded only when read (`api.v1.core.documents` reads it through a savepoint
+    # so a database that has not yet run migration 0022 still serves documents).
+    classification: Mapped[dict[str, Any] | None] = mapped_column(
+        JSONB, nullable=True, deferred=True
+    )
 
 
 class Page(IdMixin, TenantAuditMixin, Base):
@@ -47,6 +56,15 @@ class Page(IdMixin, TenantAuditMixin, Base):
     render_path: Mapped[str] = mapped_column(String(500), nullable=False)
     char_boxes: Mapped[list[Any]] = mapped_column(JSONB, nullable=False)
     has_text_layer: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    # Which parsing layer produced the text and boxes (Stage 7, Block 2): `pdfplumber` for
+    # a native text layer, `docling` for a page OCR'd or re-read on the VM, `llamaparse`
+    # for a page read by LlamaParse (only when the tender allows the document to leave
+    # the VM). `layer_detail` carries what the layer reported (OCR engine, tables found,
+    # confidence) for the parser benchmark and the page view.
+    parser_layer: Mapped[str] = mapped_column(
+        String(20), nullable=False, server_default="pdfplumber", default="pdfplumber"
+    )
+    layer_detail: Mapped[dict[str, Any] | None] = mapped_column(JSONB, nullable=True)
 
 
 class Section(IdMixin, TenantAuditMixin, Base):

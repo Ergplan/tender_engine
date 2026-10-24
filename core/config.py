@@ -52,6 +52,17 @@ class Settings(BaseSettings):
     extract_call_overhead_pages: float = 6.0
     evidence_match_threshold: float = 85.0
     render_dpi: int = 150
+    # Parsing layers (Stage 7, Block 2). Docling runs on the VM (compose service `docling`,
+    # profile `parsing`); the worker sends it the pages pdfplumber found no text layer on,
+    # and the pages with tables when `docling_tables` is on. Empty URL: the layer is off and
+    # a scanned page keeps no text, as before. An unreachable service never fails a parse.
+    docling_url: str = ""
+    docling_timeout_seconds: float = 900.0
+    docling_tables: bool = True
+    # LlamaParse is optional and off: a document leaves the VM only for a tender whose
+    # record says so (`tender.parser_llamaparse`), and the pages it read say `llamaparse`.
+    llamaparse_api_key: str = ""
+    llamaparse_url: str = "https://api.cloud.llamaindex.ai"
     worker_poll_seconds: float = 2.0
 
     openai_api_key: str = ""

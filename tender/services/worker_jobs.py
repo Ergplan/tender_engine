@@ -12,7 +12,7 @@ from core.llm.client import LLMClient
 from core.schemas import SchemaRegistry
 from core.services.extract import ExtractService
 from core.services.review_state import ReviewStateService
-from tender.services import amendment_map, derive, freshness, rounds, summary
+from tender.services import amendment_map, classify, derive, freshness, rounds, summary
 from tender.services.packs import Catalog
 from tender.services.tenders import TenderService
 from tender.services.tokens import TokenService
@@ -31,8 +31,8 @@ def tender_jobs(
     freshness_interval_days: float = 0,
     freshness_transport: httpx2.BaseTransport | None = None,
 ) -> tuple[dict[str, Handler], Callable[[Session, str], None]]:
-    """The handlers for `amendment_plan`, `tender_summary`, `tender_derive` and
-    `source_freshness`, and the function the worker calls after it has validated a run (it
+    """The handlers for `classify_type`, `amendment_plan`, `tender_summary`, `tender_derive`
+    and `source_freshness`, and the function the worker calls after it has validated a run (it
     queues the summary and the derivation once a tender's runs are all in). The freshness
     check reads the manifests under `tenders_root` and queues itself again every
     `freshness_interval_days` (0: only when asked)."""
@@ -45,6 +45,7 @@ def tender_jobs(
         transport=freshness_transport,
     )
     handlers = {
+        **classify.job_handlers(classify.TypeClassifier(llm, tenant_id)),
         **amendment_map.job_handlers(mapper),
         **summary.job_handlers(writer),
         **derive.job_handlers(deriver),

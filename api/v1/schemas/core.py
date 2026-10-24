@@ -21,9 +21,32 @@ class DocumentOut(BaseModel):
     created_by: str
     # Where the proxy serves the PDF itself, with range requests.
     file_url: str
+    # The type classifier's answer (Stage 7, Block 2 d), once `POST .../classify` has run:
+    # tender_type, state (set, unsure, unknown), confidence, reasons, alternatives.
+    classification: dict[str, Any] | None = None
     # Where the file was taken from and when; null when the upload did not say.
     source_url: str | None
     retrieved_on: date | None
+
+
+class RejectedOut(BaseModel):
+    """A member of a bundle that did not become a document, and why."""
+
+    name: str
+    reason: str
+
+
+class BundleMemberOut(BaseModel):
+    name: str
+    document: DocumentOut
+    created: bool
+
+
+class BundleOut(BaseModel):
+    """What a .zip of a tender pack became: documents for its members, and the rest."""
+
+    documents: list[BundleMemberOut]
+    rejected: list[RejectedOut]
 
 
 class PageOut(BaseModel):

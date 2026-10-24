@@ -20,13 +20,14 @@ dependencies = [
     "openpyxl>=3.1.5",
     "openai-agents>=0.24.0",
     "google-cloud-storage>=2.19,<4",
+    "python-docx>=1.2.0",
+    "httpx>=0.28,<1",
 ]
 
 [dependency-groups]
 dev = [
     "pytest>=8.3,<9",
     "pytest-timeout>=2.3,<3",
-    "httpx>=0.28,<1",
     "ruff>=0.9",
     "mypy>=1.14",
     "watchfiles>=1.0,<2",

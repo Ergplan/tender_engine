@@ -1,0 +1,146 @@
+ Container tender-engine-tests-run-185b6a8ad124 Creating 
+ Container tender-engine-tests-run-185b6a8ad124 Created 
+{
+ "status": 200,
+ "seconds": 88.3,
+ "top": [
+  "document",
+  "status",
+  "errors",
+  "processing_time",
+  "timings",
+  "confidence"
+ ],
+ "doc_keys": [
+  "schema_name",
+  "version",
+  "name",
+  "origin",
+  "furniture",
+  "body",
+  "groups",
+  "texts",
+  "pictures",
+  "tables",
+  "key_value_items",
+  "form_items",
+  "pages"
+ ],
+ "pages": {
+  "1": {
+   "size": {
+    "width": 792.0,
+    "height": 612.0
+   },
+   "image": null,
+   "page_no": 1
+  }
+ },
+ "n_texts": 21,
+ "first_texts": [
+  {
+   "self_ref": "#/texts/0",
+   "parent": {
+    "$ref": "#/body"
+   },
+   "children": [],
+   "content_layer": "furniture",
+   "meta": null,
+   "label": "page_header",
+   "prov": [
+    {
+     "page_no": 1,
+     "bbox": {
+      "l": 38.7217763264974,
+      "t": 491.671875,
+      "r": 49.8991953531901,
+      "b": 142.2421875,
+      "coord_origin": "BOTTOMLEFT"
+     },
+     "charspan": [
+      0,
+      18
+     ]
+    }
+   ],
+   "orig": "ST  & SS       UT)",
+   "text": "ST  & SS       UT)",
+   "formatting": null,
+   "hyperlink": null
+  },
+  {
+   "self_ref": "#/texts/1",
+   "parent": {
+    "$ref": "#/body"
+   },
+   "children": [],
+   "content_layer": "furniture",
+   "meta": null,
+   "label": "page_header",
+   "prov": [
+    {
+     "page_no": 1,
+     "bbox": {
+      "l": 752.8790690104166,
+      "t": 527.1328125,
+      "r": 764.8548990885416,
+      "b": 471.3515625,
+      "coord_origin": "BOTTOMLEFT"
+     },
+     "charspan": [
+      0,
+      12
+     ]
+    }
+   ],
+   "orig": "Page 1 of 15",
+   "text": "Page 1 of 15",
+   "formatting": null,
+   "hyperlink": null
+  },
+  {
+   "self_ref": "#/texts/2",
+   "parent": {
+    "$ref": "#/body"
+   },
+   "children": [],
+   "content_layer": "body",
+   "meta": null,
+   "label": "section_header",
+   "prov": [
+    {
+     "page_no": 1,
+     "bbox": {
+      "l": 73.45161437988281,
+      "t": 164.5546875,
+      "r": 84.22984313964844,
+      "b": 125.90625,
+      "coord_origin": "BOTTOMLEFT"
+     },
+     "charspan": [
+      0,
+      7
+     ]
+    }
+   ],
+   "orig": "GENERAL",
+   "text": "GENERAL",
+   "formatting": null,
+   "hyperlink": null,
+   "level": 1
+  }
+ ],
+ "body_children": [
+  {
+   "$ref": "#/texts/0"
+  },
+  {
+   "$ref": "#/texts/1"
+  },
+  {
+   "$ref": "#/pictures/0"
+  }
+ ],
+ "errors": [],
+ "timings": {}
+}

@@ -1,0 +1,44 @@
+scanned       Technical_Documents_Package- p305  pdfplumber=n(0) docling=Y(100)  'This specification deals with the testing of bored cast in s'
+scanned       Technical_Documents_Package- p305  pdfplumber=n(0) docling=Y(100)  'Kentledge: The dead weight used for applying a test load on '
+scanned       Technical_Documents_Package- p305  pdfplumber=n(0) docling=Y(100)  'SAFETY PRECAUTIONS'
+scanned       Technical_Documents_Package- p305  pdfplumber=n(0) docling=Y(100)  'Solar Energy Corporation of India'
+scanned       Technical_Documents_Package- p310  pdfplumber=n(0) docling=Y(100)  'EQUIPMENT FOR APPLYING LOAD'
+scanned       Technical_Documents_Package- p310  pdfplumber=n(0) docling=n(53)  'The total capacity of the jacks shall exceed by 50% or more '
+scanned       Technical_Documents_Package- p310  pdfplumber=n(0) docling=Y(100)  'Load Measurement Procedure'
+scanned       Technical_Documents_Package- p310  pdfplumber=n(0) docling=Y(100)  'Page 6 of 15'
+scanned       Technical_Documents_Package- p320  pdfplumber=n(0) docling=Y(100)  'STANDARD SPECIFICATION FOR STATIC TEST ON PILE (LATERAL)'
+scanned       Technical_Documents_Package- p320  pdfplumber=n(0) docling=Y(87)  'Allowable load defined as per IS: 2911 (part 2)'
+scanned       Technical_Documents_Package- p320  pdfplumber=n(0) docling=Y(97)  'Reaction Piles/ Reaction Pedestals'
+scanned       Technical_Documents_Package- p320  pdfplumber=n(0) docling=Y(100)  'Page 1 of 10'
+scanned       Technical_tender_document_60 p272  pdfplumber=n(0) docling=Y(100)  'CHAIN LINK FENCE DRAWING'
+scanned       Technical_tender_document_60 p272  pdfplumber=n(0) docling=Y(100)  'ALL DIMENSIONS ARE IN MILLIMETERS AND ELEVATION IN METERS'
+scanned       Technical_tender_document_60 p272  pdfplumber=n(0) docling=Y(100)  'GALVANIZATION THICKNESS SHALL BE MIN 85 MICRONS FOR ALL OTHE'
+scanned       Technical_tender_document_60 p272  pdfplumber=n(0) docling=Y(100)  'PLAN OF FOUNDATION'
+scanned       Technical_tender_document_60 p1    pdfplumber=Y(100) docling=Y(100)  'SECTION – VII'
+divider_pages PPA_Final_22_09.pdf          p2    pdfplumber=Y(100) docling=Y(100)  'PART I'
+divider_pages PPA_Final_22_09.pdf          p2    pdfplumber=Y(100) docling=Y(100)  'Preliminary'
+divider_pages PPA_Final_22_09.pdf          p13   pdfplumber=Y(100) docling=Y(100)  'The Supply Contract'
+divider_pages RFQ_RFP_Final_22_09.pdf      p42   pdfplumber=Y(100) docling=Y(100)  'NOT USED'
+divider_pages SECI_PPA_Solar_CnI_T1.pdf    p68   pdfplumber=Y(100) docling=Y(100)  'Guidelines.'
+divider_pages SECI_PPA_Solar_CnI_T1.pdf    p68   pdfplumber=Y(100) docling=Y(100)  'Page 68 of 85'
+tables        RfS-ESS-IV-final_upload.pdf  p3    pdfplumber=Y(100) docling=Y(100)  'BID INFORMATION SHEET'
+tables        RfS-ESS-IV-final_upload.pdf  p3    pdfplumber=Y(100) docling=Y(100)  'RfS NO. & DATE'
+tables        RfS-ESS-IV-final_upload.pdf  p3    pdfplumber=Y(100) docling=Y(100)  'SECI/C&P/IPP/15/0010/26-27 dated 01.10.2026'
+tables        RfS-ESS-IV-final_upload.pdf  p3    pdfplumber=n(71) docling=Y(100)  'TWO BID SYSTEM'
+tables        RfS-ESS-IV-final_upload.pdf  p3    pdfplumber=Y(100) docling=Y(100)  'As mentioned in RfS Document'
+tables        RfS-ESS-IV-final_upload.pdf  p3    pdfplumber=Y(92) docling=Y(100)  'Amount: INR 50,000/- (Indian Rupees Fifty Thousand Only) + a'
+tables        RfS-ESS-IV-final_upload.pdf  p3    pdfplumber=n(83) docling=Y(100)  'BID PROCESSING FEE'
+tables        RfS-ESS-IV-final_upload.pdf  p43   pdfplumber=Y(100) docling=Y(100)  'Cumulative Capacity of the projects applied for'
+tables        RfS-ESS-IV-final_upload.pdf  p43   pdfplumber=Y(100) docling=Y(100)  'Organization ID (OID) on ETS portal'
+tables        RfS-ESS-IV-final_upload.pdf  p43   pdfplumber=Y(100) docling=Y(100)  'Executive Director (C&P)'
+tables        RfS-ESS-IV-final_upload.pdf  p43   pdfplumber=Y(100) docling=Y(100)  '6th Floor, Plate-B, NBCC Office Block Tower-2'
+tables        RfS-ESS-IV-final_upload.pdf  p43   pdfplumber=Y(100) docling=Y(100)  'Documents to be Submitted Online'
+tables        RfS-ESS-IV-final_upload.pdf  p43   pdfplumber=Y(100) docling=Y(100)  'fails to submit the Bank Guarantee/POI/ Surety Bond against '
+
+pdfplumber scanned       located 1/17 (6%) on 5 pages, 0.0 s total, 0.0 s/page
+pdfplumber divider_pages located 6/6 (100%) on 4 pages, 0.0 s total, 0.0 s/page
+pdfplumber tables        located 11/13 (85%) on 2 pages, 0.0 s total, 0.0 s/page
+docling    scanned       located 16/17 (94%) on 5 pages, 200.7 s total, 40.1 s/page
+docling    divider_pages located 6/6 (100%) on 4 pages, 52.5 s total, 13.1 s/page
+docling    tables        located 13/13 (100%) on 2 pages, 38.2 s total, 19.1 s/page
+exit=0

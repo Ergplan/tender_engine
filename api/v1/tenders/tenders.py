@@ -24,6 +24,7 @@ from api.v1.schemas.tenders import (
     TenderOut,
     TenderReviewState,
     TenderSchemaOut,
+    TenderTypeSet,
     VersionDocumentOut,
     VersionOut,
 )
@@ -58,6 +59,9 @@ def _tender_out(session: SessionDep, tender: Tender) -> TenderOut:
     return TenderOut(
         id=tender.id,
         tender_type=tender.tender_type,
+        type_source=tender.type_source,
+        type_state=tender.type_state,
+        type_confidence=tender.type_confidence,
         issuing_agency=tender.issuing_agency,
         external_ref=tender.external_ref,
         title=tender.title,
@@ -105,7 +109,29 @@ def create_tender(
             external_ref=body.external_ref,
             title=body.title,
             created_by=actor,
+            type_source=body.type_source,
+            type_state=body.type_state,
+            type_confidence=body.type_confidence,
         )
+    except (TenderError, LookupError) as exc:
+        raise AppError("validation_failed", str(exc)) from exc
+    return _tender_out(session, tender)
+
+
+@router.post("/tenders/{tender_id}/type", response_model=TenderOut)
+def set_tender_type(
+    tender_id: str,
+    body: TenderTypeSet,
+    session: SessionDep,
+    tenders: TendersDep,
+    actor: ActorDep,
+) -> TenderOut:
+    """A person confirms or corrects the tender type (the answer to an `unsure` or
+    `unknown` classification). Audited. Refused once the tender has been read, because
+    the schema a run used is part of what its candidates mean."""
+    tender = _tender(tenders, session, tender_id)
+    try:
+        tenders.set_type(session, tender, body.type, created_by=actor)
     except (TenderError, LookupError) as exc:
         raise AppError("validation_failed", str(exc)) from exc
     return _tender_out(session, tender)

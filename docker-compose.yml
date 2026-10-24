@@ -52,6 +52,23 @@ services:
     <<: *python
     command: python -m worker.main
 
+  # Docling (Stage 7, Block 2): the layout, table and OCR layer, on the VM. The worker sends
+  # it the pages pdfplumber found no text layer on (DOCLING_URL=http://docling:5001). Profile
+  # `parsing`: started where the machine has the memory for it (COMPOSE_PROFILES=parsing in
+  # .env after the Block 2 resize); with the service down, a scanned page keeps no text,
+  # as before, and the parse does not fail.
+  docling:
+    image: quay.io/docling-project/docling-serve:v1.38.1
+    profiles: ["parsing"]
+    environment:
+      DOCLING_SERVE_ENABLE_UI: "0"
+      DOCLING_SERVE_MAX_SYNC_WAIT: "900"
+      OMP_NUM_THREADS: "2"
+    expose:
+      - "5001"
+    mem_limit: 3g
+    restart: always
+
   # The independent agent pass (Stage 5A) in its own container: the same image, a process
   # that claims only `agent_pass` jobs and calls the OpenAI model through core/llm.
   agent:
