@@ -245,7 +245,11 @@ def test_a_hold_suspends_publication_and_lifting_restores_it(
         corrections.lift_hold(db, hold, by="x", known_gaps=ledger)
     actions = [
         a.action
-        for a in db.scalars(select(AuditLog).where(AuditLog.table_name == "publication_hold"))
+        for a in db.scalars(
+            select(AuditLog)
+            .where(AuditLog.table_name == "publication_hold")
+            .order_by(AuditLog.created_at, AuditLog.id)
+        )
     ]
     assert actions == ["insert", "lift"]
 

@@ -16,6 +16,7 @@ log = logging.getLogger("api")
 
 ERROR_STATUS: dict[str, tuple[int, str]] = {
     "not_found": (404, "The requested record does not exist."),
+    "model_unavailable": (502, "The model call failed. Try again in a moment."),
     "review_link_required": (
         401,
         "Sign in, or open the review link you were sent.",

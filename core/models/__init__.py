@@ -6,6 +6,7 @@ from core.models.extraction import Candidate, EvidenceSpan, ExtractionRun, Valid
 from core.models.identity import ApiKey, AppUser, LoginSession, UsageRecord
 from core.models.job import Job
 from core.models.llm_call_log import LLMBatch, LLMCallLog
+from core.models.retrieval import RetrievalChunk
 from core.models.tenant import Tenant
 from core.models.truth import Approval, AuditLog, CanonicalFact, Feedback
 
@@ -26,6 +27,7 @@ __all__ = [
     "LLMCallLog",
     "LoginSession",
     "Page",
+    "RetrievalChunk",
     "Section",
     "Tenant",
     "UsageRecord",

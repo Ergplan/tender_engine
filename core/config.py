@@ -65,6 +65,27 @@ class Settings(BaseSettings):
     llamaparse_url: str = "https://api.cloud.llamaindex.ai"
     worker_poll_seconds: float = 2.0
 
+    # Full-tender query (Stage 7, Block 5). Chunks of every parsed document go into the
+    # `retrieval_chunk` table (pgvector, in the same database) after its section map; a
+    # question not answered by an approved fact is answered from retrieved pages only.
+    # Embeddings: `local` (an ONNX model on the VM through fastembed, the owner's decision
+    # of 2026-10-25: no OpenAI, no document leaves the VM) or `none` (full-text search
+    # alone). The dimension is the table's (migration 0023); a model of another size needs
+    # a migration that alters the column.
+    retrieval_enabled: bool = True
+    embeddings_provider: Literal["local", "none"] = "local"
+    local_embedding_model: str = "BAAI/bge-small-en-v1.5"
+    embedding_dimension: int = 384
+    # Where the model files are kept between container restarts (under data_dir).
+    embeddings_cache_dir: str = "/data/models/fastembed"
+    ask_top_k: int = 8
+    # The independent reviewer (operating rule 15): a model other than the builder's, with
+    # its list prices for the figure the review run records. The owner's decision of
+    # 2026-10-25: no OpenAI, so Claude Opus 5.5 reviews what Claude Fable 5.1 built.
+    review_model: str = "claude-opus-5-5"
+    review_price_in_per_mtok: float = 4.0
+    review_price_out_per_mtok: float = 20.0
+
     openai_api_key: str = ""
     # The independent agent pass (Stage 5A): the OpenAI model it runs on, its list prices
     # (the invoice is the truth; these give the figure the run records) and the factor on

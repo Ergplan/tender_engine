@@ -60,7 +60,8 @@ def test_tools_resources_and_a_call_through_a_client_session(
 
     got = anyio.run(_with_client, server, work)
     names = [t.name for t in got["tools"]]
-    assert len(names) == 11 and names[:3] == ["search_tenders", "get_tender", "get_field"]
+    assert len(names) == 12 and names[:3] == ["search_tenders", "get_tender", "get_field"]
+    assert "ask_tender" in names
     with_ui = {
         t.name: t.meta["ui"]["resourceUri"] for t in got["tools"] if t.meta and "ui" in t.meta
     }

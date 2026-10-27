@@ -302,7 +302,7 @@ def test_run_totals_come_from_the_call_log_and_the_run_ends_validated(
     assert (run.object_type, run.object_id, run.object_version) == ("document", run.document_id, 1)
     assert run.model == "claude-fable-5-1" and run.prompt_version == "v1"
     kinds = [job.kind for job in db.scalars(select(Job).order_by(Job.created_at))]
-    assert kinds == ["parse", "section_map", "extract", "validate"]
+    assert kinds == ["parse", "section_map", "index_document", "extract", "validate"]
 
 
 def test_every_candidate_insert_is_audited(pipeline: Pipeline, db: Session) -> None:

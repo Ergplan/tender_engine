@@ -20,7 +20,9 @@ x-python: &python
 
 services:
   db:
-    image: postgres:16
+    # PostgreSQL 16 with the pgvector extension (Stage 7, Block 5); the same major, the
+    # same data directory: swapping the image keeps the data.
+    image: pgvector/pgvector:pg16
     environment:
       POSTGRES_USER: tender
       POSTGRES_PASSWORD: tender
@@ -53,10 +55,11 @@ services:
     command: python -m worker.main
 
   # Docling (Stage 7, Block 2): the layout, table and OCR layer, on the VM. The worker sends
-  # it the pages pdfplumber found no text layer on (DOCLING_URL=http://docling:5001). Profile
-  # `parsing`: started where the machine has the memory for it (COMPOSE_PROFILES=parsing in
-  # .env after the Block 2 resize); with the service down, a scanned page keeps no text,
-  # as before, and the parse does not fail.
+  # it the pages pdfplumber found no text layer on and the native pages with tables
+  # (DOCLING_URL=http://docling:5001). Profile `parsing`, on since the owner's decision of
+  # 2026-10-27 (COMPOSE_PROFILES=parsing in .env; `make deploy` starts it); the worker
+  # parses one document at a time, so one conversion runs beside the stack on the
+  # e2-medium. With the service down a scanned page keeps no text and the parse does not fail.
   docling:
     image: quay.io/docling-project/docling-serve:v1.38.1
     profiles: ["parsing"]

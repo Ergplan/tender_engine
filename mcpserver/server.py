@@ -27,11 +27,13 @@ from pydantic import AnyHttpUrl
 from starlette.applications import Starlette
 from starlette.routing import BaseRoute, Route
 
+from core.retrieval import Retriever
 from core.services.extract import ExtractService
 from core.services.identity import Principal
 from mcpserver import tools
 from mcpserver.auth import SCOPES, LibraryAccessToken, LibraryOAuthProvider
 from mcpserver.tools import ToolContext, ToolRefused, ToolResult
+from tender.services.ask import AskService
 from tender.services.tenders import TenderService
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -150,6 +152,25 @@ def build_server(
         except ToolRefused as exc:
             return _refusal(exc)
         with state.session_factory() as session:
+            local = settings.model_copy(update={"tenant_id": principal.tenant_id})
+            tenders = TenderService(
+                state.catalog,
+                ExtractService(state.llm, state.storage, state.schemas, local),
+                principal.tenant_id,
+            )
+            ask = None
+            if settings.retrieval_enabled and getattr(state, "retrieval", None) is not None:
+                store = state.retrieval.for_tenant(
+                    principal.tenant_id, tuple(principal.read_tenants)
+                )
+                ask = AskService(
+                    state.llm,
+                    state.catalog,
+                    state.schemas,
+                    tenders,
+                    Retriever(store, state.embedders, top_k=settings.ask_top_k),
+                    local,
+                )
             ctx = ToolContext(
                 session=session,
                 principal=principal,
@@ -157,17 +178,9 @@ def build_server(
                 catalog=state.catalog,
                 identity=state.identity,
                 storage=state.storage,
-                tenders=TenderService(
-                    state.catalog,
-                    ExtractService(
-                        state.llm,
-                        state.storage,
-                        state.schemas,
-                        settings.model_copy(update={"tenant_id": principal.tenant_id}),
-                    ),
-                    principal.tenant_id,
-                ),
+                tenders=tenders,
                 results_root=results_root,
+                ask=ask,
             )
             try:
                 return _result(tools.run_tool(ctx, name, lambda tier: call(ctx)))
@@ -234,6 +247,18 @@ def build_server(
     def compare_tenders(tenders: list[str]) -> CallToolResult:
         """Up to six tenders side by side: fields as rows, provenance on every cell."""
         return run("compare_tenders", lambda ctx: tools.compare(ctx, tenders))
+
+    @server.tool(name="ask_tender", meta=meta("ask_tender"))
+    def ask_tender(
+        question: str, tender: str | None = None, tender_id: str | None = None
+    ) -> CallToolResult:
+        """Ask one question about a tender (slug or id). A question that names a field is
+        answered from the approved fact; any other from the tender's pages, every claim
+        cited to a page and quote the evidence resolver located. The answer says whether it
+        is approved or a machine reading; it is never a fact. Paid tier."""
+        return run(
+            "ask_tender", lambda ctx: tools.ask_tender(ctx, _ref(tender, tender_id), question)
+        )
 
     @server.tool(name="reliability_report", meta=meta("reliability_report"))
     def reliability_report(tender_type: str | None = None) -> CallToolResult:

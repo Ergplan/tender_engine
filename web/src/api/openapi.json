@@ -1012,6 +1012,234 @@
         "title": "ApprovalView",
         "type": "object"
       },
+      "AskAnswer": {
+        "properties": {
+          "amendment_changed": {
+            "default": false,
+            "title": "Amendment Changed",
+            "type": "boolean"
+          },
+          "amendment_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Amendment Note"
+          },
+          "answer": {
+            "title": "Answer",
+            "type": "string"
+          },
+          "answered": {
+            "title": "Answered",
+            "type": "boolean"
+          },
+          "authority_note": {
+            "default": "An answer is a reading of the tender's pages, not a fact of the record: only a reviewer's decision makes a fact. `source` says whether the value shown was approved.",
+            "title": "Authority Note",
+            "type": "string"
+          },
+          "call_log_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Call Log Id"
+          },
+          "citations": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/Citation"
+            },
+            "title": "Citations",
+            "type": "array"
+          },
+          "citations_resolved": {
+            "default": 0,
+            "title": "Citations Resolved",
+            "type": "integer"
+          },
+          "citations_total": {
+            "default": 0,
+            "title": "Citations Total",
+            "type": "integer"
+          },
+          "claims": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/AskClaim"
+            },
+            "title": "Claims",
+            "type": "array"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "cost_usd": {
+            "default": 0.0,
+            "title": "Cost Usd",
+            "type": "number"
+          },
+          "field_path": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Field Path"
+          },
+          "is_fact": {
+            "const": false,
+            "default": false,
+            "title": "Is Fact",
+            "type": "boolean"
+          },
+          "label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label"
+          },
+          "mode": {
+            "enum": [
+              "field",
+              "retrieval"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "passages_read": {
+            "default": 0,
+            "title": "Passages Read",
+            "type": "integer"
+          },
+          "question": {
+            "title": "Question",
+            "type": "string"
+          },
+          "retrieval": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Retrieval"
+          },
+          "source": {
+            "enum": [
+              "approved",
+              "machine",
+              "none"
+            ],
+            "title": "Source",
+            "type": "string"
+          },
+          "tender_id": {
+            "title": "Tender Id",
+            "type": "string"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          },
+          "value": {
+            "title": "Value"
+          },
+          "version_no": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version No"
+          }
+        },
+        "required": [
+          "tender_id",
+          "question",
+          "version_no",
+          "mode",
+          "source",
+          "answered",
+          "answer"
+        ],
+        "title": "AskAnswer",
+        "type": "object"
+      },
+      "AskClaim": {
+        "properties": {
+          "citations": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Citations",
+            "type": "array"
+          },
+          "statement": {
+            "title": "Statement",
+            "type": "string"
+          }
+        },
+        "required": [
+          "statement",
+          "citations"
+        ],
+        "title": "AskClaim",
+        "type": "object"
+      },
+      "AskRequest": {
+        "description": "One question about one tender (Stage 7, Block 5).",
+        "properties": {
+          "question": {
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Question",
+            "type": "string"
+          }
+        },
+        "required": [
+          "question"
+        ],
+        "title": "AskRequest",
+        "type": "object"
+      },
       "Assumptions": {
         "description": "The user's, never the tender's. Defaults are marked \"assumed\" by every caller.",
         "properties": {
@@ -2115,6 +2343,131 @@
         "title": "ChangelogVersion",
         "type": "object"
       },
+      "Citation": {
+        "properties": {
+          "bbox": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "number"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bbox"
+          },
+          "char_end": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Char End"
+          },
+          "char_start": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Char Start"
+          },
+          "clause": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Clause"
+          },
+          "document_id": {
+            "title": "Document Id",
+            "type": "string"
+          },
+          "filename": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Filename"
+          },
+          "n": {
+            "title": "N",
+            "type": "integer"
+          },
+          "page_no": {
+            "title": "Page No",
+            "type": "integer"
+          },
+          "quote": {
+            "title": "Quote",
+            "type": "string"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "resolved": {
+            "title": "Resolved",
+            "type": "boolean"
+          },
+          "score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score"
+          },
+          "version_no": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version No"
+          }
+        },
+        "required": [
+          "n",
+          "document_id",
+          "filename",
+          "page_no",
+          "quote",
+          "resolved"
+        ],
+        "title": "Citation",
+        "type": "object"
+      },
       "CompareColumn": {
         "properties": {
           "banner": {
@@ -2505,6 +2858,234 @@
           "resolution"
         ],
         "title": "CorrectionResolve",
+        "type": "object"
+      },
+      "CrossAnswer": {
+        "properties": {
+          "answer": {
+            "title": "Answer",
+            "type": "string"
+          },
+          "authority_note": {
+            "default": "Matched on approved facts only; a tender with a machine reading but no decision on the field is listed under `unreviewed`, not matched.",
+            "title": "Authority Note",
+            "type": "string"
+          },
+          "considered": {
+            "title": "Considered",
+            "type": "integer"
+          },
+          "is_fact": {
+            "const": false,
+            "default": false,
+            "title": "Is Fact",
+            "type": "boolean"
+          },
+          "matched": {
+            "items": {
+              "$ref": "#/components/schemas/CrossHit"
+            },
+            "title": "Matched",
+            "type": "array"
+          },
+          "query": {
+            "$ref": "#/components/schemas/CrossQuery"
+          },
+          "question": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Question"
+          },
+          "unreviewed": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Unreviewed",
+            "type": "array"
+          },
+          "without_field": {
+            "title": "Without Field",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "question",
+          "query",
+          "matched",
+          "considered",
+          "without_field",
+          "unreviewed",
+          "answer"
+        ],
+        "title": "CrossAnswer",
+        "type": "object"
+      },
+      "CrossAskRequest": {
+        "description": "A cross-tender question: structured (`field_path`, `operator`, `value`), or a\n`question` the engine reads into one. The answer returns the query that ran.",
+        "properties": {
+          "field_path": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Field Path"
+          },
+          "operator": {
+            "default": "any",
+            "enum": [
+              "==",
+              "!=",
+              ">",
+              ">=",
+              "<",
+              "<=",
+              "contains",
+              "in",
+              "any"
+            ],
+            "title": "Operator",
+            "type": "string"
+          },
+          "question": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Question"
+          },
+          "value": {
+            "title": "Value"
+          }
+        },
+        "title": "CrossAskRequest",
+        "type": "object"
+      },
+      "CrossHit": {
+        "properties": {
+          "evidence_pages": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Evidence Pages",
+            "type": "array"
+          },
+          "slug": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Slug"
+          },
+          "tender_id": {
+            "title": "Tender Id",
+            "type": "string"
+          },
+          "tender_type": {
+            "title": "Tender Type",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          },
+          "value": {
+            "title": "Value"
+          },
+          "version_no": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version No"
+          }
+        },
+        "required": [
+          "tender_id",
+          "slug",
+          "title",
+          "tender_type",
+          "value",
+          "unit",
+          "version_no",
+          "evidence_pages"
+        ],
+        "title": "CrossHit",
+        "type": "object"
+      },
+      "CrossQuery": {
+        "properties": {
+          "field_path": {
+            "title": "Field Path",
+            "type": "string"
+          },
+          "label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label"
+          },
+          "operator": {
+            "default": "any",
+            "enum": [
+              "==",
+              "!=",
+              ">",
+              ">=",
+              "<",
+              "<=",
+              "contains",
+              "in",
+              "any"
+            ],
+            "title": "Operator",
+            "type": "string"
+          },
+          "value": {
+            "title": "Value"
+          }
+        },
+        "required": [
+          "field_path"
+        ],
+        "title": "CrossQuery",
         "type": "object"
       },
       "DocumentOut": {
@@ -10349,6 +10930,48 @@
         ]
       }
     },
+    "/api/v1/tenders/ask": {
+      "post": {
+        "description": "Which tenders satisfy a condition on one field, over approved facts only. Send the\nstructured query (`field_path`, `operator`, `value`), or a `question` that is read into\none; the answer returns the query that ran.",
+        "operationId": "ask_across_tenders_api_v1_tenders_ask_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CrossAskRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CrossAnswer"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Ask Across Tenders",
+        "tags": [
+          "ask"
+        ]
+      }
+    },
     "/api/v1/tenders/compare": {
       "get": {
         "description": "Tenders side by side: fields as rows, tenders as columns, provenance on every cell,\na field not reviewed marked as such. A tender whose publication is suspended is left\nout with the reason.",
@@ -10828,6 +11451,75 @@
         ]
       }
     },
+    "/api/v1/tenders/{tender_id}/ask": {
+      "post": {
+        "description": "Ask one question about a tender. The answer names its source (`approved` fact,\n`machine` reading) and cites pages with quotes the evidence resolver located; an\nunresolved quote is shown as such. Never a fact.",
+        "operationId": "ask_tender_api_v1_tenders__tender_id__ask_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tender_id",
+            "required": true,
+            "schema": {
+              "title": "Tender Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-reviewer",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Reviewer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AskRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AskAnswer"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Ask Tender",
+        "tags": [
+          "ask"
+        ]
+      }
+    },
     "/api/v1/tenders/{tender_id}/assumptions": {
       "put": {
         "description": "Persist the caller's assumptions for a model of the tender. Separate from the\nmodel: a read never saves, a save never computes. Never a canonical fact.",
@@ -11080,6 +11772,69 @@
         "summary": "Start Extraction",
         "tags": [
           "tenders"
+        ]
+      }
+    },
+    "/api/v1/tenders/{tender_id}/index": {
+      "post": {
+        "description": "Queue the chunks of every document of the tender for retrieval again (after a\nre-parse, or for documents parsed before retrieval existed).",
+        "operationId": "index_tender_api_v1_tenders__tender_id__index_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tender_id",
+            "required": true,
+            "schema": {
+              "title": "Tender Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-reviewer",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Reviewer"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "integer"
+                  },
+                  "title": "Response Index Tender Api V1 Tenders  Tender Id  Index Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Index Tender",
+        "tags": [
+          "ask"
         ]
       }
     },

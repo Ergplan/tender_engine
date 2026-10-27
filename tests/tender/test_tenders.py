@@ -430,8 +430,8 @@ def test_an_amendment_no_keyword_matches_is_mapped_in_full_before_it_is_read(
     ]
     runs = pipeline.tenders.start_extraction(db, tender, created_by="pytest", is_fixture=True)
     assert runs == [], "no run until the document has been mapped"
-    queued = db.scalars(select(Job).where(Job.status == "queued")).one()
-    assert queued.kind == "amendment_plan"
+    queued = db.scalars(select(Job).where(Job.status == "queued", Job.kind != "index_document"))
+    assert [job.kind for job in queued] == ["amendment_plan"]
     pipeline.runner.run_until_idle()
 
     (run,) = db.scalars(

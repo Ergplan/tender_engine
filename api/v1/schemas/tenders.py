@@ -143,3 +143,19 @@ class TenderSchemaOut(BaseModel):
     schema_version: str
     sections: list[CompiledSection]
     fields: list[TenderField]
+
+
+class AskRequest(BaseModel):
+    """One question about one tender (Stage 7, Block 5)."""
+
+    question: str = Field(min_length=1, max_length=2000)
+
+
+class CrossAskRequest(BaseModel):
+    """A cross-tender question: structured (`field_path`, `operator`, `value`), or a
+    `question` the engine reads into one. The answer returns the query that ran."""
+
+    question: str | None = None
+    field_path: str | None = None
+    operator: Literal["==", "!=", ">", ">=", "<", "<=", "contains", "in", "any"] = "any"
+    value: Any = None

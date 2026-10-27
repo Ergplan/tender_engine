@@ -35,6 +35,7 @@ from core.services.identity import IdentityService, Principal
 from core.storage import Storage
 from tender.models import Tender
 from tender.services import library
+from tender.services.ask import AskAnswer, AskError, AskService
 from tender.services.changelog import Changelog, changelog
 from tender.services.compare import MAX_TENDERS, Comparison, compare_tenders
 from tender.services.finance import Assumptions
@@ -69,7 +70,7 @@ FREE_TOOLS = (
     "compare_tenders",
     "reliability_report",
 )
-PAID_TOOLS = ("model_tender", "save_model_assumptions", "my_watchlist")
+PAID_TOOLS = ("model_tender", "save_model_assumptions", "my_watchlist", "ask_tender")
 ASSUMPTION_NAMES = tuple(f.name for f in dataclass_fields(Assumptions))
 
 
@@ -93,6 +94,8 @@ class ToolContext:
     tenders: TenderService
     storage: Storage
     results_root: Path | None = None
+    # The full-tender query (Stage 7, Block 5); None where the host built no retrieval.
+    ask: AskService | None = None
 
     @property
     def public_base_url(self) -> str:
@@ -135,6 +138,11 @@ class TenderCard(PublishedTender):
 
     provenance: Provenance
     days_remaining: int | None
+
+
+class AskResult(AskAnswer):
+    title: str
+    provenance: Provenance
 
 
 class FieldResult(BaseModel):
@@ -821,3 +829,33 @@ def my_watchlist(
     ]
     lines.append(AUTHORITY_NOTE)
     return ToolResult(result, "\n".join(lines), resource_tenant_id=ctx.principal.tenant_id)
+
+
+def ask_tender(ctx: ToolContext, tender: str, question: str) -> ToolResult:
+    """One question about one tender (Stage 7, Block 5): the approved fact when the question
+    names a field, otherwise an answer from retrieved pages with every quote located by the
+    evidence resolver. The answer says its source and is never a fact."""
+    row = _tender(ctx, tender)
+    view = _view(ctx, row)
+    if ctx.ask is None:
+        raise ToolRefused("not_found", "the full-tender query is not configured here", 503)
+    try:
+        answer = ctx.ask.ask(ctx.session, row, question, created_by=ACTOR)
+    except AskError as exc:
+        raise ToolRefused("model_unavailable", str(exc), 502) from exc
+    result = AskResult(**answer.model_dump(), title=view.title, provenance=_provenance(view))
+    cited = "\n".join(
+        f"  [{c.n}] {'located' if c.resolved else 'NOT LOCATED'}: “{c.quote}” — "
+        f"{c.filename or c.document_id} p.{c.page_no}"
+        + (f" clause {c.clause}" if c.clause else "")
+        + (f" (version {c.version_no})" if c.version_no else "")
+        for c in answer.citations
+    )
+    text = (
+        f"{view.title}\nQ: {question}\nA ({answer.source}, {answer.mode}): {answer.answer}\n"
+        + (f"{answer.amendment_note}\n" if answer.amendment_note else "")
+        + (cited + "\n" if cited else "")
+        + f"Citations located: {answer.citations_resolved} of {answer.citations_total}. "
+        f"{AUTHORITY_NOTE}"
+    )
+    return ToolResult(result, text, resource_tenant_id=row.tenant_id)

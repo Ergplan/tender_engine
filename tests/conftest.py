@@ -21,13 +21,16 @@ from core.config import Settings
 from core.db import make_engine, make_session_factory
 from core.llm.client import LLMClient
 from core.models import Base, Document, ExtractionRun
+from core.retrieval import ChunkIndexer, ChunkStores, Retriever, TenantChunkStore, make_embedders
 from core.schemas import SchemaRegistry
 from core.services.approve import ApprovalService
 from core.services.extract import ExtractService
 from core.services.ingest import IngestService
 from core.services.review_state import ReviewStateService
 from core.storage import LocalStorage
+from tender.services.ask import AskService
 from tender.services.packs import Catalog, load_catalog
+from tender.services.retrieval_meta import chunk_meta
 from tender.services.tenders import TenderService
 from tender.services.worker_jobs import tender_jobs
 from tests.fixtures.llm import ScriptedSDK
@@ -60,6 +63,10 @@ def settings(tmp_path_factory: pytest.TempPathFactory) -> Iterator[Settings]:
         data_dir=str(tmp_path_factory.mktemp("data")),
         anthropic_api_key="test-key-not-real",
         anthropic_model="claude-fable-5-1",
+        # No live parsing service in a test, whatever the container's .env says (the VM's
+        # has DOCLING_URL since Block 4): the parse tests stub Docling where they want it.
+        docling_url="",
+        llamaparse_api_key="",
         # A batch run looks at its batch again at once; the scripted SDK ends it at once.
         llm_batch_poll_seconds=0,
     )
@@ -136,6 +143,11 @@ class Pipeline:
     review_state: ReviewStateService
     catalog: Catalog
     tenders: TenderService
+    # Retrieval (Stage 7, Block 5): the chunk store of the test tenant, its indexer (run by
+    # the runner after each section map) and the ask service over a keyword-only retriever.
+    store: TenantChunkStore
+    indexer: ChunkIndexer
+    ask: AskService
 
     def upload(
         self, db: Session, data: bytes | None = None, name: str = "contract.pdf"
@@ -196,6 +208,12 @@ def make_pipeline(
         sdk = sdk or ScriptedSDK()
         llm = LLMClient(local, session_factory, sdk=sdk.as_sdk(), prompt_roots=catalog.prompt_roots)
         extract = ExtractService(llm, storage, schemas, local)
+        # No embedding provider in tests: the keyword leg alone, no network.
+        local = local.model_copy(update={"embeddings_provider": "none"})
+        embedders = make_embedders(local)
+        store = ChunkStores(local).for_tenant(local.tenant_id)
+        indexer = ChunkIndexer(store, embedders, local, meta_for=chunk_meta)
+        tenders = TenderService(catalog, extract, local.tenant_id)
         return Pipeline(
             settings=local,
             session_factory=session_factory,
@@ -210,13 +228,19 @@ def make_pipeline(
                 schemas,
                 llm,
                 *tender_jobs(llm, catalog, extract, schemas, local.tenant_id),
+                indexer,
             ),
             ingest=IngestService(storage, local.tenant_id),
             extract=extract,
             approvals=ApprovalService(schemas, local.tenant_id),
             review_state=ReviewStateService(schemas, local.tenant_id),
             catalog=catalog,
-            tenders=TenderService(catalog, extract, local.tenant_id),
+            tenders=tenders,
+            store=store,
+            indexer=indexer,
+            ask=AskService(
+                llm, catalog, schemas, tenders, Retriever(store, embedders, top_k=6), local
+            ),
         )
 
     return build

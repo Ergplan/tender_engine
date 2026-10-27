@@ -514,3 +514,13 @@ class TenderService:
             row_id=version.id,
             after={"document_id": document.id, "role": role},
         )
+        # Retrieval (Stage 7, Block 5): a document indexed before it belonged to a tender
+        # carries no tender on its chunks; index it again now that it does.
+        if document.status == "parsed":
+            jobs.enqueue(
+                session,
+                tenant_id=self._tenant_id,
+                kind="index_document",
+                payload={"document_id": document.id},
+                created_by=created_by,
+            )

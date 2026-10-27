@@ -14,6 +14,7 @@ from core.config import Settings
 from core.db import make_engine, make_session_factory
 from core.llm.client import LLMClient
 from core.models import Tenant
+from core.retrieval import ChunkIndexer, ChunkStores, Retriever, make_embedders
 from core.services.approve import ApprovalService
 from core.services.extract import ExtractService
 from core.services.identity import IdentityService, Principal
@@ -23,7 +24,9 @@ from core.storage import LocalStorage
 from mcpserver.server import build_server
 from mcpserver.tools import ToolContext
 from tender.models import Tender
+from tender.services.ask import AskService
 from tender.services.packs import Catalog
+from tender.services.retrieval_meta import chunk_meta
 from tender.services.tenders import TenderService
 from tender.services.worker_jobs import tender_jobs
 from tests.conftest import Pipeline, add_tenant, owner_engine
@@ -45,6 +48,12 @@ def pipeline_for(
     sdk = ScriptedSDK()
     llm = LLMClient(local, factory, sdk=sdk.as_sdk(), prompt_roots=catalog.prompt_roots)
     extract = ExtractService(llm, storage, schemas, local)
+    # Retrieval as the app's pipeline fixture builds it: keyword search alone, no network.
+    local = local.model_copy(update={"embeddings_provider": "none"})
+    embedders = make_embedders(local)
+    store = ChunkStores(local).for_tenant(local.tenant_id)
+    indexer = ChunkIndexer(store, embedders, local, meta_for=chunk_meta)
+    tenders = TenderService(catalog, extract, tenant_id)
     pipeline = Pipeline(
         settings=local,
         session_factory=factory,
@@ -59,13 +68,17 @@ def pipeline_for(
             schemas,
             llm,
             *tender_jobs(llm, catalog, extract, schemas, tenant_id),
+            indexer,
         ),
         ingest=IngestService(storage, tenant_id),
         extract=extract,
         approvals=ApprovalService(schemas, tenant_id),
         review_state=ReviewStateService(schemas, tenant_id),
         catalog=catalog,
-        tenders=TenderService(catalog, extract, tenant_id),
+        tenders=tenders,
+        store=store,
+        indexer=indexer,
+        ask=AskService(llm, catalog, schemas, tenders, Retriever(store, embedders, top_k=6), local),
     )
     return pipeline, factory
 

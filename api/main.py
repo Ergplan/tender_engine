@@ -13,11 +13,12 @@ from api.v1.admin import library as admin_library
 from api.v1.awards import awards
 from api.v1.core import auth as auth_routes
 from api.v1.core import documents, extraction, files, health, oauth, review
-from api.v1.tenders import agent_pass, library, published, tenders
+from api.v1.tenders import agent_pass, ask, library, published, tenders
 from api.v1.tenders import review as tender_review
 from core.config import Settings
 from core.db import make_engine, make_session_factory
 from core.llm.client import LLMClient
+from core.retrieval import ChunkStores, make_embedders
 from core.schemas import SchemaRegistry
 from core.services.identity import IdentityService
 from core.services.oidc import GoogleOidc, OidcProvider
@@ -36,6 +37,7 @@ V1_ROUTERS = (
     # must not be read as a tender id.
     published.router,
     library.router,
+    ask.router,
     tenders.router,
     tender_review.router,
     agent_pass.router,
@@ -58,6 +60,7 @@ API_PRODUCT_ROUTERS = (
     documents.router,
     published.router,
     library.router,
+    ask.router,
     tenders.router,
     awards.router,
     reliability.router,
@@ -95,6 +98,10 @@ def create_app(
     app.state.llm = llm or LLMClient(
         settings, app.state.session_factory, prompt_roots=app.state.catalog.prompt_roots
     )
+    # Retrieval (Stage 7, Block 5): one chunk store per tenant served, the embedders of
+    # the configured provider; `ask` is the one route that calls the model in a request.
+    app.state.retrieval = ChunkStores(settings)
+    app.state.embedders = make_embedders(settings)
     try:
         with app.state.session_factory() as session:
             sync_field_defs(session, app.state.catalog, settings.tenant_id)

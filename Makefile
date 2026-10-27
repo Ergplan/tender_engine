@@ -3,7 +3,7 @@ COMPOSE := docker compose
 STATIC_IP := $(shell cat infra/STATIC-IP.txt)
 RUN_TESTS := $(COMPOSE) run --rm --no-deps -T tests
 
-.PHONY: up down test test-e2e test-ui check watch migrate deploy build-prod logs smoke client hooks evidence-corpus trace gold eval feedback-report report threeway agent-pass freshness backup
+.PHONY: up down test test-e2e test-ui check watch migrate deploy build-prod logs smoke client hooks evidence-corpus trace gold eval feedback-report report threeway agent-pass freshness backup review ask-eval
 
 up: hooks ## start the app and the test watcher
 	$(COMPOSE) up -d --build
@@ -41,7 +41,8 @@ deploy: hooks ## pull, build, migrate, restart, health check
 	$(COMPOSE) run --rm -T api alembic upgrade head
 	$(COMPOSE) run --rm -T --no-deps web npm ci --no-audit --no-fund
 	$(COMPOSE) up -d --force-recreate api worker agent web caddy
-	@for i in $$(seq 1 30); do \
+	$(COMPOSE) --profile parsing up -d docling
+	@for i in $$(seq 1 60); do \
 	  if curl -ksf https://$(STATIC_IP)/health >/dev/null; then \
 	    echo "healthy: $$(curl -ks https://$(STATIC_IP)/health)"; exit 0; fi; sleep 2; done; \
 	  echo "health check failed: https://$(STATIC_IP)/health"; $(COMPOSE) ps; exit 1
@@ -76,6 +77,12 @@ eval: ## score every gold record against the candidates in review; PROMPT=sectio
 
 feedback-report: ## FEEDBACK-REPORT.md from the feedback table
 	$(COMPOSE) exec -T api python -m evals.feedback_report
+
+ask-eval: ## Block 5 d: the question set over the gold tenders against the live engine; writes evals/results/ask-eval.*
+	$(COMPOSE) run --rm --no-deps -T api python -m evals.ask_eval $(if $(ONLY),--only $(ONLY),)
+
+review: ## operating rule 15: make review STAGE=7 [RANGE=tag..HEAD] [PROMPT=file] [MODEL=...]; the tests image has git
+	$(RUN_TESTS) python -m scripts.independent_review --stage $(STAGE) $(if $(RANGE),--range $(RANGE),) $(if $(PROMPT),--prompt-file $(PROMPT),) $(if $(MODEL),--model $(MODEL),)
 
 report: ## RELIABILITY-REPORT.md and REVIEW-LOG.md from the gold records
 	$(COMPOSE) exec -T api python -m evals.report

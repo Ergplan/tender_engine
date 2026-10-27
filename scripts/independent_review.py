@@ -1,14 +1,19 @@
 """Independent stage review (operating rule 15).
 
-  python -m scripts.independent_review --stage 1 [--model gpt-6.1-sol]
-  python -m scripts.independent_review --stage 4 --range 9cbd0e9^..9cbd0e9 \
+  make review STAGE=7 RANGE=stage-7-block-5-start..HEAD PROMPT=docs/COMPLETION-PLAN.md
+  python -m scripts.independent_review --stage 1
+  python -m scripts.independent_review --stage 4 --range 9cbd0e9^..9cbd0e9 \\
       --prompt-file docs/reports/stage-4-artifacts/derived-sections-prompt.md
 
-Sends exactly three things to a model from a different family than the builder, in a fresh
-context: the stage diff (git diff stage-N-start..HEAD), CLAUDE.md and the stage prompt from
-docs/MASTER-PROMPT.md. The draft stage report is part of the diff. Prints the reviewer's
-answer to the fixed checklist. This is build tooling, not an application LLM call, so it
-does not go through core/llm/.
+Sends exactly three things to a model other than the builder's, in a fresh context: the
+stage diff (git diff stage-N-start..HEAD), CLAUDE.md and the stage prompt from
+docs/MASTER-PROMPT.md (or the file named). The draft stage report is part of the diff.
+Prints the reviewer's answer to the fixed checklist as Markdown.
+
+The reviewer is `REVIEW_MODEL` (Claude Opus 5.5 since the owner's decision of 2026-10-25,
+no OpenAI) and the call goes through `core.llm` like every other model call (operating
+rule 8), so the review's cost is in `llm_call_log` (prompt `independent_review/v1`,
+`created_by = independent_review`). The checklist is the registered prompt.
 
 Work added to a closed stage on the owner's instruction (an addendum) is reviewed the same
 way over its own commits: `--range` names the diff and `--prompt-file` the instruction that
@@ -16,21 +21,26 @@ stands in for the stage prompt.
 """
 
 import argparse
-import json
-import os
 import re
 import subprocess
 import sys
-import time
-import urllib.error
-import urllib.request
 from pathlib import Path
 
+from pydantic import BaseModel, Field
+
+import agent.models  # noqa: F401  (registers every table on Base.metadata)
+import tender.models  # noqa: F401
+from core.config import Settings
+from core.db import make_engine, make_session_factory
+from core.llm.client import LLMCallError, LLMClient, LLMRequest, TextPart
+
 ROOT = Path(__file__).resolve().parents[1]
+PROMPT_NAME = "independent_review"
+PROMPT_VERSION = "v1"
+ACTOR = "independent_review"
 # Generated or locked files: large, and not something a reviewer can judge. Gold records
 # and scored results are data the owner's reviews produced, not code; the released schema
 # snapshots are locked copies of the live YAMLs, which the diff shows.
-ATTEMPTS, WAIT_SECONDS = 6, 20
 EXCLUDED = (
     "uv.lock",
     "web/package-lock.json",
@@ -40,23 +50,38 @@ EXCLUDED = (
     "evals/results/",
     "tender/domain_packs/power/released/",
 )
-CHECKLIST = """You are an independent reviewer of one stage of a software build. You have no
-other context than the three inputs below. Answer this fixed checklist and nothing else.
+SECTIONS = (
+    ("a", "Invariants"),
+    ("b", "Endpoints and their tests"),
+    ("c", "Audited writes"),
+    ("d", "FIELD-TRACE.md"),
+    ("e", "Report claims the code does not support"),
+)
 
-(a) For every non-negotiable invariant in CLAUDE.md: is it upheld by the stage diff? Cite the
-    file and line that upholds it, or state the violation with file and line.
-(b) Does every API endpoint added in the diff have a test? List each endpoint with its test,
-    or name the endpoint without one.
-(c) Does every write to candidate, approval, canonical_fact, tender_version and feedback go
-    through the audit log? Cite each write and its audit call, or name the write without one.
-(d) Does `make trace` regenerate FIELD-TRACE.md without diff? If the stage has no make trace
-    yet, answer "not applicable" and say why.
-(e) List every claim in the draft stage report (docs/reports/STAGE-N-REPORT.md in the diff)
-    that the code in the diff does not support.
 
-Rules: judge only what the inputs show. Do not praise. Do not suggest improvements outside
-the checklist. For each of (a) to (e) end with one line: "FINDINGS: none" or
-"FINDINGS: <count>" followed by a numbered list, each with file and line."""
+class Finding(BaseModel):
+    file: str
+    line: int | None = None
+    text: str
+    code_defect: bool = Field(
+        description="true when a change to the code resolves it; false for by-design "
+        "behaviour, a statement a diff cannot prove, or a decision pending from the owner"
+    )
+
+
+class Section(BaseModel):
+    text: str
+    findings: list[Finding] = []
+
+
+class ReviewReport(BaseModel):
+    a: Section
+    b: Section
+    c: Section
+    d: Section
+    e: Section
+    code_defects: list[Finding] = []
+    no_new_code_defect: bool
 
 
 def stage_prompt(stage: str) -> str:
@@ -74,58 +99,92 @@ def stage_diff(git_range: str) -> str:
     )
 
 
+def review_settings(settings: Settings) -> Settings:
+    """The builder's settings with the reviewer's model and prices in place."""
+    return settings.model_copy(
+        update={
+            "anthropic_model": settings.review_model,
+            "llm_price_in_per_mtok": settings.review_price_in_per_mtok,
+            "llm_price_out_per_mtok": settings.review_price_out_per_mtok,
+            # Cache reads are a twentieth of input on Opus 5.5 ($0.20 of $4.00).
+            "llm_cache_read_factor": 0.05,
+        }
+    )
+
+
+def render(report: ReviewReport) -> str:
+    lines: list[str] = []
+    for key, title in SECTIONS:
+        section: Section = getattr(report, key)
+        lines.append(f"## ({key}) {title}\n\n{section.text.strip()}\n")
+        if section.findings:
+            lines.append(f"FINDINGS: {len(section.findings)}")
+            lines.extend(_finding(n, f) for n, f in enumerate(section.findings, 1))
+        else:
+            lines.append("FINDINGS: none")
+        lines.append("")
+    lines.append("## Code defects\n")
+    if report.code_defects:
+        lines.extend(_finding(n, f) for n, f in enumerate(report.code_defects, 1))
+    else:
+        lines.append("none")
+    lines.append(f"\nNO NEW CODE DEFECT: {'yes' if report.no_new_code_defect else 'no'}")
+    return "\n".join(lines)
+
+
+def _finding(n: int, finding: Finding) -> str:
+    where = finding.file + (f":{finding.line}" if finding.line else "")
+    kind = "code defect" if finding.code_defect else "not a code defect"
+    return f"{n}. {where} — {finding.text} ({kind})"
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--stage", required=True)
-    parser.add_argument("--model", default="gpt-6.1-sol")
+    parser.add_argument("--model", help="the reviewer model; default REVIEW_MODEL")
     parser.add_argument("--range", help="git range to review instead of stage-N-start..HEAD")
     parser.add_argument(
         "--prompt-file", type=Path, help="the instruction to review against, not the stage prompt"
     )
     args = parser.parse_args()
-    key = os.environ.get("OPENAI_API_KEY")
-    if not key:
-        raise SystemExit("OPENAI_API_KEY is not set")
+    settings = Settings()
+    if args.model:
+        settings = settings.model_copy(update={"review_model": args.model})
+    settings = review_settings(settings)
+    if settings.review_model.startswith("claude-fable"):
+        raise SystemExit("the reviewer must not be the builder's model")
     git_range = args.range or f"stage-{args.stage}-start..HEAD"
     prompt = args.prompt_file.read_text() if args.prompt_file else stage_prompt(args.stage)
-    user = (
+    diff = stage_diff(git_range)
+    if not diff.strip():
+        raise SystemExit(f"git diff {git_range} is empty")
+    inputs = (
         f"# Input 1: CLAUDE.md\n\n{(ROOT / 'CLAUDE.md').read_text()}\n\n"
         f"# Input 2: the stage prompt\n\n{prompt}\n\n"
-        f"# Input 3: git diff {git_range}\n\n{stage_diff(git_range)}"
+        f"# Input 3: git diff {git_range}\n\n{diff}"
     )
-    body = {
-        "model": args.model,
-        "messages": [
-            {"role": "system", "content": CHECKLIST},
-            {"role": "user", "content": user},
-        ],
-    }
-    request = urllib.request.Request(
-        "https://api.openai.com/v1/chat/completions",
-        data=json.dumps(body).encode(),
-        headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
-    )
-    # Access to a newly enabled model can answer 403 for a while; rate limits and server
-    # errors are also worth a second try.
-    for attempt in range(1, ATTEMPTS + 1):
-        try:
-            with urllib.request.urlopen(request, timeout=900) as response:
-                answer = json.load(response)
-            break
-        except urllib.error.HTTPError as exc:
-            detail = exc.read().decode()[:800]
-            retryable = exc.code in (403, 429) or exc.code >= 500
-            if not retryable or attempt == ATTEMPTS:
-                print(f"reviewer call failed: HTTP {exc.code}: {detail}")
-                return 1
-            print(f"attempt {attempt}: HTTP {exc.code}, retrying in {WAIT_SECONDS} s", flush=True)
-            time.sleep(WAIT_SECONDS)
-    usage = answer.get("usage", {})
+    session_factory = make_session_factory(make_engine(settings), settings.tenant_id)
+    llm = LLMClient(settings, session_factory)
+    try:
+        response = llm.call(
+            LLMRequest[ReviewReport](
+                prompt_name=PROMPT_NAME,
+                prompt_version=PROMPT_VERSION,
+                content=[TextPart(text=inputs)],
+                response_model=ReviewReport,
+                created_by=ACTOR,
+                max_tokens=32000,
+            )
+        )
+    except LLMCallError as exc:
+        print(f"reviewer call failed: {exc} (llm_call_log {exc.call_log_id})")
+        return 1
     print(
-        f"reviewer: {answer.get('model')}  input chars: {len(user)}  "
-        f"tokens in/out: {usage.get('prompt_tokens')}/{usage.get('completion_tokens')}\n"
+        f"reviewer: {response.model}  range: {git_range}  input chars: {len(inputs)}  "
+        f"tokens in/out: {response.tokens_in}/{response.tokens_out}  "
+        f"cost: USD {response.cost_usd}  llm_call_log: {response.call_log_id}\n"
     )
-    print(answer["choices"][0]["message"]["content"])
+    print(render(response.parsed))
     return 0
 
 

@@ -1,0 +1,338 @@
+# Block 5 d: fifty questions over the eleven gold tenders. Every expected answer is the
+# reviewer's decided value from the gold record (evals/gold/<type>/<slug>.yaml, "reviewer"
+# there), not a value written for this file: the gold record is the reviewer-written
+# answer. `field_path` names the gold field; `expect` says how the answer is checked
+# (evals/ask_eval.py): a date in any written form, a number in any Indian or plain form
+# (lakh, crore, commas), a phrase for text, yes/no for a boolean. `critical` follows Block
+# 1's cut (dates, capacity, tariff, EMD, PBG, eligibility thresholds, penalties).
+# Questions are phrased both the way the record names a field and the way a person asks,
+# so the field route and the retrieval route are both measured.
+questions:
+  # seci-ess-iv (bess)
+  - id: q01
+    tender: seci-ess-iv
+    question: What is the bid submission deadline?
+    field_path: core.key_dates.bid_submission_deadline
+    expect: {kind: date, value: 2026-10-30}
+    critical: true
+  - id: q02
+    tender: seci-ess-iv
+    question: How large is the storage capacity being procured, in MW?
+    field_path: sector.power.common.total_capacity_mw
+    expect: {kind: number, value: 800}
+    critical: true
+  - id: q03
+    tender: seci-ess-iv
+    question: What is the smallest bid a bidder may offer, in MW?
+    field_path: sector.power.common.min_bid_mw
+    expect: {kind: number, value: 50}
+    critical: true
+  - id: q04
+    tender: seci-ess-iv
+    question: For how many years does the agreement with the BESSD run?
+    field_path: sector.power.common.ppa_tenure_years
+    expect: {kind: number, value: 20}
+    critical: false
+  - id: q05
+    tender: seci-ess-iv
+    question: What is the tender processing fee?
+    field_path: core.guarantees.processing_fee_inr
+    expect: {kind: number, value: 20000}
+    critical: false
+  - id: q06
+    tender: seci-ess-iv
+    question: What minimum monthly system availability must the BESSD guarantee?
+    field_path: core.penalties.shortfall_penalty_basis
+    expect: {kind: text, any_of: ["85%", "85 %", "85 percent"]}
+    critical: true
+  # seci-gaya-60mw (epc)
+  - id: q07
+    tender: seci-gaya-60mw
+    question: When is the pre-bid meeting?
+    field_path: core.key_dates.pre_bid_meeting_date
+    expect: {kind: date, value: 2026-10-16}
+    critical: true
+  - id: q08
+    tender: seci-gaya-60mw
+    question: What is the plant capacity in MW?
+    field_path: sector.power.common.total_capacity_mw
+    expect: {kind: number, value: 60}
+    critical: true
+  - id: q09
+    tender: seci-gaya-60mw
+    question: What minimum annual turnover must a bidder show to qualify?
+    field_path: core.eligibility.turnover_requirement_inr
+    expect: {kind: number, value: 965400000}
+    critical: true
+  - id: q10
+    tender: seci-gaya-60mw
+    question: Is a consortium allowed to bid?
+    field_path: core.eligibility.consortium_allowed
+    expect: {kind: bool, value: true}
+    critical: true
+  - id: q11
+    tender: seci-gaya-60mw
+    question: Who is the employer under the EPC contract?
+    field_path: core.commercial.offtaker
+    expect: {kind: text, any_of: ["seci", "solar energy corporation"]}
+    critical: false
+  # nhpc-fdre-ii (fdre)
+  - id: q12
+    tender: nhpc-fdre-ii
+    question: What is the last date for submission of bids?
+    field_path: core.key_dates.bid_submission_deadline
+    expect: {kind: date, value: 2024-04-12}
+    critical: true
+  - id: q13
+    tender: nhpc-fdre-ii
+    question: What is the maximum capacity a single bidder can bid for?
+    field_path: sector.power.common.max_bid_mw
+    expect: {kind: number, value: 600}
+    critical: true
+  - id: q14
+    tender: nhpc-fdre-ii
+    question: For how many days must the bid remain valid?
+    field_path: core.key_dates.bid_validity
+    expect: {kind: number, value: 180}
+    critical: true
+  - id: q15
+    tender: nhpc-fdre-ii
+    question: What is the bid processing fee?
+    field_path: core.guarantees.processing_fee_inr
+    expect: {kind: number, value: 300000}
+    critical: false
+  - id: q16
+    tender: nhpc-fdre-ii
+    question: What is the term of the power purchase agreement in years?
+    field_path: sector.power.common.ppa_tenure_years
+    expect: {kind: number, value: 25}
+    critical: false
+  - id: q17
+    tender: nhpc-fdre-ii
+    question: What is the overall cap on the earnest money deposit per project?
+    field_path: core.guarantees.emd_structured
+    expect: {kind: number, value: 100000000}
+    critical: true
+  # seci-cfd-i (fdre)
+  - id: q18
+    tender: seci-cfd-i
+    question: What is the tariff ceiling in INR per kWh?
+    field_path: sector.power.common.tariff_ceiling_inr_per_kwh
+    expect: {kind: number, value: 5.8}
+    critical: true
+  - id: q19
+    tender: seci-cfd-i
+    question: Within how many months of the effective date must the project be commissioned?
+    field_path: sector.power.common.scod_months
+    expect: {kind: number, value: 15}
+    critical: true
+  - id: q20
+    tender: seci-cfd-i
+    question: What is the technical bid opening date?
+    field_path: core.key_dates.technical_opening_date
+    expect: {kind: date, value: 2026-10-19}
+    critical: true
+  - id: q21
+    tender: seci-cfd-i
+    question: What is the maximum bid size in MW?
+    field_path: sector.power.common.max_bid_mw
+    expect: {kind: number, value: 150}
+    critical: true
+  - id: q22
+    tender: seci-cfd-i
+    question: Who buys the power under this tender?
+    field_path: core.commercial.offtaker
+    expect: {kind: text, any_of: ["power exchange", "exchanges", "gdam", "does not purchase"]}
+    critical: false
+  - id: q23
+    tender: seci-cfd-i
+    question: What minimum annual turnover is required per MW of quoted capacity?
+    field_path: core.eligibility.turnover_requirement_inr
+    expect: {kind: number, value: 4236900}
+    critical: true
+  # seci-fdre-ix (fdre)
+  - id: q24
+    tender: seci-fdre-ix
+    question: When were bids due?
+    field_path: core.key_dates.bid_submission_deadline
+    expect: {kind: date, value: 2026-08-07}
+    critical: true
+  - id: q25
+    tender: seci-fdre-ix
+    question: How much capacity is on offer in MW?
+    field_path: sector.power.common.total_capacity_mw
+    expect: {kind: number, value: 1500}
+    critical: true
+  - id: q26
+    tender: seci-fdre-ix
+    question: What is the scheduled commissioning period in months?
+    field_path: sector.power.common.scod_months
+    expect: {kind: number, value: 18}
+    critical: true
+  - id: q27
+    tender: seci-fdre-ix
+    question: What is the PPA tenure?
+    field_path: sector.power.common.ppa_tenure_years
+    expect: {kind: number, value: 25}
+    critical: false
+  - id: q28
+    tender: seci-fdre-ix
+    question: Which distribution company is SECI selling this power to?
+    field_path: core.commercial.offtaker
+    expect: {kind: text, any_of: ["west bengal", "wbsedcl", "wbesdcl"]}
+    critical: false
+  # seci-fdre-rtc-v (fdre)
+  - id: q29
+    tender: seci-fdre-rtc-v
+    question: What is the bid submission deadline?
+    field_path: core.key_dates.bid_submission_deadline
+    expect: {kind: date, value: 2026-07-20}
+    critical: true
+  - id: q30
+    tender: seci-fdre-rtc-v
+    question: What is the SCOD in months from the effective date?
+    field_path: sector.power.common.scod_months
+    expect: {kind: number, value: 24}
+    critical: true
+  - id: q31
+    tender: seci-fdre-rtc-v
+    question: What annual turnover must a bidder demonstrate?
+    field_path: core.eligibility.turnover_requirement_inr
+    expect: {kind: number, value: 40000000}
+    critical: true
+  - id: q32
+    tender: seci-fdre-rtc-v
+    question: Against what measure is a shortfall in supply penalised?
+    field_path: core.penalties.shortfall_penalty_basis
+    expect: {kind: text, any_of: ["dfr", "demand fulfilment ratio", "demand fulfillment ratio"]}
+    critical: true
+  # ntpc-phes-2000mw (generation)
+  - id: q33
+    tender: ntpc-phes-2000mw
+    question: What is the total capacity of the pumped hydro tender in MW?
+    field_path: sector.power.common.total_capacity_mw
+    expect: {kind: number, value: 2000}
+    critical: true
+  - id: q34
+    tender: ntpc-phes-2000mw
+    question: What is the minimum bid capacity?
+    field_path: sector.power.common.min_bid_mw
+    expect: {kind: number, value: 500}
+    critical: true
+  - id: q35
+    tender: ntpc-phes-2000mw
+    question: What is the commissioning period in months?
+    field_path: sector.power.common.scod_months
+    expect: {kind: number, value: 48}
+    critical: true
+  - id: q36
+    tender: ntpc-phes-2000mw
+    question: Where is the delivery point?
+    field_path: sector.power.common.delivery_point
+    expect: {kind: text, any_of: ["ists"]}
+    critical: false
+  # ntpc-hybrid-03 (hybrid)
+  - id: q37
+    tender: ntpc-hybrid-03
+    question: What is the bid due date?
+    field_path: core.key_dates.bid_submission_deadline
+    expect: {kind: date, value: 2024-12-02}
+    critical: true
+  - id: q38
+    tender: ntpc-hybrid-03
+    question: How long is the bid validity, in days?
+    field_path: core.key_dates.bid_validity
+    expect: {kind: number, value: 180}
+    critical: true
+  - id: q39
+    tender: ntpc-hybrid-03
+    question: What happens if the project supplies less energy than the minimum CUF?
+    field_path: core.penalties.shortfall_penalty_basis
+    expect: {kind: text, any_of: ["cuf", "90%", "90 %"]}
+    critical: true
+  - id: q40
+    tender: ntpc-hybrid-03
+    question: What is the processing fee for the bid?
+    field_path: core.guarantees.processing_fee_inr
+    expect: {kind: number, value: 300000}
+    critical: false
+  # wbsedcl-re-rtc-2026-01 (re_rtc)
+  - id: q41
+    tender: wbsedcl-re-rtc-2026-01
+    question: When is the pre-bid meeting?
+    field_path: core.key_dates.pre_bid_meeting_date
+    expect: {kind: date, value: 2026-10-07}
+    critical: true
+  - id: q42
+    tender: wbsedcl-re-rtc-2026-01
+    question: What is the capacity sought in MW?
+    field_path: sector.power.common.total_capacity_mw
+    expect: {kind: number, value: 1500}
+    critical: true
+  - id: q43
+    tender: wbsedcl-re-rtc-2026-01
+    question: What minimum annual CUF must the supplier deliver?
+    field_path: core.penalties.shortfall_penalty_basis
+    expect: {kind: text, any_of: ["80%", "80 %", "80 percent"]}
+    critical: true
+  - id: q44
+    tender: wbsedcl-re-rtc-2026-01
+    question: Who is the procurer?
+    field_path: core.commercial.offtaker
+    expect: {kind: text, any_of: ["wbsedcl", "west bengal"]}
+    critical: false
+  # seci-cni-1-700mw (solar)
+  - id: q45
+    tender: seci-cni-1-700mw
+    question: What is the bid submission deadline?
+    field_path: core.key_dates.bid_submission_deadline
+    expect: {kind: date, value: 2026-10-15}
+    critical: true
+  - id: q46
+    tender: seci-cni-1-700mw
+    question: What is the project SCOD in months?
+    field_path: sector.power.common.scod_months
+    expect: {kind: number, value: 24}
+    critical: true
+  - id: q47
+    tender: seci-cni-1-700mw
+    question: What is the total capacity in MW?
+    field_path: sector.power.common.total_capacity_mw
+    expect: {kind: number, value: 700}
+    critical: true
+  # ntpc-rel-600mw-anantapur-wtg (wind)
+  - id: q48
+    tender: ntpc-rel-600mw-anantapur-wtg
+    question: What turnover must a bidder have to qualify?
+    field_path: core.eligibility.turnover_requirement_inr
+    expect: {kind: number, value: 10240000}
+    critical: true
+  - id: q49
+    tender: ntpc-rel-600mw-anantapur-wtg
+    question: When does the technical bid open?
+    field_path: core.key_dates.technical_opening_date
+    expect: {kind: date, value: 2026-09-15}
+    critical: true
+  - id: q50
+    tender: ntpc-rel-600mw-anantapur-wtg
+    question: What is the capacity of the wind turbine supply tender in MW?
+    field_path: sector.power.common.total_capacity_mw
+    expect: {kind: number, value: 600}
+    critical: true
+# Cross-tender questions (Block 5 c): structured search over approved facts. `query` is
+# the structured form the question should be read into; `expect` the gold tenders whose
+# approved fact satisfies it (a tender with no decision on the field is `unreviewed`,
+# never matched, so it is not listed).
+cross_questions:
+  - id: x01
+    question: Which tenders have a total capacity of at least 1500 MW?
+    query: {field_path: sector.power.common.total_capacity_mw, operator: ">=", value: 1500}
+    expect: [seci-fdre-ix, ntpc-phes-2000mw, wbsedcl-re-rtc-2026-01]
+  - id: x02
+    question: Which tenders allow consortium bidders?
+    query: {field_path: core.eligibility.consortium_allowed, operator: "==", value: true}
+    expect: [seci-ess-iv, seci-gaya-60mw, nhpc-fdre-ii, seci-cfd-i, seci-fdre-ix, seci-fdre-rtc-v, ntpc-hybrid-03, seci-cni-1-700mw]
+  - id: x03
+    question: Which tenders have a PPA tenure of 25 years?
+    query: {field_path: sector.power.common.ppa_tenure_years, operator: "==", value: 25}
+    expect: [nhpc-fdre-ii, seci-fdre-ix, seci-fdre-rtc-v, ntpc-phes-2000mw, ntpc-hybrid-03, wbsedcl-re-rtc-2026-01, seci-cni-1-700mw]

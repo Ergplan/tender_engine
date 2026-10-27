@@ -14,10 +14,12 @@ from typing import Any
 from sqlalchemy import select
 from sqlalchemy.orm import Session, sessionmaker
 
+from core import retrieval
 from core.config import Settings
 from core.llm.client import LLMCallError, LLMClient
 from core.llm.registry import UnregisteredPromptError
 from core.models import Document, ExtractionRun, Job
+from core.retrieval import ChunkIndexer
 from core.schemas import SchemaRegistry, UnknownSchemaError
 from core.services import jobs
 from core.services.extract import ExtractService
@@ -40,6 +42,7 @@ class Runner:
         llm: LLMClient,
         extra_handlers: dict[str, Handler] | None = None,
         on_validated: Callable[[Session, str], None] | None = None,
+        indexer: ChunkIndexer | None = None,
     ) -> None:
         self._settings = settings
         self._session_factory = session_factory
@@ -48,14 +51,36 @@ class Runner:
         self._extract = ExtractService(llm, storage, schemas, settings)
         self._validate = ValidationService(schemas, settings.tenant_id)
         self._on_validated = on_validated
+        self._indexer = indexer
         self._handlers: dict[str, Handler] = {
             "parse": lambda s, p: _ignore(self._parse.parse(s, p["document_id"])),
-            "section_map": lambda s, p: _ignore(self._section_map.map(s, p["document_id"])),
+            "section_map": self._mapped,
+            # Retrieval (Stage 7, Block 5): the document's chunks, after its section map.
+            # Without an indexer the kind is claimed and dropped, so a job queued by the
+            # tender layer (a document attached after parsing) never waits for ever.
+            **(
+                retrieval.job_handlers(indexer)
+                if indexer is not None
+                else {"index_document": lambda s, p: None, "embed_pending": lambda s, p: None}
+            ),
             "extract": lambda s, p: _ignore(self._extract.extract(s, p["extraction_run_id"])),
             "validate": self._validated,
             # Job kinds of the domain layer, handed in by whoever builds the runner.
             **(extra_handlers or {}),
         }
+
+    def _mapped(self, session: Session, payload: dict[str, Any]) -> None:
+        """Map the document's sections; then queue its chunks for retrieval."""
+        self._section_map.map(session, payload["document_id"])
+        if self._indexer is not None:
+            jobs.enqueue(
+                session,
+                tenant_id=self._settings.tenant_id,
+                kind="index_document",
+                payload={"document_id": payload["document_id"]},
+                created_by="worker",
+            )
+            session.commit()
 
     def _validated(self, session: Session, payload: dict[str, Any]) -> None:
         """Validate the run; then tell the domain layer, which may have a second pass to

@@ -42,6 +42,8 @@ def services_of(pipeline: Pipeline) -> Services:
             pipeline.schemas,
             pipeline.settings.tenant_id,
         ),
+        llm=pipeline.llm,
+        schemas=pipeline.schemas,
     )
 
 

@@ -11,11 +11,13 @@ import tender.models  # noqa: F401  (registers the tender tables on Base.metadat
 from core.config import Settings
 from core.db import make_engine, make_session_factory
 from core.llm.client import LLMClient
+from core.retrieval import ChunkIndexer, ChunkStores, make_embedders
 from core.services.extract import ExtractService
 from core.services.liveness import serve_health
 from core.storage import make_storage
 from tender.services import freshness
 from tender.services.packs import build_registry
+from tender.services.retrieval_meta import chunk_meta
 from tender.services.worker_jobs import tender_jobs
 from worker.runner import Runner
 
@@ -39,7 +41,17 @@ def build_runner(settings: Settings) -> Runner:
     if settings.freshness_interval_days > 0:
         with session_factory() as session:
             freshness.ensure_scheduled(session, settings.tenant_id)
-    return Runner(settings, session_factory, storage, schemas, llm, handlers, after_validation)
+    indexer = None
+    if settings.retrieval_enabled:
+        indexer = ChunkIndexer(
+            ChunkStores(settings).for_tenant(settings.tenant_id),
+            make_embedders(settings),
+            settings,
+            meta_for=chunk_meta,
+        )
+    return Runner(
+        settings, session_factory, storage, schemas, llm, handlers, after_validation, indexer
+    )
 
 
 def main() -> None:

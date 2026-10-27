@@ -131,6 +131,14 @@ class ScriptedSDK:
             "reasons": "The notice procures solar PV power.",
             "alternatives": [],
         }
+        # What ask_tender answers (Stage 7, Block 5): claims cite passage numbers.
+        self.ask_answer: dict[str, Any] = {
+            "answer": "The passages do not say.",
+            "answered": False,
+            "claims": [],
+            "amendment_changed": False,
+            "amendment_note": None,
+        }
         self.calls: list[dict[str, Any]] = []
         self.messages = self
         # The batch API: batches[id] is the list of submitted requests. A batch reports
@@ -157,6 +165,8 @@ class ScriptedSDK:
             parsed = model.model_validate({"changes": self.amendment_changes})
         elif model.__name__ == "TenderTypeOutput":
             parsed = model.model_validate(self.tender_type_answer)
+        elif model.__name__ == "AskOutput":
+            parsed = model.model_validate(self.ask_answer)
         elif model.__name__ == "RecordSummary":
             parsed = model.model_validate(self.record_summary(kwargs))
         elif model.__name__ == "SharedAnswer":

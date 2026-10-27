@@ -68,11 +68,14 @@ class AmendmentMapper:
             .where(Page.document_id == document.id, Page.tenant_id == self._tenant_id)
             .order_by(Page.page_no)
         ).all()
+        # The sections a run can read from pages: not the summary, not a derived or an
+        # imported one (the Block 4 blind set: the model routed a change to `derived`
+        # and the run was refused, 2026-10-27).
         sections = "\n".join(
             f"- `{section.name}` ({section.label}): "
             + ", ".join(field.label for field in compiled.fields if field.section == section.name)
             for section in compiled.sections
-            if section.name != "summary"
+            if _readable(section)
         )
         base_map = ""
         if base is not None:
@@ -166,7 +169,11 @@ class AmendmentMapper:
         by_keywords = plan_groups(compiled, version_no=version_no, role=role, page_texts=page_texts)
         changes = self.map_changes(session, compiled, document, base, is_fixture=is_fixture)
         order = [section.name for section in compiled.sections]
-        by_map = sorted({change.section for change in changes}, key=order.index)
+        readable = {section.name for section in compiled.sections if _readable(section)}
+        by_map = sorted(
+            {change.section for change in changes if change.section in readable},
+            key=order.index,
+        )
         union = sorted(set(by_keywords) | set(by_map), key=order.index)
         mode = {True: "union", False: "none"}.get(start_runs, start_runs)  # type: ignore[arg-type]
         to_read = {"union": union, "missing": [g for g in by_map if g not in by_keywords]}.get(
@@ -219,6 +226,11 @@ class AmendmentMapper:
                 mode=run_mode,
             )
         return comparison
+
+
+def _readable(section: Any) -> bool:
+    """A section an extraction run reads from pages."""
+    return section.name != "summary" and not (section.derived or section.imported)
 
 
 def job_handlers(mapper: AmendmentMapper) -> dict[str, Callable[[Session, dict[str, Any]], None]]:

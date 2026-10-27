@@ -1,6 +1,14 @@
-# Context for a new session (written 2026-10-05, last updated 2026-10-24)
+# Context for a new session (written 2026-10-05, last updated 2026-10-27)
 
-Read this first, then `CLAUDE.md`, then `docs/COMPLETION-PLAN.md` (the owner's plan of 2026-10-24: one block per stage, Block 0 done, Block 1 next) and the latest stage report (`docs/reports/STAGE-7-BLOCK-0-REPORT.md`, before it `docs/reports/STAGE-6-REPORT.md`; the Stage 5A–5D reports for the agent pass, the three-way comparison, production hardening and the public library).
+Read this first, then `CLAUDE.md`, then `docs/COMPLETION-PLAN.md` (the owner's plan of 2026-10-24: one block per stage) and the latest block report under `docs/reports/` (`STAGE-7-BLOCK-5-REPORT.md` and the Block 4 report; before them the Stage 6 and 5A–5D reports).
+
+## Where the build stands (2026-10-27)
+
+- **The owner's decisions of 27 October** (DECISIONS.md, 2026-10-27) run the build to the 31 October finish: no more human reviews (the gold set is the eleven tenders as they stand; every accuracy figure is in-sample), no resize (e2-medium; Docling on under `COMPOSE_PROFILES=parsing`), no OpenAI (rule-15 review by `make review` on Claude Opus 5.5, recorded as same-family; local embeddings; the agent three-way and the Responses-API connector test dropped; the MCP server must still work for OpenAI clients), Block 4 as an unreviewed check of four tenders under the freeze (`scripts/blind_check.py`; no accuracy claim), `procurement_mode` split into stage structure and price discovery with the gold eval run again and reported as in-sample, Blocks 5 and 6 in full then 7, the only accuracy sentences "97.5% field accuracy on 11 human-reviewed tenders (in-sample)" and the evidence-location rate on unseen tenders, stops only for spend over USD 50 in one go or something irreversible.
+- **Block 4** (unreviewed check): the four tenders were extracted on 27 October through the batch API under the frozen reading (cbd191c; batch 1 tgredco-rtc, msedcl-mt, sjvn about USD 40; batch 2 bikaner); the mapper defect the set found (a change routed to the `derived` section) was fixed under the freeze and is on record; the classifier ran on all eight blind documents. The report is `docs/reports/STAGE-7-BLOCK-4-REPORT.md`.
+- **Block 5** (full-tender query) is built: `core/retrieval/` over `retrieval_chunk` (migration 0023, pgvector, local `bge-small` embeddings plus full text), `tender/services/ask*.py`, `POST /tenders/{id}/ask`, `POST /tenders/ask`, the MCP tool `ask_tender`, the fifty-question set and `make ask-eval`, `make review`. Its report is `STAGE-7-BLOCK-5-REPORT.md`.
+- **Next**: the `procurement_mode` split (schema v5, after Block 4's extraction has finished: the worker reads the mounted tree), then Block 6 (REST v1 with API keys, the snapshot contract, webhooks, the MCP write tools, the OpenAPI spec and Python client, `docs/CONNECTOR.md`), then Block 7 (definition of done, the reliability report, the review of the whole diff, ARCHITECTURE, FIELD-TRACE, HANDOVER).
+- Operating notes: run `make check` on a quiet machine (defer queued `index_document` jobs with `run_after`); `docker compose restart worker` loads code changes into the worker; `make deploy` is the owner's `!` command when the classifier refuses it.
 
 ## Where the build stands (2026-10-24)
 

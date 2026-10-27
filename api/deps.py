@@ -11,6 +11,7 @@ from api.middleware.errors import AppError
 from api.middleware.review_token import ReviewContext
 from core.config import Settings
 from core.db import set_tenant
+from core.retrieval import Retriever
 from core.schemas import SchemaRegistry
 from core.services.approve import ApprovalService, DecisionGuard
 from core.services.extract import ExtractService
@@ -18,6 +19,7 @@ from core.services.identity import Principal
 from core.services.ingest import IngestService
 from core.services.review_state import ReviewStateService
 from core.storage import Storage
+from tender.services.ask import AskService
 from tender.services.awards import AwardRowsGuard, AwardService
 from tender.services.derive import DerivedGuard, DerivedWriter
 from tender.services.packs import Catalog
@@ -176,6 +178,29 @@ def get_tenders(catalog: CatalogDep, extract: ExtractDep, tenant_id: TenantDep) 
 
 
 TendersDep = Annotated[TenderService, Depends(get_tenders)]
+
+
+def get_ask(
+    request: Request,
+    catalog: CatalogDep,
+    schemas: SchemasDep,
+    tenders: TendersDep,
+    tenant_id: TenantDep,
+    principal: PrincipalDep,
+) -> AskService:
+    """The full-tender query (Stage 7, Block 5). The one service that calls the model inside
+    a request: a question wants its answer now."""
+    settings: Settings = request.app.state.settings
+    local = settings.model_copy(update={"tenant_id": tenant_id})
+    retriever = None
+    if settings.retrieval_enabled:
+        read_tenants = tuple(principal.read_tenants) if principal is not None else ()
+        store = request.app.state.retrieval.for_tenant(tenant_id, read_tenants)
+        retriever = Retriever(store, request.app.state.embedders, top_k=settings.ask_top_k)
+    return AskService(request.app.state.llm, catalog, schemas, tenders, retriever, local)
+
+
+AskDep = Annotated[AskService, Depends(get_ask)]
 
 
 def get_summary_writer(

@@ -1097,6 +1097,28 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/tenders/ask": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Ask Across Tenders
+         * @description Which tenders satisfy a condition on one field, over approved facts only. Send the
+         *     structured query (`field_path`, `operator`, `value`), or a `question` that is read into
+         *     one; the answer returns the query that ran.
+         */
+        post: operations["ask_across_tenders_api_v1_tenders_ask_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/tenders/compare": {
         parameters: {
             query?: never;
@@ -1250,6 +1272,28 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/tenders/{tender_id}/ask": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Ask Tender
+         * @description Ask one question about a tender. The answer names its source (`approved` fact,
+         *     `machine` reading) and cites pages with quotes the evidence resolver located; an
+         *     unresolved quote is shown as such. Never a fact.
+         */
+        post: operations["ask_tender_api_v1_tenders__tender_id__ask_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/tenders/{tender_id}/assumptions": {
         parameters: {
             query?: never;
@@ -1353,6 +1397,27 @@ export interface paths {
          *     `mode` "batch" sends the calls through the batch API for a run nobody waits for.
          */
         post: operations["start_extraction_api_v1_tenders__tender_id__extract_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tenders/{tender_id}/index": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Index Tender
+         * @description Queue the chunks of every document of the tender for retrieval again (after a
+         *     re-parse, or for documents parsed before retrieval existed).
+         */
+        post: operations["index_tender_api_v1_tenders__tender_id__index_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1930,6 +1995,106 @@ export interface components {
             /** Reviewer */
             reviewer: string;
         };
+        /** AskAnswer */
+        AskAnswer: {
+            /**
+             * Amendment Changed
+             * @default false
+             */
+            amendment_changed: boolean;
+            /** Amendment Note */
+            amendment_note?: string | null;
+            /** Answer */
+            answer: string;
+            /** Answered */
+            answered: boolean;
+            /**
+             * Authority Note
+             * @default An answer is a reading of the tender's pages, not a fact of the record: only a reviewer's decision makes a fact. `source` says whether the value shown was approved.
+             */
+            authority_note: string;
+            /** Call Log Id */
+            call_log_id?: string | null;
+            /**
+             * Citations
+             * @default []
+             */
+            citations: components["schemas"]["Citation"][];
+            /**
+             * Citations Resolved
+             * @default 0
+             */
+            citations_resolved: number;
+            /**
+             * Citations Total
+             * @default 0
+             */
+            citations_total: number;
+            /**
+             * Claims
+             * @default []
+             */
+            claims: components["schemas"]["AskClaim"][];
+            /** Confidence */
+            confidence?: number | null;
+            /**
+             * Cost Usd
+             * @default 0
+             */
+            cost_usd: number;
+            /** Field Path */
+            field_path?: string | null;
+            /**
+             * Is Fact
+             * @default false
+             * @constant
+             */
+            is_fact: false;
+            /** Label */
+            label?: string | null;
+            /**
+             * Mode
+             * @enum {string}
+             */
+            mode: "field" | "retrieval";
+            /**
+             * Passages Read
+             * @default 0
+             */
+            passages_read: number;
+            /** Question */
+            question: string;
+            /** Retrieval */
+            retrieval?: string | null;
+            /**
+             * Source
+             * @enum {string}
+             */
+            source: "approved" | "machine" | "none";
+            /** Tender Id */
+            tender_id: string;
+            /** Unit */
+            unit?: string | null;
+            /** Value */
+            value?: unknown;
+            /** Version No */
+            version_no: number | null;
+        };
+        /** AskClaim */
+        AskClaim: {
+            /** Citations */
+            citations: number[];
+            /** Statement */
+            statement: string;
+        };
+        /**
+         * AskRequest
+         * @description One question about one tender (Stage 7, Block 5).
+         */
+        AskRequest: {
+            /** Question */
+            question: string;
+        };
         /**
          * Assumptions
          * @description The user's, never the tender's. Defaults are marked "assumed" by every caller.
@@ -2367,6 +2532,35 @@ export interface components {
             /** Version No */
             version_no: number;
         };
+        /** Citation */
+        Citation: {
+            /** Bbox */
+            bbox?: number[] | null;
+            /** Char End */
+            char_end?: number | null;
+            /** Char Start */
+            char_start?: number | null;
+            /** Clause */
+            clause?: string | null;
+            /** Document Id */
+            document_id: string;
+            /** Filename */
+            filename: string | null;
+            /** N */
+            n: number;
+            /** Page No */
+            page_no: number;
+            /** Quote */
+            quote: string;
+            /** Reason */
+            reason?: string | null;
+            /** Resolved */
+            resolved: boolean;
+            /** Score */
+            score?: number | null;
+            /** Version No */
+            version_no?: number | null;
+        };
         /** CompareColumn */
         CompareColumn: {
             /** Banner */
@@ -2488,6 +2682,86 @@ export interface components {
             accepted: boolean;
             /** Resolution */
             resolution: string;
+        };
+        /** CrossAnswer */
+        CrossAnswer: {
+            /** Answer */
+            answer: string;
+            /**
+             * Authority Note
+             * @default Matched on approved facts only; a tender with a machine reading but no decision on the field is listed under `unreviewed`, not matched.
+             */
+            authority_note: string;
+            /** Considered */
+            considered: number;
+            /**
+             * Is Fact
+             * @default false
+             * @constant
+             */
+            is_fact: false;
+            /** Matched */
+            matched: components["schemas"]["CrossHit"][];
+            query: components["schemas"]["CrossQuery"];
+            /** Question */
+            question: string | null;
+            /** Unreviewed */
+            unreviewed: string[];
+            /** Without Field */
+            without_field: number;
+        };
+        /**
+         * CrossAskRequest
+         * @description A cross-tender question: structured (`field_path`, `operator`, `value`), or a
+         *     `question` the engine reads into one. The answer returns the query that ran.
+         */
+        CrossAskRequest: {
+            /** Field Path */
+            field_path?: string | null;
+            /**
+             * Operator
+             * @default any
+             * @enum {string}
+             */
+            operator: "==" | "!=" | ">" | ">=" | "<" | "<=" | "contains" | "in" | "any";
+            /** Question */
+            question?: string | null;
+            /** Value */
+            value?: unknown;
+        };
+        /** CrossHit */
+        CrossHit: {
+            /** Evidence Pages */
+            evidence_pages: number[];
+            /** Slug */
+            slug: string | null;
+            /** Tender Id */
+            tender_id: string;
+            /** Tender Type */
+            tender_type: string;
+            /** Title */
+            title: string;
+            /** Unit */
+            unit: string | null;
+            /** Value */
+            value: unknown;
+            /** Version No */
+            version_no: number | null;
+        };
+        /** CrossQuery */
+        CrossQuery: {
+            /** Field Path */
+            field_path: string;
+            /** Label */
+            label?: string | null;
+            /**
+             * Operator
+             * @default any
+             * @enum {string}
+             */
+            operator: "==" | "!=" | ">" | ">=" | "<" | "<=" | "contains" | "in" | "any";
+            /** Value */
+            value?: unknown;
         };
         /** DocumentOut */
         DocumentOut: {
@@ -6113,6 +6387,39 @@ export interface operations {
             };
         };
     };
+    ask_across_tenders_api_v1_tenders_ask_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CrossAskRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrossAnswer"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     compare_api_v1_tenders_compare_get: {
         parameters: {
             query: {
@@ -6374,6 +6681,43 @@ export interface operations {
             };
         };
     };
+    ask_tender_api_v1_tenders__tender_id__ask_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-reviewer"?: string | null;
+            };
+            path: {
+                tender_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AskRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AskAnswer"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     save_assumptions_api_v1_tenders__tender_id__assumptions_put: {
         parameters: {
             query?: never;
@@ -6526,6 +6870,41 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ExtractionRunOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    index_tender_api_v1_tenders__tender_id__index_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-reviewer"?: string | null;
+            };
+            path: {
+                tender_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: number;
+                    };
                 };
             };
             /** @description Validation Error */

@@ -18,7 +18,7 @@ def test_the_chain_runs_parse_section_map_extract_validate_in_order(
     pipeline: Pipeline, db: Session
 ) -> None:
     document = pipeline.upload(db)
-    assert pipeline.runner.run_until_idle() == 2
+    assert pipeline.runner.run_until_idle() == 3, "parse, section map, retrieval index"
     db.refresh(document)
     assert document.status == "parsed"
     run = pipeline.start_run(db, document)
@@ -33,6 +33,7 @@ def test_the_chain_runs_parse_section_map_extract_validate_in_order(
     assert done == [
         ("parse", "done", 1),
         ("section_map", "done", 1),
+        ("index_document", "done", 1),
         ("extract", "done", 1),
         ("validate", "done", 1),
     ]

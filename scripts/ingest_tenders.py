@@ -10,6 +10,9 @@
   python -m scripts.ingest_tenders wait    [--timeout seconds]
   python -m scripts.ingest_tenders summary [--out docs/reports/EXTRACTION-SUMMARY.md]
   python -m scripts.ingest_tenders cost-plan [--only slug,slug]
+  python -m scripts.ingest_tenders index [--only slug,slug] [--now]   (rebuild the retrieval
+                                            chunks of every parsed document: queued for the
+                                            worker, or here with --now)
   python -m scripts.ingest_tenders summarize [--only slug,slug] [--force]
   python -m scripts.ingest_tenders freshness [--root /work/tenders]
                                              [--out docs/reports/FRESHNESS-REPORT.md]
@@ -36,10 +39,10 @@ import time
 from dataclasses import dataclass
 from datetime import UTC, date, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import yaml
-from sqlalchemy import delete, func, select
+from sqlalchemy import CursorResult, delete, func, select
 from sqlalchemy.orm import Session, sessionmaker
 
 import agent.models  # noqa: F401  (registers the agent pass tables on Base.metadata)
@@ -53,6 +56,7 @@ from core.models import (
     Job,
 )
 from core.models.extraction import RECORD_MODES
+from core.schemas import SchemaRegistry
 from core.services import jobs
 from core.services.extract import ExtractService
 from core.services.ingest import IngestService, fill_provenance
@@ -118,6 +122,8 @@ class Services:
     review: ReviewStateService
     extract: ExtractService
     summaries: SummaryWriter
+    llm: LLMClient
+    schemas: SchemaRegistry
 
 
 def build_services(settings: Settings | None = None) -> Services:
@@ -136,6 +142,8 @@ def build_services(settings: Settings | None = None) -> Services:
         review=ReviewStateService(schemas, settings.tenant_id),
         extract=extract,
         summaries=summary_writer(llm, catalog, extract, schemas, settings.tenant_id),
+        llm=llm,
+        schemas=schemas,
     )
 
 
@@ -401,7 +409,7 @@ def resume(services: Services, only: set[str] | None = None) -> list[str]:
                 Job.tenant_id == tenant_id, Job.kind == JOB_KIND, Job.status == "failed"
             )
         ):
-            slug = slugs.get(job.payload.get("tender_id"))
+            slug = slugs.get(str(job.payload.get("tender_id") or ""))
             if only and slug not in only:
                 continue
             job.status = "queued"
@@ -477,12 +485,15 @@ def reseed(services: Services, root: Path, only: set[str]) -> list[str]:
             if decisions:
                 lines.append(f"{slug}: refused, {decisions} decision(s) stand on it")
                 continue
-            withdrawn = session.execute(
-                delete(Job).where(
-                    Job.tenant_id == tenant_id,
-                    Job.status == "queued",
-                    Job.payload["tender_id"].astext == tender.id,
-                )
+            withdrawn = cast(
+                CursorResult[Any],
+                session.execute(
+                    delete(Job).where(
+                        Job.tenant_id == tenant_id,
+                        Job.status == "queued",
+                        Job.payload["tender_id"].astext == tender.id,
+                    )
+                ),
             ).rowcount
             revoked = tokens.revoke(session, tender, created_by=ACTOR)
             versions = len(services.tenders.versions(session, tender))
@@ -506,6 +517,55 @@ def routing_report(services: Services) -> list[str]:
                 f"keywords only: {record['only_keywords']} | map only: {record['only_map']} | "
                 f"both: {[g for g in record['by_keywords'] if g in record['by_map']]}"
             )
+    return lines
+
+
+def index(services: Services, only: set[str] | None = None, *, now: bool = False) -> list[str]:
+    """Rebuild the retrieval chunks of every parsed document of the tenders (Stage 7,
+    Block 5). By default `index_document` jobs are queued for the worker; with `now` the
+    indexer runs here, in this process (a backfill while the worker is on an older image,
+    or before the first deploy of the block). Nothing else changes."""
+    lines = []
+    indexer = None
+    if now:
+        from core.retrieval import ChunkIndexer, ChunkStores, make_embedders
+        from tender.services.retrieval_meta import chunk_meta
+
+        settings = services.settings
+        indexer = ChunkIndexer(
+            ChunkStores(settings).for_tenant(settings.tenant_id),
+            make_embedders(settings),
+            settings,
+            meta_for=chunk_meta,
+        )
+    with services.session_factory() as session:
+        for tender in services.tenders.all(session):
+            if only and tender.slug not in only:
+                continue
+            done = chunks = 0
+            for entry in services.tenders.versions(session, tender):
+                for _, document in entry.documents:
+                    if document.status != "parsed":
+                        continue
+                    if indexer is not None:
+                        result = indexer.index_document(session, document.id)
+                        chunks += result.chunks
+                        if result.note:
+                            lines.append(f"  {document.filename}: {result.note}")
+                    else:
+                        jobs.enqueue(
+                            session,
+                            tenant_id=services.settings.tenant_id,
+                            kind="index_document",
+                            payload={"document_id": document.id},
+                            created_by=ACTOR,
+                        )
+                    done += 1
+            session.commit()
+            if indexer is not None:
+                lines.append(f"{tender.slug}: {done} document(s) indexed, {chunks} chunks")
+            else:
+                lines.append(f"{tender.slug}: {done} document(s) queued for indexing")
     return lines
 
 
@@ -540,7 +600,7 @@ def cost_plan(services: Services, only: set[str] | None = None) -> list[str]:
             for run in runs:
                 names = run.groups or [group.name for group in compiled.schema.groups]
                 read_for.setdefault(run.document_id, set()).update(names)
-            for document_id, names in sorted(read_for.items()):
+            for document_id, group_names in sorted(read_for.items()):
                 document = session.scalar(
                     select(Document).where(
                         Document.id == document_id, Document.tenant_id == settings.tenant_id
@@ -550,7 +610,7 @@ def cost_plan(services: Services, only: set[str] | None = None) -> list[str]:
                     continue
                 for batch in (False, True):
                     windows, plan = services.extract.plan_windows(
-                        session, document, compiled.schema, sorted(names), batch=batch
+                        session, document, compiled.schema, sorted(group_names), batch=batch
                     )
                     written = sum(len(w.pages) for w in plan if w.shared)
                     read = sum(len(w.pages) * (len(w.groups) - 1) for w in plan if w.shared)
@@ -697,6 +757,7 @@ def main(argv: list[str]) -> int:
             "amendment-routing",
             "routing-report",
             "cost-plan",
+            "index",
             "revalidate",
             "summarize",
             "freshness",
@@ -712,6 +773,9 @@ def main(argv: list[str]) -> int:
         "--sync", action="store_true", help="extract with direct calls, not the batch API"
     )
     parser.add_argument("--timeout", type=float, default=6 * 3600)
+    parser.add_argument(
+        "--now", action="store_true", help="index: run the indexer here instead of queueing"
+    )
     parser.add_argument("--out", type=Path, default=DEFAULT_SUMMARY)
     args = parser.parse_args(argv[1:])
     only = {slug.strip() for slug in args.only.split(",") if slug.strip()} or None
@@ -732,6 +796,8 @@ def main(argv: list[str]) -> int:
         print("\n".join(summarize(services, only, args.force)))
     elif args.command == "cost-plan":
         print("\n".join(cost_plan(services, only)))
+    elif args.command == "index":
+        print("\n".join(index(services, only, now=args.now)))
     elif args.command == "revalidate":
         print("\n".join(revalidate(services, only)))
     elif args.command == "resume":
