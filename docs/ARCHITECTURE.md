@@ -74,7 +74,7 @@ The layout in `CLAUDE.md` is authoritative. Additions made under operating rule 
 | `tests/e2e/seed_review.py` | seeds the browser-test database | Stage 3 |
 | `infra/Caddyfile.routes`, `infra/Caddyfile.e2e` | the proxy routes shared by the deployed site and the browser-test stack: `/api/*`, `/files/*`, `/health` and, since Stage 5D, `/mcp`, `/authorize`, `/token`, `/register`, `/.well-known/*` go to the API with the public mark; everything else to the web app | Stage 3, 5D |
 | `scripts/review_token.py`, `scripts/gen_field_trace.py` | review links; `docs/FIELD-TRACE.md` | Stage 3 |
-| `evals/` | `gold.py` (a completed review as a YAML record under `evals/gold/<type>/<slug>.yaml`), `runner.py` (scores candidates against gold records; `evals/results/`), `feedback_report.py`, `report.py` (`RELIABILITY-REPORT.md`, `REVIEW-LOG.md`); imports core and tender, is imported only by the admin router and the scripts | Stage 4 |
+| `evals/` | `gold.py` (a completed review as a YAML record under `evals/gold/<type>/<slug>.yaml`), `runner.py` (scores candidates against gold records; `evals/results/`), `feedback_report.py`, `report.py` (`RELIABILITY-REPORT.md`, `REVIEW-LOG.md`), `reliability.py` (the composite figures and the two accuracy sentences from the result files, Block 7 b; also behind the MCP tool `reliability_report`); imports core and tender, is imported only by the admin router and the scripts | Stage 4 |
 | `scripts/make_gold.py` | `make gold TENDER=<slug>`: the gold record of a completed review, then the report | Stage 4 |
 | `api/v1/admin/` | the reliability router, behind the admin token (`api/middleware/review_token.py`) | Stage 4 |
 | `web/src/admin/` | `ReliabilityPage` at `/admin/reliability` | Stage 4 |
@@ -733,6 +733,12 @@ flowchart LR
 - MCP (`mcpserver/`): scope `own:write` in `SCOPES` and on the consent; tools `get_status`, `get_changes`, `submit_tender`, `submit_amendment`, `get_review_link`; `ToolContext` carries `submit` and `tokens`.
 - The contract (`scripts/export_contract.py`, `docs/contracts/`): the snapshot's JSON Schema, OpenAPI 3.1, function definitions; `contract_drift` in `infra/ci/run_checks.py`; `client/tender_engine_client.py`; `docs/CONNECTOR.md`.
 - Tests: `tests/conftest.py` `WebhookSink` (the runner's deliveries land in a mock transport), `tests/mcpserver/conftest.py` with the submit transport; `tests/api/test_contract.py`, `tests/tender/test_submit.py`, `test_snapshot_status.py`, `tests/core/services/test_webhooks.py`, `tests/scripts/test_export_contract.py`, one MCP write-tools test.
+
+### Stage 7, Block 7 (2026-10-28)
+
+- `evals/reliability.py`: the composite figures (`composite`, `InSample`, `Unseen`, `QueryEval`, `statements`, `markdown`) from the result files under `evals/results/`; `scripts/blind_check.py` also writes `<stamp>-blind-check.json` there (`--results-root`); `evals/report.py` opens the reliability report with the headline block; the MCP tool `reliability_report` returns `composite` and prints its statements (`tests/evals/test_reliability.py`, the tool test).
+- Schema v5 (`tender/domain_packs/core/common.yaml`, `power/pack.yaml`, `power/released/v5.yaml`): `core.identity.price_discovery` (enum) beside `core.identity.procurement_mode`, whose meaning narrows to the stage structure with its allowed values unchanged; the identity prompt `extract/identity_and_scope/v3`; v5 reads v1–v4 with no field read again (no signature changed).
+- `docs/HANDOVER.md` (new), `docs/reports/STAGE-7-BLOCK-7-REPORT.md` with the definition-of-done checklist over the master prompt's stages and the plan's seven blocks.
 
 ### Stage 7, Block 3 (2026-10-24/25)
 

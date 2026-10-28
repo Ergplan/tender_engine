@@ -1,8 +1,8 @@
 # Core pack: fields that keep their meaning in any sector. Seeded from the field catalogue
 # in docs/MASTER-PROMPT.md. Field paths are core.<catalogue section>.<field>.
 pack: core
-version: v4
-reads_versions: [v1, v2, v3]
+version: v5
+reads_versions: [v1, v2, v3, v4]
 
 # A section is what a reviewer sees as one block and what the extractor reads in one call.
 # roles: the document roles of a tender version this section is extracted from.
@@ -21,7 +21,9 @@ sections:
   identity_and_scope:
     label: Identity and scope
     prompt: extract/identity_and_scope
-    prompt_version: v2
+    # v3 (schema v5, 2026-10-28): the procurement mode split into the stage structure and
+    # the price discovery (DECISIONS 2026-10-27 item 5 and 2026-10-28).
+    prompt_version: v3
     roles: [rfs, contractual, nit]
     section_kinds: [cover_and_notice, introduction_and_scope]
     keywords: [rfs no, tender no, bid information sheet, capacity, delivery point, metering point, maximum capacity, minimum capacity]
@@ -98,8 +100,18 @@ fields:
     section: identity_and_scope
     label: Procurement mode
     type: enum
+    # Since v5 this field is the stage and envelope structure alone; the price discovery is
+    # core.identity.price_discovery. The value e_reverse_auction stays allowed so that every
+    # reading made under v1 to v4 still loads and the reviewed tenders keep their decided
+    # value on screen; the v3 prompt never returns it.
     enum: [single_stage_two_envelope, two_stage, e_reverse_auction, other]
-    help: How bids are invited and evaluated; e-reverse auction if one follows the financial bid.
+    help: The stage and envelope structure of the bidding (single stage with two envelopes, two stages); not the price discovery.
+  core.identity.price_discovery:
+    section: identity_and_scope
+    label: Price discovery
+    type: enum
+    enum: [e_reverse_auction, sealed_bid, other]
+    help: How the price is settled after the bids; e-reverse auction if one follows the financial bid, sealed bid if the financial bids are ranked as opened.
   core.identity.portal:
     section: identity_and_scope
     label: Bidding portal

@@ -1,6 +1,14 @@
-# Context for a new session (written 2026-10-05, last updated 2026-10-27)
+# Context for a new session (written 2026-10-05, last updated 2026-10-28)
 
-Read this first, then `CLAUDE.md`, then `docs/COMPLETION-PLAN.md` (the owner's plan of 2026-10-24: one block per stage) and the latest block report under `docs/reports/` (`STAGE-7-BLOCK-5-REPORT.md` and the Block 4 report; before them the Stage 6 and 5A–5D reports).
+Read this first, then `CLAUDE.md`, then `docs/COMPLETION-PLAN.md` (the owner's plan of 2026-10-24: one block per stage) then `docs/HANDOVER.md` (the operator's page) and the latest block report under `docs/reports/` (`STAGE-7-BLOCK-7-REPORT.md`, the close; before it Blocks 6, 5 and 4, then the Stage 6 and 5A–5D reports).
+
+## Where the build stands (2026-10-28, the close)
+
+- **Every block of the completion plan is built.** Block 6 (REST v1 behind API keys, the snapshot contract v1, webhooks, the MCP write tools, OpenAPI 3.1 and function definitions, the Python client, `docs/CONNECTOR.md`) is committed with tag `stage-7-block-7-start`; Block 7 (the definition-of-done checklist, the composite reliability figures through `evals/reliability.py` and the MCP tool `reliability_report`, `docs/HANDOVER.md`, the `procurement_mode` split as schema v5) is the last commit. The code side is complete; what remains open is model calls the owner has not released and GCP steps only they can run (the lists in `docs/HANDOVER.md`, "Open at the handover", and in the Block 7 report).
+- **The owner's rule of 2026-10-28: subscription only.** No call through the app's `ANTHROPIC_API_KEY` from a build session, not even a probe. Every step that needs one is reported with its estimate and waits: the rule-15 reviews of Blocks 5, 6, 7 and the whole Stage 7 diff; Bikaner's six unfinished Block 4 runs; `make ask-eval`; the `identity_and_scope` re-read of the eleven gold tenders under schema v5 and `make eval` after it.
+- **Schema v5** is released (`power/released/v5.yaml`): `core.identity.price_discovery` is new, `core.identity.procurement_mode` means the stage structure alone (its allowed values unchanged so every earlier reading loads), identity prompt v3. No tender has been read under v5 yet. The live api picks up v5 at its next restart; the live worker still runs Block 5's handlers until the owner restarts it.
+- **The accuracy sentences** come from `evals/reliability.py` (in-sample 97.5% on 11 tenders; 100% evidence location on 3 unseen tenders; question eval not run) and nowhere else; the reliability report opens with them.
+- Operating notes unchanged: `make check` on a quiet machine (about 40 minutes now); push by HTTPS with `gh` (memory note); review links never into the repo.
 
 ## Where the build stands (2026-10-27)
 

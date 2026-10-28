@@ -41,7 +41,7 @@ from sqlalchemy.orm import Session
 import agent.models  # noqa: F401  (registers every table on Base.metadata)
 from core.models import ExtractionRun
 from core.services.review_state import FieldState
-from evals.runner import confidence_band
+from evals.runner import RESULTS_ROOT, confidence_band
 from scripts.ingest_tenders import Services, build_services
 from tender.models import Tender
 from tender.services.amendment_link import AmendmentLink, link_amendment
@@ -476,6 +476,9 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--only", default="", help="comma-separated tender slugs")
     parser.add_argument("--json", type=Path, default=ARTIFACTS / "block-4-check.json")
     parser.add_argument("--md", type=Path, default=ARTIFACTS / "block-4-check.md")
+    # Block 7 b: the same JSON under evals/results/ as <stamp>-blind-check.json, where
+    # evals.reliability (and so the MCP tool reliability_report) reads the latest one.
+    parser.add_argument("--results-root", type=Path, default=RESULTS_ROOT)
     args = parser.parse_args(argv)
     only = {s.strip() for s in args.only.split(",") if s.strip()}
     services = build_services()
@@ -489,9 +492,14 @@ def main(argv: list[str]) -> int:
     text = render(checks)
     args.md.parent.mkdir(parents=True, exist_ok=True)
     args.md.write_text(text, encoding="utf-8")
-    args.json.write_text(json.dumps(as_json(checks), indent=1, default=str), encoding="utf-8")
+    payload = json.dumps(as_json(checks), indent=1, default=str)
+    args.json.write_text(payload, encoding="utf-8")
+    stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
+    args.results_root.mkdir(parents=True, exist_ok=True)
+    results_copy = args.results_root / f"{stamp}-blind-check.json"
+    results_copy.write_text(payload, encoding="utf-8")
     print(text)
-    print(f"written: {args.md}, {args.json}")
+    print(f"written: {args.md}, {args.json}, {results_copy}")
     return 0
 
 

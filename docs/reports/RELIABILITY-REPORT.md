@@ -1,20 +1,39 @@
 # Reliability report
 
-Generated 2026-10-15 17:21 UTC by `python -m evals.report` (also `make report`). Every gold record scored against the candidates now in review at the version it was reviewed at. Accuracy is value accuracy: the candidate the reviewer saw against what they decided. Evidence accuracy asks whether the candidate cited a page the reviewer accepted. Long text is not scored by rule.
+Generated 2026-10-28 19:31 UTC by `python -m evals.report` (also `make report`). Every gold record scored against the candidates now in review at the version it was reviewed at. Accuracy is value accuracy: the candidate the reviewer saw against what they decided. Evidence accuracy asks whether the candidate cited a page the reviewer accepted. Long text is not scored by rule.
+
+## Headline (completion plan, Block 7 b)
+
+- 97.5% field accuracy on 11 human-reviewed tenders (in-sample)
+- 100.0% evidence location on 3 unseen tenders (238 of 238 values located on the page they cite; no accuracy claim)
+- The question eval (Block 5 d, `make ask-eval`) has not run: the retrieval route calls the model, and no run was allowed yet.
+
+The in-sample figure measures the engine on the tenders it was tuned on, against the reviewers' decisions; it is not a forecast for a new tender. The unseen tenders were never reviewed, so nothing about the correctness of their values is known: a located quote says the value is on the page it cites, not that it is the right value.
+
+| Measurement | Figure | n | As of |
+| --- | --- | --- | --- |
+| Field accuracy, gold set (in-sample) | 97.5% | 942 scored fields of 11 tenders | 2026-10-28T19:31:44+00:00 |
+| Critical fields, gold set (in-sample) | 98.8% | 249 | 2026-10-28T19:31:44+00:00 |
+| Evidence accuracy, gold set | 100.0% | 634 | 2026-10-28T19:31:44+00:00 |
+| Wrong readings shown at high confidence, gold set | 10 | 942 | 2026-10-28T19:31:44+00:00 |
+| Evidence location, unseen tenders | 100.0% | 238 values, 3 tenders (msedcl-bess-mt-1000mw, tgredco-rtc-2000mw, sjvn-wind-4-600mw) | 2026-10-27T00:59:11.225898+00:00 |
+| Deterministic rules passed, unseen tenders | 99.5% | 655 | 2026-10-27T00:59:11.225898+00:00 |
+| Unlocated readings at high confidence, unseen tenders | 0 | 238 | 2026-10-27T00:59:11.225898+00:00 |
+| Question eval | not run | – | – |
 
 ## Tenders reviewed
 
 | Type | In the set | Reviewed | Tenders |
 | --- | --- | --- | --- |
-| bess | 1 | 1 | seci-ess-iv |
+| bess | 3 | 1 | seci-ess-iv |
 | epc | 3 | 1 | seci-gaya-60mw |
 | fdre | 4 | 4 | nhpc-fdre-ii, seci-cfd-i, seci-fdre-ix, seci-fdre-rtc-v |
 | generation | 1 | 1 | ntpc-phes-2000mw |
 | hybrid | 1 | 1 | ntpc-hybrid-03 |
-| re_rtc | 1 | 1 | wbsedcl-re-rtc-2026-01 |
-| solar | 1 | 1 | seci-cni-1-700mw |
-| transmission | 1 | 0 | - |
-| wind | 2 | 1 | ntpc-rel-600mw-anantapur-wtg |
+| re_rtc | 2 | 1 | wbsedcl-re-rtc-2026-01 |
+| solar | 2 | 1 | seci-cni-1-700mw |
+| transmission | 3 | 0 | - |
+| wind | 4 | 1 | ntpc-rel-600mw-anantapur-wtg |
 
 ## Accuracy
 
@@ -189,6 +208,10 @@ Generated 2026-10-15 17:21 UTC by `python -m evals.report` (also `make report`).
 | 20261006T172902Z-ergplan-latest.json | as pinned | 99% | 100% | 79 |
 | 20261013T124146Z-ergplan-latest.json | as pinned | 78% | 100% | 624 |
 | 20261013T131813Z-ergplan-latest.json | as pinned | 98% | 100% | 598 |
+| 20261015T172301Z-ergplan-latest.json | as pinned | 97% | 100% | 942 |
+| 20261024T155809Z-ergplan-latest.json | as pinned | 97% | 100% | 942 |
+| 20261028T193144Z-ergplan-latest.json | as pinned | 97% | 100% | 942 |
+| review-emphasis-ergplan.json | as pinned | - | - | None |
 
 ## Reviewer time per tender
 
@@ -210,9 +233,9 @@ Generated 2026-10-15 17:21 UTC by `python -m evals.report` (also `make report`).
 
 **Not met.** Required-field value accuracy 96%.
 
-At least 2 reviewed tenders for every type with 2 or more in the set (epc, fdre, wind); required-field value accuracy at least 90% across the last two prompt versions; no required field below 75%.
+At least 2 reviewed tenders for every type with 2 or more in the set (bess, epc, fdre, re_rtc, solar, transmission, wind); required-field value accuracy at least 90% across the last two prompt versions; no required field below 75%.
 
-- fewer than 2 reviewed tenders for: epc, wind
+- fewer than 2 reviewed tenders for: bess, epc, re_rtc, solar, transmission, wind
 - required fields below 75%: 1
 - required-field accuracy by section prompt, last two versions seen: extract/bess_performance v2 100%; extract/hybrid_mix v2 100%; extract/identity_and_scope v1 100%; extract/key_dates v1 100%; extract/re_rtc_profile v1 100%
 

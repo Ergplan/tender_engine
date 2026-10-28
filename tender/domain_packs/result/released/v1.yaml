@@ -1,0 +1,77 @@
+# Field definitions of pack `result` as released in version v1: per tender type,
+# every field with what a stored value depends on (type, unit, allowed values, keys).
+# Written by `python -m scripts.release_schema`. Never edited by hand: the pack loader
+# compares schema versions against this file.
+pack: result
+types:
+  award:
+    result.award.procurer:
+      type: text
+    result.award.reference:
+      type: text
+    result.award.result_date:
+      type: date
+    result.award.result_kind:
+      enum:
+      - auction_result
+      - cerc_adoption_order
+      - allocation
+      - register
+      type: enum
+    result.award.winners:
+      keys:
+        adopted_capacity:
+          type: decimal
+        adopted_price:
+          type: decimal
+        allocation:
+          enum:
+          - published_result
+          - base
+          - greenshoe
+          type: enum
+        bidder:
+          type: text
+        capacity:
+          type: decimal
+        capacity_unit:
+          enum:
+          - mw
+          - kw
+          - mw_per_year
+          - mt_per_year
+          - mt
+          - mw_manufacturing
+          type: enum
+        notes:
+          type: text
+        price:
+          type: decimal
+        price_unit:
+          enum:
+          - inr_per_kwh
+          - inr_per_kg
+          - inr_per_mw_vgf
+          - inr_per_mw_month
+          - inr_per_mw_annum
+          - months_ppa_term
+          - inr_contract_value
+          - inr_two_year_charges
+          type: enum
+        status:
+          enum:
+          - awarded
+          - tariff_adopted
+          - l1_ranked_award_not_confirmed
+          - tariff_adoption_recorded
+          - empanelled
+          - company_register_disclosure
+          - partially_adopted
+          - historical_award_not_adopted
+          - published_allocation
+          - award_reported_not_adopted
+          - selected
+          - adoption_quantity_ambiguous
+          type: enum
+      type: record_list
+version: v1

@@ -226,7 +226,7 @@ def power_types(catalog: Catalog) -> dict[str, CompiledType]:
 def test_the_power_pack_reads_v1_with_one_declared_change(catalog: Catalog) -> None:
     assert catalog.types["award"].reads_versions == () and catalog.types["award"].pack == "result"
     for name, compiled in power_types(catalog).items():
-        assert compiled.reads_versions == ("v1", "v2", "v3"), name
+        assert compiled.reads_versions == ("v1", "v2", "v3", "v4"), name
         expected = (
             (("v1", ("sector.power.transmission.elements",)),) if name == "transmission" else ()
         )
@@ -237,7 +237,7 @@ def test_the_power_pack_would_not_load_without_its_declaration(catalog: Catalog)
     transmission = catalog.types["transmission"]
     with pytest.raises(PackError, match=r"not listed under read_again.*transmission.elements"):
         verify_versions(
-            PACKS_ROOT / "power", "transmission", "v4", ("v1",), {}, transmission.fields
+            PACKS_ROOT / "power", "transmission", "v5", ("v1",), {}, transmission.fields
         )
 
 

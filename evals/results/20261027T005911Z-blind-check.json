@@ -1,0 +1,621 @@
+{
+ "generated": "2026-10-27T00:59:11.225898+00:00",
+ "tenders": [
+  {
+   "slug": "msedcl-bess-mt-1000mw",
+   "manifest_type": "bess",
+   "complete": true,
+   "versions": 4,
+   "documents": 5,
+   "pages": 215,
+   "runs": 6,
+   "unfinished_runs": 0,
+   "cost_usd": 13.0195,
+   "fields": 112,
+   "answered": 81,
+   "located": 81,
+   "evidence_location_rate": 1.0,
+   "answer_rate": 0.7232142857142857,
+   "bands": {
+    "high": {
+     "answered": 48,
+     "located": 48
+    },
+    "medium": {
+     "answered": 28,
+     "located": 28
+    },
+    "low": {
+     "answered": 5,
+     "located": 5
+    }
+   },
+   "rules": {
+    "rules_run": 260,
+    "passed": 258,
+    "failed_errors": 2,
+    "failed_warnings": 0,
+    "failing_rules": {
+     "range (error)": 1,
+     "type (error)": 1
+    },
+    "fields_needs_review": 2
+   },
+   "unlocated_high": [],
+   "classification": {
+    "filename": "v3_Final_BESS-Medium-Term_Procurement_v7-24_09_26.pdf",
+    "role": "rfs",
+    "tender_type": "bess",
+    "confidence": 0.98,
+    "state": "set",
+    "outcome": "agree"
+   },
+   "links": [
+    {
+     "version_no": 2,
+     "kind": "corrigendum",
+     "filename": "v1_Corrigendum-1_MT_BESS-tender.pdf",
+     "role": "amendment",
+     "outcome": "linked_to_own",
+     "method": "title",
+     "confidence": 1.0,
+     "references_found": 1,
+     "reason": "the title words fit one tender (1.00, next 0.50)"
+    },
+    {
+     "version_no": 3,
+     "kind": "amendment",
+     "filename": "Final-Addendum_15.10.2026.pdf",
+     "role": "amendment",
+     "outcome": "linked_to_own",
+     "method": "title",
+     "confidence": 1.0,
+     "references_found": 1,
+     "reason": "the title words fit one tender (1.00, next 0.50)"
+    },
+    {
+     "version_no": 4,
+     "kind": "amendment",
+     "filename": "Addendum-2_18.10.2026-1.pdf",
+     "role": "amendment",
+     "outcome": "linked_to_own",
+     "method": "reference",
+     "confidence": 0.98,
+     "references_found": 2,
+     "reason": "the document prints the tender's reference MSEDCL/BESS/PHASE-3/MT/26-27/002"
+    }
+   ],
+   "changes_by_version": [
+    {
+     "version_no": 2,
+     "kind": "corrigendum",
+     "issued_on": "2026-10-06",
+     "changes": 13,
+     "by_class": {
+      "date_moved": 2,
+      "restated": 5,
+      "value_changed": 6
+     }
+    },
+    {
+     "version_no": 3,
+     "kind": "amendment",
+     "issued_on": "2026-10-15",
+     "changes": 56,
+     "by_class": {
+      "annexure_replaced": 2,
+      "date_moved": 2,
+      "requirement_added": 6,
+      "restated": 19,
+      "value_changed": 27
+     }
+    },
+    {
+     "version_no": 4,
+     "kind": "amendment",
+     "issued_on": "2026-10-18",
+     "changes": 27,
+     "by_class": {
+      "clause_withdrawn": 2,
+      "restated": 14,
+      "value_changed": 11
+     }
+    }
+   ]
+  },
+  {
+   "slug": "tgredco-rtc-2000mw",
+   "manifest_type": "re_rtc",
+   "complete": true,
+   "versions": 1,
+   "documents": 3,
+   "pages": 233,
+   "runs": 4,
+   "unfinished_runs": 0,
+   "cost_usd": 10.5004,
+   "fields": 112,
+   "answered": 78,
+   "located": 78,
+   "evidence_location_rate": 1.0,
+   "answer_rate": 0.6964285714285714,
+   "bands": {
+    "high": {
+     "answered": 68,
+     "located": 68
+    },
+    "medium": {
+     "answered": 9,
+     "located": 9
+    },
+    "low": {
+     "answered": 1,
+     "located": 1
+    }
+   },
+   "rules": {
+    "rules_run": 181,
+    "passed": 181,
+    "failed_errors": 0,
+    "failed_warnings": 0,
+    "failing_rules": {},
+    "fields_needs_review": 0
+   },
+   "unlocated_high": [],
+   "classification": {
+    "filename": "TG_2000MW_RTC_RfS.pdf",
+    "role": "rfs",
+    "tender_type": "fdre",
+    "confidence": 0.7,
+    "state": "unsure",
+    "outcome": "differ_unsure"
+   },
+   "links": [],
+   "changes_by_version": []
+  },
+  {
+   "slug": "recpdcl-bikaner-v-part-a",
+   "manifest_type": "transmission",
+   "complete": false,
+   "versions": 6,
+   "documents": 10,
+   "pages": 528,
+   "runs": 9,
+   "unfinished_runs": 6,
+   "cost_usd": 10.7638,
+   "fields": 108,
+   "answered": 56,
+   "located": 56,
+   "evidence_location_rate": 1.0,
+   "answer_rate": 0.5185185185185185,
+   "bands": {
+    "high": {
+     "answered": 36,
+     "located": 36
+    },
+    "medium": {
+     "answered": 18,
+     "located": 18
+    },
+    "low": {
+     "answered": 2,
+     "located": 2
+    }
+   },
+   "rules": {
+    "rules_run": 141,
+    "passed": 136,
+    "failed_errors": 3,
+    "failed_warnings": 2,
+    "failing_rules": {
+     "evidence_not_located (error)": 2,
+     "date_order (warning)": 2,
+     "type (error)": 1
+    },
+    "fields_needs_review": 3
+   },
+   "unlocated_high": [],
+   "classification": {
+    "filename": "RFP_Part_A_14.08.2026_bikaner.pdf",
+    "role": "rfs",
+    "tender_type": "transmission",
+    "confidence": 0.98,
+    "state": "set",
+    "outcome": "agree"
+   },
+   "links": [
+    {
+     "version_no": 2,
+     "kind": "clarification",
+     "filename": "Postponement_of_Pre-bid_meeting_Bikaner_Part_A_04092026.pdf",
+     "role": "clarification",
+     "outcome": "ask",
+     "method": "title",
+     "confidence": 0.826,
+     "references_found": 0,
+     "reason": "the best tender scores 0.83, the next 0.44: a person chooses"
+    },
+    {
+     "version_no": 3,
+     "kind": "clarification",
+     "filename": "Notice_for_Pre-bid_Meeting_Bikaner_Part_A_18092026.pdf",
+     "role": "clarification",
+     "outcome": "ask",
+     "method": "title",
+     "confidence": 0.826,
+     "references_found": 0,
+     "reason": "the best tender scores 0.83, the next 0.44: a person chooses"
+    },
+    {
+     "version_no": 4,
+     "kind": "amendment",
+     "filename": "Amendment-I_dated_21.09.2026_Bikaner_Part_A.pdf",
+     "role": "amendment",
+     "outcome": "linked_to_own",
+     "method": "title",
+     "confidence": 0.87,
+     "references_found": 0,
+     "reason": "the title words fit one tender (0.87, next 0.56)"
+    },
+    {
+     "version_no": 5,
+     "kind": "amendment",
+     "filename": "Amendment-II_dated_10082026_Bikaner_Part_A.pdf",
+     "role": "amendment",
+     "outcome": "ask",
+     "method": "title",
+     "confidence": 0.652,
+     "references_found": 0,
+     "reason": "the best tender scores 0.65, the next 0.25: a person chooses"
+    },
+    {
+     "version_no": 6,
+     "kind": "amendment",
+     "filename": "Amendment-III_dated_16102026_Bikaner_Part_A.pdf",
+     "role": "amendment",
+     "outcome": "ask",
+     "method": "title",
+     "confidence": 0.783,
+     "references_found": 1,
+     "reason": "the best tender scores 0.78, the next 0.56: a person chooses"
+    }
+   ],
+   "changes_by_version": [
+    {
+     "version_no": 2,
+     "kind": "clarification",
+     "issued_on": "2026-09-04",
+     "changes": 3,
+     "by_class": {
+      "clause_withdrawn": 1,
+      "requirement_added": 1,
+      "restated": 1
+     }
+    },
+    {
+     "version_no": 3,
+     "kind": "clarification",
+     "issued_on": "2026-09-18",
+     "changes": 0,
+     "by_class": {}
+    },
+    {
+     "version_no": 4,
+     "kind": "amendment",
+     "issued_on": "2026-09-21",
+     "changes": 0,
+     "by_class": {}
+    },
+    {
+     "version_no": 5,
+     "kind": "amendment",
+     "issued_on": "2026-10-07",
+     "changes": 0,
+     "by_class": {}
+    },
+    {
+     "version_no": 6,
+     "kind": "amendment",
+     "issued_on": "2026-10-16",
+     "changes": 0,
+     "by_class": {}
+    }
+   ]
+  },
+  {
+   "slug": "sjvn-wind-4-600mw",
+   "manifest_type": "wind",
+   "complete": true,
+   "versions": 12,
+   "documents": 12,
+   "pages": 326,
+   "runs": 13,
+   "unfinished_runs": 0,
+   "cost_usd": 12.3809,
+   "fields": 103,
+   "answered": 79,
+   "located": 79,
+   "evidence_location_rate": 1.0,
+   "answer_rate": 0.7669902912621359,
+   "bands": {
+    "high": {
+     "answered": 69,
+     "located": 69
+    },
+    "medium": {
+     "answered": 9,
+     "located": 9
+    },
+    "low": {
+     "answered": 1,
+     "located": 1
+    }
+   },
+   "rules": {
+    "rules_run": 214,
+    "passed": 213,
+    "failed_errors": 1,
+    "failed_warnings": 0,
+    "failing_rules": {
+     "evidence_not_located (error)": 1
+    },
+    "fields_needs_review": 1
+   },
+   "unlocated_high": [],
+   "classification": {
+    "filename": "SJVN_Wind_4_Combined.pdf",
+    "role": "rfs",
+    "tender_type": "wind",
+    "confidence": 0.98,
+    "state": "set",
+    "outcome": "agree"
+   },
+   "links": [
+    {
+     "version_no": 2,
+     "kind": "corrigendum",
+     "filename": "Corigerndum_1_WIND_4_17102025.pdf",
+     "role": "amendment",
+     "outcome": "linked_to_own",
+     "method": "title",
+     "confidence": 0.95,
+     "references_found": 1,
+     "reason": "the title words fit one tender (0.95, next 0.40)"
+    },
+    {
+     "version_no": 3,
+     "kind": "corrigendum",
+     "filename": "Corrigendum_2_WIND_4_Date_Extension_upto_181125_published.pdf",
+     "role": "amendment",
+     "outcome": "linked_to_own",
+     "method": "reference",
+     "confidence": 0.98,
+     "references_found": 11,
+     "reason": "the document prints the tender's reference SJVN/CC-DELHI/REIA/2025/WIND-4"
+    },
+    {
+     "version_no": 4,
+     "kind": "corrigendum",
+     "filename": "Corrigendum_3_WIND_4_Date_Extension_upto_091225_published.pdf",
+     "role": "amendment",
+     "outcome": "linked_to_own",
+     "method": "reference",
+     "confidence": 0.98,
+     "references_found": 23,
+     "reason": "the document prints the tender's reference SJVN/CC-DELHI/REIA/2025/WIND-4"
+    },
+    {
+     "version_no": 5,
+     "kind": "corrigendum",
+     "filename": "Corrigendum_4_WIND_4_Date_Extension_upto_301225_uploaded.pdf",
+     "role": "amendment",
+     "outcome": "linked_to_own",
+     "method": "reference",
+     "confidence": 0.98,
+     "references_found": 23,
+     "reason": "the document prints the tender's reference SJVN/CC-DELHI/REIA/2025/WIND-4"
+    },
+    {
+     "version_no": 6,
+     "kind": "corrigendum",
+     "filename": "Corrigendum_5_WIND_4_Date_Extension_upto_130126_published.pdf",
+     "role": "amendment",
+     "outcome": "linked_to_own",
+     "method": "reference",
+     "confidence": 0.98,
+     "references_found": 24,
+     "reason": "the document prints the tender's reference SJVN/CC-DELHI/REIA/2025/WIND-4"
+    },
+    {
+     "version_no": 7,
+     "kind": "corrigendum",
+     "filename": "Corrigendum_6_WIND_4_Date_Extension_upto_270126_UPLOADED.pdf",
+     "role": "amendment",
+     "outcome": "linked_to_own",
+     "method": "reference",
+     "confidence": 0.98,
+     "references_found": 24,
+     "reason": "the document prints the tender's reference SJVN/CC-DELHI/REIA/2025/WIND-4"
+    },
+    {
+     "version_no": 8,
+     "kind": "corrigendum",
+     "filename": "Corrigendum_7_WIND_4_Date_Extension_upto_100226_PUBLISHED.pdf",
+     "role": "amendment",
+     "outcome": "linked_to_own",
+     "method": "reference",
+     "confidence": 0.98,
+     "references_found": 24,
+     "reason": "the document prints the tender's reference SJVN/CC-DELHI/REIA/2025/WIND-4"
+    },
+    {
+     "version_no": 9,
+     "kind": "corrigendum",
+     "filename": "Corrigendum_8_WIND_4_Date_Extension_upto_240226_epublish.pdf",
+     "role": "amendment",
+     "outcome": "linked_to_own",
+     "method": "reference",
+     "confidence": 0.98,
+     "references_found": 30,
+     "reason": "the document prints the tender's reference SJVN/CC-DELHI/REIA/2025/WIND-4"
+    },
+    {
+     "version_no": 10,
+     "kind": "corrigendum",
+     "filename": "Corrigendum_9_WIND_4_Date_Extension_upto_170326_Published.pdf",
+     "role": "amendment",
+     "outcome": "linked_to_own",
+     "method": "reference",
+     "confidence": 0.98,
+     "references_found": 26,
+     "reason": "the document prints the tender's reference SJVN/CC-DELHI/REIA/2025/WIND-4"
+    },
+    {
+     "version_no": 11,
+     "kind": "corrigendum",
+     "filename": "Corrigendum_10_WIND_4_Date_Extension_upto_070426_PUBLISHED.pdf",
+     "role": "amendment",
+     "outcome": "linked_to_own",
+     "method": "reference",
+     "confidence": 0.98,
+     "references_found": 28,
+     "reason": "the document prints the tender's reference SJVN/CC-DELHI/REIA/2025/WIND-4"
+    },
+    {
+     "version_no": 12,
+     "kind": "corrigendum",
+     "filename": "Corrigendum_11_WIND_4_Date_Extension_upto_280426.pdf",
+     "role": "amendment",
+     "outcome": "linked_to_own",
+     "method": "reference",
+     "confidence": 0.98,
+     "references_found": 3,
+     "reason": "the document prints the tender's reference SJVN/CC-DELHI/REIA/2025/WIND-4"
+    }
+   ],
+   "changes_by_version": [
+    {
+     "version_no": 2,
+     "kind": "corrigendum",
+     "issued_on": "2025-10-17",
+     "changes": 9,
+     "by_class": {
+      "date_moved": 2,
+      "restated": 3,
+      "value_changed": 4
+     }
+    },
+    {
+     "version_no": 3,
+     "kind": "corrigendum",
+     "issued_on": "2025-11-03",
+     "changes": 11,
+     "by_class": {
+      "date_moved": 2,
+      "restated": 3,
+      "value_changed": 6
+     }
+    },
+    {
+     "version_no": 4,
+     "kind": "corrigendum",
+     "issued_on": "2025-11-13",
+     "changes": 12,
+     "by_class": {
+      "date_moved": 3,
+      "restated": 7,
+      "value_changed": 2
+     }
+    },
+    {
+     "version_no": 5,
+     "kind": "corrigendum",
+     "issued_on": "2025-12-03",
+     "changes": 12,
+     "by_class": {
+      "date_moved": 2,
+      "restated": 7,
+      "value_changed": 3
+     }
+    },
+    {
+     "version_no": 6,
+     "kind": "corrigendum",
+     "issued_on": "2025-12-29",
+     "changes": 12,
+     "by_class": {
+      "annexure_replaced": 1,
+      "date_moved": 2,
+      "restated": 7,
+      "value_changed": 2
+     }
+    },
+    {
+     "version_no": 7,
+     "kind": "corrigendum",
+     "issued_on": "2026-01-13",
+     "changes": 12,
+     "by_class": {
+      "annexure_replaced": 1,
+      "date_moved": 2,
+      "restated": 5,
+      "value_changed": 4
+     }
+    },
+    {
+     "version_no": 8,
+     "kind": "corrigendum",
+     "issued_on": "2026-01-23",
+     "changes": 10,
+     "by_class": {
+      "date_moved": 2,
+      "restated": 6,
+      "value_changed": 2
+     }
+    },
+    {
+     "version_no": 9,
+     "kind": "corrigendum",
+     "issued_on": "2026-02-09",
+     "changes": 5,
+     "by_class": {
+      "date_moved": 3,
+      "restated": 2
+     }
+    },
+    {
+     "version_no": 10,
+     "kind": "corrigendum",
+     "issued_on": "2026-02-24",
+     "changes": 11,
+     "by_class": {
+      "date_moved": 3,
+      "restated": 7,
+      "value_changed": 1
+     }
+    },
+    {
+     "version_no": 11,
+     "kind": "corrigendum",
+     "issued_on": "2026-03-13",
+     "changes": 12,
+     "by_class": {
+      "date_moved": 2,
+      "restated": 9,
+      "value_changed": 1
+     }
+    },
+    {
+     "version_no": 12,
+     "kind": "corrigendum",
+     "issued_on": "2026-04-03",
+     "changes": 8,
+     "by_class": {
+      "date_moved": 2,
+      "restated": 4,
+      "value_changed": 2
+     }
+    }
+   ]
+  }
+ ]
+}

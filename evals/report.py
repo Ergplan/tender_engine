@@ -25,6 +25,8 @@ from sqlalchemy.orm import Session
 import agent.models  # noqa: F401  (registers the agent pass tables on Base.metadata)
 from core.models import Approval
 from evals.gold import GoldRecord, load_all
+from evals.reliability import Composite, composite
+from evals.reliability import markdown as headline_markdown
 from evals.runner import RESULTS_ROOT, FieldScore, Summary, summarise
 from tender.models import Tender
 
@@ -299,6 +301,7 @@ def render_report(
     comparisons: list[dict[str, Any]],
     made_at: datetime | None = None,
     history: list[FieldScore] | None = None,
+    headline: Composite | None = None,
 ) -> str:
     made = (made_at or datetime.now(UTC)).strftime("%Y-%m-%d %H:%M UTC")
     summary = summarise(scores)
@@ -312,6 +315,12 @@ def render_report(
         "Evidence accuracy asks whether the candidate cited a page the reviewer accepted. "
         "Long text is not scored by rule.",
         "",
+    ]
+    # The completion plan's Block 7 b: the figures of Blocks 1, 4 and 5 d together, in the
+    # only sentences the owner's rule of 2026-10-27 allows, from the result files.
+    if headline is not None:
+        lines += headline_markdown(headline)
+    lines += [
         "## Tenders reviewed",
         "",
         "| Type | In the set | Reviewed | Tenders |",
@@ -509,6 +518,7 @@ def write_reports(
         timings,
         prompt_comparison(tenant_id),
         history=evaluated_scores(tenant_id),
+        headline=composite(tenant_id),
     )
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(text, encoding="utf-8")

@@ -2,8 +2,8 @@
 # Field paths are sector.power.<subdomain>.<field>; this file holds subdomain `common`,
 # the power fields every tender type shares. Each tender type has its own YAML.
 pack: power
-version: v4
-reads_versions: [v1, v2, v3]
+version: v5
+reads_versions: [v1, v2, v3, v4]
 # Fields that v2 defines differently than v1. Their sections were read again under v2, and
 # their candidates from v1 runs are not read. The loader checks this list against
 # released/v1.yaml: a changed field that is not listed here, or a removed one, fails the load.

@@ -114,16 +114,16 @@ def test_schemas_register_with_core_as_tender_type_v2_once(catalog: Catalog) -> 
     names = set(registry.names())
     # Every type at the current version; the earlier versions too, for the types that
     # existed then (re_rtc arrived with v3).
-    assert {(f"tender.{name}", "v4") for name in TENDER_TYPES} <= names
+    assert {(f"tender.{name}", "v5") for name in TENDER_TYPES} <= names
     assert {
         (f"tender.{name}", version)
         for name in TENDER_TYPES
         if name != "re_rtc"
-        for version in ("v1", "v2", "v3")
+        for version in ("v1", "v2", "v3", "v4")
     } <= names
     assert ("tender.re_rtc", "v3") in names, "re_rtc arrived with v3"
     built.register(registry)  # a second registration is a no-op, not an error
-    schema = registry.get("tender.fdre", "v4")
+    schema = registry.get("tender.fdre", "v5")
     assert schema.cross_field_rules == [
         "date_order",
         "emd_pbg_within_10x",
@@ -384,15 +384,16 @@ def test_every_type_has_its_structured_fields_beside_the_prose(catalog: Catalog)
                 assert groups[field.section].prompt_version == expected, field.path
 
 
-def test_schema_v4_also_reads_the_runs_of_v1_v2_and_v3(catalog: Catalog) -> None:
+def test_schema_v5_also_reads_the_runs_of_v1_to_v4(catalog: Catalog) -> None:
     registry = SchemaRegistry()
     catalog.register(registry)
     assert catalog.types["award"].schema.version == "v1"
     assert catalog.types["award"].reads_versions == ()
     for compiled in tender_types(catalog).values():
-        assert compiled.schema.version == "v4" and compiled.reads_versions == ("v1", "v2", "v3")
+        assert compiled.schema.version == "v5"
+        assert compiled.reads_versions == ("v1", "v2", "v3", "v4")
         # re_rtc arrived with v3: nothing earlier than that to read.
-        earliest = ("v3",) if compiled.tender_type == "re_rtc" else ("v1", "v2", "v3")
+        earliest = ("v3", "v4") if compiled.tender_type == "re_rtc" else ("v1", "v2", "v3", "v4")
         for version in earliest:
             earlier = registry.get(compiled.schema.name, version)
             assert earlier.fields == compiled.schema.fields

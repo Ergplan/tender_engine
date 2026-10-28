@@ -1,6 +1,6 @@
 # Review log
 
-Generated 2026-10-15 17:21 UTC by `python -m evals.report`, from the gold records and the approvals.
+Generated 2026-10-28 19:31 UTC by `python -m evals.report`, from the gold records and the approvals.
 
 | Tender | Type | Reviewer | Started | Completed | Decided | Edited | Not in document | Notable misses |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |

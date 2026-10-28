@@ -33,6 +33,7 @@ from core.evidence import PageText, locate
 from core.models import Document, Page, UsageRecord
 from core.services.identity import IdentityService, Principal
 from core.storage import Storage
+from evals.reliability import Composite, composite
 from tender.models import Tender
 from tender.services import library
 from tender.services.ask import AskAnswer, AskError, AskService
@@ -226,6 +227,10 @@ class ReliabilityReport(BaseModel):
     tenant_id: str
     by_type: list[Reliability]
     note: str
+    # The completion plan's Block 7 b: the gold-set eval (in-sample), the evidence-location
+    # rate on the unseen tenders and the question eval, with the only sentences a report may
+    # use for accuracy (DECISIONS 2026-10-27), read from the result files.
+    composite: Composite | None = None
     authority_note: str = AUTHORITY_NOTE
 
 
@@ -721,17 +726,24 @@ def reliability_report(ctx: ToolContext, tender_type: str | None = None) -> Tool
     """Accuracy per tender type from the latest evaluation of the gold set."""
     types = {tender_type} if tender_type else set(ctx.catalog.types)
     figures = _reliabilities(ctx, types)
+    overall = composite(ctx.principal.tenant_id, ctx.results_root)
+    if not overall.in_sample:
+        overall = composite("public", ctx.results_root)
     result = ReliabilityReport(
         tenant_id=ctx.principal.tenant_id,
         by_type=figures,
         note=(
             "Value accuracy is the share of reviewed fields the engine read as the reviewer "
             "decided; evidence accuracy the share whose cited page the reviewer accepted. "
-            "Both come from `make eval` over the gold records."
+            "Both come from `make eval` over the gold records, on the tenders the engine was "
+            "tuned on (in-sample). The unseen tenders were never reviewed: their figure is "
+            "evidence location, not accuracy."
         ),
+        composite=overall,
     )
-    text = "\n".join([_reliability_text(r) for r in figures] or ["No evaluation on file."])
-    return ToolResult(result, text + f"\n{result.note}\n{AUTHORITY_NOTE}")
+    lines = [*overall.statements, overall.caveat]
+    lines += [_reliability_text(r) for r in figures] or ["No evaluation on file."]
+    return ToolResult(result, "\n".join([*lines, result.note, AUTHORITY_NOTE]))
 
 
 # -- paid tier ---------------------------------------------------------------------------
