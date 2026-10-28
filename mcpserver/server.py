@@ -30,11 +30,14 @@ from starlette.routing import BaseRoute, Route
 from core.retrieval import Retriever
 from core.services.extract import ExtractService
 from core.services.identity import Principal
+from core.services.ingest import IngestService
 from mcpserver import tools
 from mcpserver.auth import SCOPES, LibraryAccessToken, LibraryOAuthProvider
 from mcpserver.tools import ToolContext, ToolRefused, ToolResult
 from tender.services.ask import AskService
+from tender.services.submit import Fetcher, SubmitService
 from tender.services.tenders import TenderService
+from tender.services.tokens import TokenService
 
 ROOT = Path(__file__).resolve().parent.parent
 WIDGETS_DIR = ROOT / "mcp" / "widgets"
@@ -171,6 +174,13 @@ def build_server(
                     Retriever(store, state.embedders, top_k=settings.ask_top_k),
                     local,
                 )
+            submit = SubmitService(
+                tenders,
+                IngestService(state.storage, principal.tenant_id),
+                principal.tenant_id,
+                fetcher=Fetcher(transport=getattr(state, "submit_transport", None)),
+                run_mode=settings.submit_run_mode,
+            )
             ctx = ToolContext(
                 session=session,
                 principal=principal,
@@ -181,6 +191,8 @@ def build_server(
                 tenders=tenders,
                 results_root=results_root,
                 ask=ask,
+                submit=submit,
+                tokens=TokenService(principal.tenant_id),
             )
             try:
                 return _result(tools.run_tool(ctx, name, lambda tier: call(ctx)))
@@ -259,6 +271,54 @@ def build_server(
         return run(
             "ask_tender", lambda ctx: tools.ask_tender(ctx, _ref(tender, tender_id), question)
         )
+
+    @server.tool(name="get_status", meta=meta("get_status"))
+    def get_status(tender: str | None = None, tender_id: str | None = None) -> CallToolResult:
+        """Where a tender's reading stands: per version its documents, runs and pending
+        jobs; the review and publication state. Paid tier."""
+        return run("get_status", lambda ctx: tools.get_status(ctx, _ref(tender, tender_id)))
+
+    @server.tool(name="get_changes", meta=meta("get_changes"))
+    def get_changes(tender: str | None = None, tender_id: str | None = None) -> CallToolResult:
+        """The changelog across a tender's versions with impacts (the same as list_changes,
+        under the contract's name). Paid tier."""
+        return run("get_changes", lambda ctx: tools.get_changes(ctx, _ref(tender, tender_id)))
+
+    @server.tool(name="submit_tender", meta=meta("submit_tender"))
+    def submit_tender(
+        source_url: str,
+        tender_type: str | None = None,
+        agency: str | None = None,
+        title: str | None = None,
+        external_ref: str | None = None,
+    ) -> CallToolResult:
+        """Submit a new tender from the official URL of its RfS (the agency's own domain):
+        it is fetched, parsed, mapped, indexed and read; get_status says where it stands.
+        Needs the write scope. Paid tier."""
+        return run(
+            "submit_tender",
+            lambda ctx: tools.submit_tender(
+                ctx, source_url, tender_type, agency, title, external_ref
+            ),
+        )
+
+    @server.tool(name="submit_amendment", meta=meta("submit_amendment"))
+    def submit_amendment(
+        tender: str, source_url: str, kind: str, issued_on: str | None = None, force: bool = False
+    ) -> CallToolResult:
+        """Submit a corrigendum, amendment or clarification from its official URL as the
+        tender's next version; one that names another tender is refused unless forced.
+        Needs the write scope. Paid tier."""
+        return run(
+            "submit_amendment",
+            lambda ctx: tools.submit_amendment(ctx, tender, source_url, kind, issued_on, force),
+        )
+
+    @server.tool(name="get_review_link", meta=meta("get_review_link"))
+    def get_review_link(tender: str, reviewer_name: str) -> CallToolResult:
+        """A review link for a named reviewer of one of your tenders: a credential for that
+        reviewer alone. Needs the review:mint scope. Paid tier."""
+        return run("get_review_link", lambda ctx: tools.get_review_link(ctx, tender, reviewer_name))
 
     @server.tool(name="reliability_report", meta=meta("reliability_report"))
     def reliability_report(tender_type: str | None = None) -> CallToolResult:

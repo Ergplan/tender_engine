@@ -23,6 +23,7 @@ from tender.services.ask import AskService
 from tender.services.awards import AwardRowsGuard, AwardService
 from tender.services.derive import DerivedGuard, DerivedWriter
 from tender.services.packs import Catalog
+from tender.services.submit import Fetcher, SubmitService
 from tender.services.summary import SummaryGuard, SummaryWriter
 from tender.services.tenders import TenderService
 from tender.services.tokens import TokenService
@@ -201,6 +202,25 @@ def get_ask(
 
 
 AskDep = Annotated[AskService, Depends(get_ask)]
+
+
+def get_submit(
+    request: Request, tenders: TendersDep, ingest: IngestDep, tenant_id: TenantDep
+) -> SubmitService:
+    """Submissions (Stage 7, Block 6 a). A test sets `app.state.submit_transport` to stand
+    in for the official sites."""
+    settings: Settings = request.app.state.settings
+    transport = getattr(request.app.state, "submit_transport", None)
+    return SubmitService(
+        tenders,
+        ingest,
+        tenant_id,
+        fetcher=Fetcher(transport=transport),
+        run_mode=settings.submit_run_mode,
+    )
+
+
+SubmitDep = Annotated[SubmitService, Depends(get_submit)]
 
 
 def get_summary_writer(

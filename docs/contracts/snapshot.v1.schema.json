@@ -1,0 +1,294 @@
+{
+  "$defs": {
+    "SnapshotEvidence": {
+      "properties": {
+        "document_id": {
+          "title": "Document Id",
+          "type": "string"
+        },
+        "filename": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Filename"
+        },
+        "located": {
+          "title": "Located",
+          "type": "boolean"
+        },
+        "page_no": {
+          "title": "Page No",
+          "type": "integer"
+        },
+        "quote": {
+          "title": "Quote",
+          "type": "string"
+        }
+      },
+      "required": [
+        "document_id",
+        "page_no",
+        "quote",
+        "located"
+      ],
+      "title": "SnapshotEvidence",
+      "type": "object"
+    },
+    "SnapshotField": {
+      "properties": {
+        "confidence": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "machine readings only",
+          "title": "Confidence"
+        },
+        "evidence": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/SnapshotEvidence"
+          },
+          "title": "Evidence",
+          "type": "array"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "needs_review": {
+          "default": false,
+          "title": "Needs Review",
+          "type": "boolean"
+        },
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "section": {
+          "title": "Section",
+          "type": "string"
+        },
+        "source": {
+          "enum": [
+            "approved",
+            "machine",
+            "none"
+          ],
+          "title": "Source",
+          "type": "string"
+        },
+        "state": {
+          "enum": [
+            "value",
+            "withdrawn",
+            "not_stated"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Unit"
+        },
+        "value": {
+          "default": null,
+          "title": "Value"
+        },
+        "value_type": {
+          "title": "Value Type",
+          "type": "string"
+        },
+        "version_kind": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Version Kind"
+        },
+        "version_no": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Version No"
+        },
+        "withdrawn_from_version": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Withdrawn From Version"
+        }
+      },
+      "required": [
+        "path",
+        "section",
+        "label",
+        "value_type",
+        "state",
+        "source"
+      ],
+      "title": "SnapshotField",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "approved": {
+      "title": "Approved",
+      "type": "integer"
+    },
+    "authority_note": {
+      "default": "The tender document is the authoritative source; this is jouleWise's reviewed reading of it.",
+      "title": "Authority Note",
+      "type": "string"
+    },
+    "contract_version": {
+      "default": "1",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "current_version": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Current Version"
+    },
+    "external_ref": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "External Ref"
+    },
+    "fields": {
+      "items": {
+        "$ref": "#/$defs/SnapshotField"
+      },
+      "title": "Fields",
+      "type": "array"
+    },
+    "generated_at": {
+      "format": "date-time",
+      "title": "Generated At",
+      "type": "string"
+    },
+    "issuing_agency": {
+      "title": "Issuing Agency",
+      "type": "string"
+    },
+    "machine": {
+      "title": "Machine",
+      "type": "integer"
+    },
+    "not_stated": {
+      "title": "Not Stated",
+      "type": "integer"
+    },
+    "publication": {
+      "title": "Publication",
+      "type": "string"
+    },
+    "reviewed_version": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Reviewed Version"
+    },
+    "slug": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Slug"
+    },
+    "status": {
+      "title": "Status",
+      "type": "string"
+    },
+    "tender_id": {
+      "title": "Tender Id",
+      "type": "string"
+    },
+    "tender_type": {
+      "title": "Tender Type",
+      "type": "string"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    }
+  },
+  "required": [
+    "tender_id",
+    "slug",
+    "title",
+    "issuing_agency",
+    "tender_type",
+    "external_ref",
+    "status",
+    "current_version",
+    "reviewed_version",
+    "publication",
+    "generated_at",
+    "fields",
+    "approved",
+    "machine",
+    "not_stated"
+  ],
+  "title": "Tender snapshot, contract v1",
+  "type": "object"
+}

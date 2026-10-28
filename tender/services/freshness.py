@@ -31,7 +31,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from core.models import AuditLog, Document, Job
-from core.services import audit, jobs
+from core.services import audit, jobs, webhooks
 from tender.models import Tender, TenderVersion, TenderVersionDocument
 
 log = logging.getLogger("tender.freshness")
@@ -298,6 +298,20 @@ class FreshnessChecker:
                 row_id=result.tender_id,
                 after=result.model_dump(mode="json"),
             )
+            if result.new or result.changed:
+                webhooks.emit(
+                    session,
+                    tenant_id=self._tenant_id,
+                    event="amendment_detected",
+                    payload={
+                        "tender_id": result.tender_id,
+                        "slug": result.slug,
+                        "page_url": result.page_url,
+                        "new": [item.model_dump(mode="json") for item in result.new],
+                        "changed": [item.model_dump(mode="json") for item in result.changed],
+                    },
+                    created_by=created_by,
+                )
             session.commit()
             if result.stale:
                 log.warning(

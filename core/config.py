@@ -79,6 +79,9 @@ class Settings(BaseSettings):
     # Where the model files are kept between container restarts (under data_dir).
     embeddings_cache_dir: str = "/data/models/fastembed"
     ask_top_k: int = 8
+    # Submissions (Stage 7, Block 6): how a submitted version is read, `batch` (half price,
+    # up to an hour) unless the caller asks for priority (`sync`, direct calls).
+    submit_run_mode: Literal["batch", "sync"] = "batch"
     # The independent reviewer (operating rule 15): a model other than the builder's, with
     # its list prices for the figure the review run records. The owner's decision of
     # 2026-10-25: no OpenAI, so Claude Opus 5.5 reviews what Claude Fable 5.1 built.

@@ -1,0 +1,553 @@
+[
+  {
+    "description": "Which tenders satisfy a condition on one field, over approved facts only. Send the structured query (`field_path`, `operator`, `value`), or a `question` that is read into one; the answer returns the query that ran.",
+    "name": "ask_across_tenders",
+    "parameters": {
+      "additionalProperties": false,
+      "properties": {
+        "_content_type": {
+          "const": "application/json",
+          "type": "string"
+        },
+        "field_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Field Path"
+        },
+        "operator": {
+          "default": "any",
+          "enum": [
+            "==",
+            "!=",
+            ">",
+            ">=",
+            "<",
+            "<=",
+            "contains",
+            "in",
+            "any"
+          ],
+          "title": "Operator",
+          "type": "string"
+        },
+        "question": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Question"
+        },
+        "value": {
+          "title": "Value"
+        }
+      },
+      "required": [],
+      "type": "object"
+    },
+    "type": "function",
+    "x-method": "POST",
+    "x-path": "/api/v1/tenders/ask"
+  },
+  {
+    "description": "Tenders side by side: fields as rows, tenders as columns, provenance on every cell, a field not reviewed marked as such. A tender whose publication is suspended is left out with the reason.",
+    "name": "compare",
+    "parameters": {
+      "additionalProperties": false,
+      "properties": {
+        "ids": {
+          "description": "Comma-separated tender ids, at most six",
+          "title": "Ids",
+          "type": "string"
+        }
+      },
+      "required": [
+        "ids"
+      ],
+      "type": "object"
+    },
+    "type": "function",
+    "x-method": "GET",
+    "x-path": "/api/v1/tenders/compare"
+  },
+  {
+    "description": "A new tender from its RfS: a file, or the official URL it is published at (the host must be on infra/source-domains.yaml). Without `tender_type` the classifier names the type. The document is parsed, mapped, indexed and read without another call; `GET /tenders/{id}/status` says where it stands. `priority` reads with direct calls instead of the batch API. Needs the `write` scope.",
+    "name": "submit_tender",
+    "parameters": {
+      "additionalProperties": false,
+      "properties": {
+        "_content_type": {
+          "const": "multipart/form-data",
+          "type": "string"
+        },
+        "agency": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Agency"
+        },
+        "external_ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "External Ref"
+        },
+        "file": {
+          "description": "the file, base64; or send source_url instead",
+          "type": "string"
+        },
+        "issued_on": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Issued On"
+        },
+        "priority": {
+          "default": false,
+          "title": "Priority",
+          "type": "boolean"
+        },
+        "source_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Source Url"
+        },
+        "tender_type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Tender Type"
+        },
+        "title": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Title"
+        }
+      },
+      "required": [],
+      "type": "object"
+    },
+    "type": "function",
+    "x-method": "POST",
+    "x-path": "/api/v1/tenders/submit"
+  },
+  {
+    "description": "Ask one question about a tender. The answer names its source (`approved` fact, `machine` reading) and cites pages with quotes the evidence resolver located; an unresolved quote is shown as such. Never a fact.",
+    "name": "ask_tender",
+    "parameters": {
+      "additionalProperties": false,
+      "properties": {
+        "_content_type": {
+          "const": "application/json",
+          "type": "string"
+        },
+        "question": {
+          "maxLength": 2000,
+          "minLength": 1,
+          "title": "Question",
+          "type": "string"
+        },
+        "tender_id": {
+          "description": "path parameter",
+          "title": "Tender Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "question",
+        "tender_id"
+      ],
+      "type": "object"
+    },
+    "type": "function",
+    "x-method": "POST",
+    "x-path": "/api/v1/tenders/{tender_id}/ask"
+  },
+  {
+    "description": "The changelog across versions: per version, the facts it changed (old to new, a withdrawal flagged) with their evidence, decision date and reviewer role; an unreviewed version lists the fields it may touch, by path only.",
+    "name": "get_changes",
+    "parameters": {
+      "additionalProperties": false,
+      "properties": {
+        "tender_id": {
+          "description": "path parameter",
+          "title": "Tender Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "tender_id"
+      ],
+      "type": "object"
+    },
+    "type": "function",
+    "x-method": "GET",
+    "x-path": "/api/v1/tenders/{tender_id}/changes"
+  },
+  {
+    "description": "The snapshot (contract v1): every field with value, unit, page, quote, version, state (value, withdrawn, not_stated), approved or machine, and confidence.",
+    "name": "get_fields",
+    "parameters": {
+      "additionalProperties": false,
+      "properties": {
+        "tender_id": {
+          "description": "path parameter",
+          "title": "Tender Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "tender_id"
+      ],
+      "type": "object"
+    },
+    "type": "function",
+    "x-method": "GET",
+    "x-path": "/api/v1/tenders/{tender_id}/fields"
+  },
+  {
+    "description": "Queue the chunks of every document of the tender for retrieval again (after a re-parse, or for documents parsed before retrieval existed).",
+    "name": "index_tender",
+    "parameters": {
+      "additionalProperties": false,
+      "properties": {
+        "tender_id": {
+          "description": "path parameter",
+          "title": "Tender Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "tender_id"
+      ],
+      "type": "object"
+    },
+    "type": "function",
+    "x-method": "POST",
+    "x-path": "/api/v1/tenders/{tender_id}/index"
+  },
+  {
+    "description": "The published view: canonical facts only, each with the version that set it, its evidence pages, the review date and the reviewer's role; the publication state with its banner; a field without a fact as a gap with its reason and the likely page. While an unreviewed version touches a critical field the view carries the suspension and the amending documents instead of values.",
+    "name": "get_published",
+    "parameters": {
+      "additionalProperties": false,
+      "properties": {
+        "tender_id": {
+          "description": "path parameter",
+          "title": "Tender Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "tender_id"
+      ],
+      "type": "object"
+    },
+    "type": "function",
+    "x-method": "GET",
+    "x-path": "/api/v1/tenders/{tender_id}/published"
+  },
+  {
+    "description": "The published view as a PDF: cover, facts by section with a reference number each, the changelog, and an appendix of page references.",
+    "name": "get_published_pdf",
+    "parameters": {
+      "additionalProperties": false,
+      "properties": {
+        "tender_id": {
+          "description": "path parameter",
+          "title": "Tender Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "tender_id"
+      ],
+      "type": "object"
+    },
+    "type": "function",
+    "x-method": "GET",
+    "x-path": "/api/v1/tenders/{tender_id}/published.pdf"
+  },
+  {
+    "description": "A review link for a named reviewer (one reviewer per tender; an earlier link stops working). The link is a credential: hand it to the reviewer, store it nowhere else. Needs the `review:mint` scope.",
+    "name": "mint_review_link",
+    "parameters": {
+      "additionalProperties": false,
+      "properties": {
+        "_content_type": {
+          "const": "application/json",
+          "type": "string"
+        },
+        "reviewer_name": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Reviewer Name",
+          "type": "string"
+        },
+        "tender_id": {
+          "description": "path parameter",
+          "title": "Tender Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "reviewer_name",
+        "tender_id"
+      ],
+      "type": "object"
+    },
+    "type": "function",
+    "x-method": "POST",
+    "x-path": "/api/v1/tenders/{tender_id}/review-link"
+  },
+  {
+    "description": "Where the tender's reading stands: per version its documents, runs and pending jobs; the tender's review and publication state.",
+    "name": "get_status",
+    "parameters": {
+      "additionalProperties": false,
+      "properties": {
+        "tender_id": {
+          "description": "path parameter",
+          "title": "Tender Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "tender_id"
+      ],
+      "type": "object"
+    },
+    "type": "function",
+    "x-method": "GET",
+    "x-path": "/api/v1/tenders/{tender_id}/status"
+  },
+  {
+    "description": "A corrigendum, amendment or clarification as the tender's next version, a file or an official URL. Before it is read, the engine checks the document names this tender; one that names another is refused unless `force`. Needs the `write` scope.",
+    "name": "submit_amendment",
+    "parameters": {
+      "additionalProperties": false,
+      "properties": {
+        "_content_type": {
+          "const": "multipart/form-data",
+          "type": "string"
+        },
+        "file": {
+          "description": "the file, base64; or send source_url instead",
+          "type": "string"
+        },
+        "force": {
+          "default": false,
+          "title": "Force",
+          "type": "boolean"
+        },
+        "issued_on": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Issued On"
+        },
+        "kind": {
+          "title": "Kind",
+          "type": "string"
+        },
+        "priority": {
+          "default": false,
+          "title": "Priority",
+          "type": "boolean"
+        },
+        "source_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Source Url"
+        },
+        "summary_of_change": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Summary Of Change"
+        },
+        "tender_id": {
+          "description": "path parameter",
+          "title": "Tender Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "tender_id"
+      ],
+      "type": "object"
+    },
+    "type": "function",
+    "x-method": "POST",
+    "x-path": "/api/v1/tenders/{tender_id}/submit-amendment"
+  },
+  {
+    "description": "Register a URL for events (extraction_done, review_complete, new_version, amendment_detected). Every delivery is signed with the secret (`X-Tender-Signature: t=<unix>,v1=<HMAC-SHA256 of \"<t>.<body>\">`) and retried with backoff. Needs the `write` scope.",
+    "name": "register_webhook",
+    "parameters": {
+      "additionalProperties": false,
+      "properties": {
+        "_content_type": {
+          "const": "application/json",
+          "type": "string"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Description"
+        },
+        "events": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Events",
+          "type": "array"
+        },
+        "secret": {
+          "maxLength": 200,
+          "minLength": 16,
+          "title": "Secret",
+          "type": "string"
+        },
+        "url": {
+          "maxLength": 2000,
+          "minLength": 8,
+          "title": "Url",
+          "type": "string"
+        }
+      },
+      "required": [
+        "events",
+        "secret",
+        "url"
+      ],
+      "type": "object"
+    },
+    "type": "function",
+    "x-method": "POST",
+    "x-path": "/api/v1/webhooks"
+  },
+  {
+    "description": "List Webhooks",
+    "name": "list_webhooks",
+    "parameters": {
+      "additionalProperties": false,
+      "properties": {},
+      "required": [],
+      "type": "object"
+    },
+    "type": "function",
+    "x-method": "GET",
+    "x-path": "/api/v1/webhooks"
+  },
+  {
+    "description": "Stop deliveries to the endpoint; its record and its deliveries stay.",
+    "name": "deactivate_webhook",
+    "parameters": {
+      "additionalProperties": false,
+      "properties": {
+        "endpoint_id": {
+          "description": "path parameter",
+          "title": "Endpoint Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "endpoint_id"
+      ],
+      "type": "object"
+    },
+    "type": "function",
+    "x-method": "DELETE",
+    "x-path": "/api/v1/webhooks/{endpoint_id}"
+  },
+  {
+    "description": "The latest deliveries to the endpoint, newest first, with each one's outcome.",
+    "name": "list_deliveries",
+    "parameters": {
+      "additionalProperties": false,
+      "properties": {
+        "endpoint_id": {
+          "description": "path parameter",
+          "title": "Endpoint Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "endpoint_id"
+      ],
+      "type": "object"
+    },
+    "type": "function",
+    "x-method": "GET",
+    "x-path": "/api/v1/webhooks/{endpoint_id}/deliveries"
+  }
+]

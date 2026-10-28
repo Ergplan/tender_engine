@@ -27,7 +27,9 @@ from tender.models import Tender
 from tender.services.ask import AskService
 from tender.services.packs import Catalog
 from tender.services.retrieval_meta import chunk_meta
+from tender.services.submit import Fetcher, SubmitService
 from tender.services.tenders import TenderService
+from tender.services.tokens import TokenService
 from tender.services.worker_jobs import tender_jobs
 from tests.conftest import Pipeline, add_tenant, owner_engine
 from tests.fixtures.llm import ScriptedSDK
@@ -151,6 +153,7 @@ def state(pipeline: Pipeline, settings: Settings, tmp_path: Any) -> SimpleNamesp
 
 
 def context_for(state: SimpleNamespace, session: Session, principal: Principal) -> ToolContext:
+    tenant_id = principal.tenant_id
     return ToolContext(
         session=session,
         principal=principal,
@@ -160,6 +163,14 @@ def context_for(state: SimpleNamespace, session: Session, principal: Principal) 
         tenders=state.tenders,
         storage=state.storage,
         results_root=None,
+        # Block 6 c: submissions fetch from `state.submit_transport` when a test sets one.
+        submit=SubmitService(
+            state.tenders,
+            IngestService(state.storage, tenant_id),
+            tenant_id,
+            fetcher=Fetcher(transport=getattr(state, "submit_transport", None)),
+        ),
+        tokens=TokenService(tenant_id),
     )
 
 

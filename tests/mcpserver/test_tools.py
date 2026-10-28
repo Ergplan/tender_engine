@@ -32,6 +32,11 @@ def run(state: SimpleNamespace, db: Session, principal: Principal, name: str, **
         "model_tender": tools.model_tender,
         "save_model_assumptions": tools.save_model_assumptions,
         "my_watchlist": tools.my_watchlist,
+        "get_status": tools.get_status,
+        "get_changes": tools.get_changes,
+        "submit_tender": tools.submit_tender,
+        "submit_amendment": tools.submit_amendment,
+        "get_review_link": tools.get_review_link,
     }[name]
     return tools.run_tool(ctx, name, lambda tier: fn(ctx, **kwargs))
 
@@ -235,3 +240,78 @@ def test_an_unknown_tender_and_too_many_tenders_are_refused(
     with pytest.raises(ToolRefused) as many:
         run(state, db, enterprise_principal, "compare_tenders", tenders=["a"] * 7)
     assert many.value.status == 422
+
+
+def test_the_write_tools_need_the_write_scope_and_file_a_tender_from_its_official_url(
+    state: SimpleNamespace,
+    db: Session,
+    library: tuple[Pipeline, Session, str],
+    own_tender: str,
+    free_principal: Principal,
+    enterprise_principal: Principal,
+) -> None:
+    from dataclasses import replace
+
+    import httpx2
+
+    from tests.fixtures.pdfs import make_pdf
+    from tests.fixtures.tenders import RFS_PAGES
+
+    _, _, public_id = library
+    pdf = make_pdf(RFS_PAGES)
+    state.submit_transport = httpx2.MockTransport(
+        lambda request: httpx2.Response(
+            200, content=pdf, headers={"content-type": "application/pdf"}
+        )
+    )
+    url = "https://www.seci.co.in/tenders/rfs.pdf"
+    # The free tier is refused before anything else; a reader of the enterprise tier too.
+    with pytest.raises(ToolRefused) as free:
+        run(state, db, free_principal, "submit_tender", source_url=url)
+    assert free.value.error_type == "tier_required"
+    with pytest.raises(ToolRefused) as reader:
+        run(state, db, enterprise_principal, "submit_tender", source_url=url)
+    assert reader.value.error_type == "not_allowed" and "write scope" in reader.value.message
+    with pytest.raises(ToolRefused) as minter:
+        run(
+            state, db, enterprise_principal, "get_review_link", tender=own_tender, reviewer_name="A"
+        )
+    assert minter.value.error_type == "not_allowed"
+    # Reads of the contract are the paid tier's, with no further scope.
+    status = run(state, db, enterprise_principal, "get_status", tender=own_tender)
+    assert status.structured.tender_id == own_tender and "v1 original" in status.text
+    changes = run(state, db, enterprise_principal, "get_changes", tender=own_tender)
+    assert changes.structured.tender_id == own_tender
+    # With the write scope (the OAuth consent's `own:write`): submitted from the agency's URL.
+    writer = replace(enterprise_principal, scopes=(*enterprise_principal.scopes, "own:write"))
+    made = run(state, db, writer, "submit_tender", source_url=url, tender_type="solar")
+    assert made.structured.created and made.structured.version_no == 1
+    assert "Submitted" in made.text and made.structured.status_hint.startswith("get_status(")
+    again = run(state, db, writer, "submit_tender", source_url=url, tender_type="solar")
+    assert not again.structured.created and again.structured.tender_id == made.structured.tender_id
+    # An off-source URL is refused in plain words; so is an amendment of the library's tender.
+    with pytest.raises(ToolRefused) as mirror:
+        run(state, db, writer, "submit_tender", source_url="https://mirror.example/x.pdf")
+    assert (
+        mirror.value.error_type == "validation_failed" and "official source" in mirror.value.message
+    )
+    with pytest.raises(ToolRefused) as theirs:
+        run(
+            state,
+            db,
+            writer,
+            "submit_amendment",
+            tender=public_id,
+            source_url=url,
+            kind="amendment",
+        )
+    assert theirs.value.error_type == "not_allowed"
+    filed = run(
+        state, db, writer, "submit_amendment",
+        tender=made.structured.tender_id, source_url=url + "?v=2", kind="corrigendum",
+        issued_on="2026-04-01",
+    )  # fmt: skip
+    assert filed.structured.version_no == 2 or not filed.structured.created
+    link = run(state, db, writer, "get_review_link", tender=own_tender, reviewer_name="Asha")
+    assert "/review/" in link.structured.url and link.structured.reviewer_name == "Asha"
+    assert "credential" in link.text

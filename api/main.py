@@ -13,7 +13,7 @@ from api.v1.admin import library as admin_library
 from api.v1.awards import awards
 from api.v1.core import auth as auth_routes
 from api.v1.core import documents, extraction, files, health, oauth, review
-from api.v1.tenders import agent_pass, ask, library, published, tenders
+from api.v1.tenders import agent_pass, ask, contract, library, published, tenders
 from api.v1.tenders import review as tender_review
 from core.config import Settings
 from core.db import make_engine, make_session_factory
@@ -38,6 +38,7 @@ V1_ROUTERS = (
     published.router,
     library.router,
     ask.router,
+    contract.router,
     tenders.router,
     tender_review.router,
     agent_pass.router,
@@ -61,6 +62,7 @@ API_PRODUCT_ROUTERS = (
     published.router,
     library.router,
     ask.router,
+    contract.router,
     tenders.router,
     awards.router,
     reliability.router,

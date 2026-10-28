@@ -55,7 +55,7 @@ class ApiKeyOut(BaseModel):
 
 class ApiKeyCreate(BaseModel):
     name: str = Field(min_length=1, max_length=200)
-    scopes: list[Literal["read", "model"]] = ["read"]
+    scopes: list[Literal["read", "model", "write", "review:mint"]] = ["read"]
     rate_limit_per_min: int | None = Field(default=None, ge=1, le=10000)
     daily_cap: int | None = Field(default=None, ge=1, le=10_000_000)
 

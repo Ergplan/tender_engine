@@ -56,7 +56,11 @@ from tender.services.published import (
     published_tender,
     reliability_of,
 )
+from tender.services.snapshot import TenderSnapshot
+from tender.services.status import TenderStatus, tender_status
+from tender.services.submit import SubmitError, SubmitService
 from tender.services.tenders import TenderService
+from tender.services.tokens import TokenService
 
 ACTOR = "mcp"
 DEADLINE = library.DEADLINE_FIELD
@@ -70,7 +74,21 @@ FREE_TOOLS = (
     "compare_tenders",
     "reliability_report",
 )
-PAID_TOOLS = ("model_tender", "save_model_assumptions", "my_watchlist", "ask_tender")
+PAID_TOOLS = (
+    "model_tender",
+    "save_model_assumptions",
+    "my_watchlist",
+    "ask_tender",
+    "get_status",
+    "get_changes",
+    "submit_tender",
+    "submit_amendment",
+    "get_review_link",
+)
+# Block 6 c: a tool that changes the caller's tenant needs the write scope on the token
+# (`own:write` from the OAuth consent, `write` on an API key); a review link its own.
+WRITE_TOOLS = ("submit_tender", "submit_amendment")
+MINT_TOOLS = ("get_review_link",)
 ASSUMPTION_NAMES = tuple(f.name for f in dataclass_fields(Assumptions))
 
 
@@ -96,6 +114,9 @@ class ToolContext:
     results_root: Path | None = None
     # The full-tender query (Stage 7, Block 5); None where the host built no retrieval.
     ask: AskService | None = None
+    # Submissions and review links (Stage 7, Block 6 c).
+    submit: SubmitService | None = None
+    tokens: TokenService | None = None
 
     @property
     def public_base_url(self) -> str:
@@ -282,6 +303,11 @@ def guard(ctx: ToolContext, tool: str) -> str:
             f"{tool} is a paid-tier tool; the free tier reads the library",
             403,
         )
+    scopes = set(ctx.principal.scopes)
+    if tool in WRITE_TOOLS and not scopes & {"own:write", "write"}:
+        raise ToolRefused("not_allowed", f"{tool} needs the write scope on this token", 403)
+    if tool in MINT_TOOLS and not scopes & {"review:mint", "own:write"}:
+        raise ToolRefused("not_allowed", f"{tool} needs the review:mint scope on this token", 403)
     if tier == "free":
         now = datetime.now(UTC)
         if _usage_since(ctx, now - timedelta(seconds=60)) >= ctx.settings.free_rate_limit_per_min:
@@ -857,5 +883,177 @@ def ask_tender(ctx: ToolContext, tender: str, question: str) -> ToolResult:
         + (cited + "\n" if cited else "")
         + f"Citations located: {answer.citations_resolved} of {answer.citations_total}. "
         f"{AUTHORITY_NOTE}"
+    )
+    return ToolResult(result, text, resource_tenant_id=row.tenant_id)
+
+
+# -- Block 6 c: status, changes, submissions, review links ---------------------------------
+
+
+class StatusResult(TenderStatus):
+    title: str
+
+
+class SnapshotResult(TenderSnapshot):
+    pass
+
+
+class SubmitResult(BaseModel):
+    tender_id: str
+    slug: str | None
+    version_no: int
+    document_id: str
+    created: bool
+    status_hint: str
+
+
+class ReviewLinkResult(BaseModel):
+    tender_id: str
+    reviewer_name: str
+    url: str
+    expires_at: datetime | None
+    note: str
+
+
+def _own_tender(ctx: ToolContext, ref: str) -> Tender:
+    """A tender of the caller's own tenant (a submission or a review link never touches
+    the library's)."""
+    row = _tender(ctx, ref)
+    if row.tenant_id != ctx.principal.tenant_id:
+        raise ToolRefused("not_allowed", "this tender is the library's, not your tenant's", 403)
+    return row
+
+
+def get_status(ctx: ToolContext, tender: str) -> ToolResult:
+    """Where a tender's reading stands (Block 6): per version its documents, runs and
+    pending jobs; the review and publication state."""
+    row = _tender(ctx, tender)
+    status = tender_status(ctx.session, ctx.catalog, ctx.tenders, row)
+    result = StatusResult(**status.model_dump(), title=row.title)
+    lines = [
+        f"{row.title}: {status.status}, type {status.tender_type} ({status.type_state}), "
+        f"publication {status.publication}, extraction "
+        f"{'done' if status.extraction_done else 'under way'}"
+    ]
+    for version in status.versions:
+        docs = ", ".join(f"{d.filename} ({d.status})" for d in version.documents)
+        pending = f"; pending: {', '.join(version.pending_jobs)}" if version.pending_jobs else ""
+        lines.append(f"  v{version.version_no} {version.kind}: {version.stage}; {docs}{pending}")
+    return ToolResult(result, "\n".join(lines), resource_tenant_id=row.tenant_id)
+
+
+def get_changes(ctx: ToolContext, tender: str) -> ToolResult:
+    """The changelog across a tender's versions with impacts (Block 6): the same answer as
+    `list_changes`, under the name the plan gives it."""
+    return list_changes(ctx, tender)
+
+
+def submit_tender(
+    ctx: ToolContext,
+    source_url: str,
+    tender_type: str | None = None,
+    agency: str | None = None,
+    title: str | None = None,
+    external_ref: str | None = None,
+) -> ToolResult:
+    """A new tender from the official URL of its RfS (Block 6): fetched from the agency's
+    own domain only, parsed, mapped, indexed and read; `get_status` says where it stands."""
+    if ctx.submit is None:
+        raise ToolRefused("not_found", "submissions are not configured here", 503)
+    try:
+        made = ctx.submit.submit_tender(
+            ctx.session,
+            source_url=source_url,
+            tender_type=tender_type,
+            agency=agency,
+            title=title,
+            external_ref=external_ref,
+            created_by=ACTOR,
+        )
+    except SubmitError as exc:
+        raise ToolRefused("validation_failed", str(exc), 422) from exc
+    result = SubmitResult(
+        tender_id=made.tender.id,
+        slug=made.tender.slug,
+        version_no=made.version.version_no,
+        document_id=made.document.id,
+        created=made.created,
+        status_hint=f"get_status(tender='{made.tender.id}')",
+    )
+    text = (
+        f"{'Submitted' if made.created else 'Already held'}: tender {made.tender.id} "
+        f"({made.tender.title}), version {made.version.version_no}, document "
+        f"{made.document.filename}. Ask get_status for progress. {AUTHORITY_NOTE}"
+    )
+    return ToolResult(result, text, resource_tenant_id=made.tender.tenant_id)
+
+
+def submit_amendment(
+    ctx: ToolContext,
+    tender: str,
+    source_url: str,
+    kind: str,
+    issued_on: str | None = None,
+    force: bool = False,
+) -> ToolResult:
+    """A corrigendum, amendment or clarification from its official URL as the tender's
+    next version (Block 6); a document that names another tender is refused unless forced."""
+    if ctx.submit is None:
+        raise ToolRefused("not_found", "submissions are not configured here", 503)
+    row = _own_tender(ctx, tender)
+    try:
+        when = date.fromisoformat(issued_on) if issued_on else None
+    except ValueError as exc:
+        raise ToolRefused("validation_failed", f"issued_on: {exc}", 422) from exc
+    try:
+        made = ctx.submit.submit_amendment(
+            ctx.session,
+            row,
+            kind=kind,
+            source_url=source_url,
+            issued_on=when,
+            created_by=ACTOR,
+            force=force,
+        )
+    except SubmitError as exc:
+        raise ToolRefused("validation_failed", str(exc), 422) from exc
+    result = SubmitResult(
+        tender_id=row.id,
+        slug=row.slug,
+        version_no=made.version.version_no,
+        document_id=made.document.id,
+        created=made.created,
+        status_hint=f"get_status(tender='{row.id}')",
+    )
+    text = (
+        f"{'Filed' if made.created else 'Already held'}: version {made.version.version_no} "
+        f"({kind}) of {row.title}, document {made.document.filename}. {AUTHORITY_NOTE}"
+    )
+    return ToolResult(result, text, resource_tenant_id=row.tenant_id)
+
+
+def get_review_link(ctx: ToolContext, tender: str, reviewer_name: str) -> ToolResult:
+    """A review link for a named reviewer (Block 6). The link is a credential for the
+    reviewer alone: hand it over, store it nowhere."""
+    if ctx.tokens is None:
+        raise ToolRefused("not_found", "review links are not configured here", 503)
+    row = _own_tender(ctx, tender)
+    try:
+        token = ctx.tokens.create_for(
+            ctx.session, "tender", row.id, reviewer_name, created_by=ACTOR
+        )
+    except ValueError as exc:
+        raise ToolRefused("validation_failed", str(exc), 422) from exc
+    url = f"{ctx.public_base_url}/review/{token.token}"
+    result = ReviewLinkResult(
+        tender_id=row.id,
+        reviewer_name=token.reviewer_name,
+        url=url,
+        expires_at=token.expires_at,
+        note="A credential for the named reviewer: hand it over and store it nowhere else.",
+    )
+    text = (
+        f"Review link for {token.reviewer_name} on {row.title}: {url} (expires "
+        f"{token.expires_at:%Y-%m-%d}). {result.note}"
     )
     return ToolResult(result, text, resource_tenant_id=row.tenant_id)

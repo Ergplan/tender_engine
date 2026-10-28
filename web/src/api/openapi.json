@@ -685,7 +685,9 @@
             "items": {
               "enum": [
                 "read",
-                "model"
+                "model",
+                "write",
+                "review:mint"
               ],
               "type": "string"
             },
@@ -1857,6 +1859,165 @@
           "request"
         ],
         "title": "Body_decide_api_v1_oauth_consent_post",
+        "type": "object"
+      },
+      "Body_submit_amendment_api_v1_tenders__tender_id__submit_amendment_post": {
+        "properties": {
+          "file": {
+            "anyOf": [
+              {
+                "contentMediaType": "application/octet-stream",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File"
+          },
+          "force": {
+            "default": false,
+            "title": "Force",
+            "type": "boolean"
+          },
+          "issued_on": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Issued On"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "priority": {
+            "default": false,
+            "title": "Priority",
+            "type": "boolean"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
+          },
+          "summary_of_change": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summary Of Change"
+          }
+        },
+        "required": [
+          "kind"
+        ],
+        "title": "Body_submit_amendment_api_v1_tenders__tender_id__submit_amendment_post",
+        "type": "object"
+      },
+      "Body_submit_tender_api_v1_tenders_submit_post": {
+        "properties": {
+          "agency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Agency"
+          },
+          "external_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "External Ref"
+          },
+          "file": {
+            "anyOf": [
+              {
+                "contentMediaType": "application/octet-stream",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File"
+          },
+          "issued_on": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Issued On"
+          },
+          "priority": {
+            "default": false,
+            "title": "Priority",
+            "type": "boolean"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
+          },
+          "tender_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tender Type"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          }
+        },
+        "title": "Body_submit_tender_api_v1_tenders_submit_post",
         "type": "object"
       },
       "Body_upload_bundle_api_v1_documents_bundle_post": {
@@ -3088,6 +3249,82 @@
         "title": "CrossQuery",
         "type": "object"
       },
+      "DeliveryOut": {
+        "properties": {
+          "attempts": {
+            "title": "Attempts",
+            "type": "integer"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "delivered_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delivered At"
+          },
+          "endpoint_id": {
+            "title": "Endpoint Id",
+            "type": "string"
+          },
+          "event": {
+            "title": "Event",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "last_error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Error"
+          },
+          "last_status": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Status"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "endpoint_id",
+          "event",
+          "status",
+          "attempts",
+          "last_status",
+          "last_error",
+          "created_at",
+          "delivered_at"
+        ],
+        "title": "DeliveryOut",
+        "type": "object"
+      },
       "DocumentOut": {
         "properties": {
           "classification": {
@@ -3196,6 +3433,57 @@
           "retrieved_on"
         ],
         "title": "DocumentOut",
+        "type": "object"
+      },
+      "DocumentStatus": {
+        "properties": {
+          "document_id": {
+            "title": "Document Id",
+            "type": "string"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "filename": {
+            "title": "Filename",
+            "type": "string"
+          },
+          "pages": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pages"
+          },
+          "role": {
+            "title": "Role",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "document_id",
+          "filename",
+          "role",
+          "status",
+          "pages"
+        ],
+        "title": "DocumentStatus",
         "type": "object"
       },
       "Emphasis": {
@@ -5631,6 +5919,57 @@
         "title": "ReviewField",
         "type": "object"
       },
+      "ReviewLinkOut": {
+        "properties": {
+          "expires_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires At"
+          },
+          "reviewer_name": {
+            "title": "Reviewer Name",
+            "type": "string"
+          },
+          "tender_id": {
+            "title": "Tender Id",
+            "type": "string"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "url",
+          "tender_id",
+          "reviewer_name",
+          "expires_at"
+        ],
+        "title": "ReviewLinkOut",
+        "type": "object"
+      },
+      "ReviewLinkRequest": {
+        "properties": {
+          "reviewer_name": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Reviewer Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "reviewer_name"
+        ],
+        "title": "ReviewLinkRequest",
+        "type": "object"
+      },
       "ReviewRound": {
         "description": "The round a review link opens: from which version, and how much of the tender it\nasks about.",
         "properties": {
@@ -5991,6 +6330,71 @@
         "title": "ReviewerEvidence",
         "type": "object"
       },
+      "RunStatus": {
+        "properties": {
+          "document_id": {
+            "title": "Document Id",
+            "type": "string"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "finished_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finished At"
+          },
+          "mode": {
+            "title": "Mode",
+            "type": "string"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started At"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "run_id",
+          "document_id",
+          "mode",
+          "status",
+          "started_at",
+          "finished_at"
+        ],
+        "title": "RunStatus",
+        "type": "object"
+      },
       "RunView": {
         "properties": {
           "document_id": {
@@ -6199,6 +6603,165 @@
           "decisions"
         ],
         "title": "Sitting",
+        "type": "object"
+      },
+      "SnapshotEvidence": {
+        "properties": {
+          "document_id": {
+            "title": "Document Id",
+            "type": "string"
+          },
+          "filename": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Filename"
+          },
+          "located": {
+            "title": "Located",
+            "type": "boolean"
+          },
+          "page_no": {
+            "title": "Page No",
+            "type": "integer"
+          },
+          "quote": {
+            "title": "Quote",
+            "type": "string"
+          }
+        },
+        "required": [
+          "document_id",
+          "page_no",
+          "quote",
+          "located"
+        ],
+        "title": "SnapshotEvidence",
+        "type": "object"
+      },
+      "SnapshotField": {
+        "properties": {
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "machine readings only",
+            "title": "Confidence"
+          },
+          "evidence": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/SnapshotEvidence"
+            },
+            "title": "Evidence",
+            "type": "array"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "needs_review": {
+            "default": false,
+            "title": "Needs Review",
+            "type": "boolean"
+          },
+          "path": {
+            "title": "Path",
+            "type": "string"
+          },
+          "section": {
+            "title": "Section",
+            "type": "string"
+          },
+          "source": {
+            "enum": [
+              "approved",
+              "machine",
+              "none"
+            ],
+            "title": "Source",
+            "type": "string"
+          },
+          "state": {
+            "enum": [
+              "value",
+              "withdrawn",
+              "not_stated"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          },
+          "value": {
+            "title": "Value"
+          },
+          "value_type": {
+            "title": "Value Type",
+            "type": "string"
+          },
+          "version_kind": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version Kind"
+          },
+          "version_no": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version No"
+          },
+          "withdrawn_from_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Withdrawn From Version"
+          }
+        },
+        "required": [
+          "path",
+          "section",
+          "label",
+          "value_type",
+          "state",
+          "source"
+        ],
+        "title": "SnapshotField",
         "type": "object"
       },
       "SnapshotOut": {
@@ -6422,6 +6985,51 @@
           "reasons"
         ],
         "title": "Stability",
+        "type": "object"
+      },
+      "SubmitOut": {
+        "properties": {
+          "created": {
+            "title": "Created",
+            "type": "boolean"
+          },
+          "document_id": {
+            "title": "Document Id",
+            "type": "string"
+          },
+          "slug": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Slug"
+          },
+          "status_path": {
+            "title": "Status Path",
+            "type": "string"
+          },
+          "tender_id": {
+            "title": "Tender Id",
+            "type": "string"
+          },
+          "version_no": {
+            "title": "Version No",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "tender_id",
+          "slug",
+          "version_no",
+          "document_id",
+          "created",
+          "status_path"
+        ],
+        "title": "SubmitOut",
         "type": "object"
       },
       "Summary": {
@@ -7408,6 +8016,225 @@
         "title": "TenderSearchHit",
         "type": "object"
       },
+      "TenderSnapshot": {
+        "properties": {
+          "approved": {
+            "title": "Approved",
+            "type": "integer"
+          },
+          "authority_note": {
+            "default": "The tender document is the authoritative source; this is jouleWise's reviewed reading of it.",
+            "title": "Authority Note",
+            "type": "string"
+          },
+          "contract_version": {
+            "default": "1",
+            "title": "Contract Version",
+            "type": "string"
+          },
+          "current_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Version"
+          },
+          "external_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "External Ref"
+          },
+          "fields": {
+            "items": {
+              "$ref": "#/components/schemas/SnapshotField"
+            },
+            "title": "Fields",
+            "type": "array"
+          },
+          "generated_at": {
+            "format": "date-time",
+            "title": "Generated At",
+            "type": "string"
+          },
+          "issuing_agency": {
+            "title": "Issuing Agency",
+            "type": "string"
+          },
+          "machine": {
+            "title": "Machine",
+            "type": "integer"
+          },
+          "not_stated": {
+            "title": "Not Stated",
+            "type": "integer"
+          },
+          "publication": {
+            "title": "Publication",
+            "type": "string"
+          },
+          "reviewed_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewed Version"
+          },
+          "slug": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Slug"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "tender_id": {
+            "title": "Tender Id",
+            "type": "string"
+          },
+          "tender_type": {
+            "title": "Tender Type",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tender_id",
+          "slug",
+          "title",
+          "issuing_agency",
+          "tender_type",
+          "external_ref",
+          "status",
+          "current_version",
+          "reviewed_version",
+          "publication",
+          "generated_at",
+          "fields",
+          "approved",
+          "machine",
+          "not_stated"
+        ],
+        "title": "TenderSnapshot",
+        "type": "object"
+      },
+      "TenderStatus": {
+        "properties": {
+          "current_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Version"
+          },
+          "extraction_done": {
+            "title": "Extraction Done",
+            "type": "boolean"
+          },
+          "publication": {
+            "title": "Publication",
+            "type": "string"
+          },
+          "reviewed_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewed Version"
+          },
+          "slug": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Slug"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "tender_id": {
+            "title": "Tender Id",
+            "type": "string"
+          },
+          "tender_type": {
+            "title": "Tender Type",
+            "type": "string"
+          },
+          "type_confidence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Type Confidence"
+          },
+          "type_state": {
+            "title": "Type State",
+            "type": "string"
+          },
+          "versions": {
+            "items": {
+              "$ref": "#/components/schemas/VersionStatus"
+            },
+            "title": "Versions",
+            "type": "array"
+          }
+        },
+        "required": [
+          "tender_id",
+          "slug",
+          "status",
+          "tender_type",
+          "type_state",
+          "type_confidence",
+          "current_version",
+          "reviewed_version",
+          "publication",
+          "versions",
+          "extraction_done"
+        ],
+        "title": "TenderStatus",
+        "type": "object"
+      },
       "TenderSummary": {
         "properties": {
           "cost_usd": {
@@ -8129,6 +8956,74 @@
         "title": "VersionOut",
         "type": "object"
       },
+      "VersionStatus": {
+        "properties": {
+          "documents": {
+            "items": {
+              "$ref": "#/components/schemas/DocumentStatus"
+            },
+            "title": "Documents",
+            "type": "array"
+          },
+          "issued_on": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Issued On"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "pending_jobs": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Pending Jobs",
+            "type": "array"
+          },
+          "runs": {
+            "items": {
+              "$ref": "#/components/schemas/RunStatus"
+            },
+            "title": "Runs",
+            "type": "array"
+          },
+          "stage": {
+            "enum": [
+              "submitted",
+              "parsing",
+              "mapping",
+              "extracting",
+              "validated",
+              "failed"
+            ],
+            "title": "Stage",
+            "type": "string"
+          },
+          "version_no": {
+            "title": "Version No",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "version_no",
+          "kind",
+          "issued_on",
+          "stage",
+          "documents",
+          "runs",
+          "pending_jobs"
+        ],
+        "title": "VersionStatus",
+        "type": "object"
+      },
       "WatchedTender": {
         "properties": {
           "bid_deadline": {
@@ -8198,6 +9093,96 @@
           "tender_id"
         ],
         "title": "WatchlistIn",
+        "type": "object"
+      },
+      "WebhookCreate": {
+        "properties": {
+          "description": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "events": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Events",
+            "type": "array"
+          },
+          "secret": {
+            "maxLength": 200,
+            "minLength": 16,
+            "title": "Secret",
+            "type": "string"
+          },
+          "url": {
+            "maxLength": 2000,
+            "minLength": 8,
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "url",
+          "events",
+          "secret"
+        ],
+        "title": "WebhookCreate",
+        "type": "object"
+      },
+      "WebhookOut": {
+        "properties": {
+          "active": {
+            "title": "Active",
+            "type": "boolean"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "events": {
+            "items": {},
+            "title": "Events",
+            "type": "array"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "url",
+          "events",
+          "description",
+          "active",
+          "created_at"
+        ],
+        "title": "WebhookOut",
         "type": "object"
       },
       "YearRow": {
@@ -11200,6 +12185,65 @@
         ]
       }
     },
+    "/api/v1/tenders/submit": {
+      "post": {
+        "description": "A new tender from its RfS: a file, or the official URL it is published at (the host\nmust be on infra/source-domains.yaml). Without `tender_type` the classifier names the\ntype. The document is parsed, mapped, indexed and read without another call;\n`GET /tenders/{id}/status` says where it stands. `priority` reads with direct calls\ninstead of the batch API. Needs the `write` scope.",
+        "operationId": "submit_tender_api_v1_tenders_submit_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-reviewer",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Reviewer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_submit_tender_api_v1_tenders_submit_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubmitOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Submit Tender",
+        "tags": [
+          "contract v1"
+        ]
+      }
+    },
     "/api/v1/tenders/{tender_id}": {
       "get": {
         "operationId": "get_tender_api_v1_tenders__tender_id__get",
@@ -11775,6 +12819,49 @@
         ]
       }
     },
+    "/api/v1/tenders/{tender_id}/fields": {
+      "get": {
+        "description": "The snapshot (contract v1): every field with value, unit, page, quote, version,\nstate (value, withdrawn, not_stated), approved or machine, and confidence.",
+        "operationId": "get_fields_api_v1_tenders__tender_id__fields_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tender_id",
+            "required": true,
+            "schema": {
+              "title": "Tender Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TenderSnapshot"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Fields",
+        "tags": [
+          "contract v1"
+        ]
+      }
+    },
     "/api/v1/tenders/{tender_id}/index": {
       "post": {
         "description": "Queue the chunks of every document of the tender for retrieval again (after a\nre-parse, or for documents parsed before retrieval existed).",
@@ -12013,6 +13100,75 @@
         ]
       }
     },
+    "/api/v1/tenders/{tender_id}/review-link": {
+      "post": {
+        "description": "A review link for a named reviewer (one reviewer per tender; an earlier link stops\nworking). The link is a credential: hand it to the reviewer, store it nowhere else.\nNeeds the `review:mint` scope.",
+        "operationId": "mint_review_link_api_v1_tenders__tender_id__review_link_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tender_id",
+            "required": true,
+            "schema": {
+              "title": "Tender Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-reviewer",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Reviewer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewLinkRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewLinkOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Mint Review Link",
+        "tags": [
+          "contract v1"
+        ]
+      }
+    },
     "/api/v1/tenders/{tender_id}/review-state": {
       "get": {
         "description": "Core's review state for one version of the tender (the latest extracted by default).",
@@ -12112,6 +13268,118 @@
         "summary": "Get Snapshot",
         "tags": [
           "review"
+        ]
+      }
+    },
+    "/api/v1/tenders/{tender_id}/status": {
+      "get": {
+        "description": "Where the tender's reading stands: per version its documents, runs and pending\njobs; the tender's review and publication state.",
+        "operationId": "get_status_api_v1_tenders__tender_id__status_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tender_id",
+            "required": true,
+            "schema": {
+              "title": "Tender Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TenderStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Status",
+        "tags": [
+          "contract v1"
+        ]
+      }
+    },
+    "/api/v1/tenders/{tender_id}/submit-amendment": {
+      "post": {
+        "description": "A corrigendum, amendment or clarification as the tender's next version, a file or\nan official URL. Before it is read, the engine checks the document names this tender;\none that names another is refused unless `force`. Needs the `write` scope.",
+        "operationId": "submit_amendment_api_v1_tenders__tender_id__submit_amendment_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "tender_id",
+            "required": true,
+            "schema": {
+              "title": "Tender Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-reviewer",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Reviewer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_submit_amendment_api_v1_tenders__tender_id__submit_amendment_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubmitOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Submit Amendment",
+        "tags": [
+          "contract v1"
         ]
       }
     },
@@ -12396,6 +13664,195 @@
         "summary": "Get View",
         "tags": [
           "tenders"
+        ]
+      }
+    },
+    "/api/v1/webhooks": {
+      "get": {
+        "operationId": "list_webhooks_api_v1_webhooks_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/WebhookOut"
+                  },
+                  "title": "Response List Webhooks Api V1 Webhooks Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Webhooks",
+        "tags": [
+          "contract v1"
+        ]
+      },
+      "post": {
+        "description": "Register a URL for events (extraction_done, review_complete, new_version,\namendment_detected). Every delivery is signed with the secret\n(`X-Tender-Signature: t=<unix>,v1=<HMAC-SHA256 of \"<t>.<body>\">`) and retried with\nbackoff. Needs the `write` scope.",
+        "operationId": "register_webhook_api_v1_webhooks_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-reviewer",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Reviewer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Register Webhook",
+        "tags": [
+          "contract v1"
+        ]
+      }
+    },
+    "/api/v1/webhooks/{endpoint_id}": {
+      "delete": {
+        "description": "Stop deliveries to the endpoint; its record and its deliveries stay.",
+        "operationId": "deactivate_webhook_api_v1_webhooks__endpoint_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "endpoint_id",
+            "required": true,
+            "schema": {
+              "title": "Endpoint Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-reviewer",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Reviewer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Deactivate Webhook",
+        "tags": [
+          "contract v1"
+        ]
+      }
+    },
+    "/api/v1/webhooks/{endpoint_id}/deliveries": {
+      "get": {
+        "description": "The latest deliveries to the endpoint, newest first, with each one's outcome.",
+        "operationId": "list_deliveries_api_v1_webhooks__endpoint_id__deliveries_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "endpoint_id",
+            "required": true,
+            "schema": {
+              "title": "Endpoint Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/DeliveryOut"
+                  },
+                  "title": "Response List Deliveries Api V1 Webhooks  Endpoint Id  Deliveries Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Deliveries",
+        "tags": [
+          "contract v1"
         ]
       }
     }

@@ -113,8 +113,35 @@ ALLOWED_BY_ROLE: dict[str, tuple[tuple[str, str], ...]] = {
         ("GET", r"/schemas/tender/[a-z_]+"),
         ("POST", rf"/tenders/{ID}/model"),
         ("POST", r"/public/corrections"),
+        # The contract (Block 6 a): reads with `read`; the model-calling ask routes with
+        # `model`; submissions and webhooks with `write`; a review link with `review:mint`
+        # (the scope checks are in `_allowed`).
+        ("GET", rf"/tenders/{ID}/(status|fields)"),
+        ("GET", r"/webhooks"),
+        ("GET", rf"/webhooks/{ID}/deliveries"),
+        ("POST", rf"/tenders/{ID}/ask"),
+        ("POST", r"/tenders/ask"),
+        ("POST", r"/tenders/submit"),
+        ("POST", rf"/tenders/{ID}/submit-amendment"),
+        ("POST", r"/webhooks"),
+        ("DELETE", rf"/webhooks/{ID}"),
+        ("POST", rf"/tenders/{ID}/review-link"),
     ),
 }
+# What an API key needs beside `read` for a route (Block 6): the scope the key was minted
+# with. A route not listed needs nothing beside the role's own list.
+_SCOPED: tuple[tuple[str, str, str], ...] = (
+    ("POST", rf"/tenders/{ID}/ask", "model"),
+    ("POST", r"/tenders/ask", "model"),
+    ("POST", r"/tenders/submit", "write"),
+    ("POST", rf"/tenders/{ID}/submit-amendment", "write"),
+    ("POST", r"/webhooks", "write"),
+    ("DELETE", rf"/webhooks/{ID}", "write"),
+    ("POST", rf"/tenders/{ID}/review-link", "review:mint"),
+)
+_SCOPED_COMPILED = tuple(
+    (method, re.compile(f"^{API}{pattern}$"), scope) for method, pattern, scope in _SCOPED
+)
 ALLOWED_BY_ROLE["approver"] = (*ALLOWED_BY_ROLE["reviewer"], ("POST", r"/admin/gold"))
 _COMPILED = {
     role: tuple((method, re.compile(f"^{API}{pattern}$")) for method, pattern in rules)
@@ -236,6 +263,10 @@ def _allowed(principal: Principal, method: str, path: str) -> bool:
         return principal.role == "api_client" and method == "GET" and path == f"{ADMIN}reliability"
     if principal.role == "api_client" and _MODEL.match(path) and "model" not in principal.scopes:
         return False
+    if principal.role == "api_client":
+        for m, pattern, scope in _SCOPED_COMPILED:
+            if m == method and pattern.match(path) and scope not in principal.scopes:
+                return False
     return any(
         m == method and pattern.match(path) for m, pattern in _COMPILED.get(principal.role, ())
     )

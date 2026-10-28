@@ -14,7 +14,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from core.models import Approval, Document, ExtractionRun, Page
-from core.services import audit, jobs
+from core.services import audit, jobs, webhooks
 from core.services.extract import ExtractService
 from tender.models import (
     DOCUMENT_ROLES,
@@ -308,6 +308,22 @@ class TenderService:
         # The current version is the latest dated one, not the latest arrived (Block 3 b).
         session.flush()
         tender.current_version_id = self.versions(session, tender)[-1].version.id
+        # Webhooks (Block 6 b): a version added, in the same transaction as the version.
+        webhooks.emit(
+            session,
+            tenant_id=self._tenant_id,
+            event="new_version",
+            payload={
+                "tender_id": tender.id,
+                "slug": tender.slug,
+                "version_no": version.version_no,
+                "kind": kind,
+                "issued_on": issued_on.isoformat() if issued_on else None,
+                "document_id": document.id,
+                "filename": document.filename,
+            },
+            created_by=created_by,
+        )
         session.commit()
         return version
 

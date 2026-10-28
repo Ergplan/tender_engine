@@ -9,6 +9,7 @@ from core.models.llm_call_log import LLMBatch, LLMCallLog
 from core.models.retrieval import RetrievalChunk
 from core.models.tenant import Tenant
 from core.models.truth import Approval, AuditLog, CanonicalFact, Feedback
+from core.models.webhook import WebhookDelivery, WebhookEndpoint
 
 __all__ = [
     "ApiKey",
@@ -31,5 +32,7 @@ __all__ = [
     "Section",
     "Tenant",
     "UsageRecord",
+    "WebhookDelivery",
+    "WebhookEndpoint",
     "ValidationResult",
 ]

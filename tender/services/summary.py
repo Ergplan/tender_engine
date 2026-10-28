@@ -396,17 +396,21 @@ class SummaryWriter:
         self._schemas = schemas
         self._tenant_id = tenant_id
 
-    def after_validation(self, session: Session, extraction_run_id: str) -> None:
+    def after_validation(self, session: Session, extraction_run_id: str) -> bool:
         """Called by the worker when a run has been validated: once no extraction of the
-        tender is still under way, queue the summary. A record run does not queue one."""
+        tender is still under way, queue the summary. A record run does not queue one.
+        Returns whether the summary was queued, which is when the tender's reading has
+        settled (the `extraction_done` event of Block 6)."""
         run = session.scalar(
             select(ExtractionRun).where(
                 ExtractionRun.id == extraction_run_id, ExtractionRun.tenant_id == self._tenant_id
             )
         )
         if run is None or run.object_type != OBJECT_TYPE or run.mode in RECORD_MODES:
-            return
-        self.queue_if_settled(session, run.object_id, created_by=ACTOR, is_fixture=run.is_fixture)
+            return False
+        return self.queue_if_settled(
+            session, run.object_id, created_by=ACTOR, is_fixture=run.is_fixture
+        )
 
     def queue_if_settled(
         self,

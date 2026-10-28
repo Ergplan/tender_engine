@@ -18,7 +18,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from core.schemas import KeyDef
-from core.services import audit
+from core.services import audit, webhooks
 from core.services.review_state import FieldState, ReviewStateService
 from tender.domain_packs.power import derivations
 from tender.models import ReviewToken, Tender, TenderReviewSnapshot
@@ -352,6 +352,19 @@ def complete_review(
         row_id=tender.id,
         before={"status": before},
         after={"status": "reviewed", "snapshot_id": row.id, "review_token_id": token.id},
+    )
+    webhooks.emit(
+        session,
+        tenant_id=tender.tenant_id,
+        event="review_complete",
+        payload={
+            "tender_id": tender.id,
+            "slug": tender.slug,
+            "snapshot_id": row.id,
+            "reviewer": token.reviewer_name,
+            "round_no": token.round_no,
+        },
+        created_by=token.reviewer_name,
     )
     session.commit()
     return row

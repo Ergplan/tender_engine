@@ -159,3 +159,5 @@ Appended by `tender.services.corrections` when a takedown hold is placed on a pu
 
 | Date | Requested | Tender | Requested by | Reason | State |
 | --- | --- | --- | --- | --- | --- |
+| The live worker runs Block 5's handlers until it is restarted | The worker loads the mounted tree only at start; Block 6 added `tender_extract` and `webhook_deliver`, and the restart was refused to the build session (2026-10-28) | The owner's `docker compose restart worker` (or `make deploy`); until then a submission waits in `tender_extract` and a webhook delivery in `webhook_deliver`, both `queued`, nothing lost |
+| Block 6 e is not tested end to end against the live engine from this build | No API key exists on the live engine and minting one was refused to the build session (2026-10-28); a live submission reads the tender through the model, which the owner's subscription-only rule forbids from here | The owner mints a key (`/admin`, scopes read, write, review:mint), runs the `docs/CONNECTOR.md` examples (status, fields, changes, the MCP client, `claude mcp add`) and, when they allow the spend, one submission by official URL; recorded in the Block 6 report when done |

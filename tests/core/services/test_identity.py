@@ -115,7 +115,7 @@ def test_api_keys_resolve_carry_scopes_and_are_revoked(
     assert identity.resolve_api_key(db, "tie_live_" + "0" * 40) is None
     assert identity.resolve_api_key(db, "something else") is None
     with pytest.raises(IdentityError, match="unknown scope"):
-        identity.create_api_key(db, "ergplan", "x", ["write"], created_by="boss")
+        identity.create_api_key(db, "ergplan", "x", ["delete"], created_by="boss")
     with pytest.raises(IdentityError, match="needs a name"):
         identity.create_api_key(db, "ergplan", " ", [], created_by="boss")
     assert identity.revoke_api_key(db, "ergplan", key.id, by="boss") is True

@@ -7,10 +7,11 @@ changed to a per-session schema so the watcher and a manual run never collide.
 import os
 import uuid
 from collections.abc import Callable, Iterator
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+import httpx2
 import pytest
 from alembic import command
 from alembic.config import Config
@@ -126,6 +127,22 @@ def add_tenant(settings: Settings, tenant_id: str, name: str | None = None) -> N
     engine.dispose()
 
 
+class WebhookSink:
+    """Stands in for a caller's webhook receiver (Stage 7, Block 6 b): records every
+    delivery and answers with `status`."""
+
+    def __init__(self) -> None:
+        self.requests: list[httpx2.Request] = []
+        self.status = 200
+
+    def transport(self) -> httpx2.MockTransport:
+        def handle(request: httpx2.Request) -> httpx2.Response:
+            self.requests.append(request)
+            return httpx2.Response(self.status)
+
+        return httpx2.MockTransport(handle)
+
+
 @dataclass
 class Pipeline:
     """Everything wired together the way the worker and API wire it, with a scripted model."""
@@ -148,6 +165,8 @@ class Pipeline:
     store: TenantChunkStore
     indexer: ChunkIndexer
     ask: AskService
+    # Webhooks (Stage 7, Block 6 b): where the runner's deliveries land.
+    webhooks: WebhookSink = field(default_factory=WebhookSink)
 
     def upload(
         self, db: Session, data: bytes | None = None, name: str = "contract.pdf"
@@ -214,6 +233,7 @@ def make_pipeline(
         store = ChunkStores(local).for_tenant(local.tenant_id)
         indexer = ChunkIndexer(store, embedders, local, meta_for=chunk_meta)
         tenders = TenderService(catalog, extract, local.tenant_id)
+        sink = WebhookSink()
         return Pipeline(
             settings=local,
             session_factory=session_factory,
@@ -227,7 +247,14 @@ def make_pipeline(
                 storage,
                 schemas,
                 llm,
-                *tender_jobs(llm, catalog, extract, schemas, local.tenant_id),
+                *tender_jobs(
+                    llm,
+                    catalog,
+                    extract,
+                    schemas,
+                    local.tenant_id,
+                    webhook_transport=sink.transport(),
+                ),
                 indexer,
             ),
             ingest=IngestService(storage, local.tenant_id),
@@ -241,6 +268,7 @@ def make_pipeline(
             ask=AskService(
                 llm, catalog, schemas, tenders, Retriever(store, embedders, top_k=6), local
             ),
+            webhooks=sink,
         )
 
     return build

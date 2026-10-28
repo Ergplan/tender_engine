@@ -21,7 +21,9 @@ ROLES = ("reviewer", "approver", "admin", "api_client")
 USER_STATUSES = ("active", "disabled")
 # read/model: the intelligence API. public:read / own:read: an MCP access token issued by
 # the library's OAuth server (Stage 5D) for a signed-in user.
-API_KEY_SCOPES = ("read", "model", "public:read", "own:read")
+# `write`: submit tenders and amendments, register webhooks (Block 6); `review:mint`: a
+# review link for a named reviewer; `model`: the routes that call the model for the caller.
+API_KEY_SCOPES = ("read", "model", "write", "review:mint", "public:read", "own:read", "own:write")
 # What a tenant is: an enterprise customer, a free account (reads public only), or the
 # reserved public library tenant itself (Stage 5D).
 TENANT_PLANS = ("enterprise", "free", "public")

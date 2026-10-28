@@ -49,7 +49,7 @@ from core.services.identity import IdentityService, Principal
 from tender.models import OAuthClient, OAuthCode
 
 CODE_TTL = timedelta(minutes=10)
-SCOPES = ("public:read", "own:read")
+SCOPES = ("public:read", "own:read", "own:write")
 CLIENT_TENANT = "public"
 ACTOR = "oauth"
 
@@ -301,6 +301,9 @@ class LibraryOAuthProvider(
             scopes = ["public:read"]
             if plan == "enterprise" and "own:read" in row.scopes:
                 scopes.append("own:read")
+            # Block 6 c: the write tools, when the client asked and the user consented.
+            if plan == "enterprise" and "own:write" in row.scopes:
+                scopes.append("own:write")
             row.used_at = datetime.now(UTC)
             session.flush()
             # The token itself: a key of the user's tenant, written in that tenant's scope,
