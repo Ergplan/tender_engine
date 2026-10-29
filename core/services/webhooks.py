@@ -12,12 +12,15 @@ from __future__ import annotations
 
 import hashlib
 import hmac
+import ipaddress
 import json
 import logging
+import socket
 import time
 from collections.abc import Callable
 from datetime import UTC, datetime
 from typing import Any
+from urllib.parse import urlparse
 
 import httpx2
 from sqlalchemy import select
@@ -41,6 +44,67 @@ class WebhookError(Exception):
 
 class WebhookDeliveryError(Exception):
     """A delivery attempt that did not get a 2xx; the job machinery retries it."""
+
+
+# Host names that only mean something inside a network: never a caller's receiver.
+_IN_NETWORK_SUFFIXES = (".internal", ".local", ".localhost", ".lan", ".home.arpa")
+Resolver = Callable[[str], list[str]]
+
+
+def _resolve(host: str) -> list[str]:
+    """Every address the host resolves to; empty when it does not resolve here."""
+    try:
+        return sorted({str(info[4][0]) for info in socket.getaddrinfo(host, None)})
+    except (socket.gaierror, UnicodeError):
+        return []
+
+
+def _public_address(address: str) -> bool:
+    try:
+        ip = ipaddress.ip_address(address.split("%", 1)[0])
+    except ValueError:
+        return False
+    if isinstance(ip, ipaddress.IPv6Address) and ip.ipv4_mapped is not None:
+        ip = ip.ipv4_mapped
+    return ip.is_global and not ip.is_multicast
+
+
+def url_refusal(url: str) -> str | None:
+    """Why a URL cannot be a receiver, from the URL alone (registration), or None."""
+    if not (url.startswith("https://") or url.startswith("http://")):
+        return "the URL must be http(s)"
+    host = (urlparse(url).hostname or "").lower().rstrip(".")
+    if not host:
+        return "the URL has no host"
+    try:
+        ipaddress.ip_address(host)
+    except ValueError:
+        if "." not in host or host == "localhost" or host.endswith(_IN_NETWORK_SUFFIXES):
+            return f"{host} is not a public host"
+        return None
+    if not _public_address(host):
+        return f"{host} is not a public address"
+    return None
+
+
+def delivery_refusal(url: str, resolve: Resolver = _resolve) -> str | None:
+    """Why a delivery may not be sent now: the URL's own refusal, or a host that resolves
+    to a private address at delivery time (a name can change what it points at after it
+    was registered). A name that does not resolve here is left to the HTTP client."""
+    refusal = url_refusal(url)
+    if refusal is not None:
+        return refusal
+    host = (urlparse(url).hostname or "").lower().rstrip(".")
+    private = [a for a in resolve(host) if not _public_address(a)]
+    if private:
+        return f"{host} resolves to a private address ({', '.join(private)})"
+    return None
+
+
+def _allow_private() -> bool:
+    from core.config import Settings
+
+    return Settings().webhook_allow_private
 
 
 def sign(secret: str, timestamp: int, body: bytes) -> str:
@@ -70,12 +134,17 @@ def register(
     secret: str,
     created_by: str,
     description: str | None = None,
+    allow_private: bool | None = None,
 ) -> WebhookEndpoint:
     unknown = sorted(set(events) - set(EVENTS))
     if unknown or not events:
         raise WebhookError(f"events must be among {list(EVENTS)}; got {unknown or events}")
     if not (url.startswith("https://") or url.startswith("http://")):
         raise WebhookError("the URL must be http(s)")
+    if not (_allow_private() if allow_private is None else allow_private):
+        refusal = url_refusal(url)
+        if refusal is not None:
+            raise WebhookError(refusal)
     if len(secret) < MIN_SECRET:
         raise WebhookError(f"the secret must be at least {MIN_SECRET} characters")
     row = WebhookEndpoint(
@@ -199,9 +268,18 @@ def deliveries(
 class Deliverer:
     """What the worker runs: one attempt per job run."""
 
-    def __init__(self, tenant_id: str, transport: httpx2.BaseTransport | None = None) -> None:
+    def __init__(
+        self,
+        tenant_id: str,
+        transport: httpx2.BaseTransport | None = None,
+        *,
+        allow_private: bool | None = None,
+        resolve: Resolver = _resolve,
+    ) -> None:
         self._tenant_id = tenant_id
         self._transport = transport
+        self._allow_private = _allow_private() if allow_private is None else allow_private
+        self._resolve = resolve
 
     def deliver(self, session: Session, delivery_id: str) -> WebhookDelivery:
         """A 2xx marks the delivery `delivered`; anything else records the status and
@@ -228,10 +306,23 @@ class Deliverer:
             "X-Tender-Delivery": delivery.id,
             "X-Tender-Signature": sign(endpoint.secret, timestamp, body),
         }
+        if not self._allow_private:
+            refusal = delivery_refusal(endpoint.url, self._resolve)
+            if refusal is not None:
+                # Not retried: the address will not become public by waiting.
+                delivery.attempts += 1
+                delivery.last_attempt_at = datetime.now(UTC)
+                delivery.last_status = None
+                delivery.last_error = refusal
+                delivery.status = "failed"
+                session.commit()
+                log.warning("webhook delivery %s refused: %s", delivery.id, refusal)
+                return delivery
         delivery.attempts += 1
         delivery.last_attempt_at = datetime.now(UTC)
         error: str | None
         try:
+            # Redirects are not followed (httpx's default): a receiver answers itself.
             with httpx2.Client(timeout=TIMEOUT_S, transport=self._transport) as client:
                 response = client.post(endpoint.url, content=body, headers=headers)
             delivery.last_status = response.status_code

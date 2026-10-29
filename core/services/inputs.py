@@ -40,6 +40,9 @@ DOCX_SUFFIXES = (".docx", ".docm")
 ZIP_SUFFIXES = (".zip",)
 MAX_BUNDLE_MEMBERS = 200
 MAX_MEMBER_BYTES = 200 * 1024 * 1024
+# The whole bundle unpacked: the sizes its members declare, checked before any is read, so
+# a small archive cannot expand past the machine's memory.
+MAX_BUNDLE_BYTES = 600 * 1024 * 1024
 PAGE_WIDTH, PAGE_HEIGHT = 595.0, 842.0  # A4 portrait, points
 MARGIN = 40.0
 FONT, FONT_SIZE, LEADING = "cour", 9.0, 12.0
@@ -166,6 +169,12 @@ def bundle_members(data: bytes) -> tuple[list[Member], list[Rejected]]:
         infos = [i for i in archive.infolist() if not i.is_dir()]
         if len(infos) > MAX_BUNDLE_MEMBERS:
             raise InputError(f"the bundle has {len(infos)} files; at most {MAX_BUNDLE_MEMBERS}")
+        declared = sum(i.file_size for i in infos if i.file_size <= MAX_MEMBER_BYTES)
+        if declared > MAX_BUNDLE_BYTES:
+            raise InputError(
+                f"the bundle unpacks to {declared // (1024 * 1024)} MB; at most "
+                f"{MAX_BUNDLE_BYTES // (1024 * 1024)} MB"
+            )
         for info in infos:
             base = info.filename.rsplit("/", 1)[-1]
             if base.startswith((".", "~$")) or "__MACOSX/" in info.filename:
@@ -173,7 +182,12 @@ def bundle_members(data: bytes) -> tuple[list[Member], list[Rejected]]:
             if info.file_size > MAX_MEMBER_BYTES:
                 rejected.append(Rejected(info.filename, "larger than 200 MB"))
                 continue
-            content = archive.read(info)
+            try:
+                content = archive.read(info)
+            except (zipfile.BadZipFile, NotImplementedError, RuntimeError) as exc:
+                # A damaged, encrypted or mis-sized member (its size header lying).
+                rejected.append(Rejected(info.filename, f"could not be unpacked: {exc}"))
+                continue
             try:
                 kind = classify(base, content)
             except InputError as exc:

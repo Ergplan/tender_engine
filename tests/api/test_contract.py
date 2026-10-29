@@ -175,3 +175,49 @@ def test_an_api_key_needs_the_scopes_the_routes_want(
     # A key of another tenant sees none of it.
     with factory() as session:
         assert session.scalar(select(Job.id)) is not None
+
+
+def test_every_redirect_hop_of_a_submitted_url_must_be_official(
+    pipeline: Pipeline, client: TestClient
+) -> None:
+    pdf = make_pdf(RFS_PAGES)
+    asked: list[str] = []
+
+    def site(request: httpx2.Request) -> httpx2.Response:
+        asked.append(str(request.url))
+        if request.url.path == "/bounce":
+            return httpx2.Response(302, headers={"location": "http://169.254.169.254/latest"})
+        if request.url.path == "/moved":
+            return httpx2.Response(301, headers={"location": "/tenders/rfs.pdf"})
+        return httpx2.Response(200, content=pdf, headers={"content-type": "application/pdf"})
+
+    client.app.state.submit_transport = httpx2.MockTransport(site)  # type: ignore[attr-defined]
+    bounced = client.post(
+        "/api/v1/tenders/submit",
+        data={"source_url": "https://www.seci.co.in/bounce", "tender_type": "solar"},
+    )
+    assert bounced.status_code == 422 and "redirected off" in bounced.json()["detail"]
+    assert asked == ["https://www.seci.co.in/bounce"], "the off-site hop was never requested"
+    moved = client.post(
+        "/api/v1/tenders/submit",
+        data={"source_url": "https://www.seci.co.in/moved", "tender_type": "solar"},
+    )
+    assert moved.status_code == 202, moved.text
+
+
+def test_a_submitted_url_larger_than_the_cap_is_refused(
+    pipeline: Pipeline, client: TestClient, monkeypatch: Any
+) -> None:
+    from tender.services import submit
+
+    monkeypatch.setattr(submit, "MAX_BYTES", 1000)
+
+    def site(request: httpx2.Request) -> httpx2.Response:
+        return httpx2.Response(200, content=b"%PDF-" + b"0" * 5000)
+
+    client.app.state.submit_transport = httpx2.MockTransport(site)  # type: ignore[attr-defined]
+    refused = client.post(
+        "/api/v1/tenders/submit",
+        data={"source_url": "https://www.seci.co.in/big.pdf", "tender_type": "solar"},
+    )
+    assert refused.status_code == 422 and "allowed" in refused.json()["detail"]

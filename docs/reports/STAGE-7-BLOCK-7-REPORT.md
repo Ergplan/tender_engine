@@ -158,6 +158,30 @@ Run 15, 2026-10-28 20:12 UTC, 2,365 s, every check green (`ci-status-block-7.jso
 | tsc | pass | 19.5 |
 | vitest | pass | 62.2 |
 
+## Independent review (operating rule 15), 2026-10-29
+
+Run outside the build session by the owner's assistant (Claude Opus 5.5, a fresh session
+with the repository only; same vendor as the builder, per DECISIONS 2026-10-25), over
+`stage-7-start..69e6d07` with CLAUDE.md and `docs/COMPLETION-PLAN.md`, on the fixed
+checklist. It made no call through the app's key.
+
+| Check | Finding |
+| --- | --- |
+| (a) Invariants | Upheld. `canonical_fact` is written only in `core/services/approve.py:292`; the Stage 7 services that answer (`ask`, `ask_fields`, `ask_across`, `snapshot`, `status`) write nothing; the version order change keeps versions immutable and re-projects. No LLM in validation. |
+| (b) Endpoint tests | **Defect, fixed**: `POST /documents/bundle`, `POST /documents/{id}/classify`, `POST /documents/{id}/link-amendment` and `POST /tenders/{id}/type` had no API test. Now `tests/api/test_stage7_routes.py`. |
+| (c) Audit | Upheld for the five audited tables; webhook registration is audited too. |
+| (d) Trace | `scripts.gen_field_trace --check`: current, 218 fields. |
+| (e) Report claims | No claim found that the code does not support. |
+| Security (beyond the checklist) | **Three defects, fixed.** Webhook receivers could be private or in-network addresses (the worker would post into the deployment, where an unmarked request is trusted): now refused at registration and, after resolving, at delivery; `WEBHOOK_ALLOW_PRIVATE` for a receiver on the same network. The official-URL fetch checked only the final redirect target and read the whole body before its size check: every hop is now checked before it is requested and the body is streamed under the cap. A bundle had no total cap and a member with a lying size header raised a 500: now a 600 MB declared total and a named rejection. |
+
+Tests added: `tests/api/test_stage7_routes.py` (5), `tests/core/services/test_webhooks.py`
+(11 new cases), `tests/core/services/test_inputs.py` (2), `tests/api/test_contract.py` (2).
+The full suite was run on the fixed tree outside the VM (Postgres 16 with pgvector).
+
+Not resolvable by code, listed and not blocking: the reviewer is the builder's vendor (the
+owner's decisions of 2026-10-25 and 2026-10-27); the unauthenticated trust of requests made
+inside the deployment is by design (Stage 5C) and is what the webhook fix protects.
+
 ## Deployment
 
 The api runs the mounted tree and reloads on Python changes; the pack files are read at
@@ -170,7 +194,7 @@ No migration and no new dependency in this block.
 
 | Step | Command | Estimate |
 | --- | --- | --- |
-| Rule-15 review of the whole Stage 7 diff (Block 7 c) | `git add -A && make review STAGE=7 RANGE=stage-7-start..HEAD PROMPT=docs/COMPLETION-PLAN.md > docs/reports/stage-7-artifacts/review-stage-7-run1.txt`; if the diff is too long for one call, per block: `stage-7-block-5-start..stage-7-block-6-start`, `stage-7-block-6-start..stage-7-block-7-start`, `stage-7-block-7-start..HEAD` | under USD 5 a run (Opus 5.5); two or three runs |
+| Rule-15 review of the whole Stage 7 diff (Block 7 c): **done 2026-10-29 outside the build session, see above**; a further run is optional | `git add -A && make review STAGE=7 RANGE=stage-7-start..HEAD PROMPT=docs/COMPLETION-PLAN.md > docs/reports/stage-7-artifacts/review-stage-7-run1.txt`; if the diff is too long for one call, per block: `stage-7-block-5-start..stage-7-block-6-start`, `stage-7-block-6-start..stage-7-block-7-start`, `stage-7-block-7-start..HEAD` | under USD 5 a run (Opus 5.5); two or three runs |
 | Re-read `identity_and_scope` under v5, then the eval | `docker compose exec -T api python -m scripts.ingest_tenders extract --groups identity_and_scope --force --only <eleven gold slugs>` then `make eval`, `make report` | USD 6 to 12 (batch API) |
 | Bikaner's six unfinished Block 4 runs | `docker compose exec -T api python -m scripts.ingest_tenders resume --only recpdcl-bikaner-v-part-a`, then `python -m scripts.blind_check` | about USD 15 |
 | The question eval (Block 5 d) | `make ask-eval` | about USD 3 |

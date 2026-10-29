@@ -160,3 +160,28 @@ def test_a_bundle_yields_its_documents_and_names_what_it_left_out() -> None:
         normalise("pack.zip", bundle)
     with pytest.raises(InputError, match="cannot be opened"):
         bundle_members(b"PK\x03\x04not really a zip")
+
+
+def test_a_bundle_that_unpacks_past_the_cap_is_refused_before_any_member_is_read(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    bundle = zip_bytes({"a.pdf": make_pdf(), "b.pdf": make_pdf()})
+    one = len(make_pdf())
+    monkeypatch.setattr(inputs, "MAX_BUNDLE_BYTES", one + 10)
+    with pytest.raises(InputError, match="unpacks to"):
+        bundle_members(bundle)
+
+
+def test_a_member_whose_size_header_lies_is_named_not_raised() -> None:
+    bundle = bytearray(zip_bytes({"RfS.pdf": make_pdf(), "liar.pdf": make_pdf() + b"%% other"}))
+    # Corrupt the stored CRC of the second member in the central directory and the local
+    # header, so reading it fails the integrity check.
+    with zipfile.ZipFile(io.BytesIO(bytes(bundle))) as archive:
+        info = archive.getinfo("liar.pdf")
+    crc = info.CRC.to_bytes(4, "little")
+    bad = (info.CRC ^ 0xFFFFFFFF).to_bytes(4, "little")
+    data = bytes(bundle).replace(crc, bad)
+    members, rejected = bundle_members(data)
+    assert [m.name for m in members] == ["RfS.pdf"]
+    assert [r.name for r in rejected] == ["liar.pdf"]
+    assert rejected[0].reason.startswith("could not be unpacked")

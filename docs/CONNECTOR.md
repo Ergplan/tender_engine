@@ -61,7 +61,11 @@ ingested). Every delivery is a JSON POST with `X-Tender-Event`, `X-Tender-Delive
 `X-Tender-Signature: t=<unix seconds>,v1=<hex HMAC-SHA256 over "<t>.<raw body>">` using the
 endpoint's secret; answer 2xx. A failed delivery is retried six times with backoff (30 s,
 60 s, …) and then marked `failed`; `GET /api/v1/webhooks/{id}/deliveries` shows each one.
-`client/tender_engine_client.py` has `verify_webhook`.
+`client/tender_engine_client.py` has `verify_webhook`. A receiver must be a public address:
+a URL whose host is private, link-local, loopback or an in-network name (`localhost`,
+`*.internal`, a bare Docker service name) is refused at registration, and a name that
+resolves to such an address is refused at delivery; a deployment that wants a receiver on
+its own network sets `WEBHOOK_ALLOW_PRIVATE=true`.
 
 ## MCP (`/mcp`, streamable HTTP)
 

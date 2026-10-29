@@ -35,6 +35,7 @@ ACTOR = "submit"
 JOB_KIND = "tender_extract"
 FETCH_TIMEOUT_S = 60.0
 MAX_BYTES = 200 * 1024 * 1024
+MAX_REDIRECTS = 5
 USER_AGENT = "tender-engine/1.0 (+official sources only)"
 # The generic procurement schema: read with the core groups while the type is unknown.
 GENERIC_TYPE = "ipp"
@@ -71,25 +72,53 @@ class Fetcher:
             raise SubmitError(
                 f"{url}: the host is not an official source (infra/source-domains.yaml)"
             )
+        current = url
         try:
             with httpx2.Client(
                 timeout=FETCH_TIMEOUT_S,
-                follow_redirects=True,
+                follow_redirects=False,
                 headers={"User-Agent": USER_AGENT},
                 transport=self._transport,
             ) as client:
-                response = client.get(url)
+                # Redirects by hand: every hop must be on the allowlist before it is
+                # requested, not only the last one, so a listed site cannot bounce the
+                # request into the deployment's own network.
+                for _ in range(MAX_REDIRECTS + 1):
+                    with client.stream("GET", current) as response:
+                        if response.is_redirect:
+                            target = str(response.url.join(response.headers["location"]))
+                            if not self._allowlist.admissible(target):
+                                raise SubmitError(
+                                    f"{url}: redirected off the official source to {target}"
+                                )
+                            current = target
+                            continue
+                        if response.status_code != 200:
+                            raise SubmitError(f"{url}: HTTP {response.status_code}")
+                        data = _read_capped(response, url)
+                        final = str(response.url)
+                        break
+                else:
+                    raise SubmitError(f"{url}: more than {MAX_REDIRECTS} redirects")
         except httpx2.HTTPError as exc:
             raise SubmitError(f"{url}: {type(exc).__name__}: {exc}") from exc
-        if response.status_code != 200:
-            raise SubmitError(f"{url}: HTTP {response.status_code}")
-        if not self._allowlist.admissible(str(response.url)):
-            raise SubmitError(f"{url}: redirected off the official source to {response.url}")
-        data = response.content
-        if len(data) > MAX_BYTES:
-            raise SubmitError(f"{url}: {len(data)} bytes is more than the {MAX_BYTES} allowed")
-        name = unquote(urlparse(str(response.url)).path.rsplit("/", 1)[-1]) or "document.pdf"
+        name = unquote(urlparse(final).path.rsplit("/", 1)[-1]) or "document.pdf"
         return Fetched(name, data, url, datetime.now(UTC).date())
+
+
+def _read_capped(response: httpx2.Response, url: str) -> bytes:
+    """The body, refused as soon as it passes MAX_BYTES (never held whole beyond it)."""
+    declared = response.headers.get("content-length")
+    if declared and declared.isdigit() and int(declared) > MAX_BYTES:
+        raise SubmitError(f"{url}: {declared} bytes is more than the {MAX_BYTES} allowed")
+    chunks: list[bytes] = []
+    size = 0
+    for chunk in response.iter_bytes():
+        size += len(chunk)
+        if size > MAX_BYTES:
+            raise SubmitError(f"{url}: more than the {MAX_BYTES} bytes allowed")
+        chunks.append(chunk)
+    return b"".join(chunks)
 
 
 @dataclass(frozen=True)

@@ -130,3 +130,70 @@ def test_review_complete_and_amendment_events_carry_the_tender(
     events = [r.headers["X-Tender-Event"] for r in pipeline.webhooks.requests]
     assert events[-1] == "new_version"
     assert json.loads(pipeline.webhooks.requests[-1].content)["version_no"] == 2
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        "http://api:8000/api/v1/approvals",
+        "http://localhost:8000/hook",
+        "http://127.0.0.1/hook",
+        "http://10.0.0.5/hook",
+        "http://169.254.169.254/computeMetadata/v1/",
+        "http://metadata.google.internal/computeMetadata/v1/",
+        "http://[::1]/hook",
+        "http://[::ffff:10.0.0.1]/hook",
+        "https://printer.local/hook",
+    ],
+)
+def test_a_receiver_inside_the_network_is_refused(
+    pipeline: Pipeline, db: Session, url: str
+) -> None:
+    assert webhooks.url_refusal(url) is not None
+    with pytest.raises(webhooks.WebhookError, match="not a public"):
+        _endpoint(pipeline, db, ["new_version"], url=url)
+
+
+def test_private_receivers_are_admitted_only_when_the_deployment_says_so(
+    pipeline: Pipeline, db: Session
+) -> None:
+    row = webhooks.register(
+        db,
+        tenant_id=pipeline.settings.tenant_id,
+        url="http://tenderos-web:3000/hooks/engine",
+        events=["new_version"],
+        secret=SECRET,
+        created_by="pytest",
+        allow_private=True,
+    )
+    assert row.active
+    assert webhooks.url_refusal("https://hooks.acme.example/x") is None
+
+
+def test_a_name_that_resolves_into_the_network_is_not_delivered_to(
+    pipeline: Pipeline, db: Session
+) -> None:
+    endpoint = _endpoint(pipeline, db, ["new_version"], url="https://rebind.acme.test/hook")
+    webhooks.emit(
+        db,
+        tenant_id=pipeline.settings.tenant_id,
+        event="new_version",
+        payload={"tender_id": "t"},
+        created_by="pytest",
+    )
+    db.commit()
+    delivery = db.scalars(
+        select(WebhookDelivery).where(WebhookDelivery.endpoint_id == endpoint.id)
+    ).one()
+    sent_before = len(pipeline.webhooks.requests)
+    deliverer = webhooks.Deliverer(
+        pipeline.settings.tenant_id,
+        pipeline.webhooks.transport(),
+        allow_private=False,
+        resolve=lambda host: ["10.1.2.3"],
+    )
+    deliverer.deliver(db, delivery.id)
+    db.refresh(delivery)
+    assert delivery.status == "failed" and "private address" in (delivery.last_error or "")
+    assert len(pipeline.webhooks.requests) == sent_before, "nothing was sent"
+    assert webhooks.delivery_refusal("https://ok.acme.test/h", lambda host: ["8.8.8.8"]) is None
