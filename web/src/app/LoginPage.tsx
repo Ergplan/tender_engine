@@ -23,6 +23,13 @@ export function LoginPage({ message }: { message: string | null }) {
       <p className="text-xs text-slate-500">
         Were you sent a review link? Open that link instead; it needs no account.
       </p>
+      <p className="text-xs text-slate-500">
+        Have an access key?{" "}
+        <a href="/workspace" className="text-[#0f5f5c] underline">
+          Open the tender workspace
+        </a>
+        .
+      </p>
     </main>
   );
 }

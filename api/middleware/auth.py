@@ -117,6 +117,12 @@ ALLOWED_BY_ROLE: dict[str, tuple[tuple[str, str], ...]] = {
         # `model`; submissions and webhooks with `write`; a review link with `review:mint`
         # (the scope checks are in `_allowed`).
         ("GET", rf"/tenders/{ID}/(status|fields)"),
+        # The workspace in the browser (2026-10-30): a key's own tender's amendments with
+        # their impact cues, and the pages its evidence points at. Reads, tenant-scoped.
+        ("GET", rf"/tenders/{ID}/amendments"),
+        ("GET", rf"/documents/{ID}"),
+        ("GET", rf"/documents/{ID}/pages"),
+        ("GET", rf"/documents/{ID}/pages/\d+/render"),
         ("GET", r"/webhooks"),
         ("GET", rf"/webhooks/{ID}/deliveries"),
         ("POST", rf"/tenders/{ID}/ask"),

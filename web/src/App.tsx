@@ -4,6 +4,7 @@ import { Shell } from "./app/Shell";
 import { LibraryPage } from "./library/LibraryPage";
 import { PublishedPage } from "./library/PublishedPage";
 import { ReviewApp } from "./review/ReviewApp";
+import { WorkspaceApp } from "./workspace/WorkspaceApp";
 
 const REVIEW = /^\/review\/([A-Za-z0-9_-]{16,64})(\/summary|\/amendments)?\/?$/;
 const TENDER = /^\/tenders\/([0-9a-f]{32})(\/changes)?\/?$/;
@@ -26,6 +27,9 @@ export function App({
       />
     );
   if (/^\/admin\/reliability\/?$/.test(path)) return <ReliabilityPage />;
+  // The workspace (2026-10-30): an access key instead of a sign-in; drop a tender, read it.
+  const workspace = /^\/workspace(?:\/([0-9a-f]{32}))?\/?$/.exec(path);
+  if (workspace) return <WorkspaceApp initialTender={workspace[1] ?? null} />;
   const full = `${path}${search}`;
   const tender = TENDER.exec(path);
   let page = <LibraryPage filter={new URLSearchParams(search).get("filter") ?? ""} />;

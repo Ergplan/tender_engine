@@ -221,3 +221,32 @@ def test_a_submitted_url_larger_than_the_cap_is_refused(
         data={"source_url": "https://www.seci.co.in/big.pdf", "tender_type": "solar"},
     )
     assert refused.status_code == 422 and "allowed" in refused.json()["detail"]
+
+
+def test_a_read_key_reaches_the_amendments_and_the_evidence_pages_of_its_own_tenders(
+    pipeline: Pipeline, client: TestClient, db: Session
+) -> None:
+    """The browser workspace (2026-10-30) shows a key's tender's amendments and the page an
+    evidence quote is on; nothing more opens with it."""
+    tender = extracted_tender(pipeline, db)
+    identity = IdentityService(pipeline.settings)
+    factory = make_session_factory(make_engine(pipeline.settings), pipeline.settings.tenant_id)
+    with factory() as session:
+        _, secret = identity.create_api_key(
+            session, pipeline.settings.tenant_id, "workspace", ["read"], created_by="pytest"
+        )
+    reader = {**PUBLIC, "Authorization": f"Bearer {secret}"}
+    outside = TestClient(client.app, base_url="https://testserver")
+    fields = outside.get(f"/api/v1/tenders/{tender.id}/fields", headers=reader).json()
+    document_id = next(e["document_id"] for f in fields["fields"] for e in f["evidence"])
+    assert outside.get(f"/api/v1/tenders/{tender.id}/amendments", headers=reader).status_code == 200
+    assert outside.get(f"/api/v1/documents/{document_id}", headers=reader).status_code == 200
+    assert outside.get(f"/api/v1/documents/{document_id}/pages", headers=reader).status_code == 200
+    page = outside.get(f"/api/v1/documents/{document_id}/pages/1/render", headers=reader)
+    assert page.status_code == 200 and page.headers["content-type"] == "image/png"
+    # Still closed to a key: the review screen's own reads and the search inside a document.
+    assert outside.get(f"/api/v1/tenders/{tender.id}/review", headers=reader).status_code == 403
+    assert (
+        outside.get(f"/api/v1/documents/{document_id}/search?q=x", headers=reader).status_code
+        == 403
+    )

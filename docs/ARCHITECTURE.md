@@ -745,3 +745,9 @@ flowchart LR
 - `tender/services/amendment_link.py`: `link_amendment` / `link_from_text` (reference match at 0.98, else title-word recall at 0.85 with a 0.10 margin, else `ask`); `POST /documents/{id}/link-amendment`.
 - `TenderService.versions` returns date order (`ordered_versions`); `add_version` sets the current version to the latest dated.
 - `tender/services/amendments.py`: `change_class`, `AmendmentChange.change_class`, `AmendmentVersion.by_class`; `scripts/amendment_report.py` over the corpus.
+
+**Tender workspace (2026-10-30)**
+
+- `web/src/workspace/`: the browser workspace at `/workspace` and `/workspace/<tender id>`. An access key (an API key) instead of a sign-in, kept in the browser (`keyStore.ts`). Drop a tender (PDF, .docx, .xlsx) or give its official URL (`POST /tenders/submit`); follow the reading (`GET /tenders/{id}/status`, polled); read the analysis from the snapshot (`GET /tenders/{id}/fields`): the headline terms, a plain-language brief, every stated term by section with its quote and page, filters for what needs a second look and what amendments changed; the source page beside it (`GET /documents/{id}/pages/{n}/render`, fetched with the key); amendments with their changes and impact cues (`GET /tenders/{id}/amendments`) and a drop for the next one (`POST /tenders/{id}/submit-amendment`); questions (`POST /tenders/{id}/ask`); a review link for a named reviewer (`POST /tenders/{id}/review-link`). Calls go through `workspaceApi` in `web/src/api/client.ts`.
+- `api/middleware/auth.py`: an API key may also read its own tenant's `GET /tenders/{id}/amendments`, `GET /documents/{id}`, `GET /documents/{id}/pages` and the page renders (tenant-scoped reads; the review screen's reads and document search stay closed to a key).
+- Nothing in the truth pipeline changed: the workspace shows machine readings as "Read by engine" with their confidence and approved values as "Approved"; approving stays in the review screen.

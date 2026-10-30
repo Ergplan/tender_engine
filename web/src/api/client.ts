@@ -126,3 +126,91 @@ export const appApi = {
     request<T5.ReviewTokenOut>("POST", "/admin/review-tokens", undefined, body),
   usage: (days = 30) => request<T5.Usage>("GET", `/admin/usage?days=${days}`),
 };
+
+export type TenderSummary = Schemas["TenderOut"];
+export type TenderStatus = Schemas["TenderStatus"];
+export type VersionStatus = Schemas["VersionStatus"];
+export type FieldsSnapshot = Schemas["TenderSnapshot"];
+export type SnapshotField = Schemas["SnapshotField"];
+export type SnapshotEvidence = Schemas["SnapshotEvidence"];
+export type Submitted = Schemas["SubmitOut"];
+export type AskAnswer = Schemas["AskAnswer"];
+export type AskCitation = Schemas["Citation"];
+export type ReviewLink = Schemas["ReviewLinkOut"];
+
+async function send<T>(method: string, path: string, key: string, body?: BodyInit, contentType?: string): Promise<T> {
+  const headers: Record<string, string> = { Accept: "application/json", Authorization: `Bearer ${key}` };
+  if (contentType) headers["Content-Type"] = contentType;
+  const response = await fetch(`/api/v1${path}`, { method, headers, body });
+  if (!response.ok) {
+    const payload = (await response.json().catch(() => null)) as {
+      error_type?: string;
+      message?: string;
+      detail?: string | null;
+      request_id?: string;
+    } | null;
+    throw new ApiError(
+      response.status,
+      payload?.error_type ?? "unknown",
+      payload?.message ?? `Request failed with status ${response.status}`,
+      payload?.detail ?? null,
+      payload?.request_id ?? response.headers.get("X-Request-Id"),
+    );
+  }
+  return (await response.json()) as T;
+}
+
+/** What a dropped tender carries besides its file. Empty values are left out. */
+export type SubmitForm = {
+  file?: File;
+  sourceUrl?: string;
+  tenderType?: string;
+  agency?: string;
+  title?: string;
+  priority?: boolean;
+};
+
+function submitBody(form: SubmitForm, extra: Record<string, string> = {}): FormData {
+  const data = new FormData();
+  if (form.file) data.append("file", form.file, form.file.name);
+  if (form.sourceUrl) data.append("source_url", form.sourceUrl);
+  if (form.tenderType) data.append("tender_type", form.tenderType);
+  if (form.agency) data.append("agency", form.agency);
+  if (form.title) data.append("title", form.title);
+  if (form.priority) data.append("priority", "true");
+  for (const [name, value] of Object.entries(extra)) if (value) data.append(name, value);
+  return data;
+}
+
+/** The workspace's calls (2026-10-30): an API key, kept in this browser, on every call. */
+export function workspaceApi(key: string) {
+  const json = <T>(method: string, path: string, body: unknown) =>
+    send<T>(method, path, key, JSON.stringify(body), "application/json");
+  return {
+    tenders: () => send<TenderSummary[]>("GET", "/tenders", key),
+    status: (tenderId: string) => send<TenderStatus>("GET", `/tenders/${tenderId}/status`, key),
+    fields: (tenderId: string) => send<FieldsSnapshot>("GET", `/tenders/${tenderId}/fields`, key),
+    amendments: (tenderId: string) => send<TenderAmendments>("GET", `/tenders/${tenderId}/amendments`, key),
+    submit: (form: SubmitForm) => send<Submitted>("POST", "/tenders/submit", key, submitBody(form)),
+    submitAmendment: (tenderId: string, form: SubmitForm & { kind: string; issuedOn?: string; summary?: string }) =>
+      send<Submitted>(
+        "POST",
+        `/tenders/${tenderId}/submit-amendment`,
+        key,
+        submitBody(form, { kind: form.kind, issued_on: form.issuedOn ?? "", summary_of_change: form.summary ?? "" }),
+      ),
+    ask: (tenderId: string, question: string) => json<AskAnswer>("POST", `/tenders/${tenderId}/ask`, { question }),
+    reviewLink: (tenderId: string, reviewerName: string) =>
+      json<ReviewLink>("POST", `/tenders/${tenderId}/review-link`, { reviewer_name: reviewerName }),
+    /** A page image as an object URL (an <img> cannot send the key itself). */
+    pageImage: async (documentId: string, pageNo: number): Promise<string> => {
+      const response = await fetch(`/api/v1/documents/${documentId}/pages/${pageNo}/render`, {
+        headers: { Authorization: `Bearer ${key}` },
+      });
+      if (!response.ok) throw new ApiError(response.status, "page_unavailable", "The page image is not available yet.", null, null);
+      return URL.createObjectURL(await response.blob());
+    },
+  };
+}
+
+export type WorkspaceApi = ReturnType<typeof workspaceApi>;
