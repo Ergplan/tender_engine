@@ -126,6 +126,8 @@ The layout in `CLAUDE.md` is authoritative. Additions made under operating rule 
 | `scripts/export_contract.py`, `docs/contracts/` | the published contract: `snapshot.v1.schema.json` (additive only), `openapi.v1.json` (OpenAPI 3.1 of the caller's routes), `functions.v1.json` (the same as function definitions for a model); `--check` is the `contract_drift` CI check | 7.6 |
 | `client/` | `tender_engine_client.py`: the thin Python client for a product (standard library only; `TenderEngine`, `wait_until_done`, `verify_webhook`); a folder added to the layout for Block 6 d | 7.6 |
 | `docs/CONNECTOR.md` | how to connect from Claude Code, Claude.ai, ChatGPT, the OpenAI Responses API and a Python product | 7.6 |
+| `docs/SOFTWARE-ARCHITECTURE.md` | the detailed software architecture for readers outside the build: context, containers, components, truth pipeline, data model, interfaces, security, deployment, risks (copy of the Claude Doc, Mermaid diagrams) | 7 |
+| `docs/TENDEROS-INTEGRATION-MANUAL.md` | the dev team's manual for adding the engine to TenderOS as a cross-check: access, flow, endpoints, snapshot contract, field map, comparator, webhooks, code, go-live | 7 |
 
 ## Data model
 
