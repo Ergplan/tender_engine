@@ -2,8 +2,51 @@
 COMPOSE := docker compose
 STATIC_IP := $(shell cat infra/STATIC-IP.txt)
 RUN_TESTS := $(COMPOSE) run --rm --no-deps -T tests
+# The stack on a developer's machine: its own project name, data under ./.local/, plain
+# HTTP on http://localhost:8080 (infra/local/compose.yml). Needs Docker and nothing else.
+LOCAL := $(COMPOSE) -p tender-engine-local -f docker-compose.yml -f infra/local/compose.yml
+LOCAL_URL := http://localhost:$(or $(LOCAL_PORT),8080)
 
-.PHONY: up down test test-e2e test-ui check watch migrate deploy build-prod logs smoke client hooks evidence-corpus trace gold eval feedback-report report threeway agent-pass freshness backup review ask-eval
+local: hooks ## run the whole app on this machine at http://localhost:8080, with a demo tender
+	@mkdir -p .local/data .local/tenders && chmod 777 .local/data
+	$(LOCAL) build api web
+	$(LOCAL) up -d db
+	$(LOCAL) run --rm -T api alembic upgrade head
+	$(LOCAL) run --rm -T --no-deps web sh -c 'sha256sum -c node_modules/.lock-sha >/dev/null 2>&1 || (npm ci --no-audit --no-fund && sha256sum package-lock.json > node_modules/.lock-sha)'
+	$(LOCAL) up -d api worker web caddy
+	$(LOCAL) run --rm -T api python -m scripts.seed_local --demo
+	@for i in $$(seq 1 60); do \
+	  if curl -sf $(LOCAL_URL)/health >/dev/null; then echo "ready: $(LOCAL_URL)/"; exit 0; fi; sleep 2; done; \
+	  echo "not healthy yet: make local-logs"; exit 1
+
+local-down: ## stop the local stack (its database and files are kept)
+	$(LOCAL) down
+
+local-reset: ## stop the local stack and delete its database and files
+	-$(LOCAL) run --rm -T --no-deps api sh -c 'rm -rf /data/* /data/.[!.]* 2>/dev/null; true'
+	$(LOCAL) down -v
+	rm -rf .local
+
+local-logs: ## follow the local stack's logs
+	$(LOCAL) logs -f --tail=50
+
+local-test: ## the full Python and web suites against the local database
+	$(LOCAL) build tests
+	$(LOCAL) up -d db web
+	$(LOCAL) run --rm --no-deps -T tests python -m pytest -p no:cacheprovider
+	$(LOCAL) run --rm --no-deps -T tests sh -c "cd web && node node_modules/vitest/vitest.mjs run"
+
+local-watch: ## the test watcher beside the local stack; writes .ci/status.json
+	$(LOCAL) build tests
+	$(LOCAL) --profile watch up -d tests
+	$(LOCAL) logs -f --tail=20 tests
+
+local-key: ## an API key on the local stack for the workspace or a TenderOS build: make local-key [NAME=tenderos]
+	@curl -sf -X POST $(LOCAL_URL)/api/v1/admin/api-keys \
+	  -H "X-Admin-Token: local-admin-token-not-for-production" -H "Content-Type: application/json" \
+	  -d '{"name":"$(or $(NAME),local-dev)","scopes":["read","write","model","review:mint"]}'; echo
+
+.PHONY: local local-down local-reset local-logs local-test local-key local-watch up down test test-e2e test-ui check watch migrate deploy build-prod logs smoke client hooks evidence-corpus trace gold eval feedback-report report threeway agent-pass freshness backup review ask-eval
 
 up: hooks ## start the app and the test watcher
 	$(COMPOSE) up -d --build

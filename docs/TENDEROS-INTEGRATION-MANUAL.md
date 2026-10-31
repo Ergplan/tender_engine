@@ -275,7 +275,7 @@ engine = TenderEngine(os.environ["ENGINE_URL"], os.environ["ENGINE_API_KEY"])
 
 # 1. Submit TenderOS's uploaded RfS (path on disk) or its official URL.
 made = engine.submit_tender(file="/data/uploads/rfs.pdf", tender_type="re_rtc", agency="WBSEDCL")
-engine_tender_id = made["tender_id"]          # store on TenderOS's tender record
+engine_tender_id = made["tender_id"]  # store on TenderOS's tender record
 
 # 2. Wait: webhooks in production; this poll is for scripts and tests.
 status = engine.wait_until_done(engine_tender_id, poll_s=30)
@@ -292,6 +292,7 @@ by_path = {f["path"]: f for f in snapshot["fields"]}
 TOLERANCE = 0.005  # 0.5% of the larger value
 NUMERIC = {"int", "decimal", "money_inr", "percent", "duration_months", "mw", "mwh", "kv", "km"}
 
+
 def normalise(value, value_type):
     if value is None:
         return None
@@ -305,10 +306,12 @@ def normalise(value, value_type):
         return sorted({str(v).strip().lower() for v in value})
     return None  # text, long_text, records: shown, never compared
 
+
 def same(a, b, value_type):
     if value_type in NUMERIC:
         return abs(a - b) <= TOLERANCE * max(abs(a), abs(b), 1e-9)
     return a == b
+
 
 def status(tenderos_value, engine_field):
     if engine_field is None:
@@ -321,7 +324,11 @@ def status(tenderos_value, engine_field):
             return "conflict"  # TenderOS still holds a value the amendment removed
         return "verified" if engine_field["source"] == "approved" else "agree"
     if ours is None and theirs is None:
-        return "not_cross_checked" if vt not in NUMERIC | {"date", "bool", "enum", "list_text"} else "agree"
+        return (
+            "not_cross_checked"
+            if vt not in NUMERIC | {"date", "bool", "enum", "list_text"}
+            else "agree"
+        )
     if ours is None or theirs is None:
         return "one_sided"
     match = same(ours, theirs, vt)
@@ -338,16 +345,23 @@ Test this comparator against every status before wiring it: one test per row of 
 from fastapi import BackgroundTasks, Header, HTTPException, Request
 from engine.crosscheck.tender_engine_client import verify_webhook
 
+
 @app.post("/hooks/engine")
-async def engine_hook(request: Request, tasks: BackgroundTasks,
-                      x_tender_signature: str = Header(...), x_tender_delivery: str = Header(...)):
+async def engine_hook(
+    request: Request,
+    tasks: BackgroundTasks,
+    x_tender_signature: str = Header(...),
+    x_tender_delivery: str = Header(...),
+):
     body = await request.body()
     if not verify_webhook(os.environ["ENGINE_WEBHOOK_SECRET"], x_tender_signature, body):
         raise HTTPException(401)
-    if already_seen(x_tender_delivery):          # idempotent on the delivery id
+    if already_seen(x_tender_delivery):  # idempotent on the delivery id
         return {"ok": True}
     event = json.loads(body)
-    tasks.add_task(refresh_crosscheck, event["tender_id"])   # re-reads /fields, re-runs the comparator
+    tasks.add_task(
+        refresh_crosscheck, event["tender_id"]
+    )  # re-reads /fields, re-runs the comparator
     return {"ok": True}
 ```
 

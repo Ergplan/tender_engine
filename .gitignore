@@ -1,5 +1,6 @@
 # secrets and machine-local config
 .env
+.env.local
 infra/allowlist.yaml
 
 # python
@@ -19,6 +20,7 @@ web/dist/
 
 # data
 /data/
+/.local/
 
 # service-account key files never enter the repository
 *-key.json

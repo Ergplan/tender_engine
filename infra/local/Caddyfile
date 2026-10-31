@@ -1,0 +1,11 @@
+# The app on a developer's machine (`make local`): the same routes as the VM over plain
+# HTTP on :8080 (published on 127.0.0.1 only, see infra/local/compose.yml).
+{
+	auto_https off
+}
+
+import Caddyfile.routes
+
+:8080 {
+	import app api:8000
+}

@@ -1,0 +1,63 @@
+# The stack on a developer's machine (`make local`): the same services and images as the
+# VM, layered over docker-compose.yml. What changes:
+#   - plain HTTP on http://localhost:8080, bound to this machine only (no certificate);
+#   - data, tender folders and the database live under ./.local/ and a separate project
+#     name, so nothing touches /data or /work and nothing collides with the VM's stack;
+#   - settings come from infra/local/local.env (checked in, no secrets) and an optional
+#     .env.local (gitignored) for a developer's own Anthropic key;
+#   - Docling, the OpenAI agent and the test watcher are off unless asked for.
+# Run with: docker compose -p tender-engine-local -f docker-compose.yml -f infra/local/compose.yml ...
+
+x-local-python: &local-python
+  env_file: !override
+    - path: infra/local/local.env
+    - path: .env.local
+      required: false
+  volumes: !override
+    - .:/app
+    - ./.local/data:/data
+    - ./.local/tenders:/work/tenders:ro
+  restart: !override "no"
+
+services:
+  db:
+    ports: !override
+      - "127.0.0.1:${LOCAL_DB_PORT:-5433}:5432"
+    restart: !override "no"
+
+  api:
+    <<: *local-python
+
+  worker:
+    <<: *local-python
+
+  agent:
+    <<: *local-python
+    profiles: ["agent"]
+
+  web:
+    environment:
+      # The browser reaches the dev server through Caddy on 8080 over plain HTTP.
+      VITE_HMR_CLIENT_PORT: "${LOCAL_PORT:-8080}"
+      VITE_HMR_PROTOCOL: ws
+    restart: !override "no"
+
+  caddy:
+    ports: !override
+      - "127.0.0.1:${LOCAL_PORT:-8080}:8080"
+    volumes: !override
+      - ./infra/local/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./infra/Caddyfile.routes:/etc/caddy/Caddyfile.routes:ro
+      - ./.local/data:/srv/files:ro
+    restart: !override "no"
+
+  tests:
+    <<: *local-python
+    profiles: ["watch"]
+    environment:
+      TEST_DATABASE_URL: postgresql+psycopg://tender:tender@db:5432/tender_ci
+      TEST_APP_DATABASE_URL: postgresql+psycopg://tender_app:tender_app@db:5432/tender_ci
+    volumes: !override
+      - .:/app
+      - web_node_modules:/app/web/node_modules
+      - ./.local/tenders:/work/tenders:ro

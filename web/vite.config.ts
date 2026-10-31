@@ -1,7 +1,12 @@
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vitest/config";
 
-// Served behind Caddy on https://<static-ip>/; the API is the same origin under /api.
+// Served behind Caddy on https://<static-ip>/; the API is the same origin under /api. On a
+// developer's machine (`make local`) Caddy serves plain HTTP on 8080, and the live-reload
+// socket follows it (infra/local/compose.yml sets the two variables).
+const hmrPort = Number(process.env.VITE_HMR_CLIENT_PORT ?? 443);
+const hmrProtocol = process.env.VITE_HMR_PROTOCOL ?? "wss";
+
 export default defineConfig({
   plugins: [react()],
   server: {
@@ -9,7 +14,7 @@ export default defineConfig({
     port: 5173,
     strictPort: true,
     allowedHosts: true,
-    hmr: { clientPort: 443, protocol: "wss" },
+    hmr: { clientPort: hmrPort, protocol: hmrProtocol },
   },
   test: {
     environment: "jsdom",

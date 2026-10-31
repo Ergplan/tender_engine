@@ -1,13 +1,19 @@
 """A synthetic tender: an RfS and an amendment, with the answers a scripted model gives."""
 
-from typing import Any
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any
 
 from sqlalchemy.orm import Session
 
 from core.models import Document
 from tender.models import Tender
-from tests.conftest import Pipeline
 from tests.fixtures.pdfs import make_pdf
+
+# Type-only: the demo seed of `make local` imports this module in the app image, which has
+# no pytest.
+if TYPE_CHECKING:
+    from tests.conftest import Pipeline
 
 RFS_PAGES = [
     [

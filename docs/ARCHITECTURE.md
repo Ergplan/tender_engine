@@ -128,6 +128,9 @@ The layout in `CLAUDE.md` is authoritative. Additions made under operating rule 
 | `docs/CONNECTOR.md` | how to connect from Claude Code, Claude.ai, ChatGPT, the OpenAI Responses API and a Python product | 7.6 |
 | `docs/SOFTWARE-ARCHITECTURE.md` | the detailed software architecture for readers outside the build: context, containers, components, truth pipeline, data model, interfaces, security, deployment, risks (copy of the Claude Doc, Mermaid diagrams) | 7 |
 | `docs/TENDEROS-INTEGRATION-MANUAL.md` | the dev team's manual for adding the engine to TenderOS as a cross-check: access, flow, endpoints, snapshot contract, field map, comparator, webhooks, code, go-live | 7 |
+| `infra/local/` | the stack on a developer's machine (`make local`): `compose.yml` layered over `docker-compose.yml` (plain HTTP on `127.0.0.1:8080`, data under `./.local/`, project name `tender-engine-local`, Docling, agent and watcher off), `Caddyfile` (the shared routes on `:8080`), `local.env` (settings without secrets; a developer's `.env.local` is read after it); a folder added to the layout on 2026-10-31 | 7 |
+| `scripts/seed_local.py` | the local seed: the `admin` user with the local password, and with `--demo` the browser tests' synthetic tender read by the scripted model; refuses unless `PUBLIC_BASE_URL` is localhost | 7 |
+| `README.md` | the entry point for a developer: run it locally, everyday commands, where things live, pointing a local TenderOS at it | 7 |
 
 ## Data model
 
@@ -556,6 +559,8 @@ A failure is stored with its traceback in `job.last_error`. A retryable failure 
 
 ## Deployment
 
+**On a developer's machine.** `make local` builds the same images, migrates, starts `db`, `api`, `worker`, `web` and `caddy` under the compose project `tender-engine-local` with `infra/local/compose.yml` over the main file, seeds an admin and the demo tender (`scripts/seed_local.py`), and waits for `http://localhost:8080/health`. Nothing it does reaches `/data`, `/work` or the VM's project; `make local-reset` starts clean. Docling and the agent are opt-in profiles; `make local-test` and `make local-watch` run the suites and the watcher against the local database.
+
 **Today: the VM.** One GCE VM (`instance-20261004-081207`, asia-south2-b), static IP `34.131.65.108` (`infra/STATIC-IP.txt`). `make deploy` pulls, builds, migrates (as the owner, `MIGRATION_DATABASE_URL`), restarts `api`, `worker`, `agent`, `web`, `caddy` and `tests`, and health-checks `https://34.131.65.108/health`. The app connects as `tender_app` (`DATABASE_URL`); on the VM its password is the dev one from `infra/db/init.sql`, since the database listens only on the compose network and on the VM's loopback. Firewall rules are recreated from `infra/allowlist.yaml` by `infra/firewall.sh`. Data lives on the `/data` host directory mounted into api, worker and agent. The `agent` service runs the same Python image with `OPENAI_API_KEY` and the `OPENAI_*`/`AGENT_*` settings from `.env`; it makes no outbound call but to the OpenAI API. Compose stays the development stack after the cutover.
 
 **Operating the VM (Stage 7, Block 0, 2026-10-24).** Every process that opens a session imports `agent.models` and `tender.models` at its entry point (`worker/main.py`, the management commands under `scripts/`, the eval modules), as `migrations/env.py` does, so that `Base.metadata` resolves every foreign key `llm_call_log` carries; `tests/worker/test_registry.py` imports each entry point in a fresh interpreter and resolves them the way a flush does. `infra/backup.sh` (cron, 02:30 UTC, the VM user; `make backup`): `pg_dump -Fc` of the app database and a tar of `/data` under `/work/backups` for 14 days, the same two files to the versioned bucket `BACKUP_BUCKET` as the VM's service account when it may write, and a Drive bundle (`/work/backups/drive`: dump, tar, `git archive HEAD`, sha256 manifest) that holds no secret. The VM carries 4 GB of swap (`/swapfile`, swappiness 10); the app services restart `always`, the test services never by themselves.
@@ -759,3 +764,8 @@ flowchart LR
 - `POST /api/v1/auth/password` (`api/v1/core/auth.py`), `IdentityService.login_with_password` and `set_password` (`core/services/identity.py`, scrypt), migration 0026 `app_user.password_hash`, `scripts/set_password.py`. A stale session cookie no longer blocks the sign-in routes.
 - `web/src/app/LoginPage.tsx`: username and password first, Google as the alternative; the shell's navigation has the workspace, which also opens on a signed-in session.
 - `infra/Caddyfile`: `https://34-131-65-108.sslip.io` with a public certificate beside the bare IP.
+
+**Local development (2026-10-31)**
+
+- `make local` and its companions (`local-down`, `local-reset`, `local-logs`, `local-test`, `local-watch`, `local-key`): the whole app on a developer's machine at `http://localhost:8080`, from `infra/local/` over the main compose file; `scripts/seed_local.py` seeds the admin and the demo tender; `README.md` is the entry point.
+- `web/vite.config.ts`: the live-reload port and protocol come from `VITE_HMR_CLIENT_PORT` and `VITE_HMR_PROTOCOL` (443 and wss by default, as on the VM).
