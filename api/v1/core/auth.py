@@ -8,7 +8,9 @@ an HttpOnly cookie whose value is known only to the login_session row's hash.
 import hashlib
 import hmac
 import secrets
+import threading
 import time
+from collections import deque
 from datetime import UTC, datetime
 from typing import Annotated, Any
 from urllib.parse import quote, unquote
@@ -20,7 +22,7 @@ from sqlalchemy import select
 from api.deps import SessionDep, SettingsDep
 from api.middleware.auth import SESSION_COOKIE
 from api.middleware.errors import AppError
-from api.v1.schemas.identity import MeOut
+from api.v1.schemas.identity import MeOut, PasswordLoginIn
 from api.v1.schemas.library import SignupIn
 from core.config import Settings
 from core.db import SYSTEM_TENANT, set_tenant
@@ -194,6 +196,73 @@ def programmatic_signup(
         raise AppError("login_refused", str(exc)) from exc
     token = _identity(request).open_session(session, user)
     response = Response(status_code=201)
+    response.set_cookie(
+        SESSION_COOKIE,
+        token,
+        max_age=int(settings.session_hours * 3600),
+        httponly=True,
+        secure=_secure(settings),
+        samesite="lax",
+        path="/",
+    )
+    return response
+
+
+# Failed password sign-ins per username and per address, in this process: five in fifteen
+# minutes and the next attempts are refused until the window has passed.
+LOCK_FAILURES = 5
+LOCK_SECONDS = 15 * 60
+_failures: dict[str, deque[float]] = {}
+_failures_lock = threading.Lock()
+
+
+def _client(request: Request) -> str:
+    forwarded = request.headers.get("x-forwarded-for", "")
+    return forwarded.split(",")[0].strip() or (request.client.host if request.client else "")
+
+
+def _locked(keys: list[str], now: float) -> bool:
+    with _failures_lock:
+        for key in keys:
+            seen = _failures.get(key)
+            while seen and seen[0] < now - LOCK_SECONDS:
+                seen.popleft()
+            if seen and len(seen) >= LOCK_FAILURES:
+                return True
+    return False
+
+
+def _fail(keys: list[str], now: float) -> None:
+    with _failures_lock:
+        for key in keys:
+            _failures.setdefault(key, deque()).append(now)
+
+
+def _clear(keys: list[str]) -> None:
+    with _failures_lock:
+        for key in keys:
+            _failures.pop(key, None)
+
+
+@router.post("/password", status_code=204)
+def password_login(
+    body: PasswordLoginIn, request: Request, session: SessionDep, settings: SettingsDep
+) -> Response:
+    """Sign in with a username and password (2026-10-31): the same browser session as the
+    provider's sign-in. Five failures in fifteen minutes for a username or an address lock
+    further attempts for the rest of the window."""
+    now = time.time()
+    keys = [f"user:{body.username.strip().lower()}", f"ip:{_client(request)}"]
+    if _locked(keys, now):
+        raise AppError("login_locked")
+    try:
+        user = _identity(request).login_with_password(session, body.username, body.password)
+    except IdentityError as exc:
+        _fail(keys, now)
+        raise AppError("login_failed") from exc
+    _clear(keys[:1])
+    token = _identity(request).open_session(session, user)
+    response = Response(status_code=204)
     response.set_cookie(
         SESSION_COOKIE,
         token,

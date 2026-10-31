@@ -31,7 +31,8 @@ USAGE_TIERS = ("internal", "enterprise", "free", "api")
 
 
 class AppUser(IdMixin, TenantAuditMixin, Base):
-    """A person who signs in (OIDC). One row per tenant and email."""
+    """A person who signs in (OIDC, or a username and password). One row per tenant and
+    email; a password user's username is kept in `email`."""
 
     __tablename__ = "app_user"
     __table_args__ = (UniqueConstraint("tenant_id", "email", name="uq_app_user_tenant_email"),)
@@ -43,6 +44,8 @@ class AppUser(IdMixin, TenantAuditMixin, Base):
     # The identity provider's stable subject for the account (Google `sub`).
     oidc_subject: Mapped[str | None] = mapped_column(String(200), nullable=True, unique=True)
     last_login_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    # Password sign-in (2026-10-31): "scrypt$n$r$p$salt$hash"; null for provider sign-in only.
+    password_hash: Mapped[str | None] = mapped_column(String(300), nullable=True)
 
 
 class LoginSession(IdMixin, TenantAuditMixin, Base):

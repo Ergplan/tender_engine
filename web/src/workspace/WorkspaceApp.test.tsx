@@ -171,10 +171,11 @@ describe("the workspace", () => {
   it("asks for an access key, checks it, and keeps it in this browser", async () => {
     const calls = stubApi();
     render(<App path="/workspace" />);
-    fireEvent.change(screen.getByLabelText("Access key"), { target: { value: KEY } });
+    fireEvent.change(await screen.findByLabelText("Access key"), { target: { value: KEY } });
     fireEvent.click(screen.getByRole("button", { name: "Open the workspace" }));
     expect(await screen.findByRole("heading", { level: 1, name: "Add a tender" })).toBeInTheDocument();
-    expect((calls[0].init.headers as Record<string, string>).Authorization).toBe(`Bearer ${KEY}`);
+    const listed = calls.find((c) => c.url === "/api/v1/tenders")!;
+    expect((listed.init.headers as Record<string, string>).Authorization).toBe(`Bearer ${KEY}`);
     expect(window.localStorage.getItem("tender-engine.workspace-key")).toBe(KEY);
     expect(await screen.findByRole("button", { name: /Selection of solar power developers/ })).toBeInTheDocument();
   });
@@ -182,9 +183,19 @@ describe("the workspace", () => {
   it("says plainly when a key is refused", async () => {
     stubApi({ "GET /tenders": () => respond(401, { error_type: "api_key_invalid", message: "Invalid key." }) });
     render(<App path="/workspace" />);
-    fireEvent.change(screen.getByLabelText("Access key"), { target: { value: "wrong" } });
+    fireEvent.change(await screen.findByLabelText("Access key"), { target: { value: "wrong" } });
     fireEvent.click(screen.getByRole("button", { name: "Open the workspace" }));
     expect(await screen.findByRole("alert")).toHaveTextContent("That key was not accepted");
+  });
+
+  it("opens for a browser signed in with a password, without a key", async () => {
+    const calls = stubApi({
+      "GET /auth/me": () => respond(200, { kind: "user", name: "admin", role: "admin", tenant_id: "ergplan", read_tenants: [], scopes: [] }),
+    });
+    render(<App path="/workspace" />);
+    expect(await screen.findByRole("heading", { level: 1, name: "Add a tender" })).toBeInTheDocument();
+    const listed = calls.find((c) => c.url === "/api/v1/tenders")!;
+    expect((listed.init.headers as Record<string, string>).Authorization).toBeUndefined();
   });
 
   it("sends a dropped tender to the engine and opens it", async () => {

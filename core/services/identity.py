@@ -6,7 +6,9 @@ tenants it may read, its role, its scopes. Sessions and keys are looked up acros
 other query here is tenant-scoped. Every write is audited.
 """
 
+import base64
 import hashlib
+import hmac
 import secrets
 from collections.abc import Sequence
 from dataclasses import dataclass
@@ -52,6 +54,49 @@ class Principal:
 
 def _hash(raw: str) -> str:
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+
+# Password hashing (2026-10-31): scrypt from the standard library, with its parameters in
+# the stored value so they can be raised later without breaking older hashes.
+SCRYPT_N, SCRYPT_R, SCRYPT_P = 2**15, 8, 1
+MIN_PASSWORD = 12
+USERNAME_MAX = 120
+
+
+def hash_password(password: str) -> str:
+    salt = secrets.token_bytes(16)
+    digest = hashlib.scrypt(
+        password.encode("utf-8"), salt=salt, n=SCRYPT_N, r=SCRYPT_R, p=SCRYPT_P, maxmem=2**26
+    )
+    b64 = base64.urlsafe_b64encode
+    return f"scrypt${SCRYPT_N}${SCRYPT_R}${SCRYPT_P}${b64(salt).decode()}${b64(digest).decode()}"
+
+
+def password_matches(password: str, stored: str | None) -> bool:
+    if not stored:
+        return False
+    try:
+        scheme, n, r, p, salt, digest = stored.split("$")
+        if scheme != "scrypt":
+            return False
+        expected = base64.urlsafe_b64decode(digest)
+        got = hashlib.scrypt(
+            password.encode("utf-8"),
+            salt=base64.urlsafe_b64decode(salt),
+            n=int(n),
+            r=int(r),
+            p=int(p),
+            maxmem=2**26,
+            dklen=len(expected),
+        )
+    except (ValueError, TypeError):
+        return False
+    return hmac.compare_digest(got, expected)
+
+
+# A hash of nothing in particular, checked when the username is unknown, so a wrong
+# username takes as long to refuse as a wrong password.
+_DUMMY_HASH = hash_password(secrets.token_urlsafe(16))
 
 
 def _list(setting: str) -> tuple[str, ...]:
@@ -134,6 +179,94 @@ class IdentityService:
                 row_id=user.id,
                 before=before,
                 after={"oidc_subject": user.oidc_subject, "last_login_at": _iso(now)},
+            )
+        session.commit()
+        return user
+
+    def login_with_password(self, session: Session, username: str, password: str) -> AppUser:
+        """The user behind a username and password of this deployment's tenant. One message
+        for every refusal, so it does not tell which half was wrong."""
+        name = username.strip().lower()
+        set_tenant(session, self._tenant_id)
+        user = session.scalar(
+            select(AppUser).where(AppUser.tenant_id == self._tenant_id, AppUser.email == name)
+        )
+        if user is None or not user.password_hash:
+            password_matches(password, _DUMMY_HASH)
+            raise IdentityError("wrong username or password")
+        if not password_matches(password, user.password_hash) or user.status != "active":
+            raise IdentityError("wrong username or password")
+        user.last_login_at = datetime.now(UTC)
+        audit.record(
+            session,
+            tenant_id=user.tenant_id,
+            actor=user.email,
+            action="login",
+            table_name="app_user",
+            row_id=user.id,
+            after={"method": "password", "last_login_at": _iso(user.last_login_at)},
+        )
+        session.commit()
+        return user
+
+    def set_password(
+        self,
+        session: Session,
+        username: str,
+        password: str,
+        *,
+        role: str | None = None,
+        created_by: str = ACTOR,
+    ) -> AppUser:
+        """Set a user's password, creating the user (with `role`, default reviewer) when
+        the username is new. Audited; the hash is never written to the log."""
+        name = username.strip().lower()
+        if not name or len(name) > USERNAME_MAX or any(c.isspace() for c in name):
+            raise IdentityError("a username is one word of at most 120 characters")
+        if len(password) < MIN_PASSWORD:
+            raise IdentityError(f"a password has at least {MIN_PASSWORD} characters")
+        if role is not None and role not in ROLES:
+            raise IdentityError(f"unknown role {role!r}; one of {list(ROLES)}")
+        set_tenant(session, self._tenant_id)
+        user = session.scalar(
+            select(AppUser).where(AppUser.tenant_id == self._tenant_id, AppUser.email == name)
+        )
+        if user is None:
+            user = AppUser(
+                tenant_id=self._tenant_id,
+                created_by=created_by,
+                email=name,
+                display_name=name,
+                role=role or "reviewer",
+                status="active",
+                password_hash=hash_password(password),
+            )
+            session.add(user)
+            session.flush()
+            audit.record(
+                session,
+                tenant_id=user.tenant_id,
+                actor=created_by,
+                action="insert",
+                table_name="app_user",
+                row_id=user.id,
+                after={"email": name, "role": user.role, "password": "set"},
+            )
+        else:
+            before = {"role": user.role, "status": user.status}
+            user.password_hash = hash_password(password)
+            if role is not None:
+                user.role = role
+            user.status = "active"
+            audit.record(
+                session,
+                tenant_id=user.tenant_id,
+                actor=created_by,
+                action="update",
+                table_name="app_user",
+                row_id=user.id,
+                before=before,
+                after={"role": user.role, "status": user.status, "password": "changed"},
             )
         session.commit()
         return user

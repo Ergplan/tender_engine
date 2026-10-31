@@ -26,6 +26,8 @@ ERROR_STATUS: dict[str, tuple[int, str]] = {
     "session_expired": (401, "Your session has ended. Sign in again."),
     "api_key_invalid": (401, "The API key is not valid or has been revoked."),
     "login_refused": (403, "This account cannot sign in here."),
+    "login_failed": (401, "Wrong username or password."),
+    "login_locked": (429, "Too many failed sign-ins. Wait 15 minutes and try again."),
     "rate_limited": (429, "Too many calls for this key. Wait a minute, or raise the key's limit."),
     "tier_required": (403, "This needs a paid plan; the free library tier is read-only."),
     "runs_not_finished": (409, "The runs are still queued or running. Ask again later."),

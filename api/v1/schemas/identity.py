@@ -89,3 +89,10 @@ class UsageOut(BaseModel):
     calls: int
     by_tool: list[UsageByTool]
     by_key: list[UsageByKey]
+
+
+class PasswordLoginIn(BaseModel):
+    """A username and password sign-in (2026-10-31)."""
+
+    username: str = Field(min_length=1, max_length=120)
+    password: str = Field(min_length=1, max_length=500)

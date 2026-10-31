@@ -14,6 +14,7 @@ export function useMe(): Me | null {
 }
 
 const NAV: { href: string; label: string; match: RegExp; admin?: boolean }[] = [
+  { href: "/workspace", label: "Workspace", match: /^\/workspace/ },
   { href: "/tenders", label: "Tenders", match: /^\/(tenders(\/.*)?)?$/ },
   { href: "/tenders?filter=review", label: "Reviews", match: /^\/tenders\?filter=review$/ },
   { href: "/admin/reliability", label: "Reliability", match: /^\/admin\/reliability/ },

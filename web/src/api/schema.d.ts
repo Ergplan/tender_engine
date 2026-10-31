@@ -476,6 +476,28 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/auth/password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Password Login
+         * @description Sign in with a username and password (2026-10-31): the same browser session as the
+         *     provider's sign-in. Five failures in fifteen minutes for a username or an address lock
+         *     further attempts for the rest of the window.
+         */
+        post: operations["password_login_api_v1_auth_password_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/auth/signup": {
         parameters: {
             query?: never;
@@ -3649,6 +3671,16 @@ export interface components {
             /** Width */
             width: number;
         };
+        /**
+         * PasswordLoginIn
+         * @description A username and password sign-in (2026-10-31).
+         */
+        PasswordLoginIn: {
+            /** Password */
+            password: string;
+            /** Username */
+            username: string;
+        };
         /** PublicationState */
         PublicationState: {
             /** Current Version */
@@ -5841,6 +5873,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MeOut"];
+                };
+            };
+        };
+    };
+    password_login_api_v1_auth_password_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PasswordLoginIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

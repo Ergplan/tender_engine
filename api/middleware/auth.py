@@ -37,6 +37,8 @@ OPEN = {
     f"{API}/auth/login",
     f"{API}/auth/callback",
     f"{API}/auth/signup",
+    # Password sign-in (2026-10-31).
+    f"{API}/auth/password",
     # The OAuth consent page sends a visitor without a session to sign in itself.
     f"{API}/oauth/consent",
     # The public correction form (Stage 5D): a claim with an email address, no sign-in.
@@ -169,7 +171,10 @@ def install(app: FastAPI) -> None:
         if not path.startswith(API + "/"):
             return await call_next(request)
         refusal = await run_in_threadpool(_resolve, request)
-        if refusal is not None:
+        if refusal == "session_expired" and path in OPEN:
+            # An old session cookie does not stand in the way of signing in again.
+            request.state.principal = None
+        elif refusal is not None:
             return _refuse(request, refusal)
         principal: Principal | None = request.state.principal
         public = review_token.PUBLIC_HEADER in request.headers

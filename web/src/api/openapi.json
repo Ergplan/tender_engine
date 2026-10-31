@@ -5198,6 +5198,29 @@
         "title": "PageOut",
         "type": "object"
       },
+      "PasswordLoginIn": {
+        "description": "A username and password sign-in (2026-10-31).",
+        "properties": {
+          "password": {
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Password",
+            "type": "string"
+          },
+          "username": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Username",
+            "type": "string"
+          }
+        },
+        "required": [
+          "username",
+          "password"
+        ],
+        "title": "PasswordLoginIn",
+        "type": "object"
+      },
       "PublicationState": {
         "properties": {
           "current_version": {
@@ -10379,6 +10402,41 @@
           }
         },
         "summary": "Me",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/password": {
+      "post": {
+        "description": "Sign in with a username and password (2026-10-31): the same browser session as the\nprovider's sign-in. Five failures in fifteen minutes for a username or an address lock\nfurther attempts for the rest of the window.",
+        "operationId": "password_login_api_v1_auth_password_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordLoginIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Password Login",
         "tags": [
           "auth"
         ]

@@ -111,6 +111,18 @@ export type ReviewApi = ReturnType<typeof reviewApi>;
  * sends by itself on this origin; nothing is added to the request. */
 export const appApi = {
   me: () => request<T5.Me>("GET", "/auth/me"),
+  /** Username and password sign-in (2026-10-31); the session cookie comes back with it. */
+  passwordLogin: async (username: string, password: string): Promise<void> => {
+    const response = await fetch("/api/v1/auth/password", {
+      method: "POST",
+      headers: { Accept: "application/json", "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password }),
+    });
+    if (!response.ok) {
+      const payload = (await response.json().catch(() => null)) as { error_type?: string; message?: string } | null;
+      throw new ApiError(response.status, payload?.error_type ?? "unknown", payload?.message ?? "Sign-in failed.", null, null);
+    }
+  },
   logout: () => request<unknown>("POST", "/auth/logout"),
   tenders: () => request<T5.TenderListItem[]>("GET", "/tenders"),
   published: (tenderId: string) => request<T5.PublishedTender>("GET", `/tenders/${tenderId}/published`),
@@ -139,7 +151,9 @@ export type AskCitation = Schemas["Citation"];
 export type ReviewLink = Schemas["ReviewLinkOut"];
 
 async function send<T>(method: string, path: string, key: string, body?: BodyInit, contentType?: string): Promise<T> {
-  const headers: Record<string, string> = { Accept: "application/json", Authorization: `Bearer ${key}` };
+  const headers: Record<string, string> = { Accept: "application/json" };
+  // No key: a signed-in browser, whose session cookie travels on its own.
+  if (key) headers.Authorization = `Bearer ${key}`;
   if (contentType) headers["Content-Type"] = contentType;
   const response = await fetch(`/api/v1${path}`, { method, headers, body });
   if (!response.ok) {
@@ -182,7 +196,8 @@ function submitBody(form: SubmitForm, extra: Record<string, string> = {}): FormD
   return data;
 }
 
-/** The workspace's calls (2026-10-30): an API key, kept in this browser, on every call. */
+/** The workspace's calls (2026-10-30): an API key, kept in this browser, on every call; or,
+ * with an empty key, the signed-in user's session cookie (2026-10-31). */
 export function workspaceApi(key: string) {
   const json = <T>(method: string, path: string, body: unknown) =>
     send<T>(method, path, key, JSON.stringify(body), "application/json");
@@ -205,7 +220,7 @@ export function workspaceApi(key: string) {
     /** A page image as an object URL (an <img> cannot send the key itself). */
     pageImage: async (documentId: string, pageNo: number): Promise<string> => {
       const response = await fetch(`/api/v1/documents/${documentId}/pages/${pageNo}/render`, {
-        headers: { Authorization: `Bearer ${key}` },
+        headers: key ? { Authorization: `Bearer ${key}` } : {},
       });
       if (!response.ok) throw new ApiError(response.status, "page_unavailable", "The page image is not available yet.", null, null);
       return URL.createObjectURL(await response.blob());

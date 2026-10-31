@@ -35,7 +35,8 @@ an API.
 | Secrets | `/work/tender_engine/.env` (gitignored; `.env.example` lists every variable with its meaning); review links in `/work/stage*-links.txt` (mode 600). Nothing of either is in the repository |
 | Backups | nightly 02:30 UTC by cron (`infra/backup.sh`): `pg_dump` and a tar of `/data` under `/work/backups` (14 days), a `.env`-stripped Drive bundle under `/work/backups/drive`; the bucket copy fails until the bucket exists (below) |
 | The MCP server | `https://34.131.65.108/mcp`, streamable HTTP, OAuth 2.1 with dynamic registration, or an API key as a bearer token |
-| The tender workspace | `https://34.131.65.108/workspace`: drop a tender or paste its official URL, follow the reading, read every term with its page, the amendments with their impact, ask questions, send for review. Opened with an access key (an API key minted for a person) |
+| The app's address | **https://34-131-65-108.sslip.io** (public certificate; the bare IP still answers with its internal one). Sign in with a username and password (`docker compose exec -T api python -m scripts.set_password --username <name> --role admin` creates or resets one) |
+| The tender workspace | `https://34-131-65-108.sslip.io/workspace`: drop a tender or paste its official URL, follow the reading, read every term with its page, the amendments with their impact, ask questions, send for review. Opened with an access key (an API key minted for a person) |
 | The admin screens | `/admin` (users, API keys, review tokens, holds) for a signed-in admin; `/admin/reliability` behind `ADMIN_TOKEN` |
 
 ## Operating it

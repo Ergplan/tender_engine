@@ -1,5 +1,8 @@
-# TLS from Caddy's internal CA on the static IP. Reviewers see a certificate warning once;
-# docs/KNOWN-GAPS.md explains how to switch to a domain and Let's Encrypt.
+# The app's address (2026-10-31): https://34-131-65-108.sslip.io, a name that resolves to the
+# static IP, with a public certificate Caddy obtains and renews by itself (TLS-ALPN on 443;
+# port 80 stays closed). The bare IP keeps its internal-CA certificate so links made before
+# the switch still open. A domain of the organisation's own replaces the sslip.io name here
+# and in PUBLIC_BASE_URL.
 {
 	default_sni 34.131.65.108
 	auto_https disable_redirects
@@ -9,5 +12,9 @@ import Caddyfile.routes
 
 https://34.131.65.108 {
 	tls internal
+	import app api:8000
+}
+
+https://34-131-65-108.sslip.io {
 	import app api:8000
 }

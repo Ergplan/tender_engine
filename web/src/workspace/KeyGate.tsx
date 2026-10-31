@@ -65,6 +65,12 @@ export function KeyGate({ onKey, message }: { onKey: (key: string) => void; mess
         >
           {checking ? "Checking the key…" : "Open the workspace"}
         </button>
+        <p className="mt-4 text-center text-sm text-[#5b6b70]">
+          Have a username and password?{" "}
+          <a href="/" className="text-[#0f5f5c] underline">
+            Sign in
+          </a>
+        </p>
       </form>
     </main>
   );

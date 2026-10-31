@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { ApiError, type TenderSummary, workspaceApi } from "../api/client";
+import { ApiError, appApi, type TenderSummary, workspaceApi } from "../api/client";
 import { DropZone } from "./DropZone";
 import { KeyGate, Mark } from "./KeyGate";
 import { forgetKey, loadKey, saveKey } from "./keyStore";
@@ -23,8 +23,26 @@ function go(tenderId: string | null) {
 /** /workspace: drop a tender in, open any tender read so far, and see its analysis. */
 export function WorkspaceApp({ initialTender = null }: { initialTender?: string | null }) {
   const [key, setKey] = useState<string | null>(() => loadKey());
+  // Signed in with a username and password (2026-10-31): the session cookie stands in for
+  // a key. "checking" while the engine is asked who this browser is.
+  const [session, setSession] = useState<"checking" | "signed_in" | "none">(() => (loadKey() ? "none" : "checking"));
   const [refused, setRefused] = useState<string | null>(null);
-  const api = useMemo(() => (key ? workspaceApi(key) : null), [key]);
+  const api = useMemo(
+    () => (key ? workspaceApi(key) : session === "signed_in" ? workspaceApi("") : null),
+    [key, session],
+  );
+
+  useEffect(() => {
+    if (key || session !== "checking") return;
+    let cancelled = false;
+    appApi
+      .me()
+      .then((me) => !cancelled && setSession(me.kind === "user" ? "signed_in" : "none"))
+      .catch(() => !cancelled && setSession("none"));
+    return () => {
+      cancelled = true;
+    };
+  }, [key, session]);
   const [tenders, setTenders] = useState<TenderSummary[] | null>(null);
   const [selected, setSelected] = useState<string | null>(initialTender);
   const [query, setQuery] = useState("");
@@ -38,10 +56,13 @@ export function WorkspaceApp({ initialTender = null }: { initialTender?: string 
       if (caught instanceof ApiError && (caught.status === 401 || caught.status === 403)) {
         forgetKey();
         setKey(null);
-        setRefused("The access key is no longer accepted. Enter a current one.");
+        setSession("none");
+        setRefused(
+          key ? "The access key is no longer accepted. Enter a current one." : "Your session has ended. Sign in again.",
+        );
       }
     }
-  }, [api]);
+  }, [api, key]);
 
   useEffect(() => {
     void refresh();
@@ -63,7 +84,8 @@ export function WorkspaceApp({ initialTender = null }: { initialTender?: string 
       .sort((a, b) => b.created_at.localeCompare(a.created_at));
   }, [tenders, query]);
 
-  if (!key || !api)
+  if (!api && session === "checking") return <p className="p-8 font-sans text-sm text-[#5b6b70]">Opening the workspace…</p>;
+  if (!api)
     return (
       <KeyGate
         message={refused}
@@ -91,6 +113,7 @@ export function WorkspaceApp({ initialTender = null }: { initialTender?: string 
             onClick={() => {
               forgetKey();
               setKey(null);
+              if (!key) void appApi.logout().finally(() => window.location.assign("/"));
             }}
             className="ml-auto text-xs text-[#5b6b70] hover:text-[#1b2a2f]"
           >
